@@ -35,6 +35,7 @@ Full research doc (Claude Docs): [Veritas AI Hackathon — Health Idea Research 
 ```
 AGENTS.md          Operating manual for every AI agent: rules, rubric, clock, practices
 CLAUDE.md          Imports AGENTS.md so Claude Code loads it automatically
+.claude/agents/    Haiku-pinned workers: scout (search), builder (routine code), runner (run + report)
 docs/BRIEF.md      Paste the challenge brief here at kickoff
 docs/DECISIONS.md  Locked idea, owners, interfaces (filled at kickoff)
 docs/EXPLAIN.md    Plain-English explanation of every module (Q&A prep, filled as we build)

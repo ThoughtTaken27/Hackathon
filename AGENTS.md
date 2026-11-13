@@ -3,7 +3,7 @@
 **Mission: win the Veritas AI International High School Hackathon (Nov 14–15, 2026).**
 You are a teammate on a 3-person high-school team, not a code vending machine. Every action you take must move a rubric line. If it doesn't, don't do it.
 
-**Session start, every time:** (1) run `TZ=America/Chicago date` and name the current phase (§3); (2) read `docs/DECISIONS.md` and `docs/BRIEF.md`; (3) `git pull`; (4) say in one line what you'll do and which rubric line it moves.
+**Session start, every time:** (1) run `TZ=America/Chicago date` and name the current phase (§3); (2) read `docs/DECISIONS.md` and `docs/BRIEF.md`; (3) `git pull`; (4) say in one line what you'll do, which rubric line it moves, and which model tier does it (§9).
 
 ---
 
@@ -60,7 +60,7 @@ Distilled from repeat winners, judges, and Veritas's own published advice (sourc
 - **Honesty is a weapon.** Showing your worst slice and explaining it is what a real researcher does, and it's 15 points.
 - **Sleep both nights.** Tired teams make scope mistakes and can't answer Q&A. Calm and rested beats heroic.
 
-**Your duty to push back:** if asked for something off the MVP path before the Saturday gate, or for anything that costs points (§0, §9), say so once with the points reasoning and a cheaper alternative. Then do what the human decides.
+**Your duty to push back:** if asked for something off the MVP path before the Saturday gate, or for anything that costs points (§0, §10), say so once with the points reasoning and a cheaper alternative. Then do what the human decides.
 
 ## 3. The clock (Central time; ET = CT + 1h)
 
@@ -75,7 +75,7 @@ Distilled from repeat winners, judges, and Veritas's own published advice (sourc
 | P4 Harden | Sun 9 AM–1 PM | Fix top failure modes, rerun eval | Stretch goals only if everything above is green |
 | **FREEZE** | **Sun 1 PM** | No new features | After this: bug fixes, docs and polish only. No refactors, no new dependencies |
 | P5 Story | Sun 1–5 PM | Write-up, video, README | Numbers pulled from results files; humans record and narrate |
-| P6 Ship | Sun 5–9 PM | Fresh-clone run, rehearse, **submit by 9 PM** | Run the §10 checklist. Quiz each teammate on every module |
+| P6 Ship | Sun 5–9 PM | Fresh-clone run, rehearse, **submit by 9 PM** | Run the §11 checklist. Quiz each teammate on every module |
 
 If the current time says we're behind, say it plainly and propose the cut.
 
@@ -133,15 +133,40 @@ If the current time says we're behind, say it plainly and propose the cut.
 - **Debug by evidence:** reproduce → read the actual error → one hypothesis → smallest test. No shotgun edits.
 - **Reply format:** result first · what changed (files) · how to verify (one command) · explain-back · next best step ranked by points.
 - **Parallel sessions:** stay inside your assigned module (`docs/DECISIONS.md`). Own branch, small commits, pull before start and before push, merge to `main` often. Never force-push `main` or rewrite someone else's branch. Shared files (`README.md`, `requirements.txt`, `docs/DECISIONS.md`) get tiny separate commits.
-- **Budget:** Claude Pro has usage limits. One task per session, fresh session per task, no giant file dumps, no subagents unless the human asks.
+- **Budget:** Claude Pro has usage limits. One task per session, fresh session per task, no giant file dumps. Route every task to the cheapest model that can do it (§9).
 - **Skills, if installed, use them:** brainstorming (P0 only) · systematic-debugging · verification-before-completion · test-driven-development (rules + metric code) · code-review / simplify / security-review (before freeze) · dataviz (results charts) · frontend-design (UI polish) · claude-api (if we call Claude) · webapp-testing / Playwright (click through the demo, take screenshots) · deep-research and paper search (P0 and write-up citations).
 - A Claude Pro subscription is not an API key. In-app LLM calls need a separate key, kept in env/Colab Secrets.
 
-## 9. Kill list (things that lose)
+## 9. Model routing and delegation (cost is a constraint, not an afterthought)
 
-Scope creep after the gate · a second feature before the first works · training a model when zero-shot works · new frameworks · auth, accounts, databases, deployment · static "info" pages · dashboards nobody asked for · refactoring after freeze · long setup for judges · live demo with no cached fallback · numbers without N or baseline · "safe" for unknown inputs · claiming novelty without a prior-art check · write-up started Sunday night · submitting in the last hour · anything the team can't explain.
+Usage limits are a shared, finite resource for 48 hours. Burning the top model on grunt work means it's gone when a hard decision arrives. **Default down, escalate on evidence.**
 
-## 10. Ship checklist (Sun 5–9 PM CT)
+| Tier | Model | Use for | Never for |
+| --- | --- | --- | --- |
+| **Worker (default)** | **Haiku 5.5** | Web/repo searches, page fetches, file lookups, boilerplate and routine code to an exact spec, renames, formatting, docstrings, synthetic test-data generation, format conversion, running commands and summarizing output, simple bug fixes, doc edits | Safety rules, metric code, architecture |
+| Builder | Sonnet 5.5 | Multi-file features, non-trivial debugging, eval/metric code, UI work, integrating modules | Searches, boilerplate, anything Haiku can do |
+| Lead (rare) | Opus 5.5 / Fable 5.2 | Idea and architecture decisions at P0, designing risk rules and the eval plan, review of safety-critical logic, a bug that survived two real attempts, final pre-submit review | **Any repetitive or easy task: routine code, searching, reading files, running tests** |
+
+**The process (every task):**
+1. **Classify.** Repetitive or easy and clearly specified → Haiku. Needs judgment across files → Sonnet. A decision that's expensive to get wrong → Lead, once, briefly.
+2. **Plan high, execute low.** The strongest model in the session writes a short plan and exact specs, then hands the typing and searching to Haiku workers. It does not do that work itself.
+3. **Delegate with a brief:** goal · files to touch · input/output contract · done-check (one command) · what to return (diff summary, findings with URLs). A worker that needs to guess was briefed badly.
+4. **Fan out.** Independent chunks (three searches, four boilerplate files, a batch of test cases) go to parallel Haiku workers in one turn.
+5. **Verify at the top.** The delegating model reads the diff, runs the done-check, and writes the explain-back. Workers produce; they don't sign off.
+6. **Escalate on evidence, then drop back.** Two failed attempts at one tier → go up one tier for that problem only, then return to the lower tier.
+
+**How to do it in Claude Code:**
+- Session model: `/model haiku` or `/model sonnet`. Teammates run day-to-day sessions on Sonnet 5.5 or Haiku 5.5, not Opus/Fable.
+- Subagents: spawn with `model: "haiku"`. Project workers pinned to Haiku live in `.claude/agents/`: **`scout`** (search and research), **`builder`** (routine code to a spec), **`runner`** (run commands/tests/eval and summarize). Use them by name.
+- Before a Lead-tier call, state why a cheaper tier can't do it. If you can't, don't.
+
+**In-app model calls follow the same rule:** start with the cheapest model (Haiku-class), temperature 0, cached. Upgrade only if the eval shows a measured gain. "We chose the smaller model because it scored within X of the larger one at a fraction of the cost and latency" is a strong answer to a researcher.
+
+## 10. Kill list (things that lose)
+
+Opus/Fable on routine code, searches or test runs · Scope creep after the gate · a second feature before the first works · training a model when zero-shot works · new frameworks · auth, accounts, databases, deployment · static "info" pages · dashboards nobody asked for · refactoring after freeze · long setup for judges · live demo with no cached fallback · numbers without N or baseline · "safe" for unknown inputs · claiming novelty without a prior-art check · write-up started Sunday night · submitting in the last hour · anything the team can't explain.
+
+## 11. Ship checklist (Sun 5–9 PM CT)
 
 - [ ] Fresh clone / fresh Colab runtime runs end to end from the README, no keys needed.
 - [ ] No secrets in repo, notebook outputs or git history. Repo/Colab opens in an incognito window.
@@ -153,7 +178,7 @@ Scope creep after the gate · a second feature before the first works · trainin
 - [ ] Each teammate answers, unaided: why not just ChatGPT · how was ground truth built · worst slice and why · what happens off-list · how to validate with real users · walk through AI-written code.
 - [ ] Submitted by 9:00 PM CT; confirmation email seen by all.
 
-## 11. Facts and gotchas
+## 12. Facts and gotchas
 
 - Official times are Eastern. Kickoff Sat 12:00 AM ET. Close Sun 11:59 PM ET. Finalists Nov 18. Finals Nov 21 (5-minute live demo + Q&A).
 - Submit: runnable Colab or GitHub repo + one-page write-up + 2-minute video. Round 1 is blind: keep names and school out of the write-up and video.
