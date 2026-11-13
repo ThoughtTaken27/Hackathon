@@ -1,0 +1,25 @@
+# Secrets: never commit API keys
+.env
+.env.*
+!.env.example
+*.key
+secrets.*
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# Large or private data, caches
+data/raw/
+data/private/
+cache/
+*.mp4
+*.mov
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
