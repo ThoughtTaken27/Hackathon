@@ -18,6 +18,7 @@ Team repo for the [Veritas AI International High School Hackathon](https://highs
 
 ## Start here
 
+0. [`AGENTS.md`](AGENTS.md): the operating manual every AI agent (and teammate) follows. Read it once.
 1. [`docs/KICKOFF.md`](docs/KICKOFF.md): what to do in the first hour after the brief drops.
 2. [`docs/RULES-AND-RUBRIC.md`](docs/RULES-AND-RUBRIC.md): rules, scoring, what we submit.
 3. [`docs/IDEAS.md`](docs/IDEAS.md): our pre-researched ideas (HeatRx main, ChairCheck backup) and the decision table.
@@ -32,9 +33,11 @@ Full research doc (Claude Docs): [Veritas AI Hackathon — Health Idea Research 
 ## Repo layout
 
 ```
-CLAUDE.md          Shared instructions every teammate's Claude session reads
+AGENTS.md          Operating manual for every AI agent: rules, rubric, clock, practices
+CLAUDE.md          Imports AGENTS.md so Claude Code loads it automatically
 docs/BRIEF.md      Paste the challenge brief here at kickoff
 docs/DECISIONS.md  Locked idea, owners, interfaces (filled at kickoff)
+docs/EXPLAIN.md    Plain-English explanation of every module (Q&A prep, filled as we build)
 docs/              Planning docs (this is all that exists before kickoff)
 ```
 
