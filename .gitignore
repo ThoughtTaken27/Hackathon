@@ -31,3 +31,8 @@ CLAUDE.local.md
 
 # Overnight run state and logs (local only)
 .overnight/
+
+# Kettle probes and caches
+.venv-probe/
+data/raw/
+cache/
