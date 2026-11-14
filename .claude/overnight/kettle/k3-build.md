@@ -2,7 +2,7 @@
 
 Unattended on Parth's Mac; nobody answers questions. Decide, log it in `docs/DECISIONS.md`, keep going. The team takes over Sunday morning for the video, the write-up and the own-kitchen test set; submission closes Sun 10:59 PM CT.
 
-**Read first, every time you start:** `.overnight/kettle/STATE.md`, `docs/PRD.md`, `docs/DECISIONS.md`, `AGENTS.md`, `docs/research/kettle/better-than.md`, `docs/research/kettle/ui-patterns.md`, `docs/research/kettle/probes/`. On a restart, run `git status` and `git log --oneline | head -15`, then continue from the first unfinished milestone. Never redo finished work. Update STATE after every milestone.
+**Read first, every time you start:** `.overnight/kettle/STATE.md`, `docs/PRD.md`, `docs/DECISIONS.md`, `AGENTS.md`, `docs/research/kettle/better-than.md`, `docs/research/kettle/ui-patterns.md`, `docs/research/kettle/probes/`, and **`.claude/overnight/kettle/k3-addendum.md` (Parth's additions; they override this file where they differ)**. On a restart, run `git status` and `git log --oneline | head -15`, then continue from the first unfinished milestone. Never redo finished work. Update STATE after every milestone.
 
 **Context:** the last overnight build (Second Look) finished every milestone in 39 minutes and stopped, and Parth called the result basic. This time depth is the point. The quality bars below are the definition of done, not the clock. Use the time.
 
