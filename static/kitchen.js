@@ -116,7 +116,7 @@ function screen(t) {
       `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
     return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
-        el("button", { class: "btn quiet", type: "button", text: "Read this to me", style: "font-size:var(--fs-lead)", onclick: () => speak(["This laptop listens for kitchen sounds.", ...lines]) })] };
+        button("Read this to me", () => speak(["This laptop listens for kitchen sounds.", ...lines]))] };
   }
   if (k.off) {
     return { state: "off", head: "Kettle is off.", body: ["This laptop isn't listening. Press Start when you want it on."],
@@ -142,7 +142,8 @@ function screen(t) {
         button("Stop sample", () => act("/api/demo/stop"))] };
   }
   if (ui.mic === "asking" || ui.mic === "idle") {
-    return { state: "starting", head: "A box will pop up about the microphone.", body: ["Press Allow. Only this laptop uses it."], controls: [] };
+    return { state: "starting", head: "A box will pop up about the microphone.", body: ["Press Allow. Only this laptop uses it."],
+      controls: [el("button", { class: "btn quiet", type: "button", text: "No box appeared? Try again", style: "font-size:var(--fs-lead)", onclick: () => { stopMic(); ui.mic = "idle"; sync(); } })] };
   }
   if (ui.mic === "denied" || ui.mic === "none") {
     const none = ui.mic === "none";
@@ -177,13 +178,13 @@ function draw() {
   if (s.checks && s.checks.length) {
     const ul = el("ul");
     for (const c of s.checks) ul.append(el("li", { text: c }));
-    body.append(el("div", { class: "k-rules", style: "margin-top:12px" }, el("p", { text: `${today.names.caregiver}'s checks (she sees whether they happened):` }), ul));
+    body.append(el("div", { class: "k-rules", style: "margin-top:12px" }, el("p", { text: `Checks ${today.names.caregiver} set:` }), ul));
   }
   if (s.example) body.append(exampleBar());
   if (s.helper) body.append(el("details", { class: "helper" }, el("summary", { text: s.helper[0] }), el("p", { text: s.helper[1] })));
-  // demo tag
+  // demo tag: under the message, never on the error screen
   const tag = $("demo-tag");
-  tag.hidden = !today.demo;
+  tag.hidden = !today.demo || s.state === "error";
   tag.textContent = "";
   if (today.demo) tag.append(el("span", { class: "tag demo", style: "font-size:var(--fs-meta)", text: "Sample day" }));
   // controls / pause menu

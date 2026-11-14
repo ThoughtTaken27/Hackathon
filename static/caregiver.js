@@ -61,7 +61,7 @@ function renderDemo(d, names) {
     tag.hidden = false;
     tag.textContent = "";
     tag.append(el("span", { class: "tag demo", text: `Sample day · ${d.title}` }),
-      el("span", { class: "meta muted", style: "margin-left:8px", text: `Recorded sounds from a public research home, not ${names.parent}.` }));
+      el("span", { class: "meta muted demo-caption", style: "margin-left:8px", text: `Recorded sounds from a public research home, not ${names.parent}.` }));
     tag.style.marginBottom = "10px";
   } else {
     tag.hidden = true;

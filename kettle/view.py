@@ -48,7 +48,8 @@ def heartbeat_line(hb: dict, now: float, demo: bool) -> dict:
     elif st == "starting":
         text = "Starting… the first label appears in about 10 seconds."
     elif st == "listening":
-        text = f"Listening · last heard {_ago(now - hb['last_heard'])} ago"
+        ago = now - hb["last_heard"]
+        text = "Listening · last heard just now" if ago < 10 else f"Listening · last heard {_ago(ago)} ago"
     elif st == "stale":
         text = (f"Not listening since {c(since)} (laptop asleep, closed or off). Nothing is known after that."
                 if since else "Not listening. Nothing is known about today yet.")

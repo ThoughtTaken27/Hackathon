@@ -76,3 +76,10 @@ def test_validate():
             assert False, bad
         except (ValueError, KeyError):
             pass
+
+
+def test_started_after_the_check_says_so_and_is_still_cant_tell():
+    ev = run_of(13 * H, "absence", 6, dur=600)                  # Kettle first heard anything at 1 PM
+    b = timeline.blocks(ev, TH, now=14 * H, listening_now=True, listening_from=13 * H)
+    r = state(KITCHEN, b, 14 * H)
+    assert r["state"] == "cant_tell" and "started at 1:00 PM, after this check's time" in r["detail"]

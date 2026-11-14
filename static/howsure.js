@@ -62,6 +62,7 @@ function renderResults(box, r) {
     : `Development folds (also used to choose the model), N = ${d.n_clips} clips from ${d.n_sessions} sessions. The held-out test hasn't been run yet.`;
   document.getElementById("split-line").textContent = splitText;
 
+  box.append(el("p", { class: "verdict", text: verdict(per, main.ours_ch0.confusion) }));
   // lead with the measured gap (addendum item 5): what a Mac already ships vs Kettle, same clips, same metric
   const apple = ev ? ev.baselines && ev.baselines.apple_zeroshot : d.baselines.apple_zeroshot && d.baselines.apple_zeroshot.macro_f1;
   const oursHead = ev ? (ev.slices.unknown || ev.slices.all).ch0 : d.ours_ch0.macro_f1;
@@ -72,7 +73,7 @@ function renderResults(box, r) {
       el("strong", { class: "num", text: pct(oursHead) }),
       el("span", { class: "muted", text: ` (macro F1, ${ev ? "held-out test" : "development folds"}, same clips).` })));
   }
-  box.append(el("p", { class: "verdict", text: verdict(per, main.ours_ch0.confusion) }));
+
 
   // headline numbers
   const head = el("div", { class: "stat-row" });
@@ -90,7 +91,7 @@ function renderResults(box, r) {
     const a = d.baselines.apple_zeroshot;
     if (a && a.macro_f1) head.append(stat("Apple's built-in sound classifier (zero-shot)", a.macro_f1, `same clips · CI ${ci(a.macro_f1)}`));
   }
-  box.append(el("section", { class: "card" }, el("h2", { class: "section-title", text: "Macro F1: the average, over the 9 activities, of how well each is caught without false alarms" }), head));
+  box.append(el("section", { class: "card" }, el("h2", { class: "section-title", text: "Overall score (higher is better): macro F1, the average over the 9 activities of how well each is caught without false alarms" }), head));
 
   // the caregiver's metric
   const ma = (ev && ev.meal_activity) || d.meal_activity;

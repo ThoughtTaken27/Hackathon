@@ -91,6 +91,12 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
         left = deadline - now
         return {"state": "not_yet", "at": None, "detail": f"Not yet · checks in {_dur(left)}", "note": None}
     if missing > CANT_TELL_SHARE * (deadline - start):
+        heard = [b for b in blocks if b["state"] not in ("not_listening", "paused")]
+        first = min((b["start"] for b in heard), default=None)
+        if first is None or first >= deadline:            # Kettle only started after this check's time
+            when = f" at {_clock(first, tz)}" if first else ""
+            return {"state": "cant_tell", "at": None,
+                    "detail": f"Can't tell: Kettle started{when}, after this check's time.", "note": None}
         a, b = max(gaps, key=lambda g: g[1] - g[0])
         return {"state": "cant_tell", "at": None,
                 "detail": f"Can't tell: Kettle wasn't listening from {clock_range(a, b, tz)}.", "note": None}
@@ -111,8 +117,12 @@ def _tv(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
     gaps = unheard(blocks, start, now) if now > start else []
     missing = sum(b - a for a, b in gaps)
     if now > start and missing > CANT_TELL_SHARE * (now - start):
+        heard = [b for b in blocks if b["state"] not in ("not_listening", "paused")]
+        first = min((b["start"] for b in heard), default=None)
+        lead = (f"Can't tell yet: Kettle has only been listening since {_clock(first, tz)}." if first and first - start > 0.5 * (now - start)
+                else f"Can't tell: Kettle wasn't listening for {_dur(missing)} today.")
         return {"state": "cant_tell", "at": None,
-                "detail": f"Can't tell: Kettle wasn't listening for {_dur(missing)} today.",
+                "detail": lead,
                 "note": f"TV heard for {_dur(total)}." if total else None}
     return {"state": "under", "at": None,
             "detail": f"TV for {_dur(total)} so far today" if total else "No TV heard today", "note": None}
