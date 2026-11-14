@@ -51,7 +51,8 @@ AGENTS.md          Operating manual for every AI agent: rules, rubric, clock, pr
 CLAUDE.md          Imports AGENTS.md so Claude Code loads it automatically
 .claude/settings.json  Shared Claude Code config: default model, safe-command allowlist, hooks
 .claude/hooks/     Session briefing (clock + git state) and guardrails (secrets, pre-kickoff code, force-push)
-.claude/skills/    Team slash commands: /kickoff /start /done /explain /checkin /ship-check
+.claude/skills/    Team slash commands: /kickoff /start /done /explain /checkin /ship-check,
+                   plus design skills /frontend-design /emil-design-eng /apple-design
 .claude/agents/    Haiku-pinned workers: scout (search), builder (routine code), runner (run + report)
 .github/           Issue + PR templates (done-check, explain-back, AI-usage row)
 .env.example       Key names only; copy to .env (git-ignored)
