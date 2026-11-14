@@ -26,3 +26,12 @@ Each row names the place in the app, the test or number that proves it, and the 
 | Learned "unusual day" model | SINS has no clock times, so it couldn't be measured honestly |
 | Accounts, cloud sync, hosted share link | Themes 8 and 9; remote viewing is a private VPN set up once (README) |
 | Phone as the kitchen microphone | Needs HTTPS on the home network; a Could for another week |
+
+## Parth's addendum items (k3-addendum.md) → where they live
+| # | Item | Where | Proof | Status |
+|---|---|---|---|---|
+| A1 | Draft submission by Sat 9 PM CT | `docs/SUBMISSION-DRAFT.md` | every form field filled from the repo's real state; Parth presses submit | Built (numbers filled from `results/`) |
+| A2a | Reliability (calibration) plot + ECE with CI | `results/reliability_dev.png`; "How much to trust 'how sure'" on `/how-sure` | `dev.calibration` (ECE before/after temperature with session-bootstrap CIs; temperature cross-fitted) | Built |
+| A2b | Plain cost story for θ | write-up "Results"; `/how-sure` trade-off table; `results/theta_tradeoff_dev.png` | `dev.theta_tradeoff` (kitchen sessions not noticed vs false kitchen blocks per 16-h day, through the shipped timeline, incl. the shipped θ) | Built |
+| A4 | Caregiver metric (kitchen activity) in the headline | `results/metrics.md` (first section after the held-out table), write-up, README, `/how-sure` | `dev.meal_activity`, `dcase_eval.meal_activity` (missed vs false alarms with N and CI) | Built |
+| A6 | Reproduce notebook < 5 min, outputs saved | `notebooks/kettle_reproduce.ipynb` | executed with nbconvert: 38 s, last cell "ALL MATCH (within 0.1 points)" | Built |

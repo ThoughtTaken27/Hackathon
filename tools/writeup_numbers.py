@@ -136,6 +136,7 @@ if __name__ == "__main__":
     m = json.loads((ROOT / "results" / "metrics.json").read_text())
     parts = blocks(m)
     fill(ROOT / "README.md", parts)
+    fill(ROOT / "docs" / "SUBMISSION-DRAFT.md", {"lead": parts["lead"]})
     wp = dict(parts)
     wp["results"] = parts["results_short"]
     fill(ROOT / "docs" / "WRITEUP.md", wp)

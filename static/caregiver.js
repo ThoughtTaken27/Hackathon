@@ -85,6 +85,7 @@ function announce(t) {
 
 function render(t) {
   today = t;
+  window.KETTLE_THETA = t.theta;
   announce(t);
   $("title").textContent = `${t.names.parent}'s kitchen today`;
   document.title = `${t.names.parent}'s kitchen today · Kettle`;
@@ -160,12 +161,17 @@ function renderTry(r) {
   box.append(el("p", { class: "meta muted", text: r.file }), mini);
   if (r.all_not_sure) {
     box.append(el("p", { text: "Kettle wasn't sure about any of this. It knows 9 household activities; this may be something else." }));
+    const avg = {};
+    for (const w of r.windows) for (const [k, v] of Object.entries(w.probs)) avg[k] = (avg[k] || 0) + v / r.windows.length;
+    const top = Object.entries(avg).sort((a, b) => b[1] - a[1]).slice(0, 2);
+    box.append(el("p", { class: "meta muted", text: `Closest guesses: ${top.map(([k, v]) => `${ACT_NAME[k]} ${v.toFixed(2)}`).join(" · ")} (below the ${Math.round(100 * (window.KETTLE_THETA || 0.66))}% bar Kettle needs to name an activity).` }));
   } else {
     box.append(el("p", { text: `Kettle heard: ${heard}` }));
   }
   const top = r.windows[0];
   if (top && top.sounds.length) box.append(el("p", { class: "meta muted", text: soundsSentence(top.sounds) + " (first 10 s)" }));
   if (r.cut) box.append(el("p", { class: "meta muted", text: "Kettle reads the first 60 seconds only." }));
+  box.scrollIntoView({ block: "nearest", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
 
 async function tryBytes(name, bytes) {

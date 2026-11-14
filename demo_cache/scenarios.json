@@ -1,5 +1,5 @@
 {
- "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'.",
+ "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard.",
  "usual": {
   "title": "A usual morning",
   "started": "06:00",

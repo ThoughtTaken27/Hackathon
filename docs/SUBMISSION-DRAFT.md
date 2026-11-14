@@ -4,7 +4,12 @@
 You can resubmit as often as you like before Sun 11:59 PM ET; judges see the latest version (brief p.18). Submit a first version
 tonight once the links below work, then resubmit Sunday after the own-kitchen set and the video.
 
-Status of this draft: **NUMBERS PENDING** (filled from `results/metrics.json` after the frozen eval run; see the bottom of this file for when).
+Status of this draft: numbers filled by `python tools/writeup_numbers.py` from `results/metrics.json` (held-out run done Sat 13:15 CT). Own-kitchen and video slots stay open until Sunday.
+
+**Headline to lead with (from results):**
+<!-- lead:start -->
+Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
+<!-- lead:end -->
 
 | Form field | What to paste |
 |---|---|

@@ -98,7 +98,8 @@ button { font: inherit; color: inherit; }
   background: var(--c, var(--muted)); }
 .blk.medium { opacity: .7; }
 .blk.empty { top: auto; height: 2px; bottom: 0; border-radius: 0; background: var(--act-empty); }
-.blk.not_sure { background: repeating-linear-gradient(135deg, var(--hatch) 0 2px, transparent 2px 7px); box-shadow: inset 0 0 0 1px var(--hatch); }
+/* Not sure: less ink than a real activity (half height, light hatch), more than Quiet's baseline line */
+.blk.not_sure { top: 50%; border-radius: 2px; background: repeating-linear-gradient(135deg, var(--hatch) 0 2px, transparent 2px 7px); }
 .blk.talk_or_tv { background: repeating-linear-gradient(135deg, var(--act-tv) 0 6px, var(--act-talk) 6px 12px); opacity: .85; }
 .blk.not_listening { border-radius: 0; background:
   repeating-linear-gradient(45deg, var(--hatch) 0 1px, transparent 1px 6px),
