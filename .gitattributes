@@ -1,0 +1,12 @@
+# Same line endings on Mac, Windows and Linux (stops whole-file diffs and broken hook scripts)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.mp4 binary
+
+# Append-only team logs: keep everyone's new rows instead of raising a conflict
+docs/AI-USAGE-LOG.md merge=union
+docs/EXPLAIN.md merge=union

@@ -2,7 +2,46 @@
 
 Summary of the research doc: [Veritas AI Hackathon — Health Idea Research & Game Plan](https://claude.ai/artifact/KxEQasfso3e2RMTBuqrS8v). The final pick happens at kickoff with the decision table in `KICKOFF.md`. Nothing here is code; it's a plan to adapt to the brief.
 
-## Ranking
+## Idea filter (latest, Nov 12–13)
+
+From later research rounds, after several picks were rejected. Run every candidate through it at kickoff:
+
+1. **Real pull:** people already show the problem through painful workarounds or explicit "I wish" posts.
+2. **Chatbot test:** a 2026 frontier chatbot can't simply do it. Paste a real input into ChatGPT/Gemini/Claude and save the transcript. If the chatbot nails it, the idea is dead unless we can measure specific cases where it fails, with the chatbot as our baseline. Don't underestimate current models.
+3. **Not already solved** for *this specific user, in this specific way*. Almost every category has companies in 2026. Winners pick a narrow user and moment, an insider fact, a product that acts instead of just answering, or a trust layer.
+4. **Buildable and measurable in 48 hours,** with public or synthetic data.
+
+Pattern seen in 2026 searches: "AI decodes a confusing document" ideas are saturated. Obvious wish-tools (pharmacy stock finders, AI that calls offices for you, check-in calls for aging parents, photo calorie counters) all exist already.
+
+## Newer candidate: OneCabinet (not yet confirmed by the team)
+
+**Pitch:** one medicine list for a family that mixes Indian and US medicines. A grandchild photographs a grandparent's medicine strips and bottles. A vision model reads brand, composition and strength. The result is matched against a public Indian-medicine dataset (`junioralive` on GitHub, ~254k rows, MIT licence; recheck before use) and NIH RxNorm. Then **plain rules** flag:
+
+- same-ingredient duplicates (Crocin = Tylenol: paracetamol = acetaminophen)
+- same-class duplicates (telmisartan + losartan)
+- hidden combination duplicates (Telma-AM + US amlodipine)
+- daily maximum doses exceeded
+- drugs not approved in the US
+
+**Output:** an English sheet for the US doctor, a Hindi/Gujarati daily schedule built from fixed phrase templates, and questions to ask. It never says "stop" a medicine.
+
+**Evidence:** an FDA study (BMJ Qual Saf 2020) found 27 US brand names that match foreign brands with *different* drugs, plus 74 near matches. Reopen the paper before citing it.
+
+**Competitors:** ScanMyPills (US data only), travel name-translators (e.g. MediHelp), Indian apps like 1mg. **Gate before committing:** run the chatbot test on 8–10 real-looking strips (synthetic or public images, no real patient data).
+
+## Killed ideas, with reasons (saves time at kickoff)
+
+| Idea | Why killed |
+| --- | --- |
+| Camera-checked home blood-pressure technique | A general AI could do most of it, the pitch was unclear, and nobody asked for it |
+| Snore-clip analysis | A voice recorder plus a chatbot already covers it |
+| Employer health-plan picker | Benefits Decoder, Healthee, Nayya, ALEX already do it |
+| Financial-aid letter decoder | Niche, College Raptor, TuitionFit, plus 6+ Devpost clones |
+| Medicaid work-requirement navigator | Free calculators; well-funded startups |
+| ER-or-wait triage interviewer | Ada, nurse lines, chatbot health modes |
+| Phone-video fall-risk test | CDC STEADI checklist and OneStep exist. ChairCheck below needs its fairness/abstention twist to survive |
+
+## Ranking (first research round)
 
 Scores are estimates out of 5 against the rubric.
 

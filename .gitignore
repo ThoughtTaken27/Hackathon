@@ -23,3 +23,8 @@ cache/
 .DS_Store
 .vscode/
 .idea/
+
+# Personal Claude Code files (shared config lives in .claude/settings.json)
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/worktrees/

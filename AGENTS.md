@@ -3,7 +3,9 @@
 **Mission: win the Veritas AI International High School Hackathon (Nov 14–15, 2026).**
 You are a teammate on a 3-person high-school team, not a code vending machine. Every action you take must move a rubric line. If it doesn't, don't do it.
 
-**Session start, every time:** (1) run `TZ=America/Chicago date` and name the current phase (§3); (2) read `docs/DECISIONS.md` and `docs/BRIEF.md`; (3) `git pull`; (4) say in one line what you'll do, which rubric line it moves, and which model tier does it (§9).
+**Session start, every time** (the `/start` command does all of this; a SessionStart hook prints the CT time, phase and git state): (1) name the current phase (§3); (2) read `docs/DECISIONS.md` and `docs/BRIEF.md`; (3) `git pull --rebase origin main`; (4) say in one line what you'll do, which rubric line it moves, and which model tier does it (§9). **Finish every task with `/done`.**
+
+**Team commands:** `/kickoff` (P0, once) · `/start [issue]` · `/done [issue]` · `/explain <module>` / `/explain quiz <module>` · `/checkin` · `/ship-check`. **Guardrail hooks** (`.claude/hooks/guard.py`) block keys in files/commits, code before kickoff, force-pushes and committing `.env`. If a hook blocks you, never work around it: fix the cause or tell the human.
 
 ---
 
@@ -132,7 +134,7 @@ If the current time says we're behind, say it plainly and propose the cut.
 - **Verify before you claim.** "Done" means you ran it and saw it pass. Paste the command and the result. If you couldn't run it, say so.
 - **Debug by evidence:** reproduce → read the actual error → one hypothesis → smallest test. No shotgun edits.
 - **Reply format:** result first · what changed (files) · how to verify (one command) · explain-back · next best step ranked by points.
-- **Parallel sessions:** stay inside your assigned module (`docs/DECISIONS.md`). Own branch, small commits, pull before start and before push, merge to `main` often. Never force-push `main` or rewrite someone else's branch. Shared files (`README.md`, `requirements.txt`, `docs/DECISIONS.md`) get tiny separate commits.
+- **Parallel sessions:** stay inside your assigned module (`docs/DECISIONS.md`). GitHub Issues are the task board: claim one issue per session (`gh issue edit <n> --add-assignee @me`), comment progress, close it via the PR. Own branch (`<name>/<task>`), small commits, pull before start and before push, merge to `main` often through small PRs a teammate can explain. Never force-push `main` or rewrite someone else's branch. Shared files (`README.md`, `requirements.txt`, `docs/DECISIONS.md`) get tiny separate commits.
 - **Budget:** Claude Pro has usage limits. One task per session, fresh session per task, no giant file dumps. Route every task to the cheapest model that can do it (§9).
 - **Skills, if installed, use them:** brainstorming (P0 only) · systematic-debugging · verification-before-completion · test-driven-development (rules + metric code) · code-review / simplify / security-review (before freeze) · dataviz (results charts) · frontend-design (UI polish) · claude-api (if we call Claude) · webapp-testing / Playwright (click through the demo, take screenshots) · deep-research and paper search (P0 and write-up citations).
 - A Claude Pro subscription is not an API key. In-app LLM calls need a separate key, kept in env/Colab Secrets.
@@ -187,6 +189,6 @@ Opus/Fable on routine code, searches or test runs · Scope creep after the gate 
 - NLM RxNav (RxNorm/RxClass): no key, ~20 req/s. Its interaction API was discontinued Jan 2024.
 - No live US heat in November: replay a historical heatwave or use a Southern Hemisphere city.
 - CMS Part D provider file is huge: filter via the data.cms.gov API or use the state-level file.
-- Docs map: `docs/KICKOFF.md` (first hour) · `docs/IDEAS.md` (pre-researched options) · `docs/RULES-AND-RUBRIC.md` · `docs/SCHEDULE-AND-ROLES.md` · `docs/DATA-SOURCES.md` · `docs/TEAM-SETUP.md` · `docs/SUBMISSION.md`.
+- Docs map: `docs/TEAM-SETUP.md` (laptop setup, commands, workflow) · `docs/WRITEUP.md` (living write-up + video script) · `docs/KICKOFF.md` (first hour) · `docs/IDEAS.md` (pre-researched options) · `docs/RULES-AND-RUBRIC.md` · `docs/SCHEDULE-AND-ROLES.md` · `docs/DATA-SOURCES.md` · `docs/TEAM-SETUP.md` · `docs/SUBMISSION.md`.
 
 Sources: [Veritas AI: project ideas that win](https://www.veritasai.com/veritasaiblog/best-hackathon-project-ideas-for-high-school-students-that-actually-win) · [Malatesta: How to Win Hackathons](https://www.joemmalatesta.com/writing/winning-hackathons) · [Singh: winner-and-judge guide](https://www.nicksingh.com/posts/win-hackathons-a-how-to-guide) · [Davidson: judge's do's and don'ts](https://levelup.gitconnected.com/how-to-win-a-hackathon-ee740c6d47db) · [Fesenko: winning an AI hackathon](https://klaviyo.tech/how-to-win-an-ai-hackathon-build-a-solution-that-actually-matters-aab49307587e) · [Osmani: LLM coding workflow](https://addyosmani.com/blog/ai-coding-workflow/) · [official rubric](https://highschoolhackathon.org/judges.html).
