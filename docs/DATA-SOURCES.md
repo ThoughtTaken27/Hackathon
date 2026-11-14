@@ -24,3 +24,18 @@ Reachability checked from the Claude Code cloud container on **Nov 13, 2026**. C
 - **Cache every API response to disk** (e.g. `cache/` folder, git-ignored) so demos, evaluation and the video don't depend on the network or rate limits.
 - Commit small, curated sample data needed to run the demo. Keep big raw downloads out of git.
 - Synthetic test data must be clearly labeled synthetic, and the labeling process written down (who labeled, from what source).
+
+## Prior art studied for Kettle (credit in the write-up; accessed Nov 14, 2026; details in `docs/research/kettle/`)
+
+| Product / work | Link | What we took (patterns only, no code or assets) |
+| --- | --- | --- |
+| Howz (Intelesant) | https://www.howz.com/reassure | Plain alert names ("Late start"), pause; anti-pattern: raw sensor events, stale sensors |
+| Canary Care | https://www.canarycare.co.uk/families/ | Time-window rule, "no cameras" promise; anti-pattern: alert-count banner |
+| havn (cortekAI) | https://www.havnwellness.com | Resident sees what family sees; anti-pattern: live location, audio clips |
+| Assistiv Home Sensing | https://www.assistiv.services/home-sensing | Acoustic activity set (cooking, conversation, TV, silence) |
+| Apple Sound Recognition / SoundAnalysis | https://support.apple.com/guide/iphone/use-sound-recognition-iphf2dc33312/ios | Hedged copy; built-in classifier as a zero-shot **baseline** |
+| Alexa Together / Emergency Assist | https://www.aboutamazon.com/news/devices/alexa-together-launches-to-help-customers-remotely-care-for-loved-ones | "Type, not content" feed; no-activity rule |
+| StackCare | https://stackcare.com | "Up & About Check", "system offline" notice |
+| Care Daily (People Power) | https://caredaily.ai | Status sentence + "checked 10 s ago" |
+| Snug | https://apps.apple.com/us/app/snug-daily-safety-check-in/id1122758716 | Older adults' own complaints about check-in burden |
+| DCASE 2018 Task 5 baseline + results | https://github.com/DCASE-REPO/dcase2018_baseline · https://dcase.community/challenge2018/task-monitoring-domestic-activities-results | Published comparison numbers (baseline 83.1, best 88.4 unknown-mic macro F1) |
