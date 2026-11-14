@@ -190,7 +190,13 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
         if listening_since is not None:
             return f"No kitchen activity heard yet today. Kettle has been listening since {_clock(listening_since, tz_offset_s)}."
         return ""
-    items = [_span(b, tz_offset_s) for b in merged[-3:]]
+    items = []
+    for i, b in enumerate(merged[-3:]):
+        text = _span(b, tz_offset_s)
+        prev = merged[-3:][i - 1] if i else None
+        if prev is not None and prev["activity"] == b["activity"]:      # "TV from about 12:45 PM and again from about 2:45 PM"
+            text = "again " + text.split(" ", 1)[1]
+        items.append(text)
     more = len(merged) - 3
     lead = f"So far today, after {more} earlier {'activity' if more == 1 else 'activities'}: " if more > 0 else "So far today: "
     return lead + ", ".join(items[:-1]) + (" and " if len(items) > 1 else "") + items[-1] + "."
