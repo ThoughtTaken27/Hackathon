@@ -37,7 +37,7 @@ def main() -> None:
 
     with TestClient(kettle_app.app) as c:
         print(f"app loaded in {time.time() - T0:.1f} s")
-        for page in ("/", "/kitchen", "/how-sure"):
+        for page in ("/", "/today", "/kitchen", "/how-sure"):
             r = c.get(page)
             check(r.status_code == 200 and "Prototype, not medical advice" in r.text, f"page {page} loads with the disclaimer")
         t = c.get("/api/today").json()

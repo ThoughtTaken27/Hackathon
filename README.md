@@ -80,10 +80,11 @@ git clone <this repo> kettle && cd kettle
 python3.11 -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python smoke_test.py        # golden path, offline, < 60 s; prints PASS
-python app.py               # then open http://localhost:8000
+python app.py               # then open http://localhost:8000 (the opening page shows both screens live)
 ```
 
-- **Caregiver view:** http://localhost:8000/ . With no kitchen laptop set up, press **Play a sample day** (real recordings from a public research home, through the same model, played fast) or **Try your own sound** (drop any audio file; it's read in memory and never saved).
+- **Opening page:** http://localhost:8000/ : what Kettle is, and Dad's kitchen screen beside Meera's phone, both live. **Play a sample day** there runs on both at once.
+- **Caregiver view (Meera's phone):** http://localhost:8000/today . With no kitchen laptop set up, press **Play a sample day** (real recordings from a public research home, through the same model, played fast) or **Try your own sound** (drop any audio file; it's read in memory and never saved).
 - **Kitchen screen:** http://localhost:8000/kitchen on the laptop that sits in the kitchen (Chrome or Edge; the microphone needs `localhost`). The parent reads three lines, presses "Yes", and can pause or turn it off any time.
 - **How sure is Kettle?** http://localhost:8000/how-sure : measured misses and false alarms per activity, from `results/metrics.json`.
 

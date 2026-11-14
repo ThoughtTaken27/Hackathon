@@ -40,7 +40,7 @@ def main() -> None:
         with sync_playwright() as p:
             b = p.chromium.launch()
             pg = b.new_page(viewport={"width": 1440, "height": 900})
-            pg.goto(BASE + "/")
+            pg.goto(BASE + "/today")
             pg.wait_for_timeout(1500)
             pg.evaluate(OBSERVE)
             pg.get_by_role("button", name="Play a sample day: a usual morning").click()

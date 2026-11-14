@@ -128,7 +128,14 @@ def _active() -> tuple[dict, float]:
 # ---------------------------------------------------------------- pages
 
 @app.get("/")
+def home_page():
+    """Opening page: what Kettle is, and the two screens (Meera's phone, Dad's kitchen) side by side."""
+    return FileResponse(STATIC / "home.html")
+
+
+@app.get("/today")
 def caregiver_page():
+    """Meera's view (the adult child's phone)."""
     return FileResponse(STATIC / "index.html")
 
 

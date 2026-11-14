@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kettle · a calm day timeline from kitchen sounds</title>
+<meta name="description" content="Kettle turns a laptop already in a parent's kitchen into a calm day timeline for the adult child far away, from the kinds of sound only. No audio saved, no words kept.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='1' y='8' width='7.5' height='6' rx='3' fill='%23eb6834'/%3E%3Crect x='10' y='8' width='4' height='6' rx='2' fill='%231baf7a'/%3E%3Crect x='15.5' y='8' width='5.5' height='6' rx='2.75' fill='%232a78d6'/%3E%3C/svg%3E">
+<link rel="preload" href="/static/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/app.css?v=20261114d">
+<link rel="stylesheet" href="/static/home.css?v=20261114d">
+</head>
+<body class="home">
+<nav class="nav" aria-label="Kettle"><div class="nav-in">
+  <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
+  <span class="nav-sp"></span>
+  <a class="nav-link hide-sm" href="#screens">Two screens</a>
+  <a class="nav-link hide-sm" href="#how">How it works</a>
+  <a class="nav-link" href="/how-sure">How sure</a>
+  <a class="btn primary nav-cta" href="/today">Open the app</a>
+</div></nav>
+
+<main>
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="pill reveal" style="--d:0">For families caring from far away</p>
+      <h1 class="display reveal" style="--d:1">Know Dad's morning went okay.<span class="soft"> Without a camera.</span></h1>
+      <p class="lede reveal" style="--d:2">Kettle turns the laptop already in your parent's kitchen into a calm timeline of the day, from the kinds of sound alone. It keeps no audio and no words, and it tells you how often it's wrong.</p>
+      <div class="cta reveal" style="--d:3">
+        <button class="btn primary lg" type="button" id="play">Play a sample day</button>
+        <a class="btn lg" href="/how-sure">See how sure it is</a>
+      </div>
+      <p class="fine reveal" style="--d:4">Runs on one laptop. No account, no cloud, no keys.</p>
+    </div>
+
+    <figure class="instrument reveal" style="--d:2" aria-label="Kitchen sound becoming a day timeline">
+      <div class="ins-top">
+        <span class="live"><span class="live-dot" aria-hidden="true"></span>Kitchen laptop, listening</span>
+        <span class="ins-time num" id="ins-time">8:05 AM</span>
+      </div>
+      <div class="wave" id="wave" aria-hidden="true"></div>
+      <div class="ins-label" aria-live="off"><span class="ins-k">Heard</span><span class="ins-v" id="ins-v">Cooking</span><span class="ins-sure" id="ins-sure">how sure: high</span></div>
+      <div class="ins-bar" id="ins-bar" aria-hidden="true">
+        <i style="--l:4%;--w:6%;--c:var(--act-working)"></i>
+        <i style="--l:34%;--w:9%;--c:var(--act-cooking)"></i>
+        <i style="--l:44%;--w:6%;--c:var(--act-eating)"></i>
+        <i style="--l:51%;--w:5%;--c:var(--act-washing)"></i>
+        <i style="--l:62%;--w:22%;--c:var(--act-tv)"></i>
+      </div>
+      <div class="ins-ticks num" aria-hidden="true"><span>6 AM</span><span>8 AM</span><span>10 AM</span><span>12 PM</span></div>
+      <figcaption class="ins-cap">Every 10 seconds, a sound model on the laptop names what it hears. Only the name and the time are kept.</figcaption>
+    </figure>
+  </section>
+
+  <!-- trust strip: numbers read from results/metrics.json -->
+  <section class="strip" aria-label="Measured results" id="strip">
+    <div class="strip-in">
+      <div class="m"><p class="m-n num" data-k="f1">84.1</p><p class="m-l">macro F1 on held-out benchmark clips it never heard, run once</p></div>
+      <div class="m"><p class="m-n num" data-k="caught">89%</p><p class="m-l">of kitchen-activity moments caught</p></div>
+      <div class="m"><p class="m-n num" data-k="fa">0.5%</p><p class="m-l">of other moments wrongly called kitchen activity</p></div>
+      <div class="m"><p class="m-n num" data-k="audio">0</p><p class="m-l">audio files written in a 3-minute privacy check</p></div>
+    </div>
+    <p class="strip-note">From the DCASE 2018 home-activity benchmark: recordings from one research home, not yet a real kitchen. <a href="/how-sure">Every number, with its error bars</a></p>
+  </section>
+
+  <!-- two screens -->
+  <section class="sec" id="screens">
+    <div class="sec-head">
+      <h2 class="h2">Two people. Two screens. The same day.</h2>
+      <p class="sub">Ravi, 79, lives alone and has early memory loss. His daughter Meera lives 300 miles away. They see the same timeline. Neither sees a recording, because none exists.</p>
+    </div>
+    <div class="screens">
+      <article class="screen-col">
+        <div class="laptop" data-w="1280" data-h="800">
+          <div class="lid"><div class="glass"><iframe title="Dad's kitchen screen, live" src="/kitchen?embed=1" loading="lazy" tabindex="-1"></iframe></div></div>
+          <div class="base" aria-hidden="true"></div>
+        </div>
+        <div class="who-card">
+          <p class="who-k">Dad's kitchen <span class="muted">Ravi's laptop</span></p>
+          <ul class="ticks-list">
+            <li>Says in big type whether it's listening, and what it just heard.</li>
+            <li>One big button pauses it. Meera just sees "Paused by Dad" and the time.</li>
+            <li>Shows Ravi exactly what Meera sees. Nothing is hidden from him.</li>
+          </ul>
+          <a class="btn" href="/kitchen">Open Dad's kitchen</a>
+        </div>
+      </article>
+      <article class="screen-col narrow">
+        <div class="phone" data-w="390" data-h="844">
+          <div class="glass"><iframe title="Meera's phone, live" src="/today?embed=1" loading="lazy" tabindex="-1"></iframe></div>
+        </div>
+        <div class="who-card">
+          <p class="who-k">Meera's phone <span class="muted">the daughter</span></p>
+          <ul class="ticks-list">
+            <li>A day bar of activities: cooking, eating, TV. Not sounds, not words.</li>
+            <li>Her own checks, like "kitchen activity by 10 AM". No alerts.</li>
+            <li>Tap any block to see why Kettle thinks so, and how sure it is.</li>
+          </ul>
+          <a class="btn" href="/today">Open Meera's phone</a>
+        </div>
+      </article>
+    </div>
+    <div class="screens-cta">
+      <button class="btn primary lg" type="button" id="play2">Play a sample day on both screens</button>
+      <p class="fine" id="play-note">Real recordings from a public research home, through the same model, played in about 15 seconds.</p>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section class="sec" id="how">
+    <div class="sec-head">
+      <h2 class="h2">How it works</h2>
+      <p class="sub">Three steps, all on the kitchen laptop.</p>
+    </div>
+    <ol class="steps">
+      <li class="step">
+        <span class="step-n num">01</span>
+        <h3>Hear</h3>
+        <p>The laptop's microphone hands Kettle 10 seconds of sound at a time. It is held in memory and never written to disk.</p>
+      </li>
+      <li class="step">
+        <span class="step-n num">02</span>
+        <h3>Name</h3>
+        <p>A small, frozen sound model (CED-tiny) picks one of nine activities, like cooking, washing up or TV. Unsure, or unlike anything it learned? It says "Not sure".</p>
+      </li>
+      <li class="step">
+        <span class="step-n num">03</span>
+        <h3>Draw the day</h3>
+        <p>Only the activity and the time are kept. They become the day bar both screens show, and answer the checks Meera set.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- limits -->
+  <section class="sec limits">
+    <div class="sec-head">
+      <h2 class="h2">What Kettle won't do</h2>
+      <p class="sub">Said plainly, because a caregiver should know before trusting it.</p>
+    </div>
+    <ul class="limit-grid">
+      <li><strong>It is not an emergency device.</strong> It can't detect a fall or call for help.</li>
+      <li><strong>It doesn't send alerts.</strong> Meera looks when she wonders. Kettle doesn't nag.</li>
+      <li><strong>It isn't proven in a real kitchen yet.</strong> Every number so far comes from one research home's recordings.</li>
+      <li><strong>It doesn't learn Dad's routine.</strong> It only checks the rules Meera sets, and shows Dad what they are.</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="home-foot">
+  <div class="home-foot-in">
+    <span class="mark"><svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</span>
+    <span>Prototype, not medical advice. Meera and Ravi are invented people.</span>
+  </div>
+</footer>
+
+<script src="/static/home.js?v=20261114d"></script>
+</body>
+</html>
