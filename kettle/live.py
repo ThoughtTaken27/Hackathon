@@ -108,7 +108,8 @@ def tick(s: dict, now: float) -> None:
 
 def weekly_due(s: dict, now: float) -> bool:
     """True when a week has passed since the parent last said yes: the kitchen screen asks 'Keep it on?'."""
-    return bool(s.get("consent")) and not s.get("off_at") and now - (s.get("last_confirm") or now) >= WEEK_S
+    last = s.get("last_confirm")
+    return bool(s.get("consent")) and not s.get("off_at") and last is not None and now - last >= WEEK_S
 
 
 def keep_on(s: dict, now: float) -> dict:
