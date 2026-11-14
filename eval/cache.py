@@ -46,7 +46,9 @@ def export() -> dict:
             e = embed.load(enc, split)
         except FileNotFoundError:
             continue
-        np.savez_compressed(OUT / f"{enc}_{split}.npz", files=e["files"], emb=e["emb"][:, :1].astype(np.float16),
+        dtype = np.float32 if enc == "logmel" else np.float16      # log-mel statistics are precision-sensitive
+        chans = slice(None) if enc == "logmel" else slice(0, 1)     # the log-mel baseline trains on all 4 channels, like ours
+        np.savez_compressed(OUT / f"{enc}_{split}.npz", files=e["files"], emb=e["emb"][:, chans].astype(dtype),
                             scores=np.zeros((len(e["files"]), 1, 0), np.float16))
     lab = ROOT / "data" / "clips" / "offlist" / "labels.json"
     if lab.exists():
