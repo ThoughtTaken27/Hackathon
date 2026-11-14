@@ -124,7 +124,7 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
     // now tick
     const now = today.now;
     nowTick.style.left = pct(now);
-    nowTick.hidden = now < a || now > z;
+    nowTick.hidden = now < a || now > z || today.blocks.length === 0;
     // labels above the bar: only where they fit without overlapping
     const width = bar.clientWidth || 600;
     const minGap = 8;

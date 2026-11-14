@@ -33,3 +33,34 @@ Measured against: PRD §9, component-craft's ten laws, ui-patterns.md (incumbent
 
 ## Motion added this round
 Block settle (scaleX from its left edge, 380 ms out-curve) + label fade-in (+120 ms, 4 px rise, 3 px blur) + summary blur-crossfade; press feedback `scale(.97)` 160 ms on every button; heartbeat "last heard" digits roll (160 ms) without moving the sentence; how-sure headline numbers count up once (600 ms). `prefers-reduced-motion`: animations off, 120 ms opacity only.
+
+## Full round-1 capture (11:42–11:55 CT): all 33 states × desktop/phone × light/dark = 132 images, reviewed via 17 contact sheets in `round-1/sheets/` plus full-size files where needed
+Sheet-by-sheet notes:
+- **sheet-01 caregiver-error / caregiver-live:** error is the only red on any screen, with the time it stopped and "The day so far is shown below" — calm, factual. Live: the first minute of live blocks is invisible at a 7-hour scale (→ fix 23).
+- **sheet-02 live-paused / never:** "Paused by Dad at 11:47 AM · resumes at 12:47 PM" reads as a fact, not a warning (good). Never-started: the intro card now gives a judge the sample day in one tap; on phone the now-tick crossed "The day appears here…" (→ 22).
+- **sheet-03 never-top / paused (sample):** summary "So far today, after 1 earlier activity: …" is clumsy (→ 24). Working (typing) violet block at 7:45 is a real mislabel of a "moving about" stretch by the provisional head; leave it (honest), re-check with the final head.
+- **sheet-04 quiet / rules-sheet:** "Not heard by 10:00 AM. Kettle was listening the whole time." + "First heard at 10:35 AM." is exactly the PRD's Missed copy; amber dot, no red. A long "Not sure" hatch over the quiet stretch: diagnosed as θ = 0.67 on the provisional head (quiet clips at 0.59), not the novelty gate (distances 6–21 vs threshold 29) → re-check after M3. Rule sheet: scrim + bottom sheet, 44 px fields; fine on phone.
+- **sheet-05 stale / try-not-audio:** stale heartbeat in amber with "Nothing is known after that"; cross-hatched gap; Can't-tell on the 10 AM check. "That isn't audio Kettle can read. Try a WAV, MP3, M4A or OGG file." is designed and calm.
+- **sheet-06 try-washing-up / try-white-noise:** the held-out washing-up clip came back "wasn't sure about any of this" (same θ cause as sheet-04); white noise correctly says not sure. The golden "clear" and "unclear" try clips will be chosen by a stated rule after the head is frozen.
+- **sheet-07 tv / usual:** TV check now "over" (TV for 4 h 16 min, from 12:50 PM) and the morning check "Can't tell" because the laptop was asleep until 12:30: the scenario shows both states it was built for. Summary "TV from about 12:45 PM and again from about 2:45 PM" reads naturally.
+- **sheet-08 usual-evidence / usual-full:** evidence card unfolds inline under the bar (not a modal): "Cooking 8:10–8:25 AM · 3 windows · how sure: high · Sounds Kettle heard: mostly dishes, some door and rain" — the room-tone labels are gone; "rain" on a cooking clip is the encoder's honest evidence (frying can sound like rain).
+- **sheet-09/10 how-sure (+ empty, top):** meal-activity stats now sit under macro F1; empty state designed. Dark "top" capture fired before the data loaded (harness timing, → 25).
+- **sheet-10/11 kitchen consent 1–2 / declined:** the example bar makes "a timeline like this one" concrete; teach-back step is one question with two big answers; vertically centred.
+- **sheet-12 kitchen-error / listening:** "Kettle has stopped." with a helper fold; listening lists every check Meera set. Phone hour ticks collided after a viewport resize (→ 21).
+- **sheet-13/14 mic-asking / mic-denied / no-mic / pause-menu:** each one decision per screen with a named way out ("Play a sample day instead"). Pause menu: three options, "Don't pause" as a quiet link.
+- **sheet-15 paused / resumed:** "Meera sees: Paused by you at 11:47 AM. Starts listening again at 12:47 PM." — tells the parent exactly what the caregiver sees. Resumed chip showed a bare "…" (→ 20).
+- **sheet-16 sample-day / starting:** sample-day Pause button was secondary-styled while live Pause is primary (→ 19). Starting: "Waiting for the first sound…" chip.
+- **sheet-17 kitchen-weekly:** showed the sample-day screen instead of "Keep it on?" — the demo branch was checked before the weekly rule (→ 18, a real bug).
+
+| # | Problem | Fix |
+|---|---|---|
+| 18 | Weekly "Keep it on?" never shown during a sample day | Demo screen checked after consent/off/paused/weekly — **fixed** |
+| 19 | Sample-day Pause styled secondary | Primary, same as live — **fixed** |
+| 20 | Resumed chip "…" | "Waiting for the first sound…" — **fixed** |
+| 21 | Ticks collide after resize | Re-render on `resize`; harness waits 900 ms after resizing — **fixed** |
+| 22 | Now-tick through the empty-day message | Hidden while the day has no blocks — **fixed** |
+| 23 | Sub-minute live blocks invisible | `min-width: 3px` — **fixed** |
+| 24 | "after 1 earlier activity" | "… One earlier activity is on the bar." — **fixed** |
+| 25 | How-sure captured before data | Harness waits 3.5 s — **fixed** |
+
+CSS audit after fixes: 0 FIX; 3 easings; radii = PRD hierarchy; 8 font sizes (all tokens); reduced-motion block present.

@@ -244,5 +244,6 @@ $("save-rules").addEventListener("click", async () => {
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") openSheet(false); });
 
+addEventListener("resize", () => { if (today) bar.render(today); });
 poll();
 setInterval(poll, 1000);

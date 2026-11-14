@@ -103,12 +103,6 @@ function screen(t) {
       controls: [button("Try again", () => location.reload(), "primary")],
       helper: ["For a helper", "The Kettle program on this laptop isn't answering. Start it again with: python app.py. Today's timeline is kept."] };
   }
-  if (t.demo) {
-    return { state: hb.state, head: `Sample day: ${t.demo.title}`, body: [`Recorded sounds from a public research home, played fast. Not ${n.parent}.`],
-      chip: true, bar: true,
-      controls: [hb.state === "paused" ? button("Resume listening", () => act("/api/resume"), "primary pause") : button("Pause", () => { ui.pauseMenu = true; draw(); }, "pause"),
-        button("Stop sample", () => act("/api/demo/stop"))] };
-  }
   if (!k.consent) {
     if (ui.step === "teachback") {
       return { state: "never", head: `Is it OK for ${n.caregiver} to see this?`, body: ["She will see the kinds of sound and when they happened. Nothing else."],
@@ -140,6 +134,12 @@ function screen(t) {
   if (k.weekly_due) {
     return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.caregiver} sees the kinds of sounds, not recordings or words.`],
       controls: [button("Keep it on", () => act("/api/keep-on"), "primary"), button("Turn it off", () => act("/api/off"))] };
+  }
+  if (t.demo) {
+    return { state: hb.state, head: `Sample day: ${t.demo.title}`, body: [`Recorded sounds from a public research home, played fast. Not ${n.parent}.`],
+      chip: true, bar: true,
+      controls: [hb.state === "paused" ? button("Resume listening", () => act("/api/resume"), "primary pause") : button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"),
+        button("Stop sample", () => act("/api/demo/stop"))] };
   }
   if (ui.mic === "asking" || ui.mic === "idle") {
     return { state: "starting", head: "A box will pop up about the microphone.", body: ["Press Allow. Only this laptop uses it."], controls: [] };
@@ -206,7 +206,7 @@ function draw() {
     if (ui.showChip === null) ui.showChip = big || today.kitchen.consent_day === new Date(today.now * 1000).toLocaleDateString("en-US", { weekday: "long" });
     wrap.hidden = false;
     if (ui.showChip || big) {
-      const txt = today.chip || (s.state === "starting" ? "Waiting for the first sound…" : "…");
+      const txt = today.chip || "Waiting for the first sound…";
       wrap.append(el("div", { class: `chip ${big ? "big" : ""}`, "aria-live": "polite" }, el("span", { class: "txt", text: txt })));
     }
     if (!big) wrap.append(el("button", { class: "btn quiet", type: "button", style: "font-size:var(--fs-lead);margin-left:8px", text: ui.showChip ? "Hide what it hears" : "What does it hear?", onclick: () => { ui.showChip = !ui.showChip; draw(); } }));
@@ -264,5 +264,6 @@ async function poll() {
     if (ui.failures >= 3 && today) { ui.down = true; stopMic(); draw(); }
   }
 }
+addEventListener("resize", () => draw());
 poll();
 setInterval(poll, 1000);

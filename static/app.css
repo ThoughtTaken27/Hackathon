@@ -94,7 +94,7 @@ button { font: inherit; color: inherit; }
 .daybar { position: relative; }
 .bar-hit { position: relative; height: 56px; }
 .bar { position: absolute; left: 0; right: 0; top: 14px; height: 28px; border-radius: 8px; background: var(--fill-soft); overflow: hidden; }
-.blk { position: absolute; top: 0; bottom: 0; border-radius: 4px; transform-origin: left center; cursor: pointer; border: 0; padding: 0;
+.blk { position: absolute; top: 0; bottom: 0; min-width: 3px; border-radius: 4px; transform-origin: left center; cursor: pointer; border: 0; padding: 0;
   background: var(--c, var(--muted)); }
 .blk.medium { opacity: .7; }
 .blk.empty { top: auto; height: 2px; bottom: 0; border-radius: 0; background: var(--act-empty); }

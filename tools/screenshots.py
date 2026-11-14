@@ -102,8 +102,8 @@ def main() -> None:
                 each("caregiver-never-top", "/")
             if "howsure" in only:
                 each("howsure-empty", "/how-sure", route=lambda pg: pg.route("**/api/results", lambda r: r.fulfill(json={"status": "missing"})))
-                each("howsure", "/how-sure", full=True, wait=1500)
-                each("howsure-top", "/how-sure", wait=1500)
+                each("howsure", "/how-sure", full=True, wait=3500)
+                each("howsure-top", "/how-sure", wait=3500)
             if "kitchen" in only:
                 post("/api/consent")
                 each("kitchen-mic-asking", "/kitchen", init=PENDING)
@@ -116,6 +116,7 @@ def main() -> None:
                     for size, theme in combos:
                         live_pg.set_viewport_size({"width": SIZES[size][0], "height": SIZES[size][1]})
                         live_pg.emulate_media(color_scheme=theme)
+                        live_pg.wait_for_timeout(900)
                         snap(live_pg, name, size, theme)
                     live_pg.set_viewport_size({"width": 1440, "height": 900})
                 live_pg.goto(BASE + "/kitchen")

@@ -198,8 +198,10 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
             text = "again " + text.split(" ", 1)[1]
         items.append(text)
     more = len(merged) - 3
-    lead = f"So far today, after {more} earlier {'activity' if more == 1 else 'activities'}: " if more > 0 else "So far today: "
-    return lead + ", ".join(items[:-1]) + (" and " if len(items) > 1 else "") + items[-1] + "."
+    text = "So far today: " + ", ".join(items[:-1]) + (" and " if len(items) > 1 else "") + items[-1] + "."
+    if more > 0:
+        text += f" {'One earlier activity is' if more == 1 else f'{more} earlier activities are'} on the bar."
+    return text
 
 
 def label_name(label: str) -> str:
