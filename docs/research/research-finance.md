@@ -1,0 +1,7 @@
+# Research notes: Finance runner-up (scam-text filter for an older adult)
+Accessed Nov 13 2026.
+- Datasets: UCI SMS Spam Collection (HF ucirvine/sms_spam, 5,574 rows, licence field "unknown"; `samples/hf-sms-spam.json`); Mendeley SMS Phishing Dataset (Mishra & Soni 2022, 5,971 msgs: 4,844 ham, 489 spam, 638 smishing; CC BY 4.0; https://data.mendeley.com/datasets/f45bkkt8pr/1); HF MOZNLP/MOZ-Smishing (OpenRAIL-M, 2025). HF searches saved in `samples/hf-smishing-search.json`, `samples/hf-sms-phishing-search.json`.
+- Stats: FTC: $12.5B fraud losses reported in 2024 (press release, opened: https://www.ftc.gov/news-events/news/press-releases/2025/03/new-ftc-data-show-big-jump-reported-losses-fraud-125-billion-2024). FTC top text scams 2024: fake package delivery #1, unpaid tolls top 5, ~$470M text-scam losses (https://www.ftc.gov/news-events/data-visualizations/data-spotlight/2025/04/top-text-scams-2024, opened by scout). IC3 60+ figures (~$4.8B, 147,127 complaints): secondary only.
+- Research: 175,430 Reddit-reported messaging scams 2020–2025; reply-based scams grow fastest and are detected worst (https://www.alphaxiv.org/abs/2605.16656, scout opened).
+- Incumbents: Google Messages (Gemini scam detection), iOS 26 unknown-sender screening, Scamio, Norton Genie, Truecaller, RoboKiller. None publishes independent accuracy.
+- Verdict: measurable and buildable, but the brief lists its three "own" twists, so it'll be crowded. Free, built-in incumbents too. Kept as Plan B.
