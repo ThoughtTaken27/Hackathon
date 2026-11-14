@@ -9,6 +9,7 @@ Each shard holds: files [n], emb [n, channels, D] float32, scores [n, channels, 
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from pathlib import Path
 
@@ -46,12 +47,13 @@ def read(path: Path, ch0: bool) -> np.ndarray:
     return x[:1] if ch0 else x
 
 
-def run(name: str, split: str, ch0: bool, device: str, batch: int = 32) -> int:
-    """Embed every clip in data/clips/<split> not yet in the cache; returns how many were added."""
+def run(name: str, split: str, ch0: bool, device: str, batch: int = 32, only: set[str] | None = None) -> int:
+    """Embed every clip in data/clips/<split> not yet in the cache (optionally only the stems in `only`)."""
     out = EMB / name / split
     out.mkdir(parents=True, exist_ok=True)
     have = done_files(out)
-    todo = sorted(p for p in (CLIPS / split).glob("*.flac") if p.stem not in have and not p.stem.endswith(".part"))
+    todo = sorted(p for p in (CLIPS / split).glob("*.flac") if p.stem not in have and not p.stem.endswith(".part")
+                  and (only is None or p.stem in only))
     if not todo:
         return 0
     f = encoder(name, device)
@@ -101,9 +103,11 @@ if __name__ == "__main__":
     ap.add_argument("--ch0", action="store_true")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--follow", action="store_true", help="repeat until the fetch log says done")
+    ap.add_argument("--only", help="JSON file with a 'files' list of clip stems to embed (a seeded subset)")
     a = ap.parse_args()
+    only = set(json.loads(open(a.only).read())["files"]) if a.only else None
     while True:
-        added = run(a.encoder, a.split, a.ch0, a.device)
+        added = run(a.encoder, a.split, a.ch0, a.device, only=only)
         log = ROOT / ".overnight" / "kettle" / "jobs" / f"fetch-{a.split}.log"
         finished = log.exists() and '"requested"' in log.read_text().splitlines()[-1]
         if not a.follow or (finished and added == 0):

@@ -194,7 +194,8 @@ def markdown(m: dict) -> str:
           f"| **Kettle, single mic (channel 0, what one laptop hears)** | {f(d['ours_ch0']['macro_f1'])} |"]
     for k, v in d["baselines"].items():
         if "macro_f1" in v:
-            L.append(f"| {k.replace('_', ' ')} | {f(v['macro_f1'])} |")
+            extra = f" ({v['subset']}; Kettle on the same clips: {f(v['ours_same_clips'])})" if v.get("subset") else ""
+            L.append(f"| {k.replace('_', ' ')}{extra} | {f(v['macro_f1'])} |")
     L += [f"| DCASE 2018 baseline (published, dev CV, full data) | {PUBLISHED['dcase2018_baseline']['dev_cv']} |",
           f"| Best DCASE 2018 entry (published, dev CV) | {PUBLISHED['best_entry']['dev_cv']} |", "",
           "## Per activity (dev, single mic): misses and false alarms", "",
@@ -263,9 +264,16 @@ def run_default(fast: bool) -> dict:
     oof = R.pop("_oof")
     R.pop("_nov", None)
     stored = R.pop("_stored_predictions", {})
-    if stored and len(stored) >= 3:          # keep the big-encoder baselines reproducible from the committed cache
+    if stored:          # keep the big-encoder baselines reproducible from the committed cache
+        arrays = {}
+        for k, v in stored.items():
+            if k.endswith("_files"):
+                continue
+            base = k.rsplit("_", 1)[0]
+            arrays[k] = np.asarray(v).astype(np.int8)
+            arrays[k + "__files"] = np.asarray(stored.get(f"{base}_files", oof["files"]))
         (RESULTS / "cache").mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(RESULTS / "cache" / "probes_dev.npz", files=oof["files"], **{k: v.astype(np.int8) for k, v in stored.items()})
+        np.savez_compressed(RESULTS / "cache" / "probes_dev.npz", **arrays)
     fs = failures(oof)
     m = {"generated": time.strftime("%Y-%m-%d %H:%M %Z"), "commit": commit_hash(), "head_sha256": head["sha256"],
          "head": {"theta": head["theta"], "temperature": head["temperature"], "trained_on": head.get("trained_on")},

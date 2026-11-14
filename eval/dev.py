@@ -254,24 +254,50 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     for enc in ("ast", "ced-small", "clap"):
         key = enc.replace("-", "_")
         try:
-            E = align(T, table(enc, "dev", train_files))
+            E_all = table(enc, "dev", train_files)
         except (FileNotFoundError, KeyError, ValueError) as e:
             for name in (f"{key}_probe", f"{key}_zeroshot"):           # fall back to committed predictions
                 sp = stored_probe(name, T["files"])
                 if sp is not None:
-                    B[name] = {**report(y, sp, session, w, split), "from": "committed out-of-fold predictions"}
+                    m, pred = sp
+                    r = {**report(y[m], pred, session[m], w, split), "from": "committed out-of-fold predictions"}
+                    if not m.all():
+                        r.update(subset=f"seeded subset: {int(m.sum())} clips",
+                                 ours_same_clips=report(y[m], P0.argmax(1)[m], session[m], w, split)["macro_f1"])
+                    B[name] = r
             if f"{key}_probe" not in B:
-                B[f"{key}_probe"] = {"missing": f"embeddings not cached for every clip ({type(e).__name__})"}
+                B[f"{key}_probe"] = {"missing": f"embeddings not cached ({type(e).__name__})"}
             continue
-        Le, _ = cv_logits(E["emb"], y, fold, nested=not fast)
+        have = set(E_all["files"])
+        sub_file = ROOT / "data" / "meta" / f"{enc}_subset.json"
+        if have >= set(T["files"]):
+            m = np.ones(len(y), bool)
+            note = None
+        else:                                  # score on the declared seeded subset only, next to ours on the same clips
+            wanted = set(json.loads(sub_file.read_text())["files"]) if sub_file.exists() else have
+            m = np.isin(T["files"], list(wanted & have))
+            if m.sum() < 500 or (sub_file.exists() and not wanted <= have):
+                B[f"{key}_probe"] = {"missing": f"only {int(m.sum())} of the {len(wanted)} subset clips embedded"}
+                continue
+            note = f"seeded subset: {int(m.sum())} clips ({sub_file.name if sub_file.exists() else 'cached clips'})"
+        Ts = {k: (v[m] if isinstance(v, np.ndarray) and len(v) == len(y) else v) for k, v in T.items()}
+        E = align(Ts, E_all)
+        ys, fs, ss = y[m], fold[m], session[m]
+        same = report(ys, P0.argmax(1)[m], ss, w, split)["macro_f1"] if note else None
+        def entry(pred):
+            r = report(ys, pred, ss, w, split)
+            return {**r, "subset": note, "ours_same_clips": same} if note else r
+        Le, _ = cv_logits(E["emb"], ys, fs, nested=not fast)
         stored[f"{key}_probe"] = Le[:, 0].argmax(-1)
-        B[f"{key}_probe"] = report(y, stored[f"{key}_probe"], session, w, split)
+        B[f"{key}_probe"] = entry(stored[f"{key}_probe"])
         if enc == "ast":
             stored["ast_zeroshot"] = audioset_map_predict(E["scores"][:, 0], NAMES)
-            B["ast_zeroshot"] = report(y, stored["ast_zeroshot"], session, w, split)
+            B["ast_zeroshot"] = entry(stored["ast_zeroshot"])
         if enc == "clap":
             stored["clap_zeroshot"] = E["scores"][:, 0].argmax(-1)
-            B["clap_zeroshot"] = report(y, stored["clap_zeroshot"], session, w, split)
+            B["clap_zeroshot"] = entry(stored["clap_zeroshot"])
+        if note:
+            stored[f"{key}_files"] = E["files"]
     ap = apple_predictions(T["files"])
     if ap is not None:
         B["apple_zeroshot"] = report(y, ap, session, w, split)
@@ -490,15 +516,15 @@ def apple_predictions(files) -> np.ndarray | None:
     return None
 
 
-def stored_probe(name: str, files) -> np.ndarray | None:
-    """Out-of-fold predictions of a big-encoder baseline from the committed cache (results/cache/probes_dev.npz)."""
+def stored_probe(name: str, files) -> tuple[np.ndarray, np.ndarray] | None:
+    """Committed out-of-fold predictions of a big-encoder baseline (results/cache/probes_dev.npz).
+    Returns (mask over `files` that the baseline covered, predictions for those rows)."""
     p = ROOT / "results" / "cache" / "probes_dev.npz"
     if not p.exists():
         return None
     z = np.load(p)
     if name not in z.files:
         return None
-    idx = {f: i for i, f in enumerate(z["files"])}
-    if not all(f in idx for f in files):
-        return None
-    return z[name][[idx[f] for f in files]]
+    idx = {f: i for i, f in enumerate(z[name + "__files"])}
+    m = np.array([f in idx for f in files])
+    return m, z[name][[idx[f] for f in np.asarray(files)[m]]]

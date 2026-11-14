@@ -203,7 +203,12 @@ function baselineChart(d, pub) {
     ["Kettle, 4-mic average", d.ours_node_avg.macro_f1, "ours"],
   ];
   const B = d.baselines;
-  const add = (k, label, kind = "base") => { if (B[k] && B[k].macro_f1) rows.push([label, B[k].macro_f1, kind]); };
+  const add = (k, label, kind = "base") => {
+    if (!B[k] || !B[k].macro_f1) return;
+    rows.push([B[k].subset ? `${label} *` : label, B[k].macro_f1, kind]);
+    if (B[k].subset) subsets.push(`* ${label}: ${B[k].subset}; Kettle scores ${B[k].ours_same_clips.value.toFixed(1)} on the same clips.`);
+  };
+  const subsets = [];
   add("logmel_lr", "Log-mel statistics + logistic regression (no deep model)");
   add("ast_probe", "AST (86 M params) + the same head");
   add("ced_small_probe", "CED-small + the same head");
@@ -234,5 +239,5 @@ function baselineChart(d, pub) {
   const axis = el("div", { class: "dc-row axis" }, el("span", { class: "dc-label" }), el("div", { class: "dc-track" },
     ...[0, 25, 50, 75, 100].map((v) => el("span", { class: "dc-tick", style: `left:${v}%`, text: String(v) }))), el("span", { class: "dc-val" }));
   wrap.append(axis, tip);
-  return el("div", {}, wrap, el("p", { class: "meta muted", style: "margin-top:8px", text: "Dots are macro F1 on the same development clips; bars are 95% session-bootstrap intervals. Zero-shot rows use label maps written before any score was computed. Published DCASE rows used all the data and are not strictly comparable." }));
+  return el("div", {}, wrap, ...[...new Set(subsets)].map((s) => el("p", { class: "meta muted", style: "margin-top:4px", text: s })), el("p", { class: "meta muted", style: "margin-top:8px", text: "Dots are macro F1 on the same development clips; bars are 95% session-bootstrap intervals. Zero-shot rows use label maps written before any score was computed. Published DCASE rows used all the data and are not strictly comparable." }));
 }

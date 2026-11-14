@@ -88,3 +88,50 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 - **What it does:** plain HTML, CSS and JavaScript, no build step. `common.js` draws the day bar (existing blocks are never removed and re-added; only new ones animate in) and the evidence card; `caregiver.js`, `kitchen.js`, `howsure.js` drive each page; `worklet.js` passes mic samples from the browser's audio thread.
 - **Why this way:** design tokens from PRD §9.5; activity colours from a palette validated for colour-blind readers on the pairs that actually sit next to each other; every block also has a text label.
 - **Judge question:** *Does the browser record audio?* No `MediaRecorder`, no Blob, no storage: `tests/test_privacy_grep.py`.
+
+---
+
+## Evaluation (how every number is made)
+
+### `eval/dev.py` (+ `python -m eval`)
+- **What it does:** the whole development-fold study. Uses the official 4 SINS folds (session-disjoint): train the head on 3 folds (all 4 microphone channels as examples), predict the 4th, rotate. C is chosen inside each training set by leave-one-fold-out (nested), so the test fold never picks C. Then: temperature and θ from out-of-fold logits; every baseline on the same clips and folds; ablations (channel-0-only training, no class balancing, MLP head, 5-s chip window, leave-one-mic-node-out); the session-level score through the real timeline rules; the "kitchen activity" metric; calibration; the θ trade-off; per-node slices.
+- **Why this way:** the folds are the dataset authors' (we re-verified they're session-disjoint in `tests/test_folds.py`); nested C avoids tuning on the scored fold; everything else that was chosen on dev is labelled "dev folds (also used for selection)" because it's optimistic.
+- **Known limit:** dev numbers are optimistic (selection uses the same folds); the frozen eval run is the unbiased number.
+- **Judge question (Prasad): why macro F1?** It's the DCASE 2018 metric, so we're comparable to published systems, and it weights rare activities (vacuuming, washing up) like common ones; accuracy would reward always saying "Quiet". For Meera we also report the metric that matches her question: "any kitchen activity" caught vs false alarms.
+
+### `eval/metrics.py`
+- **What it does:** confusion matrix; per-activity recall ("caught"), precision ("right when it says so"), F1, missed (FN) and false-alarm (FP) counts; macro F1; prevalence reweighting; the session bootstrap; Wilson intervals.
+- **Why this way:** we score a class-balanced subset, which inflates precision on rare classes, so each confusion row is reweighted to the class's true frequency (cap 50); recall doesn't change. Clips in one session are correlated, so CIs resample whole sessions (1,000 draws). Checked against a hand-computed example in `tests/test_metrics.py`.
+- **Judge question:** *Why not a normal bootstrap over clips?* It would treat 30 clips of one cooking session as 30 independent cooks and give intervals that are far too narrow.
+
+### `eval/sample.py`, `eval/PREREGISTER.md`, `eval/dcase.py`, `eval/guard.py`
+- **What they do:** the one frozen run on the official DCASE 2018 Task 5 evaluation set. The sample (1,000 random moments + top-up to ≥ 50 per activity, all 7 microphone copies = 7,791 clips, seed 20261114), the scoring and the mic-fingerprint rule were committed (commit `0119c57`) before any eval audio was fetched. `guard.py` refuses to open eval embeddings unless it's the sanctioned run with a frozen head. `run_once()` refuses a second run once predictions exist; `rehearse()` runs the same scoring on a dev stand-in with a random head first.
+- **Why this way:** a held-out set is only held out if nothing can peek at it. Pre-registering the recipe means we couldn't pick a flattering sample after the fact.
+- **Known limit:** a seeded subsample of the eval set, reweighted to its true class counts, not all 72,972 clips: close to, not exactly, a leaderboard number.
+- **Judge question (Kerimov): does it hold up on microphones it never heard?** The unknown-mic slice is exactly that; which nodes are "unknown" was decided from unlabelled spectra (`eval/fingerprint.py`), never from labels or predictions.
+
+### `eval/fingerprint.py`
+- **What it does:** decides which eval sensor nodes are the 3 microphones the dev set never had, using only each node's average log-mel spectrum (no labels, no predictions): an eval node is "known" if it's nearest one dev node and within that node's own fold-to-fold spread, one-to-one.
+- **Judge question:** *What if it can't tell?* Then we report per-node numbers only and never call a slice "unknown-mic".
+
+### `eval/offlist.py`
+- **What it does:** 200 ESC-50 clips from 20 non-household categories (dog, siren, rain, alarm clock…) plus 60 generated noise and silence clips: sounds that are none of the 9 activities. Every confident label on them is wrong by construction.
+- **Why this way:** "Not sure" only matters if it catches the sounds Kettle wasn't trained on; this measures it, with and without the novelty gate.
+- **Judge question (Batool): where is it confidently wrong?** On these off-list sounds with θ alone, and on TV vs conversation in the dev confusions; the page shows both.
+
+### `eval/privacy_check.py`
+- **What it does:** runs the real app under a Python audit hook while headless Chromium plays a sample day into the kitchen page as a fake microphone; samples `lsof`; diffs the repo, temp folders and caches for new audio files or audio magic bytes; uploads 5 MB to "Try your own sound". Writes `results/privacy_check.json` and fails on any audio write.
+- **Known limit:** not a kernel trace (the optional `sudo fs_usage` step is in the docstring); OS swap is outside our control.
+- **Judge question:** *How do you prove nothing is recorded?* Four independent checks against the running app, plus a code grep test, plus a stated threat model.
+
+### `eval/own_kitchen.py`, `eval/OWN_KITCHEN_GUIDE.md`, `eval/own_kitchen/`
+- **What it does:** the team's own kitchens as the honest worst slice: a teammate who didn't write the code records with consent and labels while recording; a format checker (`python -m eval.own_kitchen_check`) that never changes a label; one scoring run with the frozen head, with Wilson intervals.
+- **Judge question:** *Who labelled it and why them?* A teammate who didn't write the code, so the labels can't drift toward what the model says.
+
+### `eval/cache.py` + `notebooks/kettle_reproduce.ipynb`
+- **What it does:** a small committed cache (dev embeddings in float16, log-mel features, baseline predictions, Apple's per-activity scores) so the notebook can retrain the head and rebuild every table and plot in minutes, without the 76-minute download. The eval set's embeddings are not committed (its licence forbids derivatives); its saved predictions are.
+- **Judge question:** *Can I check your numbers myself?* Open the notebook and run it: its last cell compares every number with `results/metrics.json`.
+
+### `tools/apple_baseline/`
+- **What it does:** a Swift command-line tool that runs Apple's built-in SoundAnalysis classifier (303 sound classes, the one a Mac ships) on channel 0 of each clip; `run.py` maps classes to our 9 activities with a map frozen before any score was computed.
+- **Judge question (Batool): what did you add beyond the pretrained encoder?** A trained head, calibration, an abstain rule measured on off-list sounds, a session-level pipeline, and the comparison with what a Mac already does out of the box.
