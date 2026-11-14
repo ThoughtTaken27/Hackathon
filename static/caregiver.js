@@ -54,8 +54,22 @@ function renderDemo(d, names) {
   for (const b of $("demo-buttons").children) b.classList.toggle("primary", !!d && b.dataset.sid === d.id);
 }
 
+let seenKeys = null, seenHb = null;
+function announce(t) {
+  if (seenHb && seenHb !== t.heartbeat.state) $("announce").textContent = t.heartbeat.text;
+  seenHb = t.heartbeat.state;
+  // Tell screen-reader users about a block that just settled ("Washing up, 8:45 AM, how sure: high").
+  const keys = new Set(t.blocks.map(blockKey));
+  if (seenKeys) {
+    const fresh = t.blocks.filter((b) => !seenKeys.has(blockKey(b)) && b.state !== "not_listening");
+    if (fresh.length) $("announce").textContent = fresh.map((b) => `${b.label}, ${b.range}${b.how_sure ? `, how sure: ${b.how_sure}` : ""}`).join(". ");
+  }
+  seenKeys = keys;
+}
+
 function render(t) {
   today = t;
+  announce(t);
   $("title").textContent = `${t.names.parent}'s kitchen today`;
   document.title = `${t.names.parent}'s kitchen today · Kettle`;
   $("date").textContent = t.date_text;

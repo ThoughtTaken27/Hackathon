@@ -22,7 +22,7 @@ const nm = (c) => ACT_NAME[c] || c;
 
 function verdict(per, conf) {
   // Built from the numbers: what it almost always catches, what it mixes up most, what is weakest.
-  const strong = per.filter((c) => c.recall.value >= 95 && c.precision.value >= 90).map((c) => nm(c.class));
+  const strong = per.filter((c) => c.recall.value >= 95 && c.precision.value >= 90).map((c) => nm(c.class).toLowerCase().replace("tv", "TV"));
   let worstPair = null, worstN = 0;
   for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) {
     if (i !== j && conf[i][j] + conf[j][i] > worstN && i < j) { worstN = conf[i][j] + conf[j][i]; worstPair = [i, j]; }

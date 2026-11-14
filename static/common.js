@@ -76,7 +76,8 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
   const nowTick = el("div", { class: "now-tick", "aria-hidden": "true" });
   const ticks = el("div", { class: "ticks", "aria-hidden": "true" });
   const list = el("ol", { class: "sr" });
-  hit.append(bar, nowTick);
+  const empty = el("div", { class: "empty-day", hidden: true });
+  hit.append(bar, nowTick, empty);
   root.append(labels, hit, ticks, list);
   const nodes = new Map();
   let first = true, selected = null, lastBlocks = [];
@@ -94,6 +95,8 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
 
   function render(today) {
     lastBlocks = today.blocks;
+    empty.hidden = today.blocks.length > 0;
+    empty.textContent = today.heartbeat.state === "never" ? `The day appears here once ${today.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(today);
     const span = z - a;
     const pct = (t) => `${(100 * (Math.max(a, Math.min(z, t)) - a) / span).toFixed(3)}%`;

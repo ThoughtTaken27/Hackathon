@@ -120,7 +120,7 @@ function screen(t) {
     }
     const lines = ["The program is called Kettle. It only notes the kind of sound, like 'dishes' or 'TV'.", "It keeps no recordings and no words.",
       `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
-    return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines,
+    return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
         el("button", { class: "btn quiet", type: "button", text: "Read this to me", style: "font-size:20px", onclick: () => speak(["This laptop listens for kitchen sounds.", ...lines]) })] };
   }
@@ -179,6 +179,7 @@ function draw() {
     for (const c of s.checks) ul.append(el("li", { text: c }));
     body.append(el("div", { class: "k-rules", style: "margin-top:12px" }, el("p", { text: `${today.names.caregiver}'s checks (she sees whether they happened):` }), ul));
   }
+  if (s.example) body.append(exampleBar());
   if (s.helper) body.append(el("details", { class: "helper" }, el("summary", { text: s.helper[0] }), el("p", { text: s.helper[1] })));
   // demo tag
   const tag = $("demo-tag");
@@ -214,6 +215,22 @@ function draw() {
   }
   $("bar-section").hidden = !s.bar;
   if (s.bar) bar.render(today);
+}
+
+// A drawn example of what Meera sees (not real data), so "a day timeline like this one" has something to point at.
+let exampleNode = null;
+function exampleBar() {
+  if (exampleNode) return exampleNode;
+  const fake = { day0: 0, now: 11 * 3600, names: today.names, heartbeat: { state: "listening" }, blocks: [
+    { start: 6 * 3600, end: 7.6 * 3600, state: "empty", activity: "absence", label: "Quiet", range: "" },
+    { start: 8 * 3600, end: 8.4 * 3600, state: "activity", activity: "cooking", label: "Cooking", range: "", how_sure: "high" },
+    { start: 8.45 * 3600, end: 8.75 * 3600, state: "activity", activity: "dishwashing", label: "Washing up", range: "", how_sure: "high" },
+    { start: 9.2 * 3600, end: 10.6 * 3600, state: "activity", activity: "watching_tv", label: "TV", range: "", how_sure: "high" }] };
+  const box = el("div", { class: "example", "aria-label": "Example of the day timeline (not real)" },
+    el("span", { class: "tag", text: "Example, not real" }), el("div"));
+  setTimeout(() => makeDayBar(box.lastChild).render(fake), 0);
+  exampleNode = box;
+  return box;
 }
 
 let prevChip = null;
