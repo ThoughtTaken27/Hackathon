@@ -72,10 +72,10 @@ function renderResults(box, r) {
   const oursHead = ev ? (ev.slices.unknown || ev.slices.all).ch0 : d.ours_ch0.macro_f1;
   if (apple && apple.value != null) {
     box.append(el("p", { class: "gap" },
-      el("span", { text: "A Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores " }),
-      el("strong", { class: "num", text: pct(apple) }), el("span", { text: "; Kettle, on one microphone, scores " }),
-      el("strong", { class: "num", text: pct(oursHead) }),
-      el("span", { class: "muted", text: ` (macro F1, ${ev ? "held-out test" : "development folds"}, same clips).` })));
+      el("span", { text: "On the same clips, Kettle on one microphone scores " }), el("strong", { class: "num", text: pct(oursHead) }),
+      el("span", { text: ` macro F1, level with the official 2018 DCASE baseline (${r.published.dcase2018_baseline.eval_known_mic} known / ${r.published.dcase2018_baseline.eval_unknown_mic} unseen microphones, full set; best entry ${r.published.best_entry.eval_known_mic} / ${r.published.best_entry.eval_unknown_mic}). A Mac already hears a kettle, but Apple's built-in sound classifier scores ` }),
+      el("strong", { class: "num", text: pct(apple) }),
+      el("span", { class: "muted", text: ` (${ev ? "held-out test" : "development folds"}).` })));
   }
 
 
@@ -164,7 +164,7 @@ function renderResults(box, r) {
         el("figure", {}, el("img", { src: "/api/results/reliability_dev.png", alt: `Reliability plot: confidence against observed accuracy. Expected calibration error ${cal.ece_after_temperature.value} points.`, loading: "lazy" }),
           el("figcaption", { class: "meta muted", text: `When Kettle says it is X% sure, it is right about X% of the time: the average gap (ECE) is ${cal.ece_after_temperature.value} percentage points (95% CI ${ci(cal.ece_after_temperature)}).` })),
         el("div", {},
-          el("p", { text: `A higher "Not sure" bar trades one mistake for another. A false "kitchen activity" could hide a skipped breakfast; a missed one could make a normal morning look like "Not heard by 10:00 AM" and prompt a call. Through the shipped day bar, raising the bar from ${Math.round(low.theta * 100)}% to ${Math.round(high.theta * 100)}% cuts false kitchen-activity blocks from ${low.meal_false_alarms_per_day} to ${high.meal_false_alarms_per_day} a day, but misses ${high.meal_sessions_missed} instead of ${low.meal_sessions_missed} of ${low.meal_sessions} meal sessions.` }),
+          el("p", { text: `A higher "Not sure" bar could trade one mistake for another: a false "kitchen activity" could hide a skipped breakfast; a missed one could prompt a needless call. On development clips it barely mattered for Meera's check: across ${low.meal_sessions} kitchen sessions, ${high.meal_sessions_missed === 0 && low.meal_sessions_missed === 0 ? "none went unnoticed at any bar from" : "missed sessions changed between"} ${Math.round(low.theta * 100)}% and ${Math.round(high.theta * 100)}%, and false kitchen blocks moved between ${Math.min(...tt.map((x) => x.meal_false_alarm_blocks))} and ${Math.max(...tt.map((x) => x.meal_false_alarm_blocks))} over ${low.days} days of sound. We set the bar so the labels Kettle does show are right about ${d.not_sure.shown_precision_metric.value.toFixed(0)}% of the time.` }),
           el("div", { class: "scroll-x" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", { class: "num", text: "Not-sure bar" }), el("th", { class: "num", text: "Meal sessions missed" }), el("th", { class: "num", text: "False kitchen blocks / day" }))), tb))))));
   }
 
