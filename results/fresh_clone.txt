@@ -1,0 +1,7 @@
+Fresh-clone test (Sat Nov 14 2026, 13:51-13:53 CT, macOS, Python 3.11, local pip cache warm)
+git clone <local repo> -> checkout kettle -> python3.11 -m venv .venv -> pip install -r requirements.txt : 105 s
+HF_HUB_OFFLINE=1 python smoke_test.py : PASS, 32.1 s (first, cold run)
+python app.py (KETTLE_PORT=8799, offline) -> POST /api/demo/usual/instant : "A usual morning", 12 blocks, "Met at 8:05 AM (cooking, how sure: medium)"
+GET / contains "Prototype, not medical advice": yes
+Total wall time: 150 s. No API keys, no account, no network after pip install.
+Note: on a machine without a pip cache, installing PyTorch dominates (expect several minutes).
