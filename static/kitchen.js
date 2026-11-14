@@ -112,7 +112,7 @@ function screen(t) {
       return { state: "off", head: "Kettle is off.", body: ["This laptop isn't listening. Press Start when you want it on."],
         controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
     }
-    const lines = ["The program is called Kettle. It only notes the kind of sound, like 'dishes' or 'TV'.", "It keeps no recordings and no words.",
+    const lines = ["The program is called Kettle. It uses this laptop's microphone and only notes the kind of sound, like 'dishes' or 'TV'.", "It keeps no recordings and no words.",
       `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
     return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
@@ -129,11 +129,11 @@ function screen(t) {
     return { state: "paused", head: weekly ? "Kettle has paused. Keep it on?" : "Paused. Kettle isn't listening.",
       body: [`${n.caregiver} sees: Paused by you at ${hb.since_text}.`, until], bar: true,
       controls: weekly ? [button("Keep it on", () => act("/api/keep-on"), "primary"), button("Turn it off", () => act("/api/off"))]
-        : [button("Resume listening", () => act("/api/resume"), "primary pause")] };
+        : [button("Resume listening", () => act("/api/resume"), "primary pause"), button("Turn it off", () => act("/api/off"))] };
   }
   if (k.weekly_due) {
-    return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.caregiver} sees the kinds of sounds, not recordings or words.`],
-      controls: [button("Keep it on", () => act("/api/keep-on"), "primary"), button("Turn it off", () => act("/api/off"))] };
+    return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.caregiver} sees the kinds of sounds, not recordings or words.`, "If nobody answers, Kettle pauses tomorrow until you choose."],
+      controls: [button("Keep it on", () => act("/api/keep-on")), button("Turn it off", () => act("/api/off"))] };
   }
   if (t.demo) {
     return { state: hb.state, head: `Sample day: ${t.demo.title}`, body: [`Recorded sounds from a public research home, played fast. Not ${n.parent}.`],
@@ -148,7 +148,7 @@ function screen(t) {
   if (ui.mic === "denied" || ui.mic === "none") {
     const none = ui.mic === "none";
     return { state: "error-soft", head: none ? "No microphone found." : "Kettle can't hear the kitchen.",
-      body: [none ? "Plug one in, or use a laptop with a built-in microphone." : `Ask ${n.caregiver} or a helper to turn the microphone on.`],
+      body: [none ? "Plug one in, or use a laptop with a built-in microphone." : `The laptop's microphone is switched off for Kettle. This isn't something you did wrong. ${n.caregiver} or a helper can turn it on.`],
       helper: none ? null : ["Steps for a helper", "Chrome: click the icon left of the address, then Microphone, then Allow, then Try again. Safari: Settings for this website, then Microphone, then Allow."],
       controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary"), button("Play a sample day instead", () => act("/api/demo/usual"))] };
   }
@@ -178,7 +178,7 @@ function draw() {
   if (s.checks && s.checks.length) {
     const ul = el("ul");
     for (const c of s.checks) ul.append(el("li", { text: c }));
-    body.append(el("div", { class: "k-rules", style: "margin-top:12px" }, el("p", { text: `Checks ${today.names.caregiver} set:` }), ul));
+    body.append(el("div", { class: "k-rules", style: "margin-top:12px" }, el("p", { text: `Checks ${today.names.caregiver} set (they only read the timeline; Kettle tells her nothing else):` }), ul));
   }
   if (s.example) body.append(exampleBar());
   if (s.helper) body.append(el("details", { class: "helper" }, el("summary", { text: s.helper[0] }), el("p", { text: s.helper[1] })));
@@ -191,11 +191,13 @@ function draw() {
   const ctr = $("controls");
   ctr.textContent = "";
   if (ui.pauseMenu) {
+    setText($("head"), "How long should Kettle stop listening?", false);
+    $("status").dataset.state = "never";
     ctr.append(el("div", { class: "pause-menu" },
-      button("Pause for 15 minutes", () => act("/api/pause", { minutes: 15 }), "primary"),
+      button("Pause for 15 minutes", () => act("/api/pause", { minutes: 15 })),
       button("Pause for 1 hour", () => act("/api/pause", { minutes: 60 })),
       button("Pause until tomorrow morning", () => act("/api/pause", { minutes: null })),
-      el("button", { class: "btn quiet", type: "button", text: "Don't pause", style: "font-size:var(--fs-lead)", onclick: () => { ui.pauseMenu = false; draw(); } })));
+      button("Cancel", () => { ui.pauseMenu = false; draw(); }, "quiet-k")));
   } else {
     for (const c of s.controls) ctr.append(c);
   }
@@ -243,7 +245,7 @@ function sync() {
   if (wasPaused && !k.paused && !today.demo) {
     ui.resumedAt = Date.now();
     const last = (today.blocks || []).filter((b) => b.state === "paused").pop();
-    ui.resumedText = last ? `Paused from ${last.range}.` : "";
+    ui.resumedText = last ? (last.end - last.start < 60 ? "Paused for under a minute." : `Paused from ${last.range}.`) : "";
   }
   const shouldListen = !today.demo && k.consent && !k.off && !k.paused;
   if (shouldListen && ui.mic === "idle" && !ui.down) startMic();

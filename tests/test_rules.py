@@ -89,3 +89,16 @@ def test_never_started_says_nothing_heard_yet():
     for rs in (KITCHEN, TV):
         r = state(rs, [], 14 * H)
         assert r["state"] == "cant_tell" and "hasn't heard anything yet today" in r["detail"]
+
+
+def test_unnamed_sounds_before_deadline_say_so_not_heard_nothing():
+    ev = day(run_of(6 * H, "absence", 20, dur=600), run_of(int(9.4 * H), "cooking", 6, conf=0.3, dur=300),
+             run_of(int(10.5 * H), "cooking", 3, dur=300))
+    r = state(KITCHEN, blocks(ev, 11 * H), 11 * H)
+    assert r["state"] == "missed" and r["detail"].startswith("No clear kitchen activity by 10:00 AM.")
+    assert "couldn't name" in r["detail"] and "You might call to say hello." in r["note"]
+
+
+def test_met_says_how_sure():
+    ev = day(run_of(6 * H, "absence", 12, dur=600), run_of(8 * H, "cooking", 4, conf=0.7, dur=300))
+    assert "how sure: medium" in state(KITCHEN, blocks(ev, 11 * H), 11 * H)["detail"]

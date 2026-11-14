@@ -82,7 +82,8 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
                   if _counts(r, b) and b["start"] < deadline and b["start"] <= now), None)
     if first:
         what = PHRASE[first["activity"]] if first["activity"] else "talking or TV"
-        return {"state": "met", "at": first["start"], "detail": f"Met at {_clock(first['start'], tz)} ({what})",
+        sure = "high" if (first.get("conf") or 0) >= 0.8 else "medium"
+        return {"state": "met", "at": first["start"], "detail": f"Met at {_clock(first['start'], tz)} ({what}, how sure: {sure})",
                 "note": None}
     end = min(now, deadline)
     gaps = unheard(blocks, start, end) if end > start else []
@@ -104,7 +105,13 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
     later = next((b for b in sorted(blocks, key=lambda b: b["start"]) if _counts(r, b) and b["start"] >= deadline), None)
     whole = "Kettle was listening the whole time." if missing < 60 else \
         f"Kettle was listening for {round(100 * (1 - missing / (deadline - start)))}% of that time."
-    note = f"First heard at {_clock(later['start'], tz)}." if later else "You might call to say hello."
+    unsure = [b for b in blocks if b["state"] in ("not_sure", "talk_or_tv") and b["start"] < deadline and b["end"] > start]
+    note = (f"First heard at {_clock(later['start'], tz)}. " if later else "") + "You might call to say hello."
+    if unsure:      # Kettle heard something it couldn't name: say so instead of "Not heard"
+        a, z = unsure[0]["start"], max(b["end"] for b in unsure)
+        return {"state": "missed", "at": deadline,
+                "detail": f"No clear kitchen activity by {_hhmm(r['time'])}. Kettle heard sounds it couldn't name ({clock_range(a, min(z, deadline), tz)}).",
+                "note": note}
     return {"state": "missed", "at": deadline, "detail": f"Not heard by {_hhmm(r['time'])}. {whole}", "note": note}
 
 

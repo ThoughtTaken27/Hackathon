@@ -311,3 +311,4 @@ tr.row-shipped td { color: var(--ink); font-weight: 600; }
 .verdict { font-size: var(--fs-kbody); line-height: 32px; }
 .gap { font-size: var(--fs-body); line-height: var(--lh-body); }
 .stat .meta:not(.muted) { color: var(--text); }
+.kbtn.quiet-k { background: transparent; box-shadow: inset 0 0 0 1.5px var(--line); }

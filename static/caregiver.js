@@ -112,7 +112,7 @@ async function poll() {
       const node = $("hb");
       node.dataset.state = "error";
       node.querySelector(".text").textContent =
-        `Kettle stopped working on the kitchen laptop at ${clock(lastOk.now, lastOk.tz_offset)}. The day so far is shown below.`;
+        `Kettle stopped working on the kitchen laptop at ${clock(lastOk.now, lastOk.tz_offset)}. ${lastOk.names.parent}'s screen asks him to press Try again; a call is the only way to know more. Below: the day before it stopped.`;
     }
   }
 }

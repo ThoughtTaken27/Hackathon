@@ -21,7 +21,7 @@ from pathlib import Path
 
 import numpy as np
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from kettle import audio, demo, encoders, live, model, rules, timeline, view

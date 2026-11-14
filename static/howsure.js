@@ -62,7 +62,11 @@ function renderResults(box, r) {
     : `Development folds (also used to choose the model), N = ${d.n_clips} clips from ${d.n_sessions} sessions. The held-out test hasn't been run yet.`;
   document.getElementById("split-line").textContent = splitText;
 
-  box.append(el("p", { class: "verdict", text: verdict(per, main.ours_ch0.confusion) }));
+  const kc = Object.fromEntries(per.map((c) => [c.class, c]));
+  if (kc.cooking && kc.dishwashing && kc.eating) {
+    box.append(el("p", { class: "verdict", text: `For the kitchen, on ${ev ? "test clips it had never heard" : "development clips"}: Kettle caught ${kc.cooking.recall.value.toFixed(0)}% of cooking, ${kc.dishwashing.recall.value.toFixed(0)}% of washing up and ${kc.eating.recall.value.toFixed(0)}% of eating. When it isn't sure, it says "Not sure" instead of guessing.` }));
+  }
+  box.append(el("p", { class: "gap", text: verdict(per, main.ours_ch0.confusion) }));
   // lead with the measured gap (addendum item 5): what a Mac already ships vs Kettle, same clips, same metric
   const apple = ev ? ev.baselines && ev.baselines.apple_zeroshot : d.baselines.apple_zeroshot && d.baselines.apple_zeroshot.macro_f1;
   const oursHead = ev ? (ev.slices.unknown || ev.slices.all).ch0 : d.ours_ch0.macro_f1;

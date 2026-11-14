@@ -37,7 +37,7 @@ def _ago(seconds: float) -> str:
     return f"{s // 3600} h {s % 3600 // 60} min"
 
 
-def heartbeat_line(hb: dict, now: float, demo: bool) -> dict:
+def heartbeat_line(hb: dict, now: float) -> dict:
     """{'state', 'text', 'kitchen'}: the first line on the caregiver view and the kitchen headline."""
     st, since, until = hb["state"], hb["since"], hb["until"]
     c = lambda t: clock(t, now)
@@ -93,6 +93,15 @@ def block_view(b: dict, now: float) -> dict:
     return out
 
 
+def summary_line(blks, tz, listening_since, hb, now) -> str:
+    """The day summary, plus what isn't known when Kettle is paused, asleep or off (so a gap never reads as a quiet day)."""
+    text = timeline.summary(blks, tz, listening_since)
+    since = hb.get("since") or hb.get("last_heard")
+    if hb["state"] in ("paused", "stale", "off", "mic_blocked", "no_mic") and since and text:
+        text += f" Nothing is known after {clock(since, now)}."
+    return text
+
+
 def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
     """The full payload for GET /api/today and the /ws/state push."""
     day0 = local_midnight(now)
@@ -130,9 +139,9 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
         "now": now, "now_text": clock(now, now), "day0": day0, "tz_offset": tz,
         "date_text": time.strftime("%A, %B %-d", time.localtime(now)),
         "names": {"parent": PARENT, "caregiver": CAREGIVER},
-        "heartbeat": heartbeat_line(hb, now, bool(demo)),
+        "heartbeat": heartbeat_line(hb, now),
         "blocks": [block_view(b, now) for b in blks],
-        "summary": timeline.summary(blks, tz, listening_since if live_now else None),
+        "summary": summary_line(blks, tz, listening_since if live_now else None, hb, now),
         "rules": rules.evaluate(s["rules"], blks, now, day0, tz),
         "rule_defs": s["rules"],
         "chip": chip_text,

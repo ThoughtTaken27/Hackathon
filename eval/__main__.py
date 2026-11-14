@@ -266,8 +266,8 @@ def failures_md(fs: list[dict]) -> str:
     for i, f in enumerate(fs, 1):
         L += [f"## {i}. {DISPLAY[f['true']]} heard as {DISPLAY[f['predicted']]}",
               f"- Clip `{f['clip']}` (session {f['session']}, {f['node']}, fold {f['fold']}); {f['how_many_like_this']} dev clips made this same mistake.",
-              f"- Kettle's probabilities: " + ", ".join(f"{DISPLAY[k]} {v:.2f}" for k, v in f["probs"].items()),
-              f"- Sounds the encoder heard: " + ", ".join(f"{s['name']} {s['score']:.2f}" for s in f["sounds"]),
+              "- Kettle's probabilities: " + ", ".join(f"{DISPLAY[k]} {v:.2f}" for k, v in f["probs"].items()),
+              "- Sounds the encoder heard: " + ", ".join(f"{s['name']} {s['score']:.2f}" for s in f["sounds"]),
               f"- Likely cause: {f['likely_cause']}", ""]
     return "\n".join(L)
 
