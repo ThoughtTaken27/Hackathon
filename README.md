@@ -1,70 +1,39 @@
-# Veritas AI International High School Hackathon 2026
+# Kettle
 
-Team repo for the [Veritas AI International High School Hackathon](https://highschoolhackathon.org/) (Nov 14–15, 2026, virtual).
+**A laptop already in a parent's kitchen turns household sounds into a calm day timeline for the adult child who lives far away, keeps no audio and no words, and publishes how often it misses an activity and how often it cries wolf.**
 
-> **Status: pre-kickoff.** This repo holds planning docs and team tooling only (Claude Code config, hooks, templates; no project logic). Per the rules, **all project code must be written during the 48-hour window** (starts 12:00 AM ET Sat Nov 14 = 11:00 PM CT Fri Nov 13). Do not add code before then.
+Track: AI + Health ("manage an ongoing one better"). Built for an adult child caring from a distance for a parent with early memory loss (invented persona: Meera, 34, and her father Ravi, 79, who consents on his own kitchen screen and can pause it).
 
-## Key times
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't detect falls or call for help.
 
-| Event | Eastern (official) | Central |
-| --- | --- | --- |
-| Registration closes | Fri Nov 13, 11:59 PM | Fri Nov 13, 10:59 PM |
-| **Kickoff: briefs emailed, 48h starts** | **Sat Nov 14, 12:00 AM** | **Fri Nov 13, 11:00 PM** |
-| Code-complete target (full demo flow) | Sat Nov 14, 7:00 PM | Sat Nov 14, 6:00 PM |
-| Our submit target | Sun Nov 15, 10:00 PM | Sun Nov 15, 9:00 PM |
-| **Submissions close (no late entries)** | **Sun Nov 15, 11:59 PM** | **Sun Nov 15, 10:59 PM** |
-| Finalists announced | Wed Nov 18 | Wed Nov 18 |
-| Live finals (5-min demo + Q&A) | Sat Nov 21 | Sat Nov 21 |
+_Results table, screenshots and limits are filled in from `results/` as the build finishes (see below)._
 
-## New teammate? 15 minutes
+## Run it (no keys, no account, no network)
 
-1. Follow [`docs/TEAM-SETUP.md`](docs/TEAM-SETUP.md) §2: install Git, Python and Claude Code, clone, run `claude`, **trust the folder**.
-2. The first reply should show the **hackathon briefing** (CT time, phase, next deadline). That means the team hooks are working.
-3. Type `/start`. When a task is finished, type `/done`.
+Python 3.11. About 5 minutes on a fresh machine (most of it is installing PyTorch).
 
-| Command | When |
-| --- | --- |
-| `/kickoff` | Fri 11 PM CT, once, whole team |
-| `/start [issue#]` · `/done [issue#]` | Every session / every task |
-| `/explain <module>` · `/explain quiz <module>` | After each change · Q&A drills |
-| `/checkin` | Team check-ins |
-| `/ship-check` | Sun 5 PM CT, before submitting |
-| `/product-teardown <product>` | Before rebuilding an existing tool: why people use it, how it works, what we add |
-| `/overnight` | Kickoff night, repo owner only: brief → research → PRD → overnight build (`bash .claude/overnight/run.sh`) |
-
-## Start here
-
-0. [`AGENTS.md`](AGENTS.md): the operating manual every AI agent (and teammate) follows. Read it once.
-1. [`docs/KICKOFF.md`](docs/KICKOFF.md): what to do in the first hour after the brief drops.
-2. [`docs/RULES-AND-RUBRIC.md`](docs/RULES-AND-RUBRIC.md): rules, scoring, what we submit.
-3. [`docs/IDEAS.md`](docs/IDEAS.md): our pre-researched ideas (HeatRx main, ChairCheck backup) and the decision table.
-4. [`docs/SCHEDULE-AND-ROLES.md`](docs/SCHEDULE-AND-ROLES.md): the 48-hour plan and who does what.
-5. [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md): APIs and datasets, checked on Nov 13, with gotchas.
-6. [`docs/TEAM-SETUP.md`](docs/TEAM-SETUP.md): accounts, keys, Claude Code, git workflow.
-7. [`docs/SUBMISSION.md`](docs/SUBMISSION.md): write-up template, video script, Q&A prep, final checklist.
-8. [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md): log every AI tool use here (we must credit them).
-
-Full research doc (Claude Docs, ask the repo owner to share it): [Veritas AI Hackathon — Health Idea Research & Game Plan](https://claude.ai/artifact/KxEQasfso3e2RMTBuqrS8v)
-
-## Repo layout
-
-```
-AGENTS.md          Operating manual for every AI agent: rules, rubric, clock, practices
-CLAUDE.md          Imports AGENTS.md so Claude Code loads it automatically
-.claude/settings.json  Shared Claude Code config: default model, safe-command allowlist, hooks
-.claude/hooks/     Session briefing (clock + git state) and guardrails (secrets, pre-kickoff code, force-push)
-.claude/skills/    Team slash commands: /kickoff /start /done /explain /checkin /ship-check,
-                   plus build/design skills /agentic-build /ui-polish /component-craft
-                   /frontend-design /emil-design-eng /apple-design
-.claude/overnight/ Kickoff-night runner and playbooks (research → PRD → build); local only, never pushes
-.claude/agents/    Haiku-pinned workers: scout (search), builder (routine code), runner (run + report)
-.github/           Issue + PR templates (done-check, explain-back, AI-usage row)
-.env.example       Key names only; copy to .env (git-ignored)
-docs/WRITEUP.md    Living one-page write-up + 2-minute video script
-docs/BRIEF.md      Paste the challenge brief here at kickoff
-docs/DECISIONS.md  Locked idea, owners, interfaces (filled at kickoff)
-docs/EXPLAIN.md    Plain-English explanation of every module (Q&A prep, filled as we build)
-docs/              Planning docs (this is all that exists before kickoff)
+```bash
+git clone <this repo> kettle && cd kettle
+python3.11 -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+python smoke_test.py        # golden path, offline, < 60 s; prints PASS
+python app.py               # then open http://localhost:8000
 ```
 
-The code layout gets decided at kickoff, once the idea is locked. See `docs/KICKOFF.md`.
+- **Caregiver view:** http://localhost:8000/ . With no kitchen laptop set up, press **Play a sample day** (real recordings from a public research home, through the same model, played fast) or **Try your own sound** (drop any audio file; it's read in memory and never saved).
+- **Kitchen screen:** http://localhost:8000/kitchen on the laptop that sits in the kitchen (Chrome or Edge; the microphone needs `localhost`). The parent reads three lines, presses "Yes", and can pause or turn it off any time.
+- **How sure is Kettle?** http://localhost:8000/how-sure : measured misses and false alarms per activity, from `results/metrics.json`.
+
+Everything the model needs is in the repo: CED-tiny weights (`models/ced-tiny`, Apache-2.0), the trained head (`models/head.json`, plain numbers) and 90 sample clips (`demo_cache/`, SINS dev set, CC BY-NC 4.0).
+
+## How it works
+
+```
+kitchen mic ─► 10-s windows every 2 s (RAM only) ─► CED-tiny (frozen, 192-d) ─► logistic head (9 activities)
+             ─► "Not sure" below a confidence threshold ─► 2-of-3 smoothing ─► day bar blocks + evidence
+             ─► caregiver checks (rules she sets: Met / Not yet / Missed / Can't tell) + heartbeat
+```
+
+## Team tooling
+
+This repo also holds the team's Claude Code setup: [`AGENTS.md`](AGENTS.md) (operating manual), `.claude/` (hooks, skills, agents), and planning docs in [`docs/`](docs/) (`PRD.md`, `DECISIONS.md`, `WRITEUP.md`, `EXPLAIN.md`, `AI-USAGE-LOG.md`, `DATA-SOURCES.md`). Commands: `/start`, `/done`, `/explain <module>`, `/checkin`, `/ship-check`.

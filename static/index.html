@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dad's kitchen today · Kettle</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='6' width='14' height='4' rx='2' fill='%232B83C6'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<main class="page" id="app">
+  <header class="top">
+    <div>
+      <h1 id="title">Dad's kitchen today</h1>
+      <p class="date" id="date"></p>
+    </div>
+    <a class="link" href="/how-sure">How sure is Kettle?</a>
+  </header>
+
+  <div id="demo-tag" hidden></div>
+  <p class="hb" id="hb" data-state="never" aria-live="polite"><span class="dot" aria-hidden="true"></span><span class="text"></span></p>
+  <p class="summary" id="summary"></p>
+
+  <section class="card" aria-label="Day timeline">
+    <div id="bar"></div>
+    <div class="fold" id="fold"><div id="evidence"></div></div>
+    <p class="privacy-line">No audio saved. No words kept. Only these labels. <a href="/how-sure#privacy">How we check</a></p>
+  </section>
+
+  <div class="grid2">
+    <section aria-labelledby="checks-h">
+      <h2 class="section-title" id="checks-h">Your checks</h2>
+      <div class="rules" id="rules"></div>
+      <p class="rules-foot">Rules you set. Kettle doesn't learn Dad's routine and doesn't send alerts.</p>
+      <div class="row" style="margin-top:12px"><button class="btn" id="edit-rules" type="button">Change checks</button></div>
+    </section>
+
+    <section aria-labelledby="try-h" id="try-section">
+      <h2 class="section-title" id="try-h">Try Kettle without a kitchen laptop</h2>
+      <div class="card stack">
+        <div>
+          <p style="color:var(--ink);font-weight:500">Play a sample day</p>
+          <p class="meta muted">Real recordings from a public research home, run through the same model, played fast. The clock times are staged.</p>
+          <div class="row" style="margin-top:10px" id="demo-buttons"></div>
+          <div class="row" style="margin-top:8px" id="demo-extra" hidden>
+            <button class="btn" type="button" id="demo-sleep">Close the laptop lid</button>
+            <button class="btn quiet" type="button" id="demo-stop">Back to Dad's kitchen</button>
+          </div>
+        </div>
+        <div>
+          <p style="color:var(--ink);font-weight:500">Try your own sound</p>
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac">
+            <span class="meta">Drop an audio file here, or tap to choose one (up to 60 seconds). It's read in memory and never saved.</span>
+          </label>
+          <div class="row" style="margin-top:8px" id="samples"></div>
+          <div class="try-result" id="try-result" aria-live="polite" style="margin-top:12px"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <p>Kettle is not an emergency device. It can't detect falls or call for help.</p>
+    <p>Times are Dad's local time. <span id="head-line"></span></p>
+    <p><strong>Prototype, not medical advice.</strong></p>
+  </footer>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-h">
+  <h2 id="sheet-h">Your checks</h2>
+  <p class="meta muted">Up to three. Kettle only checks rules you set, and shows the answer here. It never sends alerts.</p>
+  <div id="sheet-fields"></div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn" type="button" id="add-rule">Add a check</button>
+    <span style="flex:1"></span>
+    <button class="btn quiet" type="button" id="cancel-rules">Cancel</button>
+    <button class="btn primary" type="button" id="save-rules">Save</button>
+  </div>
+  <p class="meta" id="sheet-msg" style="margin-top:8px;color:var(--stale)"></p>
+</div>
+
+<script src="/static/common.js"></script>
+<script src="/static/caregiver.js"></script>
+</body>
+</html>

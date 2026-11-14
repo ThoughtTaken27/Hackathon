@@ -36,3 +36,10 @@ CLAUDE.local.md
 .venv-probe/
 data/raw/
 cache/
+
+# Kettle runtime and caches (labels-only timeline is local; audio caches never committed)
+data/clips/
+data/emb/
+data/timeline/
+data/raw/
+results/*.tmp

@@ -1,0 +1,17 @@
+# Kettle runtime + evaluation. Python 3.11. CPU is enough (no GPU needed).
+numpy==2.4.6
+scipy==1.17.1
+soundfile==0.14.0
+av==18.1.0
+torch==2.15.0
+torchaudio==2.11.1
+transformers==5.23.0
+safetensors==0.8.0
+scikit-learn==1.9.1
+fastapi==0.162.7
+starlette==1.10.0
+uvicorn==0.54.0
+websockets==17.4
+httpx2==2.16.0
+matplotlib==3.11.2
+requests==2.34.2
