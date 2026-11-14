@@ -28,7 +28,7 @@ On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments
 | DCASE 2018 official baseline (published) | 85.0 known mics · 83.1 unseen mics | full eval set, all dev data |
 | DCASE 2018 best entry (published) | 90.4 · 88.4 | full eval set |
 
-Pre-registered before any test audio was fetched (sample, scoring, microphone rule). Not confirmed by the mic-fingerprint rule; per-node numbers only, so we report all 7 microphones together; an unseen-microphone number is not claimed. The trained baselines below (log-mel, AST) were only run on the development folds.
+CIs resample the 91 test sessions (the lower end is pessimistic: some resamples lack a rare activity). Sample, scoring and microphone rule were pre-registered before any test audio was fetched; the rule couldn't identify the 3 unseen microphones, so we report all 7 together and claim no unseen-microphone number.
 
 **Held-out, per activity (one microphone): misses and false alarms counted separately**
 
@@ -44,7 +44,7 @@ Pre-registered before any test audio was fetched (sample, scoring, microphone ru
 | TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
 | Working (typing) | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
 
-Recall fell from development to held-out for moving about 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93%. The test set is a different stretch of the same week with a different mix of sessions and microphones; with only one held-out run we can't separate those causes.
+Recall fell from dev to held-out for moving about 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).
 
 **Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41). Computed after the run from its saved predictions (not in the pre-registration).
 

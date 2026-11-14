@@ -46,9 +46,9 @@ def blocks(m: dict) -> dict:
                 held.append(f"| {label} | {f(v)} | same clips |")
         held.append(f"| DCASE 2018 official baseline (published) | {bl['eval_known_mic']} known mics · {bl['eval_unknown_mic']} unseen mics | full eval set, all dev data |")
         held.append(f"| DCASE 2018 best entry (published) | {best['eval_known_mic']} · {best['eval_unknown_mic']} | full eval set |")
-        held += ["", f"Pre-registered before any test audio was fetched (sample, scoring, microphone rule). {e['fingerprint_summary'].capitalize()}, "
-                     "so we report all 7 microphones together; an unseen-microphone number is not claimed. The trained baselines below (log-mel, AST) "
-                     "were only run on the development folds.", ""]
+        held += ["", f"CIs resample the {a['ch0']['n_sessions']} test sessions (the lower end is pessimistic: some resamples lack a rare activity). "
+                     "Sample, scoring and microphone rule were pre-registered before any test audio was fetched; the rule couldn't identify the 3 unseen "
+                     "microphones, so we report all 7 together and claim no unseen-microphone number.", ""]
         per = e["ours_ch0"]["per_class"]
         held += ["**Held-out, per activity (one microphone): misses and false alarms counted separately**", "",
                  "| Activity | Caught (recall) | Missed | False alarms | N clips |", "|---|---|---|---|---|"]
@@ -58,8 +58,7 @@ def blocks(m: dict) -> dict:
         drops = [(c, dper[c["class"]]["recall"]["value"] - c["recall"]["value"]) for c in per]
         big = [f"{DISPLAY[c['class']].lower()} {dper[c['class']]['recall']['value']:.0f}% → {c['recall']['value']:.0f}%" for c, dd in sorted(drops, key=lambda x: -x[1]) if dd >= 5]
         if big:
-            held += ["", f"Recall fell from development to held-out for {', '.join(big)}. The test set is a different stretch of the same week with "
-                         "a different mix of sessions and microphones; with only one held-out run we can't separate those causes."]
+            held += ["", f"Recall fell from dev to held-out for {', '.join(big)} (a different stretch of the week and other microphones; one run can't separate the causes)."]
         em = e.get("meal_activity")
         if em:
             held += ["", f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
@@ -111,9 +110,21 @@ def blocks(m: dict) -> dict:
              f"({shipped['meal_false_alarms_per_day']} per 16-hour day at the chosen θ, {lo['meal_false_alarms_per_day']} at θ = {lo['theta']:.2f}). "
              f"Those are kitchen-level false alarms; the \"per hour\" figure above counts every activity confusion, including cooking vs washing up. "
              f"The cost of a high θ shows up elsewhere: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e else "")
-    short = held + dev_rows
+    lm, ap = d["baselines"]["logmel_lr"]["macro_f1"], d["baselines"].get("ast_probe", {})
+    dev_line = (f"Development folds (optimistic; they chose the model): Kettle {f(d['ours_ch0']['macro_f1'])}, log-mel statistics + logistic "
+                f"regression (no deep model) {f(lm)}"
+                + (f", AST (16× bigger) + the same head {f(ap['macro_f1'])} on a 2,700-clip subset where Kettle scores {ap['ours_same_clips']['value']:.1f}" if "macro_f1" in ap else "")
+                + f"; N = {d['n_clips']:,} clips / {d['n_sessions']} sessions.")
+    short = held + ["", dev_line]
+    fl_short = [f"{i}. **{DISPLAY[x['true']]} → {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips): {x['likely_cause']}"
+                for i, x in enumerate(pick, 1)]
+    trade_short = (f"\"Not sure\" below θ = {d['not_sure']['theta']:.2f} (chosen on dev so shown labels are right "
+                   f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). On dev, no kitchen session went unnoticed at any θ "
+                   f"from 0.30 to 0.90; θ only moved false kitchen blocks ({lo['meal_false_alarms_per_day']} → {shipped['meal_false_alarms_per_day']} "
+                   f"per 16-hour day). Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e and missed_all == {0} else trade)
     return {"lead": "\n".join(lead), "results": "\n".join(held + dev_rows + [""] + extra),
-            "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade}
+            "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade,
+            "failures_short": "\n".join(fl_short), "tradeoff_short": trade_short}
 
 
 def fill(path: Path, parts: dict) -> None:
@@ -129,6 +140,6 @@ if __name__ == "__main__":
     fill(ROOT / "README.md", parts)
     fill(ROOT / "docs" / "SUBMISSION-DRAFT.md", {"lead": parts["lead"]})
     wp = dict(parts)
-    wp["results"] = parts["results_short"]
+    wp["results"], wp["failures"], wp["tradeoff"] = parts["results_short"], parts["failures_short"], parts["tradeoff_short"]
     fill(ROOT / "docs" / "WRITEUP.md", wp)
     print(parts["lead"])
