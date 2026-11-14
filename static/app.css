@@ -61,7 +61,6 @@ button { font: inherit; color: inherit; }
 .top .date { color: var(--muted); font-size: var(--fs-meta); line-height: var(--lh-meta); margin-top: 2px; }
 .link { font-size: var(--fs-meta); color: var(--ink); text-decoration: none; padding: 10px 14px; border-radius: 12px;
   box-shadow: var(--edge); background: var(--card); white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
-.link:hover { background: var(--fill-soft); }
 
 .card { background: var(--card); border-radius: 16px; box-shadow: var(--edge); padding: 16px; }
 @media (min-width: 768px) { .card { padding: 24px; } }
@@ -107,7 +106,7 @@ button { font: inherit; color: inherit; }
 .blk.paused { border-radius: 0; background: repeating-linear-gradient(90deg, var(--paused) 0 2px, transparent 2px 6px); opacity: .55; }
 .blk.selected { box-shadow: 0 0 0 2px var(--ink); z-index: 2; }
 .blk.settle { animation: settle 380ms var(--ease-out) both; }
-@keyframes settle { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes settle { from { transform: scaleX(.04); opacity: .4; } to { transform: scaleX(1); opacity: 1; } }
 .now-tick { position: absolute; top: 8px; height: 40px; width: 2px; background: var(--ink); border-radius: 999px; opacity: .55; }
 .ticks { position: relative; height: 18px; font-size: var(--fs-micro); line-height: var(--lh-micro); color: var(--muted); }
 .ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
@@ -151,10 +150,8 @@ button { font: inherit; color: inherit; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 12px;
   border: 0; background: var(--card); color: var(--ink); box-shadow: var(--edge); font-size: var(--fs-meta); font-weight: 500; cursor: pointer;
   transition: background-color 150ms ease, transform 160ms var(--ease-out); }
-.btn:hover { background: var(--fill-soft); }
 .btn:active { transform: scale(.97); }
 .btn.primary { background: var(--ink); color: var(--card); box-shadow: none; }
-.btn.primary:hover { background: color-mix(in srgb, var(--ink) 88%, var(--card)); }
 .btn.quiet { box-shadow: none; background: transparent; text-decoration: underline; text-underline-offset: 3px; padding: 0 8px; }
 .btn[disabled] { opacity: .5; cursor: default; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -164,6 +161,11 @@ button { font: inherit; color: inherit; }
 @media (min-width: 900px) { .try-grid { grid-template-columns: 1fr 1fr; } }
 .drop { display: block; border-radius: 12px; padding: 20px; box-shadow: inset 0 0 0 1.5px var(--line); text-align: center; cursor: pointer; transition: background-color 150ms ease; }
 .drop.over { background: var(--fill-soft); }
+@media (hover: hover) and (pointer: fine) {
+  .link:hover, .btn:hover { background: var(--fill-soft); }
+  .btn.primary:hover { background: color-mix(in srgb, var(--ink) 88%, var(--card)); }
+  .btn.quiet:hover { background: transparent; color: var(--ink); }
+}
 .drop input { display: none; }
 .mini-bar { position: relative; height: 20px; border-radius: 6px; background: var(--fill-soft); overflow: hidden; margin: 10px 0 6px; }
 .mini-bar .blk { cursor: default; }
