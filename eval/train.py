@@ -49,6 +49,7 @@ if __name__ == "__main__":
         print("frozen", freeze())
     else:
         R = dev.run(fast="--fast" in sys.argv)
-        R.pop("_oof", None)
         (ROOT / "results").mkdir(exist_ok=True)
         train(R)
+        from eval.__main__ import write_results       # same pass: write results/ with the new head
+        write_results(R)

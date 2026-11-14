@@ -1,0 +1,111 @@
+{
+ "spread": {
+  "DevNode1": 0.0007175803184509277,
+  "DevNode2": 0.00047284364700317383,
+  "DevNode3": 0.0004877448081970215,
+  "DevNode4": 0.0003170967102050781
+ },
+ "nodes": {
+  "EvalNode1": {
+   "distances": {
+    "DevNode1": 0.001548469066619873,
+    "DevNode2": 0.0024329423904418945,
+    "DevNode3": 0.012697756290435791,
+    "DevNode4": 0.0027925968170166016
+   },
+   "nearest": "DevNode1",
+   "within_spread": false
+  },
+  "EvalNode2": {
+   "distances": {
+    "DevNode1": 0.0008416175842285156,
+    "DevNode2": 0.0034391283988952637,
+    "DevNode3": 0.0092926025390625,
+    "DevNode4": 0.004565238952636719
+   },
+   "nearest": "DevNode1",
+   "within_spread": false
+  },
+  "EvalNode3": {
+   "distances": {
+    "DevNode1": 0.0014209151268005371,
+    "DevNode2": 0.0020595192909240723,
+    "DevNode3": 0.008862137794494629,
+    "DevNode4": 0.0033926963806152344
+   },
+   "nearest": "DevNode1",
+   "within_spread": false
+  },
+  "EvalNode4": {
+   "distances": {
+    "DevNode1": 0.0033608675003051758,
+    "DevNode2": 0.000970005989074707,
+    "DevNode3": 0.0050751566886901855,
+    "DevNode4": 0.006333112716674805
+   },
+   "nearest": "DevNode2",
+   "within_spread": false
+  },
+  "EvalNode5": {
+   "distances": {
+    "DevNode1": 0.012749195098876953,
+    "DevNode2": 0.008439779281616211,
+    "DevNode3": 0.0008528232574462891,
+    "DevNode4": 0.019379138946533203
+   },
+   "nearest": "DevNode3",
+   "within_spread": false
+  },
+  "EvalNode6": {
+   "distances": {
+    "DevNode1": 0.002067267894744873,
+    "DevNode2": 0.0017164349555969238,
+    "DevNode3": 0.00560915470123291,
+    "DevNode4": 0.004538893699645996
+   },
+   "nearest": "DevNode2",
+   "within_spread": false
+  },
+  "EvalNode7": {
+   "distances": {
+    "DevNode1": 0.0013216137886047363,
+    "DevNode2": 0.0028591156005859375,
+    "DevNode3": 0.012608349323272705,
+    "DevNode4": 0.0006198883056640625
+   },
+   "nearest": "DevNode4",
+   "within_spread": false
+  }
+ },
+ "known": [],
+ "unknown": [],
+ "confirmed": false,
+ "dev_match": {},
+ "n_clips": {
+  "dev": {
+   "DevNode1": 2214,
+   "DevNode2": 2281,
+   "DevNode3": 2193,
+   "DevNode4": 2232
+  },
+  "eval": {
+   "EvalNode6": 1113,
+   "EvalNode4": 1113,
+   "EvalNode1": 1113,
+   "EvalNode7": 1113,
+   "EvalNode3": 1113,
+   "EvalNode5": 1113,
+   "EvalNode2": 1113
+  }
+ },
+ "rule": [
+  "The DCASE 2018 Task 5 page says three eval sensor nodes are not in the development set but doesn't say which.",
+  "Rule (fixed in docs/PRD.md \u00a713.2 before any eval audio was fetched):",
+  "- For every node, compute the mean log-mel spectrum (64 bands, channel 0) over its clips. Unlabelled: no",
+  "  activity labels and no model predictions are used.",
+  "- For each dev node k, its \"spread\" = the largest cosine distance between its own per-fold centroids.",
+  "- An EvalNode is matched to DevNode k if k is its nearest dev centroid and the distance is below k's spread.",
+  "- EvalNodes matched one-to-one to DevNode1-4 are \"known\"; the rest are \"unknown\". If fewer than 4 nodes",
+  "  match one-to-one, the unknown-mic slice is not reported as such (per-node numbers only)."
+ ]
+}

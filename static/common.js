@@ -202,15 +202,24 @@ function evidenceCard(b) {
   return card;
 }
 
-function legend() {
-  const items = [
-    ["Cooking", "var(--act-cooking)"], ["Washing up", "var(--act-washing)"], ["Eating", "var(--act-eating)"],
-    ["TV", "var(--act-tv)"], ["Conversation", "var(--act-talk)"],
-  ];
+// The legend names exactly what is on today's bar (activities first, then Not sure / Not listening / Paused / Quiet).
+function makeLegend(root) {
   const lg = el("div", { class: "legend", "aria-hidden": "true" });
-  for (const [n, c] of items) lg.append(el("span", {}, el("i", { style: `background:${c}` }), n));
-  lg.append(el("span", {}, el("i", { class: "blk not_sure", style: "position:static" }), "Not sure"));
-  lg.append(el("span", {}, el("i", { class: "blk not_listening", style: "position:static" }), "Not listening"));
-  lg.append(el("span", {}, el("i", { style: "height:2px;background:var(--act-empty);vertical-align:3px" }), "Quiet"));
-  return lg;
+  root.append(lg);
+  let last = "";
+  return function render(today) {
+    const acts = [...new Set(today.blocks.filter((b) => b.state === "activity").map((b) => b.activity))];
+    const states = new Set(today.blocks.map((b) => b.state));
+    const key = acts.join() + [...states].join();
+    if (key === last) return;
+    last = key;
+    lg.textContent = "";
+    for (const a of acts) lg.append(el("span", {}, el("i", { style: `background:var(${ACT_COLOUR[a]})` }), ACT_NAME[a]));
+    if (states.has("talk_or_tv")) lg.append(el("span", {}, el("i", { class: "blk talk_or_tv", style: "position:static" }), "Talking or TV"));
+    if (states.has("not_sure")) lg.append(el("span", {}, el("i", { class: "blk not_sure", style: "position:static" }), "Not sure"));
+    if (states.has("not_listening")) lg.append(el("span", {}, el("i", { class: "blk not_listening", style: "position:static" }), "Not listening"));
+    if (states.has("paused")) lg.append(el("span", {}, el("i", { class: "blk paused", style: "position:static" }), "Paused"));
+    if (states.has("empty")) lg.append(el("span", {}, el("i", { style: "height:2px;background:var(--act-empty);vertical-align:3px" }), "Quiet"));
+    lg.hidden = !lg.children.length;
+  };
 }

@@ -251,6 +251,7 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     Llm, c_lm = cv_logits(lm["emb"], y, fold, C_per_fold=Cs.get("logmel_lr"))
     B["logmel_lr"] = report(y, Llm[:, 0].argmax(-1), session, w, split)
     B["ced_tiny_zeroshot"] = report(y, audioset_map_predict(T["scores"][:, 0], NAMES), session, w, split)
+    stored = {}
     for enc in ("ast", "ced-small", "clap"):
         key = enc.replace("-", "_")
         try:
@@ -274,9 +275,12 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
             m = np.ones(len(y), bool)
             note = None
         else:                                  # score on the declared seeded subset only, next to ours on the same clips
-            wanted = set(json.loads(sub_file.read_text())["files"]) if sub_file.exists() else have
+            if not sub_file.exists():           # partial caches without a declared seeded subset are not scored
+                B[f"{key}_probe"] = {"missing": f"only {len(have)} clips embedded and no seeded subset declared (cut)"}
+                continue
+            wanted = set(json.loads(sub_file.read_text())["files"])
             m = np.isin(T["files"], list(wanted & have))
-            if m.sum() < 500 or (sub_file.exists() and not wanted <= have):
+            if m.sum() < 500 or not wanted <= have:
                 B[f"{key}_probe"] = {"missing": f"only {int(m.sum())} of the {len(wanted)} subset clips embedded"}
                 continue
             note = f"seeded subset: {int(m.sum())} clips ({sub_file.name if sub_file.exists() else 'cached clips'})"
@@ -301,7 +305,6 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     ap = apple_predictions(T["files"])
     if ap is not None:
         B["apple_zeroshot"] = report(y, ap, session, w, split)
-    stored = {}
     R["baselines"] = B
     R["C_per_fold_baselines"] = {"logmel_lr": c_lm}
     R["_stored_predictions"] = stored

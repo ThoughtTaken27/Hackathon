@@ -284,7 +284,7 @@ async def api_try(request: Request):
 def api_try_samples():
     """The sample files offered under 'Try your own sound' (a clear clip, an unclear one, noise, not audio)."""
     d = ROOT / "demo_cache" / "try"
-    return [{"name": p.name} for p in sorted(d.iterdir()) if not p.name.startswith(".")]
+    return [{"name": p.name} for p in sorted(d.iterdir()) if not p.name.startswith(".") and p.suffix != ".json"]
 
 
 @app.get("/api/try-samples/{name}")

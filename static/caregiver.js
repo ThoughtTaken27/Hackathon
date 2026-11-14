@@ -13,7 +13,9 @@ const bar = makeDayBar($("bar"), {
     $("fold").classList.toggle("open", !!b);
   },
 });
-$("bar").after(legend());
+const legendHolder = el("div");
+$("bar").after(legendHolder);
+const renderLegend = makeLegend(legendHolder);
 
 function renderHeartbeat(hb, demo) {
   // The "last heard 12 s ago" number rolls when it changes; the rest of the sentence stays still.
@@ -92,6 +94,7 @@ function render(t) {
   $("intro").hidden = !(t.heartbeat.state === "never" && !t.demo);
   setText($("summary"), t.summary);
   bar.render(t);
+  renderLegend(t);
   renderRules(t.rules);
   $("head-line").textContent = t.head && t.head.trained_on && t.head.trained_on.startsWith("STUB") ? "Model: temporary stub." : "";
 }

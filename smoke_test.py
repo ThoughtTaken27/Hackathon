@@ -80,7 +80,7 @@ def main() -> None:
         # try your own sound: a real clip, garbage, not audio, too short
         def try_bytes(name: str, data: bytes) -> dict:
             return c.post("/api/try", content=data, headers={"X-Filename": name, "Content-Type": "application/octet-stream"}).json()
-        for name in sorted(os.listdir(ROOT / "demo_cache" / "try")):
+        for name in sorted(n for n in os.listdir(ROOT / "demo_cache" / "try") if not n.endswith(".json")):
             r = try_bytes(name, (ROOT / "demo_cache" / "try" / name).read_bytes())
             print(f"  try {name}: {r['status']}" + (f" -> {[w['display'] for w in r['windows']]}" if r["status"] == "ok" else ""))
             check(r["status"] in ("ok", "unreadable", "too_short"), f"try {name} gives a designed result")

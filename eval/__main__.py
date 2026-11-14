@@ -205,7 +205,7 @@ def markdown(m: dict) -> str:
     ns = d["not_sure"]
     L += ["", f"**Not sure:** θ = {ns['theta']:.2f} (chosen on dev: reweighted shown-label precision ≥ 0.90); "
               f"coverage {100 * ns['coverage']:.1f}% of windows get a label, precision of shown labels {100 * ns['macro_precision_shown']:.1f}%. "
-              f"Temperature {d['temperature']:.2f}; ECE {d['calibration']['ece_after_temperature']:.3f}.", ""]
+              f"Temperature {d['temperature']:.2f}; expected calibration error {f(d['calibration']['ece_after_temperature'])} points.", ""]
     cal = d["calibration"]
     L += [f"**Calibration:** expected calibration error {f(cal['ece_before'])} points before temperature scaling, "
           f"{f(cal['ece_after_temperature'])} after (temperature cross-fitted across folds). Plot: `results/reliability_dev.png`.", ""]
@@ -258,10 +258,17 @@ def failures_md(fs: list[dict]) -> str:
 # ---------------------------------------------------------------- the default run
 
 def run_default(fast: bool) -> dict:
+    return write_results(dev.run(fast=fast))
+
+
+def write_results(R: dict) -> dict:
+    """Write results/ from a finished dev study R (with the shipped head for the off-list test)."""
     t0 = time.time()
     head = model.load(ROOT / "models" / "head.json")
-    R = dev.run(fast=fast)
     oof = R.pop("_oof")
+    RESULTS.mkdir(exist_ok=True)
+    (RESULTS / "cache").mkdir(exist_ok=True)
+    np.savez_compressed(RESULTS / "cache" / "oof_dev.npz", **{k: np.asarray(v) for k, v in oof.items()})
     R.pop("_nov", None)
     stored = R.pop("_stored_predictions", {})
     if stored:          # keep the big-encoder baselines reproducible from the committed cache

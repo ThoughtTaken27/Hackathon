@@ -1,0 +1,11 @@
+{
+ "rule": "washing-up.flac = the earliest segment of the held-out washing-up session that the frozen head labels washing up above theta and not novel; unclear.flac = the held-out demo clip with the lowest top probability among non-novel clips (frozen head). Chosen after freezing, for the golden 'clear' and 'not sure' inputs; not used in any metric.",
+ "washing-up.flac": "DevNode1_ex56_1",
+ "unclear.flac": {
+  "clip": "DevNode1_ex70_1",
+  "true": "eating",
+  "top": "working",
+  "p": 0.35
+ },
+ "demo_clips_argmax_correct": "70/90"
+}

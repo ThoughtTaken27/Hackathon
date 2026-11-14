@@ -627,3 +627,17 @@ Numbers in `{}` are filled only from `results/metrics.json`. Real voices, real s
 - **Products studied (patterns only, no code or assets):** Howz, Canary Care, havn (cortekAI), Assistiv Home Sensing, Apple Sound Recognition, Alexa Together / Emergency Assist, StackCare, Care Daily, Snug, Caregiver Aware; WellNest (Devpost). Links in §4 and `docs/DATA-SOURCES.md`.
 - **Statistic:** US Administration for Community Living, 2023 Profile of Older Americans.
 - **AI tools:** Claude Code (Claude Opus 5.5 for planning and review; Sonnet 5.5 / Haiku 5.5 workers) wrote research summaries, probes and code; REA (morluto/rea, MIT) for public-surface teardowns; Aside (repo owner's agent) for read-only web research. Every use logged in `docs/AI-USAGE-LOG.md`.
+
+## 22. What changed during the build (stage 3, Sat Nov 14; details and evidence in `docs/DECISIONS.md`)
+Where this section and an earlier one disagree, this section describes what was actually built.
+- **Demo hold-out:** 1 whole session per activity (9 sessions, 90 clips, DevNode1 channel 0), not 3 (§13.2): rare activities have only 9–10 sessions.
+- **Pages poll** `/api/today` once a second; there is no `/ws/state` socket (§10.3). The only WebSocket carries the kitchen mic.
+- **Kitchen-only controls** are enforced by request origin: consent, pause, resume, off and mic audio are accepted only from the kitchen laptop itself (127.0.0.1); no session token.
+- **"Not sure" has two triggers:** top probability below θ, *or* a sound unlike every activity Kettle learned (Mahalanobis distance above the 99th percentile of out-of-fold dev windows). Added after the off-list test showed θ alone let most non-household sounds through (§13.6).
+- **Day bar range:** 6 AM to a little after now (≥ 6 h; the whole day once it's late), not a fixed 6 AM–midnight (§9.3), so blocks stay tappable on a phone.
+- **Activity colours:** the dataviz reference palette's validated hues, assigned so real neighbours pass colour-blind checks (§9.5's hand-picked palette failed the validator); red kept for "Kettle stopped working" only.
+- **Evidence list:** 79 kitchen/living-room AudioSet labels; body sounds, bathroom sounds, speaker attributes (male/female/child, shouting, whispering) and room tone (hum, static, white/pink noise) removed.
+- **Baselines:** CLAP cut on the full dev subset (time; its stage-2 probe number is quoted as a probe). AST zero-shot and AST linear probe scored on a seeded 2,700-clip subset, beside Kettle on the same clips. Apple scored on every dev clip.
+- **Off-list set:** ESC-50 clips repeated to 10 s, not zero-padded.
+- **Added from Parth's addendum:** reliability plot + ECE with CI (temperature cross-fitted across folds), the θ trade-off for the caregiver check, slices per mic node / activity / home, the "kitchen activity" metric in the headline, the measured Apple-vs-Kettle gap leading "How sure", `notebooks/kettle_reproduce.ipynb` from a committed cache, per-judge Q&A (§19), `docs/SUBMISSION-DRAFT.md`.
+- **Cut from the addendum:** both unverified pitch quotes (not found as worded; see DECISIONS).
