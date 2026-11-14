@@ -75,6 +75,7 @@ function render(t) {
   $("date").textContent = t.date_text;
   renderDemo(t.demo, t.names);
   renderHeartbeat(t.heartbeat, t.demo);
+  $("intro").hidden = !(t.heartbeat.state === "never" && !t.demo);
   setText($("summary"), t.summary);
   bar.render(t);
   renderRules(t.rules);
@@ -106,6 +107,11 @@ for (const [sid, name] of SCENARIOS) {
   b.addEventListener("click", async () => { render(await api(`/api/demo/${sid}`, {})); });
   $("demo-buttons").append(b);
 }
+SCENARIOS.forEach(([sid, name], i) => {
+  const b = el("button", { class: `btn ${i === 0 ? "primary" : ""}`, type: "button", text: i === 0 ? `Play a sample day: ${name.toLowerCase()}` : name });
+  b.addEventListener("click", async () => { render(await api(`/api/demo/${sid}`, {})); });
+  $("intro-buttons").append(b);
+});
 $("demo-stop").addEventListener("click", async () => render(await api("/api/demo/stop", {})));
 $("demo-sleep").addEventListener("click", async () => render(await api("/api/demo/sleep", {})));
 

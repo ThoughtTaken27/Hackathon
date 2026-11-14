@@ -144,10 +144,11 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
       labels.append(s);
       right = x + tw;
     }
-    // hour ticks: every 3 h (every 6 h when narrow)
     ticks.textContent = "";
+    // hour ticks: the smallest step (1, 2, 3, 4 or 6 h) that leaves at least 64 px per label
     const spanH = span / 3600;
-    const every = spanH <= 8 ? (width < 420 ? 2 : 1) : spanH <= 14 ? (width < 420 ? 4 : 2) : (width < 420 ? 6 : 3);
+    const fit = Math.max(2, Math.floor(width / 64));
+    const every = [1, 2, 3, 4, 6].find((e) => spanH / e <= fit) || 6;
     const h0 = Math.round((a - today.day0) / 3600);
     const hEnd = Math.round((z - today.day0) / 3600);
     for (let h = h0; h <= hEnd; h += 1) {

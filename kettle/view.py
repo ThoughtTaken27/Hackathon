@@ -106,6 +106,11 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
         pauses.append([max(s["off_at"], day0), now, "off"])
     started = max(s["started_at"], day0) if s.get("started_at") else None
     blks = timeline.blocks(events, theta, pauses=pauses, now=now, listening_now=live_now, listening_from=started)
+    if hb["state"] in ("stale", "mic_blocked", "no_mic") and not any(b["state"] != "paused" for b in blks):
+        a = max(day0, hb["since"] or day0)          # e.g. just after midnight with the laptop asleep
+        if now - a > 1:
+            blks.append({"start": a, "end": now, "state": "not_listening", "activity": None, "conf": None,
+                         "n_windows": 0, "sounds": [], "guesses": []})
     listening_since = min((e["start"] for e in events), default=None)
     chip = s.get("chip")
     chip_text = None

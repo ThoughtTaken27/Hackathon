@@ -31,7 +31,7 @@ PENDING = "navigator.mediaDevices.getUserMedia = () => new Promise(() => {});"
 def post(path: str, body: dict | None = None):
     req = urllib.request.Request(BASE + path, data=json.dumps(body or {}).encode(), method="POST",
                                  headers={"Content-Type": "application/json"})
-    return json.loads(urllib.request.urlopen(req, timeout=30).read())
+    return json.loads(urllib.request.urlopen(req, timeout=180).read())
 
 
 def start_server(tmp: Path):

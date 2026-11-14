@@ -122,7 +122,7 @@ function screen(t) {
       `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
     return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
-        el("button", { class: "btn quiet", type: "button", text: "Read this to me", style: "font-size:20px", onclick: () => speak(["This laptop listens for kitchen sounds.", ...lines]) })] };
+        el("button", { class: "btn quiet", type: "button", text: "Read this to me", style: "font-size:var(--fs-lead)", onclick: () => speak(["This laptop listens for kitchen sounds.", ...lines]) })] };
   }
   if (k.off) {
     return { state: "off", head: "Kettle is off.", body: ["This laptop isn't listening. Press Start when you want it on."],
@@ -185,7 +185,7 @@ function draw() {
   const tag = $("demo-tag");
   tag.hidden = !today.demo;
   tag.textContent = "";
-  if (today.demo) tag.append(el("span", { class: "tag demo", style: "font-size:15px", text: "Sample day" }));
+  if (today.demo) tag.append(el("span", { class: "tag demo", style: "font-size:var(--fs-meta)", text: "Sample day" }));
   // controls / pause menu
   const ctr = $("controls");
   ctr.textContent = "";
@@ -194,7 +194,7 @@ function draw() {
       button("Pause for 15 minutes", () => act("/api/pause", { minutes: 15 }), "primary"),
       button("Pause for 1 hour", () => act("/api/pause", { minutes: 60 })),
       button("Pause until tomorrow morning", () => act("/api/pause", { minutes: null })),
-      el("button", { class: "btn quiet", type: "button", text: "Don't pause", style: "font-size:20px", onclick: () => { ui.pauseMenu = false; draw(); } })));
+      el("button", { class: "btn quiet", type: "button", text: "Don't pause", style: "font-size:var(--fs-lead)", onclick: () => { ui.pauseMenu = false; draw(); } })));
   } else {
     for (const c of s.controls) ctr.append(c);
   }
@@ -209,7 +209,7 @@ function draw() {
       const txt = today.chip || (s.state === "starting" ? "Waiting for the first sound…" : "…");
       wrap.append(el("div", { class: `chip ${big ? "big" : ""}`, "aria-live": "polite" }, el("span", { class: "txt", text: txt })));
     }
-    if (!big) wrap.append(el("button", { class: "btn quiet", type: "button", style: "font-size:20px;margin-left:8px", text: ui.showChip ? "Hide what it hears" : "What does it hear?", onclick: () => { ui.showChip = !ui.showChip; draw(); } }));
+    if (!big) wrap.append(el("button", { class: "btn quiet", type: "button", style: "font-size:var(--fs-lead);margin-left:8px", text: ui.showChip ? "Hide what it hears" : "What does it hear?", onclick: () => { ui.showChip = !ui.showChip; draw(); } }));
   } else {
     wrap.hidden = true;
   }
