@@ -192,8 +192,8 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
         return ""
     items = [_span(b, tz_offset_s) for b in merged[-3:]]
     more = len(merged) - 3
-    text = "So far today: " + ", ".join(items)
-    return text + (f", and {more} more." if more > 0 else ".")
+    lead = f"So far today, after {more} earlier {'activity' if more == 1 else 'activities'}: " if more > 0 else "So far today: "
+    return lead + ", ".join(items[:-1]) + (" and " if len(items) > 1 else "") + items[-1] + "."
 
 
 def label_name(label: str) -> str:

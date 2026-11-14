@@ -1,0 +1,35 @@
+# Screenshots, round 0
+
+- caregiver-error-desktop-light.png
+- caregiver-live-desktop-light.png
+- caregiver-live-paused-desktop-light.png
+- caregiver-never-desktop-light.png
+- caregiver-never-top-desktop-light.png
+- caregiver-paused-desktop-light.png
+- caregiver-quiet-desktop-light.png
+- caregiver-rules-sheet-desktop-light.png
+- caregiver-stale-desktop-light.png
+- caregiver-try-not-audio-desktop-light.png
+- caregiver-try-washing-up-desktop-light.png
+- caregiver-try-white-noise-desktop-light.png
+- caregiver-tv-desktop-light.png
+- caregiver-usual-desktop-light.png
+- caregiver-usual-evidence-desktop-light.png
+- caregiver-usual-full-desktop-light.png
+- howsure-desktop-light.png
+- howsure-empty-desktop-light.png
+- howsure-top-desktop-light.png
+- kitchen-consent-1-desktop-light.png
+- kitchen-consent-2-desktop-light.png
+- kitchen-declined-desktop-light.png
+- kitchen-error-desktop-light.png
+- kitchen-listening-desktop-light.png
+- kitchen-mic-asking-desktop-light.png
+- kitchen-mic-denied-desktop-light.png
+- kitchen-no-mic-desktop-light.png
+- kitchen-pause-menu-desktop-light.png
+- kitchen-paused-desktop-light.png
+- kitchen-resumed-desktop-light.png
+- kitchen-sample-day-desktop-light.png
+- kitchen-starting-desktop-light.png
+- kitchen-weekly-desktop-light.png

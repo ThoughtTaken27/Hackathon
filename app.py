@@ -306,6 +306,10 @@ async def api_demo(sid: str):
         if APP["demo"]:
             demo.sleep_laptop(APP["demo"])
         return api_today()
+    if sid == "week":
+        if APP["demo"]:          # sample-day control: pretend a week has passed since Dad said yes
+            APP["demo"]["state"]["last_confirm"] = APP["demo"]["now"] - live.WEEK_S
+        return api_today()
     if sid not in demo.scenarios():
         raise HTTPException(404, "no such sample day")
     d = demo.new_demo(sid, view.local_midnight(time.time()))

@@ -81,11 +81,15 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
   const nodes = new Map();
   let first = true, selected = null, lastBlocks = [];
 
+  // The bar runs from 6 AM (or the first block, if earlier) to a little after now, at least 6 hours,
+  // so a 20-minute block is wide enough to see and tap; late in the evening it shows the whole day.
   function range(today) {
     const start6 = today.day0 + 6 * 3600;
     const earliest = Math.min(start6, ...today.blocks.map((b) => b.start));
     const startH = Math.floor((earliest - today.day0) / 3600);
-    return [today.day0 + startH * 3600, today.day0 + 24 * 3600];
+    const nowH = (today.now - today.day0) / 3600;
+    const endH = Math.min(24, Math.max(startH + 6, Math.ceil(nowH + 1)));
+    return [today.day0 + startH * 3600, today.day0 + endH * 3600];
   }
 
   function render(today) {
@@ -139,11 +143,12 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
     }
     // hour ticks: every 3 h (every 6 h when narrow)
     ticks.textContent = "";
-    const every = width < 420 ? 6 : 3;
+    const spanH = span / 3600;
+    const every = spanH <= 8 ? (width < 420 ? 2 : 1) : spanH <= 14 ? (width < 420 ? 4 : 2) : (width < 420 ? 6 : 3);
     const h0 = Math.round((a - today.day0) / 3600);
-    for (let h = h0; h <= 24; h += 1) {
-      if ((h - h0) % every !== 0 && h !== 24) continue;
-      if (h === 24 && (24 - h0) % every !== 0) continue;
+    const hEnd = Math.round((z - today.day0) / 3600);
+    for (let h = h0; h <= hEnd; h += 1) {
+      if ((h - h0) % every !== 0) continue;
       ticks.append(el("span", { text: hourLabel(h), style: `left:${pct(today.day0 + h * 3600)}` }));
     }
     // text alternative for screen readers
