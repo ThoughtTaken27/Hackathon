@@ -6,6 +6,10 @@ Track: AI + Health ("manage an ongoing one better"). Built for an adult child ca
 
 > **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't detect falls or call for help.
 
+| Meera's phone ("Dad's kitchen today") | Dad's kitchen laptop |
+|---|---|
+| <img src="docs/screenshots/readme/caregiver-phone-evidence.png" width="260" alt="Caregiver view on a phone: heartbeat, summary, day bar and the evidence behind a cooking block"> | <img src="docs/screenshots/readme/kitchen-desktop.png" width="520" alt="Kitchen screen: listening, the checks Meera set, a large Pause button"> |
+
 <!-- lead:start -->
 Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
 <!-- lead:end -->
@@ -84,6 +88,17 @@ kitchen mic ─► 10-s windows every 2 s (RAM only) ─► CED-tiny (frozen, 19
              ─► "Not sure" below a confidence threshold ─► 2-of-3 smoothing ─► day bar blocks + evidence
              ─► caregiver checks (rules she sets: Met / Not yet / Missed / Can't tell) + heartbeat
 ```
+
+## Limits (read before quoting any number)
+- **One home, one person.** SINS is one adult living alone for a week, so we can't check whether Kettle works equally well across ages, sexes or households. The only other homes are two teammates' kitchens (exploratory, small N, added Sunday).
+- **Development numbers are optimistic**: the same folds chose the encoder, C, θ and smoothing. The held-out number is a single pre-registered run on a seeded sample of the official test set, reweighted to its class counts: close to, not exactly, a leaderboard number. Our pre-registered check could not tell which eval microphones are the 3 unseen ones, so we report all 7 together.
+- **Clock times in the sample days are staged** (SINS has none); the labels are the real model's output.
+- **"Kitchen activity" means kitchen sounds were heard**, not that anyone ate. Eating is hard to hear; "moving about" is the weakest class.
+- **Not an emergency device.** No fall, smoke or distress detection. No alerts are sent.
+- **Privacy proof limits:** `python -m eval.privacy_check` proves Kettle's own code writes no audio and makes no outside connections; it is not a kernel trace and can't protect against a compromised computer.
+
+## Credits
+Data: SINS / DCASE 2018 Task 5 development (CC BY-NC 4.0) and evaluation (CC BY-NC-ND 4.0) sets, KU Leuven ADVISE (Zenodo 1247102, 1291760, 1964758); ESC-50 (CC BY-NC 3.0). Models: CED-tiny / CED-small (Xiaomi, Apache-2.0), AST (MIT, BSD-3), Apple SoundAnalysis (built into macOS, baseline only). Published comparison: DCASE 2018 Task 5 results page. Libraries: PyTorch, torchaudio, transformers, scikit-learn, NumPy, SciPy, soundfile, PyAV, FastAPI, uvicorn, matplotlib, Playwright. Products studied (patterns only): Howz, Canary Care, havn, Assistiv, Apple Sound Recognition, Alexa Together, StackCare, Care Daily, Snug, Caregiver Aware, WellNest. AI tools: Claude Code (code, research, reviews), REA (teardowns), Aside (research) — every use in [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md). Full list: [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md).
 
 ## Team tooling
 
