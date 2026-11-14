@@ -21,62 +21,73 @@ def f(x) -> str:
 
 def blocks(m: dict) -> dict:
     d, e, pub = m["dev"], m.get("dcase_eval"), m["published"]
+    bl, best = pub["dcase2018_baseline"], pub["best_entry"]
     ma = d["meal_activity"]
-    apple_dev = d["baselines"].get("apple_zeroshot", {}).get("macro_f1")
-    apple_eval = (e or {}).get("baselines", {}).get("apple_zeroshot") if e else None
-    held = (e["slices"].get("unknown") or e["slices"]["all"]) if e else None
-    lead = []
-    if apple_eval and "value" in apple_eval and held:
-        lead.append(f"Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound "
-                    f"classifier scores **{apple_eval['value']:.1f}** macro F1 on the official DCASE 2018 test clips; Kettle, on one "
-                    f"microphone, scores **{held['ch0']['value']:.1f}** (95% CI {held['ch0']['ci95'][0]:.1f}–{held['ch0']['ci95'][1]:.1f}, "
-                    f"{held['ch0']['n_clips']:,} clips, run once with a frozen model).")
-    elif apple_dev:
-        lead.append(f"Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound "
-                    f"classifier scores **{apple_dev['value']:.1f}** macro F1 on our development clips; Kettle scores "
-                    f"**{d['ours_ch0']['macro_f1']['value']:.1f}** on the same clips.")
-    rows = ["| System | Macro F1 [95% CI] | Data |", "|---|---|---|"]
+    lead, held, dev_rows, extra = [], [], [], []
     if e:
-        for name, key in (("all 7 eval microphones", "all"), ("known microphones", "known"), ("unseen microphones", "unknown")):
-            s = e["slices"].get(key)
-            if s:
-                rows.append(f"| **Kettle, one mic** ({name}) | **{f(s['ch0'])}** | held-out test, N = {s['ch0']['n_clips']:,} clips / {s['ch0']['n_sessions']} sessions |")
-                rows.append(f"| Kettle, 4-mic average ({name}) | {f(s['node_avg'])} | held-out test |")
-        for k, label in (("apple_zeroshot", "Apple SoundAnalysis, zero-shot"), ("ast_zeroshot", "AST, zero-shot"),
-                         ("ced_tiny_zeroshot", "CED-tiny, zero-shot"), ("majority", "Always 'Quiet'")):
-            v = e.get("baselines", {}).get(k)
-            if v and "value" in v:
-                rows.append(f"| {label} | {f(v)} | held-out test, same clips |")
-    rows.append(f"| Kettle, one mic | {f(d['ours_ch0']['macro_f1'])} | dev folds, N = {d['n_clips']:,} clips / {d['n_sessions']} sessions |")
-    for k, label in (("logmel_lr", "Log-mel statistics + logistic regression (no deep model)"), ("ast_probe", "AST + same head"),
-                     ("apple_zeroshot", "Apple SoundAnalysis, zero-shot"), ("ast_zeroshot", "AST, zero-shot"), ("majority", "Always 'Quiet'")):
+        a = e["slices"]["all"]
+        apple = e.get("baselines", {}).get("apple_zeroshot", {})
+        lead.append(
+            f"On the official DCASE 2018 test set (run once with a frozen model; {e['n_moments']:,} moments × 7 microphones = "
+            f"{e['n_clips']:,} clips from {a['ch0']['n_sessions']} sessions), Kettle scores **{a['ch0']['value']:.1f}** macro F1 "
+            f"(95% CI {a['ch0']['ci95'][0]:.1f}–{a['ch0']['ci95'][1]:.1f}) on one microphone and {a['node_avg']['value']:.1f} on four: level with the "
+            f"official 2018 baseline ({bl['eval_known_mic']} known / {bl['eval_unknown_mic']} unseen microphones, full set) and below the best "
+            f"entry ({best['eval_known_mic']} / {best['eval_unknown_mic']}). A Mac already hears a kettle, but Apple's built-in sound classifier "
+            f"scores {apple.get('value', float('nan')):.1f} on the same clips. Our contribution isn't the leaderboard: it's publishing every "
+            f"activity's misses and false alarms, and a \"Not sure\", consent and pause design built around them.")
+        held += ["**Held-out test (official DCASE 2018 eval sample, run once, all 7 microphones; macro F1, 95% session-bootstrap CI):**", "",
+                 "| System | Macro F1 | N |", "|---|---|---|",
+                 f"| **Kettle, one microphone** | **{f(a['ch0'])}** | {a['ch0']['n_clips']:,} clips / {e['n_moments']:,} moments / {a['ch0']['n_sessions']} sessions |",
+                 f"| Kettle, 4-microphone average | {f(a['node_avg'])} | same |"]
+        for k, label in (("apple_zeroshot", "Apple SoundAnalysis, zero-shot"), ("ced_tiny_zeroshot", "Same encoder, zero-shot label map"),
+                         ("majority", "Always \"Quiet\"")):
+            v = e.get("baselines", {}).get(k, {})
+            if "value" in v:
+                held.append(f"| {label} | {f(v)} | same clips |")
+        held.append(f"| DCASE 2018 official baseline (published) | {bl['eval_known_mic']} known mics · {bl['eval_unknown_mic']} unseen mics | full eval set, all dev data |")
+        held.append(f"| DCASE 2018 best entry (published) | {best['eval_known_mic']} · {best['eval_unknown_mic']} | full eval set |")
+        held += ["", f"Pre-registered before any test audio was fetched (sample, scoring, microphone rule). {e['fingerprint_summary'].capitalize()}, "
+                     "so we report all 7 microphones together; an unseen-microphone number is not claimed. The trained baselines below (log-mel, AST) "
+                     "were only run on the development folds.", ""]
+        per = e["ours_ch0"]["per_class"]
+        held += ["**Held-out, per activity (one microphone): misses and false alarms counted separately**", "",
+                 "| Activity | Caught (recall) | Missed | False alarms | N clips |", "|---|---|---|---|---|"]
+        for c in per:
+            held.append(f"| {DISPLAY[c['class']]} | {f(c['recall'])} | {c['missed']} | {c['false_alarms']} | {c['support']:,} |")
+        dper = {c["class"]: c for c in d["ours_ch0"]["per_class"]}
+        drops = [(c, dper[c["class"]]["recall"]["value"] - c["recall"]["value"]) for c in per]
+        big = [f"{DISPLAY[c['class']].lower()} {dper[c['class']]['recall']['value']:.0f}% → {c['recall']['value']:.0f}%" for c, dd in sorted(drops, key=lambda x: -x[1]) if dd >= 5]
+        if big:
+            held += ["", f"Recall fell from development to held-out for {', '.join(big)}. The test set is a different stretch of the same week with "
+                         "a different mix of sessions and microphones; with only one held-out run we can't separate those causes."]
+        em = e.get("meal_activity")
+        if em:
+            held += ["", f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
+                         f"(**missed {em['missed']}**); **false alarms** on {f(em['false_alarm_rate'])}% of {em['n_other']:,} other windows "
+                         f"({em['false_alarms']}). Computed after the run from its saved predictions (not in the pre-registration)."]
+    dev_rows += ["", "**Development folds (session-disjoint, 4-fold; optimistic: the same folds chose the model):**", "",
+                 "| System | Macro F1 | Notes |", "|---|---|---|",
+                 f"| **Kettle, one microphone** | **{f(d['ours_ch0']['macro_f1'])}** | N = {d['n_clips']:,} clips / {d['n_sessions']} sessions |"]
+    for k, label in (("logmel_lr", "Log-mel statistics + logistic regression (no deep model)"), ("ced_small_probe", "CED-small (4× bigger) + same head"),
+                     ("ast_probe", "AST (16× bigger) + same head"), ("apple_zeroshot", "Apple SoundAnalysis, zero-shot"),
+                     ("ast_zeroshot", "AST, zero-shot label map"), ("majority", "Always \"Quiet\"")):
         v = d["baselines"].get(k, {})
         if "macro_f1" in v:
-            sub = f"; {v['subset']}, Kettle {v['ours_same_clips']['value']:.1f} on the same clips" if v.get("subset") else ""
-            rows.append(f"| {label} | {f(v['macro_f1'])} | dev folds{sub} |")
-    rows.append(f"| DCASE 2018 baseline (published) | {pub['dcase2018_baseline']['eval_known_mic']} known mics · {pub['dcase2018_baseline']['eval_unknown_mic']} unseen mics | full eval set, all dev data |")
-    rows.append(f"| Best DCASE 2018 entry (published) | {pub['best_entry']['eval_known_mic']} · {pub['best_entry']['eval_unknown_mic']} | full eval set |")
-    per = (e or d)["ours_ch0"]["per_class"] if e and "ours_ch0" in e else d["ours_ch0"]["per_class"]
-    per_rows = ["| Activity | Caught | Missed | False alarms | N |", "|---|---|---|---|---|"]
-    for c in per:
-        per_rows.append(f"| {DISPLAY[c['class']]} | {f(c['recall'])} | {c['missed']} | {c['false_alarms']} | {c['support']} |")
-    meal = (f"**For Meera's check (any kitchen activity: cooking, washing up or eating), dev folds:** caught {f(ma['caught'])}% "
-            f"of {ma['n_meal']:,} windows (missed {ma['missed']}); wrongly called kitchen activity on {f(ma['false_alarm_rate'])}% "
-            f"of {ma['n_other']:,} other windows ({ma['false_alarms']}).")
+            sub = f"{v['subset']}; Kettle {v['ours_same_clips']['value']:.1f} on the same clips" if v.get("subset") else ""
+            dev_rows.append(f"| {label} | {f(v['macro_f1'])} | {sub} |")
+    dev_rows += ["", f"Dev, Meera's check: caught {f(ma['caught'])}% of {ma['n_meal']:,} kitchen windows (missed {ma['missed']}); "
+                     f"false alarms on {f(ma['false_alarm_rate'])}% of {ma['n_other']:,} others ({ma['false_alarms']})."]
     o = m.get("offlist", {})
-    extra = []
     if "confident_wrong" in o:
         extra.append(f"On {o['n']} sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident "
                      f"label to {f(o['confident_wrong'])}% (vs {f(o['confident_wrong_without_novelty_gate'])}% without its "
                      f"'unlike anything it learned' check).")
-    sl = d["session_level"]
-    extra.append(f"Through the day bar (2-of-3 smoothing), {sl['smoothing_on']['session_recall']['value']:.0f}% of "
-                 f"{sum(sl['smoothing_on']['sessions'])} activity sessions were caught with {sl['smoothing_on']['false_alarms_per_hour']} "
-                 f"false-alarm blocks per hour ({sl['smoothing_off']['false_alarms_per_hour']} without smoothing).")
-    split = (f"Held-out numbers: the official DCASE 2018 Task 5 evaluation set, a pre-registered seeded sample "
-             f"({e['n_clips']:,} clips, {e['n_moments']:,} moments × 7 microphones), run once on {e['run']['started']} with the frozen model "
-             f"(commit {e['run']['commit'][:7]}, model {e['run']['head_sha256'][:8]}), reweighted to the true class counts. "
-             f"{e['fingerprint_summary'].capitalize()}.") if e else "The held-out run hasn't happened yet."
+    sl = d["session_level"]["smoothing_on"]
+    extra.append(f"Through the day bar (dev, 2-of-3 smoothing, {sl['hours']} h of stitched audio): {f(sl['session_recall'])}% of "
+                 f"{sum(sl['sessions'])} activity sessions were caught as one block covering at least half of them, with "
+                 f"{sl['false_alarms_per_hour']} false-alarm blocks per hour across all activities "
+                 f"({d['session_level']['smoothing_off']['false_alarms_per_hour']} without smoothing).")
+    split = ""
     fails = json.loads((ROOT / "results" / "failures.json").read_text())
     pick = [x for want in (("cooking", "dishwashing"), ("watching_tv", "social_activity"), ("other", "absence"))
             for x in fails if (x["true"], x["predicted"]) == want]
@@ -87,42 +98,22 @@ def blocks(m: dict) -> dict:
         fl.append(f"{i}. **{DISPLAY[x['true']]} heard as {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips; e.g. "
                   f"`{x['clip']}`: {probs}; it heard {snd}). {x['likely_cause']}")
     tt = d["theta_tradeoff"]
-    shipped = next((r for r in tt if r.get("shipped")), min(tt, key=lambda r: abs(r["theta"] - d["not_sure"]["theta"])))
+    shipped = next((r for r in tt if r.get("shipped")), tt[0])
     lo = tt[0]
-    trade = (f"Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\" (chosen on dev folds so shown labels are right "
-             f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time; {d['not_sure']['coverage_metric']['value']:.0f}% of windows get a label). "
-             f"A false \"kitchen activity\" could hide a skipped breakfast; a missed one costs Meera an unnecessary call. We lean toward fewer "
-             f"false ones: through the day bar on dev folds, θ = {shipped['theta']:.2f} gives {shipped['meal_false_alarms_per_day']} false kitchen-activity "
-             f"blocks per 16-hour day and doesn't notice {shipped['meal_sessions_missed']} of {shipped['meal_sessions']} kitchen sessions, versus "
-             f"{lo['meal_false_alarms_per_day']} and {lo['meal_sessions_missed']} at θ = {lo['theta']:.2f}.")
-    short = ["| System (macro F1, 95% CI) | Held-out test, one mic | Dev folds, one mic |", "|---|---|---|"]
-    if e:
-        a = e["slices"]["all"]
-        short.append(f"| **Kettle** | **{f(a['ch0'])}** | {f(d['ours_ch0']['macro_f1'])} |")
-        for k, label in (("apple_zeroshot", "Apple SoundAnalysis, zero-shot"), ("ced_tiny_zeroshot", "Same encoder, zero-shot label map"),
-                         ("majority", "Always \"Quiet\"")):
-            v = e.get("baselines", {}).get(k, {})
-            dv = d["baselines"].get(k, {}).get("macro_f1")
-            short.append(f"| {label} | {f(v) if 'value' in v else '–'} | {f(dv) if dv else '–'} |")
-        lm = d["baselines"]["logmel_lr"]["macro_f1"]
-        short.append(f"| Log-mel + logistic regression (no deep model) | – | {f(lm)} |")
-        short.append(f"| DCASE 2018 baseline / best entry (published, full data) | {pub['dcase2018_baseline']['eval_known_mic']}–{pub['dcase2018_baseline']['eval_unknown_mic']} / {pub['best_entry']['eval_known_mic']}–{pub['best_entry']['eval_unknown_mic']} | – |")
-        em = e.get("meal_activity", ma)
-        short_meal = (f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
-                      f"(**missed {em['missed']}**); **false alarms** on {f(em['false_alarm_rate'])}% of {em['n_other']:,} other windows ({em['false_alarms']}).")
-        hs = (f"Held-out = the official DCASE 2018 Task 5 test set: a pre-registered seeded sample, {e['n_clips']:,} clips × all 7 microphones, "
-              f"{e['slices']['all']['ch0']['n_sessions']} sessions, run once with the frozen model. Our pre-registered check couldn't tell which "
-              f"microphones are the 3 unseen ones, so we report all 7 together (published systems: known {pub['dcase2018_baseline']['eval_known_mic']}, unseen {pub['dcase2018_baseline']['eval_unknown_mic']} for the baseline).")
-        worst = sorted(per, key=lambda c: c["recall"]["value"])[:3]
-        weak = "Weakest on the held-out test: " + "; ".join(
-            f"{DISPLAY[c['class']].lower()} (caught {c['recall']['value']:.0f}%, {c['missed']} missed, {c['false_alarms']} false alarms of {c['support']:,})"
-            for c in worst) + ". Every activity's misses and false alarms: README and the app's \"How sure is Kettle?\" page."
-        short_rows = [hs, "", *short, "", short_meal, "", weak]
-    else:
-        short_rows = ["The held-out run hasn't happened yet."]
-    return {"lead": "\n".join(lead), "results": "\n".join([split, "", *rows, "", meal, "", *per_rows, "", *extra]),
-            "results_short": "\n".join(short_rows),
-            "failures": "\n".join(fl), "tradeoff": trade}
+    missed_all = {r["meal_sessions_missed"] for r in tt}
+    fa_range = (min(r["meal_false_alarm_blocks"] for r in tt), max(r["meal_false_alarm_blocks"] for r in tt))
+    trade = (f"**The \"Not sure\" bar θ.** Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\". We chose θ on dev folds "
+             f"so that shown labels are right {d['not_sure']['shown_precision_metric']['value']:.0f}% of the time "
+             f"({d['not_sure']['coverage_metric']['value']:.0f}% of windows get a label). For Meera's check it barely matters on dev: across "
+             f"{lo['meal_sessions']} kitchen sessions ({lo['days']} days of stitched audio) "
+             + ("no kitchen session went unnoticed at any θ from 0.30 to 0.90" if missed_all == {0} else "kitchen sessions missed varied with θ")
+             + f", and θ only moved the count of false kitchen-activity blocks between {fa_range[0]} and {fa_range[1]} "
+             f"({shipped['meal_false_alarms_per_day']} per 16-hour day at the chosen θ, {lo['meal_false_alarms_per_day']} at θ = {lo['theta']:.2f}). "
+             f"Those are kitchen-level false alarms; the \"per hour\" figure above counts every activity confusion, including cooking vs washing up. "
+             f"The cost of a high θ shows up elsewhere: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e else "")
+    short = held + dev_rows
+    return {"lead": "\n".join(lead), "results": "\n".join(held + dev_rows + [""] + extra),
+            "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade}
 
 
 def fill(path: Path, parts: dict) -> None:

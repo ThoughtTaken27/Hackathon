@@ -79,7 +79,7 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
     deadline = day0 + h * 3600 + m * 60
     start = min(day0 + WINDOW_START_H * 3600, deadline - 3600)
     first = next((b for b in sorted(blocks, key=lambda b: b["start"])
-                  if _counts(r, b) and b["start"] < deadline and b["start"] <= now), None)
+                  if _counts(r, b) and b["end"] > start and b["start"] < deadline and b["start"] <= now), None)
     if first:
         what = PHRASE[first["activity"]] if first["activity"] else "talking or TV"
         sure = "high" if (first.get("conf") or 0) >= 0.8 else "medium"
@@ -143,6 +143,8 @@ def validate(rules: list[dict]) -> list[dict]:
         raise ValueError("up to 3 checks")
     out = []
     for i, r in enumerate(rules):
+        if not isinstance(r, dict):
+            raise ValueError("each check is an object")
         t = r.get("type")
         if t in ("kitchen_by", "any_by"):
             h, m = map(int, str(r["time"]).split(":"))

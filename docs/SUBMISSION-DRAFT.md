@@ -8,7 +8,7 @@ Status of this draft: numbers filled by `python tools/writeup_numbers.py` from `
 
 **Headline to lead with (from results):**
 <!-- lead:start -->
-Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
+On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments × 7 microphones = 7,791 clips from 91 sessions), Kettle scores **84.1** macro F1 (95% CI 74.4–86.7) on one microphone and 85.3 on four: level with the official 2018 baseline (85.0 known / 83.1 unseen microphones, full set) and below the best entry (90.4 / 88.4). A Mac already hears a kettle, but Apple's built-in sound classifier scores 31.8 on the same clips. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms, and a "Not sure", consent and pause design built around them.
 <!-- lead:end -->
 
 | Form field | What to paste |

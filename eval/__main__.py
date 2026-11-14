@@ -309,7 +309,10 @@ def rescore_eval(e: dict) -> dict:
     e["per_node"] = {nd: {"node_avg": dev.report(y[node == nd], pn[node == nd], s[node == nd], w, split)["macro_f1"],
                           "ch0": dev.report(y[node == nd], p0[node == nd], s[node == nd], w, split)["macro_f1"],
                           "n_clips": int((node == nd).sum())} for nd in sorted(set(node))}
-    th = model.load(ROOT / "models" / "head.json")["theta"]
+    head = model.load(ROOT / "models" / "head.json")
+    if head["sha256"] != e["run"]["head_sha256"]:
+        raise SystemExit("models/head.json is not the head the held-out run used; refusing to re-score with it.")
+    th = head["theta"]
     low = np.array([r["ch0_conf"] < th for r in rows])
     e["not_sure_share_at_theta"] = num(float(low.mean()), split + "; top probability below θ (novelty check not included)",
                                        len(rows), len(set(s)), M.wilson(int(low.sum()), len(rows)))

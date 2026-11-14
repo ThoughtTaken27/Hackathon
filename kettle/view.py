@@ -137,7 +137,7 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
             chip_text = f"Sounds like {PHRASE[chip['label']]}"
     return {
         "now": now, "now_text": clock(now, now), "day0": day0, "tz_offset": tz,
-        "date_text": time.strftime("%A, %B %-d", time.localtime(now)),
+        "date_text": time.strftime("%A, %B ", time.localtime(now)) + str(time.localtime(now).tm_mday),
         "names": {"parent": PARENT, "caregiver": CAREGIVER},
         "heartbeat": heartbeat_line(hb, now),
         "blocks": [block_view(b, now) for b in blks],

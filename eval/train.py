@@ -17,6 +17,12 @@ from eval.common import ROOT, table
 from kettle import model
 
 
+def held_out_run_done() -> bool:
+    import json as _j
+    p = ROOT / "results" / "eval_run.json"
+    return p.exists() and any(a.get("predictions_written") for a in _j.loads(p.read_text())["attempts"])
+
+
 def train(study: dict) -> dict:
     from eval.embed import EMB, done_files
     from pathlib import Path
@@ -45,6 +51,10 @@ def freeze() -> str:
 
 
 if __name__ == "__main__":
+    if held_out_run_done() and "--after-eval-run" not in sys.argv:
+        raise SystemExit("The held-out run already used the frozen head (results/eval_run.json). Retraining or re-freezing now "
+                         "would make the shipped model differ from the one that was tested. Pass --after-eval-run only if you "
+                         "mean to start a new, separately reported model.")
     if "--freeze" in sys.argv:
         print("frozen", freeze())
     else:

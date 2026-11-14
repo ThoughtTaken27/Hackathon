@@ -86,7 +86,11 @@ def score() -> None:
             lo, hi = M.wilson(int((p[m] == k).sum()), int(m.sum()))
             per.append({"class": c, "recall": num(sc["recall"][k], split, int(m.sum()), len(set(s[m])), (lo, hi)),
                         "missed": int(sc["missed"][k]), "false_alarms": int(sc["false_alarms"][k])})
-    out = {"split": split, "macro_f1_present_classes": num(float(np.mean([sc["f1"][k] for k in set(y)])), split, len(y), len(set(s))),
+    present = sorted(set(y) | set(p))           # classes that were true or predicted: a class only ever wrongly predicted counts as F1 = 0
+    mf = num(float(np.mean([sc["f1"][k] for k in present])), split, len(y), len(set(s)))
+    mf["ci"] = "n/a"
+    mf["note"] = "macro F1 over activities present in the labels or the predictions; exploratory, small N"
+    out = {"split": split, "macro_f1_present_classes": mf,
            "per_class": per, "confusion": M.confusion(y, p).astype(int).tolist(), "head_sha256": head["sha256"]}
     (ROOT / "results" / "own_kitchen.json").write_text(json.dumps(out, indent=1, default=float))
     print(json.dumps(out["macro_f1_present_classes"]))

@@ -4,7 +4,7 @@
 *This project is a prototype and is not medical advice. Kettle is not an emergency device.*
 
 <!-- lead:start -->
-Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
+On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments × 7 microphones = 7,791 clips from 91 sessions), Kettle scores **84.1** macro F1 (95% CI 74.4–86.7) on one microphone and 85.3 on four: level with the official 2018 baseline (85.0 known / 83.1 unseen microphones, full set) and below the best entry (90.4 / 88.4). A Mac already hears a kettle, but Apple's built-in sound classifier scores 31.8 on the same clips. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms, and a "Not sure", consent and pause design built around them.
 <!-- lead:end -->
 
 ## The problem
@@ -21,24 +21,55 @@ Data: SINS / DCASE 2018 Task 5 (one person living alone for a week, 4 microphone
 
 ## Results
 <!-- results:start -->
-Held-out = the official DCASE 2018 Task 5 test set: a pre-registered seeded sample, 7,791 clips × all 7 microphones, 91 sessions, run once with the frozen model. Our pre-registered check couldn't tell which microphones are the 3 unseen ones, so we report all 7 together (published systems: known 85.0, unseen 83.1 for the baseline).
+**Held-out test (official DCASE 2018 eval sample, run once, all 7 microphones; macro F1, 95% session-bootstrap CI):**
 
-| System (macro F1, 95% CI) | Held-out test, one mic | Dev folds, one mic |
+| System | Macro F1 | N |
 |---|---|---|
-| **Kettle** | **84.1 [74.4, 86.7]** | 85.1 [81.1, 87.4] |
-| Apple SoundAnalysis, zero-shot | 31.8 [25.7, 37.9] | 32.4 [29.9, 35.1] |
-| Same encoder, zero-shot label map | 38.5 [30.9, 47.2] | 37.5 [34.4, 41.1] |
-| Always "Quiet" | 5.0 [1.6, 7.8] | 4.6 [3.5, 5.7] |
-| Log-mel + logistic regression (no deep model) | – | 79.7 [75.5, 82.4] |
-| DCASE 2018 baseline / best entry (published, full data) | 85.0–83.1 / 90.4–88.4 | – |
+| **Kettle, one microphone** | **84.1 [74.4, 86.7]** | 7,791 clips / 1,113 moments / 91 sessions |
+| Kettle, 4-microphone average | 85.3 [75.5, 88.1] | same |
+| Apple SoundAnalysis, zero-shot | 31.8 [25.7, 37.9] | same clips |
+| Same encoder, zero-shot label map | 38.5 [30.9, 47.2] | same clips |
+| Always "Quiet" | 5.0 [1.6, 7.8] | same clips |
+| DCASE 2018 official baseline (published) | 85.0 known mics · 83.1 unseen mics | full eval set, all dev data |
+| DCASE 2018 best entry (published) | 90.4 · 88.4 | full eval set |
 
-**Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41).
+Pre-registered before any test audio was fetched (sample, scoring, microphone rule). Not confirmed by the mic-fingerprint rule; per-node numbers only, so we report all 7 microphones together; an unseen-microphone number is not claimed. The trained baselines below (log-mel, AST) were only run on the development folds.
 
-Weakest on the held-out test: moving about (caught 55%, 156 missed, 248 false alarms of 350); washing up (caught 73%, 96 missed, 35 false alarms of 350); working (typing) (caught 81%, 284 missed, 173 false alarms of 1,463). Every activity's misses and false alarms: README and the app's "How sure is Kettle?" page.
+**Held-out, per activity (one microphone): misses and false alarms counted separately**
+
+| Activity | Caught (recall) | Missed | False alarms | N clips |
+|---|---|---|---|---|
+| Quiet | 95.1 [93.1, 95.9] | 97 | 198 | 1,988 |
+| Cooking | 86.1 [71.4, 93.0] | 67 | 36 | 483 |
+| Washing up | 72.6 [49.5, 84.9] | 96 | 35 | 350 |
+| Eating | 84.9 [75.0, 91.8] | 53 | 42 | 350 |
+| Moving about | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
+| Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
+| Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
+| TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
+| Working (typing) | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
+
+Recall fell from development to held-out for moving about 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93%. The test set is a different stretch of the same week with a different mix of sessions and microphones; with only one held-out run we can't separate those causes.
+
+**Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41). Computed after the run from its saved predictions (not in the pre-registration).
+
+**Development folds (session-disjoint, 4-fold; optimistic: the same folds chose the model):**
+
+| System | Macro F1 | Notes |
+|---|---|---|
+| **Kettle, one microphone** | **85.1 [81.1, 87.4]** | N = 8,920 clips / 257 sessions |
+| Log-mel statistics + logistic regression (no deep model) | 79.7 [75.5, 82.4] |  |
+| CED-small (4× bigger) + same head | 85.9 [81.9, 88.1] |  |
+| AST (16× bigger) + same head | 83.0 [79.1, 85.7] | seeded subset: 2700 clips (ast_subset.json); Kettle 85.5 on the same clips |
+| Apple SoundAnalysis, zero-shot | 32.4 [29.9, 35.1] |  |
+| AST, zero-shot label map | 38.9 [35.6, 42.7] | seeded subset: 2700 clips (ast_subset.json); Kettle 85.5 on the same clips |
+| Always "Quiet" | 4.6 [3.5, 5.7] |  |
+
+Dev, Meera's check: caught 95.3 [93.8, 96.5]% of 3,000 kitchen windows (missed 164); false alarms on 1.8 [0.7, 3.7]% of 5,920 others (106).
 <!-- results:end -->
 
 <!-- tradeoff:start -->
-Below θ = 0.66 confidence Kettle says "Not sure" (chosen on dev folds so shown labels are right 90% of the time; 85% of windows get a label). A false "kitchen activity" could hide a skipped breakfast; a missed one costs Meera an unnecessary call. We lean toward fewer false ones: through the day bar on dev folds, θ = 0.66 gives 3.87 false kitchen-activity blocks per 16-hour day and doesn't notice 0 of 33 kitchen sessions, versus 7.75 and 0 at θ = 0.30.
+**The "Not sure" bar θ.** Below θ = 0.66 confidence Kettle says "Not sure". We chose θ on dev folds so that shown labels are right 90% of the time (85% of windows get a label). For Meera's check it barely matters on dev: across 33 kitchen sessions (1.55 days of stitched audio) no kitchen session went unnoticed at any θ from 0.30 to 0.90, and θ only moved the count of false kitchen-activity blocks between 6 and 12 (3.87 per 16-hour day at the chosen θ, 7.75 at θ = 0.30). Those are kitchen-level false alarms; the "per hour" figure above counts every activity confusion, including cooking vs washing up. The cost of a high θ shows up elsewhere: 14% of held-out windows were "Not sure".
 <!-- tradeoff:end -->
 
 **Where it fails** (real dev-fold mistakes, `results/failures.md`):

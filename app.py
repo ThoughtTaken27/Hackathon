@@ -32,6 +32,7 @@ TIMELINE = Path(os.environ.get("KETTLE_TIMELINE_DIR", ROOT / "data" / "timeline"
 RESULTS = ROOT / "results"
 MAX_UPLOAD = 10 * 1024 * 1024
 KITCHEN_HOSTS = {"127.0.0.1", "::1", "localhost", "testclient"}
+LOCAL_NAMES = {"localhost", "127.0.0.1", "[::1]", "testserver"}
 
 APP: dict = {"enc": None, "head": None, "state": None, "demo": None, "demo_task": None,
              "runtime": {"first_audio_t": None, "windows": 0, "infer_s": []}}
@@ -85,11 +86,14 @@ app.mount("/static", StaticFiles(directory=STATIC), name="static")
 async def _ticker() -> None:
     """Once a second: end pauses that ran out and run the weekly 'Keep it on?' rule."""
     while True:
-        s = APP["state"]
-        before = len(s["log"])
-        live.tick(s, time.time())
-        for rec in s["log"][before:]:
-            persist({"kind": "log", **rec})
+        try:
+            s = APP["state"]
+            before = len(s["log"])
+            live.tick(s, time.time())
+            for rec in s["log"][before:]:
+                persist({"kind": "log", **rec})
+        except Exception as e:      # the weekly-question safeguard must keep running even if a write fails
+            print(f"ticker error: {e!r}", flush=True)
         await asyncio.sleep(1)
 
 
@@ -97,9 +101,19 @@ def _theta() -> float:
     return float(APP["head"].get("theta", 0.5))
 
 
+def _is_kitchen(client_host: str, headers) -> bool:
+    """True only for the kitchen laptop's own browser: a local connection, a local Host name, and (if the browser
+    sends one) a local Origin. The Host/Origin checks stop another web page or DNS rebinding from pressing the parent's buttons."""
+    from urllib.parse import urlsplit
+    host_name = (headers.get("host") or "").rsplit(":", 1)[0]
+    origin = headers.get("origin")
+    origin_ok = origin is None or (urlsplit(origin).hostname or "") in {"localhost", "127.0.0.1", "::1"}
+    return client_host in KITCHEN_HOSTS and host_name in LOCAL_NAMES and origin_ok
+
+
 def _kitchen_only(request: Request) -> None:
     """Refuse parent-only actions unless they come from the kitchen laptop itself."""
-    if (request.client.host if request.client else "") not in KITCHEN_HOSTS:
+    if not _is_kitchen(request.client.host if request.client else "", request.headers):
         raise HTTPException(403, "Only the kitchen laptop can do this.")
 
 
@@ -174,10 +188,12 @@ def api_results():
 # ---------------------------------------------------------------- parent's controls (kitchen laptop only)
 
 async def _body(request: Request) -> dict:
+    """The JSON body as a dict; anything else (bad JSON, a list, a number) counts as empty."""
     try:
-        return await request.json()
+        b = await request.json()
     except ValueError:
         return {}
+    return b if isinstance(b, dict) else {}
 
 
 def _act(fn, *args) -> dict:
@@ -198,9 +214,10 @@ def api_consent(request: Request):
 @app.post("/api/pause")
 async def api_pause(request: Request):
     _kitchen_only(request)
-    minutes = (await _body(request)).get("minutes")
-    if minutes not in (15, 60, None):
-        raise HTTPException(400, "minutes must be 15, 60 or null")
+    body = await _body(request)
+    if "minutes" not in body or body["minutes"] not in (15, 60, None):
+        raise HTTPException(400, "minutes must be 15, 60 or null (until tomorrow morning)")
+    minutes = body["minutes"]
     return _act(live.pause, minutes)
 
 
@@ -244,7 +261,7 @@ async def api_mic(request: Request):
 async def api_rules(request: Request):
     try:
         clean = rules.validate((await _body(request)).get("rules"))
-    except (ValueError, KeyError, TypeError):
+    except (ValueError, KeyError, TypeError, AttributeError):
         raise HTTPException(400, "Up to 3 checks, each with a time or a number of hours.")
     s, now = _active()
     s["rules"] = clean
@@ -259,7 +276,8 @@ async def api_rules(request: Request):
 async def api_try(request: Request):
     """Label an uploaded clip. Reads the raw body into RAM (no multipart, so nothing is spooled to disk)."""
     body = await request.body()
-    name = request.headers.get("x-filename", "your sound")[:80]
+    from urllib.parse import unquote
+    name = unquote(request.headers.get("x-filename", "your sound"))[:80]
     if len(body) > MAX_UPLOAD:
         return {"status": "too_big", "file": name}
     try:
@@ -307,7 +325,8 @@ async def _play(d: dict) -> None:
 
 
 @app.post("/api/demo/{sid}")
-async def api_demo(sid: str):
+async def api_demo(sid: str, request: Request):
+    _kitchen_only(request)      # a sample day takes over both screens, so only the kitchen laptop can start or stop one
     if sid == "stop":
         APP["demo"] = None
         return api_today()
@@ -328,8 +347,9 @@ async def api_demo(sid: str):
 
 
 @app.post("/api/demo/{sid}/instant")
-def api_demo_instant(sid: str):
+def api_demo_instant(sid: str, request: Request):
     """Play a whole sample day at once (for tests and screenshots)."""
+    _kitchen_only(request)
     if sid not in demo.scenarios():
         raise HTTPException(404)
     d = demo.new_demo(sid, view.local_midnight(time.time()))
@@ -344,7 +364,7 @@ def api_demo_instant(sid: str):
 @app.websocket("/ws/audio")
 async def ws_audio(sock: WebSocket):
     """16 kHz Int16 PCM from the kitchen page -> labels. Audio stays in this connection's RAM buffer."""
-    if (sock.client.host if sock.client else "") not in KITCHEN_HOSTS:
+    if not _is_kitchen(sock.client.host if sock.client else "", sock.headers):
         await sock.close(code=4403)
         return
     await sock.accept()
@@ -363,7 +383,7 @@ async def ws_audio(sock: WebSocket):
             for ev in evs:
                 if ev["kind"] == "window10":
                     rt["windows"] += 1
-                    persist({"kind": "window", **ev})
+                    persist({**ev, "kind": "window"})      # "kind" last: the labels file marks windows as "window"
             del pcm
     except WebSocketDisconnect:
         pass

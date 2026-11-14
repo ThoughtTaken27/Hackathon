@@ -102,8 +102,9 @@ def tick(s: dict, now: float) -> None:
         _log(s, s["paused_until"], "resume", auto=True)
         s.update(paused_at=None, paused_until=None, pause_reason=None, started_at=now)
     if weekly_due(s, now) and now - s["last_confirm"] > WEEK_S + 86400 and not is_paused(s, now):
-        pause(s, now, minutes=None, reason="weekly")
-        s["paused_until"] = now + 365 * 86400        # until the parent answers "Keep it on?"
+        s["paused_at"] = now
+        s.update(paused_until=now + 365 * 86400, pause_reason="weekly")     # until the parent answers "Keep it on?"
+        _log(s, now, "pause", until=s["paused_until"], reason="weekly")
 
 
 def weekly_due(s: dict, now: float) -> bool:
@@ -150,7 +151,7 @@ def feed(s: dict, st: dict, pcm: bytes, now: float, enc: dict, head: dict) -> li
     if not can_listen(s, now):
         st.update(ring=np.zeros(0, dtype=np.float32), since_hop=0, total=0, prev_end=None)
         return []
-    x = np.frombuffer(pcm, dtype=np.int16).astype(np.float32) / 32768.0
+    x = np.frombuffer(pcm[: len(pcm) // 2 * 2], dtype=np.int16).astype(np.float32) / 32768.0   # ignore a stray odd byte
     st["ring"] = np.concatenate([st["ring"], x])[-WIN_S * SR:]
     st["since_hop"] += len(x)
     st["total"] += len(x)

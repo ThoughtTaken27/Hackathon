@@ -24,13 +24,18 @@ class AudioError(Exception):
         self.seconds = seconds
 
 
-def _decode_av(data: bytes) -> tuple[np.ndarray, int]:
-    """Decode formats libsndfile can't read (M4A/AAC) with PyAV, from memory. Returns [channels, n]."""
+def _decode_av(data: bytes, max_s: float | None = None) -> tuple[np.ndarray, int]:
+    """Decode formats libsndfile can't read (M4A/AAC) with PyAV, from memory, stopping after max_s seconds."""
     import av
     with av.open(io.BytesIO(data), mode="r") as box:
         stream = next(s for s in box.streams if s.type == "audio")
         sr = stream.rate
-        chunks = [f.to_ndarray().astype(np.float32) for f in box.decode(stream)]
+        chunks, got = [], 0
+        for frame in box.decode(stream):
+            chunks.append(frame.to_ndarray().astype(np.float32))
+            got += frame.samples
+            if max_s and got >= max_s * sr:
+                break
     if not chunks:
         raise AudioError("unreadable")
     x = np.concatenate(chunks, axis=1)
@@ -41,14 +46,17 @@ def _decode_av(data: bytes) -> tuple[np.ndarray, int]:
     return x, sr
 
 
-def decode(data: bytes) -> tuple[np.ndarray, int]:
-    """Raw file bytes -> (float32 [channels, samples], sample rate). Raises AudioError('unreadable')."""
+def decode(data: bytes, max_s: float | None = None) -> tuple[np.ndarray, int]:
+    """Raw file bytes -> (float32 [channels, samples], sample rate), reading at most max_s seconds.
+    Raises AudioError('unreadable'). The cap matters: a tiny compressed file can hold hours of silence."""
     try:
-        x, sr = sf.read(io.BytesIO(data), dtype="float32", always_2d=True)
+        info = sf.info(io.BytesIO(data))
+        frames = int(max_s * info.samplerate) if max_s else -1
+        x, sr = sf.read(io.BytesIO(data), dtype="float32", always_2d=True, frames=frames)
         x = x.T
     except Exception:
         try:
-            x, sr = _decode_av(data)
+            x, sr = _decode_av(data, max_s)
         except AudioError:
             raise
         except Exception:
@@ -79,9 +87,13 @@ def read_upload(data: bytes) -> tuple[np.ndarray, float, bool]:
 
     Raises AudioError('unreadable') or AudioError('too_short', seconds).
     """
-    x, sr = decode(data)
+    try:
+        total = sf.info(io.BytesIO(data)).duration
+    except Exception:
+        total = None
+    x, sr = decode(data, MAX_S + 1)
     mono = to_16k_mono(x, sr)
-    seconds = len(mono) / SR
+    seconds = total if total else len(mono) / SR
     if seconds < MIN_S:
         raise AudioError("too_short", round(seconds, 1))
     cut = seconds > MAX_S

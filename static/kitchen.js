@@ -25,8 +25,10 @@ async function startMic() {
     draw();
     return;
   }
+  if (!wantMic()) { stream.getTracks().forEach((tr) => tr.stop()); ui.mic = "idle"; return; }   // paused while the browser was asking
   const ctx = new AudioContext({ sampleRate: 16000 });
   await ctx.audioWorklet.addModule("/static/worklet.js");
+  if (!wantMic()) { stream.getTracks().forEach((tr) => tr.stop()); ctx.close(); ui.mic = "idle"; return; }
   const src = ctx.createMediaStreamSource(stream);
   const node = new AudioWorkletNode(ctx, "kettle-tap");
   const ratio = ctx.sampleRate / 16000;
@@ -72,6 +74,11 @@ function stopMic() {
   try { a.ws && a.ws.close(); } catch (e) { /* already closed */ }
   a.ctx.close();
   ui.mic = "idle";
+}
+
+function wantMic() {
+  const k = today && today.kitchen;
+  return !!(k && !today.demo && k.consent && !k.off && !k.paused);
 }
 
 // ---------------------------------------------------------------- actions

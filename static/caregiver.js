@@ -164,7 +164,7 @@ function renderTry(r) {
     const avg = {};
     for (const w of r.windows) for (const [k, v] of Object.entries(w.probs)) avg[k] = (avg[k] || 0) + v / r.windows.length;
     const top = Object.entries(avg).sort((a, b) => b[1] - a[1]).slice(0, 2);
-    box.append(el("p", { class: "meta muted", text: `Closest guesses: ${top.map(([k, v]) => `${ACT_NAME[k]} ${v.toFixed(2)}`).join(" · ")} (below the ${Math.round(100 * (window.KETTLE_THETA || 0.66))}% bar Kettle needs to name an activity).` }));
+    box.append(el("p", { class: "meta muted", text: `Closest guesses: ${top.map(([k, v]) => `${ACT_NAME[k]} ${v.toFixed(2)}`).join(" · ")} (Kettle needs ${Math.round(100 * window.KETTLE_THETA)}% to name an activity, and the sound must be like the ones it learned).` }));
   } else {
     box.append(el("p", { text: `Kettle heard: ${heard}` }));
   }
@@ -179,7 +179,7 @@ async function tryBytes(name, bytes) {
   box.textContent = "";
   box.append(el("p", { class: "shimmer", text: `Listening to ${name}…` }));
   try {
-    const r = await fetch("/api/try", { method: "POST", headers: { "Content-Type": "application/octet-stream", "X-Filename": name }, body: bytes });
+    const r = await fetch("/api/try", { method: "POST", headers: { "Content-Type": "application/octet-stream", "X-Filename": encodeURIComponent(name) }, body: bytes });
     renderTry(await r.json());
   } catch (e) {
     box.textContent = "";
