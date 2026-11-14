@@ -1,0 +1,7 @@
+{
+ "blocks_added": 13,
+ "blocks_removed": 1,
+ "early_blocks_still_present": "3 of 3",
+ "max_shift_px_of_unchanged_blocks": 0,
+ "note": "Removals happen only when 2-of-3 smoothing relabels the newest window (its block key changes); the bar's time axis is fixed for a sample day, so unchanged blocks shouldn't move."
+}

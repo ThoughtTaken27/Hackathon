@@ -83,3 +83,9 @@ def test_started_after_the_check_says_so_and_is_still_cant_tell():
     b = timeline.blocks(ev, TH, now=14 * H, listening_now=True, listening_from=13 * H)
     r = state(KITCHEN, b, 14 * H)
     assert r["state"] == "cant_tell" and "started at 1:00 PM, after this check's time" in r["detail"]
+
+
+def test_never_started_says_nothing_heard_yet():
+    for rs in (KITCHEN, TV):
+        r = state(rs, [], 14 * H)
+        assert r["state"] == "cant_tell" and "hasn't heard anything yet today" in r["detail"]

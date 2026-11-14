@@ -60,7 +60,8 @@ function setText(node, text, animate = true) {
 
 // ---------------------------------------------------------------- the day bar
 
-function blockKey(b) { return `${b.state}|${b.activity || ""}|${Math.round(b.start)}`; }
+// Keyed by start time only: when smoothing relabels the newest block, the same node changes colour in place.
+function blockKey(b) { return String(Math.round(b.start)); }
 
 function blockClass(b) {
   const c = ["blk", b.state];
