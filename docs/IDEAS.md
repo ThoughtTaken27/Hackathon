@@ -2,6 +2,74 @@
 
 Summary of the research doc: [Veritas AI Hackathon — Health Idea Research & Game Plan](https://claude.ai/artifact/KxEQasfso3e2RMTBuqrS8v). The final pick happens at kickoff with the decision table in `KICKOFF.md`. Nothing here is code; it's a plan to adapt to the brief.
 
+## Strategy: rebuild and surpass a weak incumbent (Nov 13, evening)
+
+Take a tool that already exists and has real users but is retired, clunky, stale or unsafe. Rebuild it **from scratch** in the 48 hours and add the one capability it lacks. Then **measure ours against it**: the incumbent is our baseline.
+
+Rules for doing this cleanly:
+- Never fork or copy their code. Take the problem, public data and lessons only. All our code is written after kickoff.
+- Credit the original in the write-up: "X exists (link); here's what it gets wrong for [persona]; here's what we add, measured." The rubric rewards exactly that (originality: "prior-art check; state our twist; cite what exists").
+- Prefer **government, retired or abandoned tools**. Their data is public, there's no brand or IP problem, and the story is strong ("NIH shut it down; nothing replaced it").
+- Better UI alone scores little in Round 1. The twist must be a measurable capability. Polish pays off in the video and the finals demo.
+- **The brief comes first.** Briefs drop at 11 PM CT; match a candidate below to the brief, or adapt the pattern to whatever the brief asks.
+
+Research caveat: this session's network blocked most outside sites, so most facts below come from search results. Open the primary page before quoting any number in the write-up.
+
+### What we know about kickoff (verified from the organizer emails)
+- At 11:00 PM CT, the exact project brief for each of the four tracks arrives by email, together with the submission form.
+- "You don't need to pick a track until then." The FAQ also says code, writeup and video are required, and teams may use public data, open-source libraries and pretrained models with credit.
+- The About page says projects are "applied to a real problem in the track you choose". Whether a brief fixes one problem or sets a theme is unknown until 11 PM.
+- Submissions close Sun 11:59 PM ET (10:59 PM CT). Top 10 finalists are named Nov 18. Finals are Nov 21.
+
+### Shortlist (ranked for our rubric)
+
+**1. Pill identifier with a safety net (Health; strongest).** Incumbent: NIH's Pillbox, retired Jan 28, 2021.
+- **Why now:**
+  - NLM says it has no plans to replace Pillbox. It also says its final static files "should not be used for pill identification".
+  - What's left are ad-heavy or third-party sites (Drugs.com, Medscape, PillID). PillID's image archive covers only 8,693 photos.
+  - Chatbots get about 88% (22/25) on clear photos. Their errors are misread imprints, e.g. "NF 06" read as "NF 05" turned nifedipine into metformin (Renal Failure, Dec 2024).
+- **Rebuild:** photo → vision model reads the imprint, colour and shape → match against an authoritative table (DailyMed product characteristics). Show the top 3 candidates with the evidence for each. **Abstain** ("not sure, ask your pharmacist") when the imprint is uncertain.
+- **Measure:** top-1 and top-3 accuracy, plus the wrong answers avoided by abstaining. Baselines: chatbot alone, and imprint-text search. Slices: lighting, pill shape, worn imprints.
+- **User:** a caregiver sorting a parent's loose pills. This fits Arecibo (older adults, caregivers).
+- **Risks:**
+  - We need a vision API key and a cached demo.
+  - A wrong ID is dangerous, so abstention and the "not medical advice" line are core.
+  - Verify the Pillbox archive and DailyMed imprint fields at kickoff.
+- Sources: [NLM retirement notice](https://www.nlm.nih.gov/pubs/techbull/ja20/ja20_pillbox_discontinue.html), [data.gov archive](https://catalog.data.gov/dataset/pillbox-retired-january-28-2021), [PillID](https://pillid.pages.dev/about.html), [Mayo ChatGPT pill study](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11391868/), [one pill, three chatbots](https://dhinsights.org/news/one-pill-three-chatbots-four-answers-why-ai-models-get-simple-healthcare-questions-wrong).
+
+**2. Discharge or medication instructions translated with a safety check (Languages, crosses into Health).** Incumbent: Google Translate, as used in ERs.
+- **Why:**
+  - Khoong et al. (JAMA Intern Med, 2019) found 92% accuracy for Spanish and 81% for Chinese, with 2% and 8% potentially harmful errors. "Hold the kidney medicine" became "keep taking" it.
+  - A 2021 study ranged from 55% (Armenian) to 94% by language.
+  - NYC law requires translated pharmacy labels in seven languages.
+- **Rebuild:** translate + back-translate. Rules then check that doses, numbers, negations and hold/stop/continue verbs survived. Flag risky lines and show the English beside them for a bilingual family member.
+- **Measure:** harmful-error detection recall vs plain machine translation; per-language slice table.
+- **Warning:** a workshop mentor called translation ideas saturated. Our twist is the safety check, not the translation.
+- Sources: [UCSF summary](https://www.ucsf.edu/news/2019/02/413376/google-translates-doctors-orders-spanish-and-chinese-few-significant-errors), [ScienceDaily](https://www.sciencedaily.com/releases/2019/02/190225123451.htm).
+
+**3. Personal smoke and heat alerts for sensitive people (Climate).** Incumbents: the EPA AirNow app, CDC Heat & Health Tracker, and EJScreen.
+- **Why:**
+  - AirNow is about 3.6★ from 818 Google Play ratings (third-party aggregator). Complaints: no alerts, slow updates, low resolution, readings that don't match the website.
+  - EPA removed EJScreen in Feb 2025, and the CDC heat tracker's daily data was paused in 2025 (both from search results).
+- **Rebuild:** one person (asthma, or an older adult on heat-sensitive medication), their places → next-day AQI and heat risk → a plain action plan.
+- **Measure:** next-day forecast error vs a persistence baseline and vs the official forecast.
+- **Prior art:** Leeward, 2nd place at the Health in Climate AI Hackathon NYC 2026 (heat and smoke risk for veterans), and AirCast (NASA Space Apps 2025 nominee, heuristic forecast with no backtest). This overlaps HeatRx.
+- Sources: [AirNow app](https://apps.apple.com/us/app/epa-airnow/id467653238), [android-stats](https://android-stats.com/d/com.saic.airnow), [Leeward repo](https://github.com/harshini2212/Climate-Health-Cornell-Hackathon), [AirCast repo](https://github.com/allenvarghese05/aircast-nasa-hackathon).
+
+**4. Finance (only if the finance brief fits; weakest evidence).**
+- **Medicare Plan Finder:** in 2019 it ranked plans by premium instead of total cost. One example was about $5,800/year apart. Current state unchecked.
+- **IRS Free File:** about 68% of eligible taxpayers didn't use it (2019 Taxpayer Advocate). Direct File won't run in 2026 (Nextgov, Nov 2025).
+- **CFPB college-cost tool:** no four-year debt estimate (2012 critique).
+- **Impact statistic:** NCOA BenefitsCheckUp: 36% of older adults applied and 20% enrolled within 8–10 weeks.
+- Sources: [Nextgov](https://www.nextgov.com/digital-government/2025/11/direct-file-wont-happen-2026-irs-tells-states/409309), [Becker's on Plan Finder](https://www.beckershospitalreview.com/payer-issues/cms-spent-11m-on-a-new-medicare-cost-tool-consumers-say-it-doesn-t-work.html), [NCOA study](https://ncoa.org/article/new-study-finds-benefitscheckup-effective-for-helping-older-adults-access-federal-and-state-programs).
+
+### Past hackathon projects worth learning from (inspiration only; never copy code)
+The pattern across all of them: a good idea, synthetic data, and **no measured evaluation against a baseline**. Measurement is our edge.
+- [still-kicking](https://github.com/CarolinaBosch/still-kicking): voice check-in for older adults with caregiver summaries. Synthetic patients; the microphone path is untested.
+- [MedLingo](https://github.com/MdBilalNad/MedLingo): explains lab reports in the user's language. Its eval folder has no results.
+- [medclear-ai](https://github.com/Vallejo1921/medclear-ai): clinical notes in plain language. One test, no metrics, unsourced claims.
+- [AirCast](https://github.com/allenvarghese05/aircast-nasa-hackathon) and [Leeward](https://github.com/harshini2212/Climate-Health-Cornell-Hackathon): see candidate 3.
+
 ## Idea filter (latest, Nov 12–13)
 
 From later research rounds, after several picks were rejected. Run every candidate through it at kickoff:
