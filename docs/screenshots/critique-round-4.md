@@ -22,3 +22,6 @@ Every sheet opened and read (sheet-01 … sheet-17), plus the full-length How-su
 | 5 | Kitchen page after ~30 s of listening shows only a thin green tick on a 6 AM–6 PM bar | Expected at full-day scale (min block width applies); the sample day shows the full bar. No change |
 
 No regressions from round 3 in hierarchy, contrast or copy. Calm, not surveillant: no camera imagery, no red except "stopped".
+
+## Recapture after the judge-round-2 copy change (16:45 CT)
+Full recapture: 136 screens, 0 problems. The How-sure lead now reads "close to the official 2018 DCASE baseline's published 85 (known microphones) / 83.1 (unseen), but not directly comparable… not yet a real kitchen. For context only, Apple's built-in sound classifier (zero-shot, a different label set) scores 31.8%", and it reads well in all four size/theme variants (sheet-10). Left for Lane B: the overall-score row still shows Apple's 31.8% as a third big tile next to Kettle's; shrinking it to a footnote is a one-line change in `static/howsure.js` if the team agrees with judge round 2.

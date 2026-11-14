@@ -1,7 +1,9 @@
-Fresh-clone test (Sat Nov 14 2026, 13:51-13:53 CT, macOS, Python 3.11, local pip cache warm)
-git clone <local repo> -> checkout kettle -> python3.11 -m venv .venv -> pip install -r requirements.txt : 105 s
-HF_HUB_OFFLINE=1 python smoke_test.py : PASS, 32.1 s (first, cold run)
-python app.py (KETTLE_PORT=8799, offline) -> POST /api/demo/usual/instant : "A usual morning", 12 blocks, "Met at 8:05 AM (cooking, how sure: medium)"
-GET / contains "Prototype, not medical advice": yes
-Total wall time: 150 s. No API keys, no account, no network after pip install.
+Fresh-clone test, re-run on the final code (Sat Nov 14 2026, 16:35-16:38 CT, macOS, Python 3.11, local pip cache warm)
+git clone <local repo> -> checkout kettle (23b7905) -> python3.11 -m venv .venv -> pip install -r requirements.txt : 71 s
+HF_HUB_OFFLINE=1 python smoke_test.py (empty environment: no API keys) : PASS, 25.0 s (first, cold run)
+python app.py (KETTLE_PORT=8799, offline) -> POST /api/demo/usual/instant : 12 blocks; heartbeat "Listening · last heard just now";
+  checks "Met at 8:05 AM (cooking, how sure: medium)", "TV for 1 h 7 min so far today"
+GET / contains "Prototype, not medical advice": yes. Tracebacks in the app log: 0
+Total wall time: 114 s. No API keys, no account, no network after pip install.
 Note: on a machine without a pip cache, installing PyTorch dominates (expect several minutes).
+Earlier run (13:51-13:53 CT, before the M8 fixes): install 105 s, smoke PASS 32.1 s, total 150 s.

@@ -2,7 +2,7 @@
 
 Source themes: [`better-than.md`](better-than.md) (418 coded reviews; top 10 by count × severity, 11 rows because 10a and 10b tie).
 Each row names the place in the app, the test or number that proves it, and the screenshot (final design round,
-`docs/screenshots/round-3/`). "Cut" means we deliberately don't build it, with the reason.
+`docs/screenshots/round-4/`; earlier rounds kept). "Cut" means we deliberately don't build it, with the reason.
 
 | # | Pain theme (count, score) | Where Kettle answers it | Proof (command or number) | Screenshot | Status |
 |---|---|---|---|---|---|
@@ -14,7 +14,7 @@ Each row names the place in the app, the test or number that proves it, and the 
 | 5= | False alarms (16, 32) | **False-alarm** count per activity on "How sure"; "Not sure" hatching below θ and for sounds unlike all 9 activities; 2-of-3 smoothing; **no push alerts** (checks only show state) | `dev.not_sure` (θ, coverage, shown-label precision); `offlist` (confident wrong with and without the novelty gate); `dev.session_level` (false-alarm blocks per hour, smoothing on vs off) | `howsure-*` (#not-sure), `caregiver-try-white-noise-*`, `caregiver-try-unclear-*` | Built |
 | 7 | Consent overridden (8, 24) | Listening starts only after two steps on the kitchen laptop (explainer, then "Is it OK for Meera to see this?"); only the kitchen laptop itself (127.0.0.1) can consent, pause, resume or stream audio; weekly "Keep it on?" that pauses if unanswered | `tests/test_heartbeat_consent.py` (audio refused before consent and while paused; weekly pause); smoke test (audio before consent is dropped) | `kitchen-consent-1-*`, `kitchen-consent-2-*`, `kitchen-weekly-*` | Built |
 | 8 | Discontinued under you (11, 22) | Local-first: model weights, sample clips and code in the repo; no server of ours | `smoke_test.py` passes with no network (`HF_HUB_OFFLINE=1`); fresh-clone test (M8) | — | Built |
-| 9 | App bugs, logouts (21, 21) | No accounts, no login, one local page | Screenshot sweep of every state: zero sign-in screens | all of `round-3/` | Built |
+| 9 | App bugs, logouts (21, 21) | No accounts, no login, one local page | Screenshot sweep of every state: zero sign-in screens | all of `round-4/` (136 screens, 0 page errors) | Built |
 | 10a | "No news" is ambiguous (6, 18) | Heartbeat is the first line: "Listening · last heard 40 s ago" / "Not listening since 10:42 AM (laptop asleep, closed or off). Nothing is known after that." Quiet is a thin line (heard, nothing happening); Not listening is a cross-hatch; checks say "Can't tell" instead of "Missed" when Kettle wasn't listening | `tests/test_heartbeat_consent.py::test_silence_is_listening_but_no_input_is_stale`, `tests/test_timeline.py::test_quiet_is_not_the_same_as_not_listening`, `tests/test_rules.py::test_not_listening_gives_cant_tell_never_missed` | `caregiver-stale-*`, `caregiver-tv-*`, `caregiver-error-*` | Built |
 | 10b | Wants "no activity by X" (9, 18) | Up to 3 caregiver-set checks: "Kitchen activity by 10:00 AM", "Some sound of activity by …", "TV on for more than N hours", each Met / Not yet / Missed / Can't tell, labelled "Rules you set. Kettle doesn't learn Dad's routine and doesn't send alerts." | `tests/test_rules.py` (normal day, late start, not listening, paused, not-sure never counts) | `caregiver-usual-*` (Met), `caregiver-quiet-*` (Missed), `caregiver-tv-*` (Can't tell), `caregiver-rules-sheet-*` | Built |
 

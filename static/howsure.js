@@ -73,7 +73,7 @@ function renderResults(box, r) {
   if (apple && apple.value != null) {
     box.append(el("p", { class: "gap" },
       el("span", { text: "On the same clips, Kettle on one microphone scores " }), el("strong", { class: "num", text: pct(oursHead) }),
-      el("span", { text: ` macro F1, level with the official 2018 DCASE baseline (${r.published.dcase2018_baseline.eval_known_mic} known / ${r.published.dcase2018_baseline.eval_unknown_mic} unseen microphones, full set; best entry ${r.published.best_entry.eval_known_mic} / ${r.published.best_entry.eval_unknown_mic}). A Mac already hears a kettle, but Apple's built-in sound classifier scores ` }),
+      el("span", { text: ` macro F1: close to the official 2018 DCASE baseline's published ${r.published.dcase2018_baseline.eval_known_mic} (known microphones) / ${r.published.dcase2018_baseline.eval_unknown_mic} (unseen), but not directly comparable, because they scored the full test set and trained on all development data (best entry ${r.published.best_entry.eval_known_mic} / ${r.published.best_entry.eval_unknown_mic}). These are recordings from one research home, not yet a real kitchen. For context only, Apple's built-in sound classifier (zero-shot, a different label set) scores ` }),
       el("strong", { class: "num", text: pct(apple) }),
       el("span", { class: "muted", text: ` (${ev ? "held-out test" : "development folds"}).` })));
   }

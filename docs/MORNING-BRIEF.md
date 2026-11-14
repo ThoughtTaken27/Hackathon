@@ -7,7 +7,7 @@ from `results/metrics.json` (made by `python -m eval`); none is typed from memor
 ## 1. What exists now (two minutes)
 - **The idea in one sentence:** a laptop already in a parent's kitchen turns household sounds into a calm day timeline for the adult child far away, keeps no audio and no words, and publishes how often it misses an activity and how often it raises a false alarm.
 - **Track:** AI + Health ("manage an ongoing one better"): Meera (34, invented) and her father Ravi (79, invented, early memory loss, lives alone).
-- **Run it** (fresh clone, no keys): `python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python smoke_test.py && python app.py`, then open http://localhost:8000 and press **Play a sample day: a usual morning**. The kitchen screen is http://localhost:8000/kitchen (Chrome; it asks for the microphone). Screenshots: `docs/screenshots/readme/`, every state in `docs/screenshots/round-3/` (sheets in `round-3/sheets/`).
+- **Run it** (fresh clone, no keys): `python3.11 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt && python smoke_test.py && python app.py`, then open http://localhost:8000 and press **Play a sample day: a usual morning**. The kitchen screen is http://localhost:8000/kitchen (Chrome; it asks for the microphone). Screenshots: `docs/screenshots/readme/`, every state in `docs/screenshots/round-4/` (sheets in `round-4/sheets/`; critiques in `docs/screenshots/critique-round-{1,2,3,4}.md`).
 - **Status against the plan:**
 
 | Milestone | Status | Proof |
@@ -18,10 +18,10 @@ from `results/metrics.json` (made by `python -m eval`); none is typed from memor
 | M4 eval harness | done | `python -m eval` → `results/`; `python -m eval.check_metrics` → 0 bare numbers |
 | M5 product | done | live mode, sample days, caregiver view + heartbeat + checks, parent's consent/pause/off/weekly, try-your-own-sound, how-sure page, privacy check |
 | M6 one frozen eval run | done 13:04–13:15 CT, commit `351e929`, pre-registered at `0119c57` | `results/eval_run.json` (1 attempt) |
-| M7 design ×3 | done | `docs/screenshots/critique-round-{1,2,3}.md`, fresh critic (r2), usability walkthrough (r3) |
-| M8 review + fresh clone | see §2 | |
-| M9 judge simulation ×2 | see §2 | |
-| M10 hand-off | this file | |
+| M7 design ×3 (+1) | done | `docs/screenshots/critique-round-{1,2,3,4}.md`, fresh critic (r2), usability walkthrough (r3); round 4 capture fails on any page error or traceback: 136 screens, 0 problems |
+| M8 review + fresh clone | done | fresh code review, every real finding fixed (`c09f082`); fresh clone from the README, no keys: see `results/fresh_clone.txt` (re-run 16:40 CT on the final code) |
+| M9 judge simulation ×2 | done | `docs/research/kettle/judge-round-{1,2}.md`: ≈ 71 → 74 (Round 1), ≈ 70 → 71 (finals); top changes made or skipped with a reason |
+| M10 hand-off | done | this file, `docs/EXPLAIN.md` (every module), `.overnight/kettle/BUILD_DONE` |
 
 - **Numbers (single microphone, macro F1 with 95% session-bootstrap CI):**
   - **Held-out (official DCASE 2018 Task 5 eval sample, run once, all 7 microphones, N = 7,791 clips / 91 sessions): Kettle 84.1 [74.4, 86.7]; 4-mic average 85.3 [75.5, 88.1]; Apple's built-in classifier 31.8 [25.7, 37.9] on the same clips.** Published DCASE 2018 baseline 85.0 (known mics) / 83.1 (unseen mics); best entry 90.4 / 88.4 (full set, all data; not strictly comparable).
@@ -30,7 +30,28 @@ from `results/metrics.json` (made by `python -m eval`); none is typed from memor
   - "Not sure": off-list sounds (dogs, sirens, noise, silence) get a confident label 0.4% [0.1, 2.1] of the time with the novelty check, 56.2% [50.1, 62.1] without. Calibration error 1.6 → 1.5 points. Smoothing cuts false-alarm blocks from 11.1 to 3.2 per hour.
 
 ## 2. What is not done or not right (ranked by points at risk)
-(Updated at the end of the run; see the "Final status" section at the bottom.)
+Ranked by points at risk.
+1. **No real-kitchen number yet (Testing 15, finals Q&A).** Every result is SINS: one research home, fixed microphone arrays. The own-kitchen set is Lane A's job today (the build was not allowed to create or label it). Until it's scored, the write-up says "not yet a real kitchen". This is the judges' first question in both simulations.
+2. **The live microphone path has only been driven by Chromium's fake mic** (the privacy check, 180 s, 8 activity changes, median 7.1 s to the timeline). Parth's live rehearsal in a real kitchen (Lane C) is the first real-mic test. Have the sample day ready as the fallback.
+3. **The day bar draws only 15 of 33 dev kitchen sessions as the right activity covering at least half the session** (46%, CI 30–62); every one still had some kitchen block on it (addendum item 9: a definition difference, not a bug; both are reported). Expect "why trust Missed?". Answer: the check is "any kitchen activity" and no dev kitchen session went unnoticed, but which kitchen activity is shown is less reliable, and the evidence card shows how sure.
+4. **Held-out recall dropped for moving about (76 → 55) and washing up (89 → 73).** The new per-microphone table shows moving about is low on every microphone (50–60%), so it isn't a microphone effect; one run can't separate the rest.
+5. **No unseen-microphone number** (the pre-registered fingerprint rule didn't confirm the nodes), **no log-mel baseline on held-out** (skipped: a post-hoc second look at the test set), **CLAP cut**, **AST only on a 2,700-clip dev subset**.
+6. **Write-up is ~1,390 words including tables and sources** (prose ~950). Lane B trims prose only; the number blocks regenerate.
+7. Cosmetic: the phone rules sheet truncates "TV on for more than (hours)"; the Python 3.11 requirement is strict (3.12 untested).
+
+**Addendum status (`.claude/overnight/kettle/k3-addendum.md`):**
+| # | Item | Status |
+|---|---|---|
+| 1 | Submission draft by Sat 9 PM | done: `docs/SUBMISSION-DRAFT.md`, numbers from `results/`; Parth presses submit |
+| 2a | Reliability plot + ECE with CI | done: ECE 1.6 → 1.5 [0.8, 2.6] points, `results/reliability_dev.png` |
+| 2b | θ cost story | done: trade-off table + plot; the write-up leads with the strict 15 of 33 |
+| 3 | Honest slices (no age/sex) | done: per microphone (dev and held-out × activity), per activity; per-home rows empty until Sunday |
+| 4 | Kitchen-activity metric in the headline | done: held-out caught 89.3 [85.3, 94.1]% of 1,183 windows, 144 missed; false alarms 0.5% of 6,608 |
+| 5 | Lead with a measured gap | done, then reframed by judge round 2: lead with the held-out score and the "not directly comparable" caveat; Apple's 31.8 is context, labelled zero-shot with a different label set |
+| 6 | Reproduce notebook < 5 min with outputs | done: 67 s re-run at 16:37 CT, ALL MATCH |
+| 7 | Per-judge Q&A | done: PRD §23 and `docs/EXPLAIN.md` |
+| 8 | Pitch quotes | **cut**: neither quote found as worded (DECISIONS 11:20); Parth may open them Sunday |
+| 9 | 17 of 33 kitchen sessions | done: a definition difference, not a bug; both numbers reported, regression tests (DECISIONS 16:15) |
 
 ## 3. Decisions made overnight that a human should confirm
 All in `docs/DECISIONS.md` (stage-3 rows from 10:12 onward). The ones to look at first:
@@ -73,13 +94,19 @@ Each person runs `/explain quiz <module>` until 4/5: `kettle/timeline.py` (Not s
 ## 7. Video shot list (2:00, from PRD §18; numbers from results)
 | Time | Shot | Set up |
 |---|---|---|
-| 0:00–0:15 | Kitchen laptop on a counter; caregiver phone; one line: Apple's classifier 31.8 vs Kettle 84.1 on the official test clips | `/how-sure` top on screen |
+| 0:00–0:15 | Kitchen laptop on a counter; caregiver phone; one line: "On the official test clips it had never heard, Kettle caught 86% of cooking and 85% of eating, and says 'Not sure' instead of guessing" (judge round 2: don't lead with Apple) | `/how-sure` top on screen |
 | 0:15–0:35 | Kitchen consent: "This laptop listens for kitchen sounds." → "Is it OK for Meera to see this?" → Listening | fresh `/kitchen` (delete `data/timeline/` first) |
 | 0:35–1:05 | Live: plates under a running tap → chip "Sounds like washing up" → a block settles; speak → "Conversation", no words anywhere; Pause → phone shows "Paused by Dad at …" | real kitchen, Chrome, presenter mode `/kitchen?presenter=1` |
 | 1:05–1:20 | Phone: heartbeat, summary, "Kitchen activity by 10:00 AM: Met"; then "Close the laptop lid" → "Not listening since …"; quiet morning → "No clear kitchen activity by 10:00 AM" | sample days on `/` |
-| 1:20–1:45 | How sure: kitchen sentence, held-out 84.1 [74.4, 86.7] vs Apple 31.8, per-activity misses and false alarms | `/how-sure` |
+| 1:20–1:45 | How sure: kitchen sentence, held-out 84.1 [74.4, 86.7] (close to the 2018 baseline, not directly comparable), per-activity misses and false alarms; Apple 31.8 only as context | `/how-sure` |
 | 1:45–1:55 | Where it fails: moving about vs quiet, TV vs conversation, own-kitchen drop (Sunday number) | `/how-sure#failures` |
 | 1:55–2:00 | End card: "Kettle. Know Dad's day went normally, without watching him. Prototype, not medical advice." | |
 
+## 7b. Today's clock (Sunday, CT)
+9:00 read this · 9:30 Lane A starts recording · 1:00 PM FREEZE (bug fixes and docs only) · 1–5 PM video and write-up · 5 PM fresh clone + `/ship-check` · **9:00 PM submit** (hard close 10:59 PM).
+
 ## 8. Credits and logs
 `docs/AI-USAGE-LOG.md` (stage-3 row), `docs/DATA-SOURCES.md` (stage-3 section), README "Credits".
+
+---
+Final update: Sat Nov 14 2026, 4:38 PM (Central). Build finished early; nothing pushed.
