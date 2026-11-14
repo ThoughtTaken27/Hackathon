@@ -70,13 +70,18 @@ Everything under `.claude/` is shared through git, so all three Claude Code sess
 | `/checkin` | At each team check-in: done / next / blocked, time left, the cut to make |
 | `/ship-check` | Sun 5 PM CT: fresh-clone run, secret scan, numbers vs `results/` |
 
-**Design skills** (third-party, credited in each folder's `SOURCE.md`). Claude also picks them up on its own when you do UI work:
+**Build and design skills.** Claude also picks these up on its own when the task fits:
 
 | Command | Use it for |
 | --- | --- |
+| `/agentic-build` | Any multi-file feature or integration: contract, thin vertical slice, verifier, review, hand-off |
+| `/ui-polish` | The polish loop for the demo screen: research, token plan, build, screenshot, measure, critique, iterate |
+| `/component-craft` | Per-component standard: ten laws, measured scale, state copy (incl. "not in our list"), motion recipes, CSS audit |
 | `/frontend-design` | Visual direction for the demo screen: palette, type, layout that doesn't look AI-templated (Anthropic, Apache-2.0) |
 | `/emil-design-eng` | Interaction polish and UI code review: press states, transitions, easing, timing (Emil Kowalski, MIT) |
 | `/apple-design` | Motion, gestures, materials, typography, reduced motion, Apple's design principles (Emil Kowalski, MIT) |
+
+`agentic-build`, `ui-polish` and `component-craft` are the repo owner's own skills, cleaned up for the team. The other three are third-party, credited in each folder's `SOURCE.md`.
 
 Polish is worth points only on the one demo screen and the first 15 seconds of the video. Use these in P4/P5 (Sunday), after the GATE passes. Never let them hold up the core flow or the metrics table.
 
