@@ -148,25 +148,28 @@ function renderResults(box, r) {
   if (d.novelty) nsBox.append(el("p", { text: `It also says "Not sure" when a sound is unlike all 9 activities it learned (${d.novelty.flagged_in_distribution.value.toFixed(0)}% of development windows get flagged this way).` }));
   if (off && off.confident_wrong) nsBox.append(el("p", { text: `On ${off.n} sounds that aren't household activities at all (dogs, sirens, rain, alarm clocks, noise, silence), Kettle gave a confident label to ${pct(off.confident_wrong)} (95% CI ${ci(off.confident_wrong)}). Without the "unlike anything it learned" check it would have been ${pct(off.confident_wrong_without_novelty_gate)}. Every one of those labels would have been wrong.` }));
   const sl = d.session_level;
-  if (sl) nsBox.append(el("p", { text: `On the day bar, a block needs 2 of 3 windows to agree. That caught ${sl.smoothing_on.session_recall.value.toFixed(0)}% of ${sl.smoothing_on.sessions.reduce((a, b) => a + b, 0)} activity sessions with ${sl.smoothing_on.false_alarms_per_hour} false-alarm blocks per hour of sound, versus ${sl.smoothing_off.false_alarms_per_hour} per hour without it.` }));
+  if (sl) nsBox.append(el("p", { text: `On the day bar, a block needs 2 of 3 windows to agree, and a short "Not sure" gap inside one activity no longer splits it. That caught ${sl.smoothing_on.session_recall.value.toFixed(0)}% of ${sl.smoothing_on.sessions.reduce((a, b) => a + b, 0)} activity sessions with ${sl.smoothing_on.false_alarms_per_hour} false-alarm blocks per hour of sound, versus ${sl.smoothing_off.false_alarms_per_hour} per hour without it.` }));
   box.append(section("When Kettle isn't sure", "not-sure", nsBox));
 
   // calibration and the cost of θ
   const cal = d.calibration, tt = d.theta_tradeoff;
   if (cal && tt) {
     const shipped = tt.reduce((b, r) => (Math.abs(r.theta - d.not_sure.theta) < Math.abs(b.theta - d.not_sure.theta) ? r : b), tt[0]);
-    const low = tt[0], high = tt[tt.length - 1];
+    const low = tt[0];
     const tb = el("tbody");
     for (const r of tt) tb.append(el("tr", { class: r === shipped ? "row-shipped" : "" }, el("td", { class: "num", text: `${Math.round(r.theta * 100)}%${r === shipped ? " (now)" : ""}` }),
-      el("td", { class: "num", text: `${r.meal_sessions_missed} of ${r.meal_sessions}` }), el("td", { class: "num", text: String(r.meal_false_alarms_per_day) })));
+      el("td", { class: "num", text: `${r.meal_sessions_missed} of ${r.meal_sessions}` }),
+      el("td", { class: "num", text: r.meal_sessions_missed_strict != null ? `${r.meal_sessions_missed_strict} of ${r.meal_sessions}` : "–" }),
+      el("td", { class: "num", text: String(r.meal_false_alarms_per_day) })));
+    const ks = d.kitchen_sessions;
     box.append(section("How much to trust \"how sure\"", "calibration",
       el("div", { class: "two-col" },
         el("figure", {}, el("img", { src: "/api/results/reliability_dev.png", alt: `Reliability plot: confidence against observed accuracy. Expected calibration error ${cal.ece_after_temperature.value} points.`, loading: "lazy" }),
           el("figcaption", { class: "meta muted", text: `When Kettle says it is X% sure, it is right about X% of the time: the average gap (ECE) is ${cal.ece_after_temperature.value} percentage points (95% CI ${ci(cal.ece_after_temperature)}).` })),
         el("div", {},
-          el("p", { text: `A higher "Not sure" bar could trade one mistake for another: a false "kitchen activity" could hide a skipped breakfast; a missed one could prompt a needless call. On development clips it barely mattered for Meera's check: across ${low.meal_sessions} kitchen sessions, ${high.meal_sessions_missed === 0 && low.meal_sessions_missed === 0 ? "none went unnoticed at any bar from" : "missed sessions changed between"} ${Math.round(low.theta * 100)}% and ${Math.round(high.theta * 100)}%, and false kitchen blocks moved between ${Math.min(...tt.map((x) => x.meal_false_alarm_blocks))} and ${Math.max(...tt.map((x) => x.meal_false_alarm_blocks))} over ${low.days} days of sound. We set the bar so the labels Kettle does show are right about ${d.not_sure.shown_precision_metric.value.toFixed(0)}% of the time.` }),
-          d.meal_sessions_strict ? el("p", { class: "meta muted", text: `"Noticed" means some kitchen block overlapped the session. Counting only the right kitchen activity covering at least half of it, ${d.meal_sessions_strict.n_caught} of ${d.meal_sessions_strict.n_sessions} kitchen sessions were caught; in the others the right activity never formed one block that long.` }) : null,
-          el("div", { class: "scroll-x" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", { class: "num", text: "Not-sure bar" }), el("th", { class: "num", text: "Kitchen sessions not noticed" }), el("th", { class: "num", text: "False kitchen blocks / day" }))), tb))))));
+          el("p", { text: `A higher "Not sure" bar trades one mistake for another: a false "kitchen activity" could hide a skipped breakfast; a missed one could prompt a needless call. We set the bar so the labels Kettle does show are right about ${d.not_sure.shown_precision_metric.value.toFixed(0)}% of the time. On development clips (${low.meal_sessions} kitchen sessions, ${low.days} days of sound), a session counts as noticed when kitchen blocks cover at least half of it.` }),
+          ks ? el("p", { class: "meta muted", text: `"Right activity" is stricter: one block of that session's own activity covers half of it. At first only ${ks.without_bridging.strict.n_caught} of ${ks.without_bridging.n_sessions} passed, because short "Not sure" moments split a cooking session into pieces. Since the held-out test, a "Not sure" gap of up to ${Math.round(ks.bridge_s)} seconds inside one activity no longer splits it (the model and the bar didn't change): ${ks.with_bridging.strict.n_caught} of ${ks.with_bridging.n_sessions} now pass, and false kitchen blocks fell from ${ks.without_bridging.false_kitchen_blocks_per_day} to ${ks.with_bridging.false_kitchen_blocks_per_day} a day.` }) : null,
+          el("div", { class: "scroll-x" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", { class: "num", text: "Not-sure bar" }), el("th", { class: "num", text: "Kitchen sessions not noticed" }), el("th", { class: "num", text: "Not the right activity" }), el("th", { class: "num", text: "False kitchen blocks / day" }))), tb))))));
   }
 
   // slices

@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-14 16:18 CST",
- "commit": "298da1c195bdc3fc07789c74b46d0c667102435b",
+ "generated": "2026-11-14 16:57 CST",
+ "commit": "cb56c88a46c82cedc3116a7cf8b6c414ee502ce1",
  "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
  "head": {
   "theta": 0.66,
@@ -1677,15 +1677,26 @@
   "session_level": {
    "smoothing_on": {
     "caught": [
-     23,
-     6,
-     2,
-     7,
-     81,
-     18,
+     32,
+     11,
+     5,
+     10,
+     90,
+     19,
      8,
      8,
-     18
+     23
+    ],
+    "caught_merged": [
+     39,
+     11,
+     9,
+     12,
+     92,
+     20,
+     8,
+     8,
+     25
     ],
     "sessions": [
      39,
@@ -1699,27 +1710,37 @@
      32
     ],
     "false_alarm_blocks": [
-     33,
-     6,
+     30,
+     5,
      11,
      3,
-     18,
+     16,
      0,
      0,
      1,
      8
     ],
     "hours": 24.78,
-    "false_alarms_per_hour": 3.23,
-    "session_recall_point": 0.665,
+    "false_alarms_per_hour": 2.99,
+    "session_recall_point": 0.802,
     "session_recall": {
-     "value": 66.5,
+     "value": 80.2,
      "split": "dev folds, activity sessions through the shipped timeline",
      "n_clips": 257,
      "n_sessions": 257,
      "ci95": [
-      60.6,
-      72.0
+      74.9,
+      84.6
+     ]
+    },
+    "session_recall_merged": {
+     "value": 87.2,
+     "split": "dev folds, activity sessions through the shipped timeline, same-activity blocks together cover >= 50%",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      82.5,
+      90.7
      ]
     }
    },
@@ -1734,6 +1755,17 @@
      8,
      7,
      3
+    ],
+    "caught_merged": [
+     37,
+     11,
+     9,
+     12,
+     92,
+     20,
+     8,
+     8,
+     27
     ],
     "sessions": [
      39,
@@ -1769,6 +1801,85 @@
       41.1,
       53.2
      ]
+    },
+    "session_recall_merged": {
+     "value": 87.2,
+     "split": "dev folds, activity sessions through the shipped timeline, same-activity blocks together cover >= 50%",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      82.5,
+      90.7
+     ]
+    }
+   },
+   "smoothing_on_no_bridge": {
+    "caught": [
+     23,
+     6,
+     2,
+     7,
+     81,
+     18,
+     8,
+     8,
+     18
+    ],
+    "caught_merged": [
+     37,
+     11,
+     9,
+     12,
+     90,
+     20,
+     8,
+     8,
+     25
+    ],
+    "sessions": [
+     39,
+     12,
+     9,
+     12,
+     117,
+     20,
+     8,
+     8,
+     32
+    ],
+    "false_alarm_blocks": [
+     33,
+     6,
+     11,
+     3,
+     18,
+     0,
+     0,
+     1,
+     8
+    ],
+    "hours": 24.78,
+    "false_alarms_per_hour": 3.23,
+    "session_recall_point": 0.665,
+    "session_recall": {
+     "value": 66.5,
+     "split": "dev folds, activity sessions through the shipped timeline",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      60.6,
+      72.0
+     ]
+    },
+    "session_recall_merged": {
+     "value": 85.6,
+     "split": "dev folds, activity sessions through the shipped timeline, same-activity blocks together cover >= 50%",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      80.8,
+      89.4
+     ]
     }
    }
   },
@@ -1778,6 +1889,8 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
+    "meal_sessions_missed_strict": 11,
+    "meal_sessions_missed_any_overlap": 0,
     "meal_false_alarm_blocks": 12,
     "meal_false_alarms_per_day": 7.75,
     "days": 1.55
@@ -1787,6 +1900,8 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
+    "meal_sessions_missed_strict": 11,
+    "meal_sessions_missed_any_overlap": 0,
     "meal_false_alarm_blocks": 10,
     "meal_false_alarms_per_day": 6.46,
     "days": 1.55
@@ -1796,8 +1911,10 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 8,
-    "meal_false_alarms_per_day": 5.17,
+    "meal_sessions_missed_strict": 9,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 7,
+    "meal_false_alarms_per_day": 4.52,
     "days": 1.55
    },
    {
@@ -1805,8 +1922,10 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 6,
-    "meal_false_alarms_per_day": 3.87,
+    "meal_sessions_missed_strict": 8,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 5,
+    "meal_false_alarms_per_day": 3.23,
     "days": 1.55
    },
    {
@@ -1814,8 +1933,10 @@
     "shipped": true,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 6,
-    "meal_false_alarms_per_day": 3.87,
+    "meal_sessions_missed_strict": 7,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 5,
+    "meal_false_alarms_per_day": 3.23,
     "days": 1.55
    },
    {
@@ -1823,8 +1944,10 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 7,
-    "meal_false_alarms_per_day": 4.52,
+    "meal_sessions_missed_strict": 9,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 4,
+    "meal_false_alarms_per_day": 2.58,
     "days": 1.55
    },
    {
@@ -1832,34 +1955,117 @@
     "shipped": false,
     "meal_sessions": 33,
     "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 8,
-    "meal_false_alarms_per_day": 5.17,
+    "meal_sessions_missed_strict": 13,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 4,
+    "meal_false_alarms_per_day": 2.58,
     "days": 1.55
    },
    {
     "theta": 0.9,
     "shipped": false,
     "meal_sessions": 33,
-    "meal_sessions_missed": 0,
-    "meal_false_alarm_blocks": 7,
-    "meal_false_alarms_per_day": 4.52,
+    "meal_sessions_missed": 2,
+    "meal_sessions_missed_strict": 16,
+    "meal_sessions_missed_any_overlap": 0,
+    "meal_false_alarm_blocks": 2,
+    "meal_false_alarms_per_day": 1.29,
     "days": 1.55
    }
   ],
-  "meal_sessions_strict": {
-   "rule": "kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it",
-   "caught": {
-    "value": 45.5,
-    "split": "dev folds (also used for selection), kitchen sessions through the shipped timeline at the shipped \u03b8",
-    "n_clips": 33,
-    "n_sessions": 33,
-    "ci95": [
-     29.8,
-     62.0
-    ]
+  "kitchen_sessions": {
+   "rules": {
+    "merged (headline)": "kitchen-activity blocks (cooking, washing up or eating) together cover >= 50% of the session",
+    "strict": "one block of the session's own activity covers >= 50% of it (the session_level rule)",
+    "any overlap": "any kitchen-activity block touches the session"
    },
-   "n_caught": 15,
-   "n_sessions": 33
+   "with_bridging": {
+    "n_sessions": 33,
+    "false_kitchen_blocks_per_day": 3.23,
+    "merged": {
+     "n_caught": 33,
+     "caught": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection), kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       89.6,
+       100.0
+      ]
+     }
+    },
+    "strict": {
+     "n_caught": 26,
+     "caught": {
+      "value": 78.8,
+      "split": "dev folds (also used for selection), kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       62.2,
+       89.3
+      ]
+     }
+    },
+    "any_overlap": {
+     "n_caught": 33,
+     "caught": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection), kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       89.6,
+       100.0
+      ]
+     }
+    }
+   },
+   "without_bridging": {
+    "n_sessions": 33,
+    "false_kitchen_blocks_per_day": 3.87,
+    "merged": {
+     "n_caught": 33,
+     "caught": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection), bridging off, kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       89.6,
+       100.0
+      ]
+     }
+    },
+    "strict": {
+     "n_caught": 15,
+     "caught": {
+      "value": 45.5,
+      "split": "dev folds (also used for selection), bridging off, kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       29.8,
+       62.0
+      ]
+     }
+    },
+    "any_overlap": {
+     "n_caught": 33,
+     "caught": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection), bridging off, kitchen sessions through the shipped timeline at the shipped \u03b8",
+      "n_clips": 33,
+      "n_sessions": 33,
+      "ci95": [
+       89.6,
+       100.0
+      ]
+     }
+    }
+   },
+   "bridge_s": 30.0
   },
   "baselines": {
    "majority": {

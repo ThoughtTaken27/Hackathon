@@ -68,3 +68,24 @@ def test_summary_facts_equal_blocks():
 def test_summary_never_invents_activity_from_quiet_or_not_sure():
     b = timeline.blocks(run_of(0, "absence", 4) + run_of(40, "cooking", 4, conf=0.3), TH)
     assert timeline.summary(b, 0, listening_since=0).startswith("No kitchen activity heard yet today.")
+
+
+def _unsure_gap(start: float, n: int) -> list[dict]:
+    return [ev(start + i * 10, "cooking", conf=0.3) for i in range(n)]       # below θ -> "not_sure"
+
+
+def test_short_not_sure_gap_inside_one_activity_is_bridged():
+    # addendum item 10: 3 cooking, 30 s of "not sure", 3 cooking -> one cooking block, not three pieces
+    events = run_of(0, "cooking", 3) + _unsure_gap(30, 3) + run_of(60, "cooking", 3)
+    b = timeline.blocks(events, TH)
+    assert [(x["state"], x["activity"], x["n_windows"]) for x in b] == [("activity", "cooking", 9)]
+    assert b[0]["conf"] < 0.9                         # the bridged windows still lower "how sure"
+
+
+def test_long_gap_different_sides_or_novel_sounds_are_not_bridged():
+    long_gap = run_of(0, "cooking", 3) + _unsure_gap(30, 4) + run_of(70, "cooking", 3)          # 40 s > BRIDGE_S
+    assert [x["state"] for x in timeline.blocks(long_gap, TH)] == ["activity", "not_sure", "activity"]
+    two_sides = run_of(0, "cooking", 3) + _unsure_gap(30, 2) + run_of(50, "dishwashing", 3)
+    assert [x["state"] for x in timeline.blocks(two_sides, TH)] == ["activity", "not_sure", "activity"]
+    novel = run_of(0, "cooking", 3) + [dict(e, novel=True) for e in _unsure_gap(30, 2)] + run_of(50, "cooking", 3)
+    assert [x["state"] for x in timeline.blocks(novel, TH)] == ["activity", "not_sure", "activity"]

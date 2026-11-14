@@ -1,4 +1,4 @@
-# Kettle results (2026-11-14 16:18 CST, commit 298da1c195, head fa5de76a7970)
+# Kettle results (2026-11-14 16:57 CST, commit cb56c88a46, head fa5de76a7970)
 
 Primary metric: macro F1 over the 9 SINS activities, 10-s windows. Dev numbers: **dev folds (also used for selection)**, N = 8920 clips from 257 sessions, prevalence-reweighted, 95% session-bootstrap CI.
 
@@ -85,20 +85,22 @@ Caught 95.3 [93.8, 96.5]% of 3000 kitchen-activity windows (missed 164); right 8
 
 ## The cost of θ for Meera's check (dev, through the shipped timeline; kitchen activity = cooking, washing up or eating)
 
-| θ | Kitchen sessions not noticed | False kitchen-activity blocks per 16-h day |
-|---|---|---|
-| 0.30 | 0 of 33 | 7.75 |
-| 0.40 | 0 of 33 | 6.46 |
-| 0.50 | 0 of 33 | 5.17 |
-| 0.60 | 0 of 33 | 3.87 |
-| 0.66 (shipped) | 0 of 33 | 3.87 |
-| 0.70 | 0 of 33 | 4.52 |
-| 0.80 | 0 of 33 | 5.17 |
-| 0.90 | 0 of 33 | 4.52 |
+Kitchen sessions **noticed** = kitchen-activity blocks together cover at least half of the session (the pre-registered 50% threshold, applied to the merged caregiver class). Two extra columns: **strict** (one block of the session's own activity covers half of it) and **any overlap**.
+
+| θ | Not noticed (merged, headline) | Not caught (strict) | Not touched (any overlap) | False kitchen-activity blocks per 16-h day |
+|---|---|---|---|---|
+| 0.30 | 0 of 33 | 11 | 0 | 7.75 |
+| 0.40 | 0 of 33 | 11 | 0 | 6.46 |
+| 0.50 | 0 of 33 | 9 | 0 | 4.52 |
+| 0.60 | 0 of 33 | 8 | 0 | 3.23 |
+| 0.66 (shipped) | 0 of 33 | 7 | 0 | 3.23 |
+| 0.70 | 0 of 33 | 9 | 0 | 2.58 |
+| 0.80 | 0 of 33 | 13 | 0 | 2.58 |
+| 0.90 | 2 of 33 | 16 | 0 | 1.29 |
 
 Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.
 
-'Noticed' here means any kitchen-activity block overlaps the session. Under the strict rule (kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it), 15 of 33 kitchen sessions are caught (45.5 [29.8, 62.0]%): the day bar notices every kitchen session, but in the rest the right activity never formed one block covering half of it (another kitchen activity, 'Not sure' or shorter blocks filled the gap; we haven't measured which most often). Window-level kitchen recall and these session counts measure different things.
+**Fragmentation and the bridging rule (addendum item 10).** Before: the strict rule caught 15 of 33 kitchen sessions while merged kitchen blocks covered half or more of all 33: the right activity was there, split by short 'Not sure' stretches into several blocks (none of the strict misses was drawn as the wrong kitchen activity). Timeline rule 2b now bridges a 'Not sure' stretch of at most 30 s between two windows of the same activity. After, at the shipped θ: merged 100.0 [89.6, 100.0]% (33 of 33), strict 78.8 [62.2, 89.3]% (26, was 15), false kitchen blocks per day 3.23 (was 3.87). All 9 activities, strict rule: 80.2 [74.9, 84.6]% of 257 sessions (was 66.5 [60.6, 72.0]%); merged: 87.2 [82.5, 90.7]% (was 85.6 [80.8, 89.4]%). The rule was added **after** the frozen held-out predictions were written; the head and θ are unchanged, the 30 s was chosen from dev gap lengths only, and the held-out window-level numbers don't use the timeline.
 
 ## Slices we can check (and the ones we can't)
 
@@ -115,7 +117,7 @@ SINS is one person in one home, so **age and sex can't be tested**. What we can 
 
 ## Through the shipped timeline (activity sessions, dev)
 
-With 2-of-3 smoothing: 66.5 [60.6, 72.0]% of 257 activity sessions caught, 3.23 false-alarm blocks per hour of audio. Without smoothing: 47.1 [41.1, 53.2]% caught, 11.1 per hour (24.78 h of stitched audio).
+With 2-of-3 smoothing and bridging (rule 2b): 80.2 [74.9, 84.6]% of 257 activity sessions caught, 2.99 false-alarm blocks per hour of audio. Without smoothing: 47.1 [41.1, 53.2]% caught, 11.1 per hour (24.78 h of stitched audio).
 
 ## Off-list sounds (not one of the 9 activities)
 

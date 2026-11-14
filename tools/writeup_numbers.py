@@ -102,7 +102,7 @@ def blocks(m: dict) -> dict:
                          f"the new sound); each 2-s update took {rt['per_hop_s_median'] * 1000:.0f} ms (90th percentile "
                          f"{rt['per_hop_s_p90'] * 1000:.0f} ms) and the server used {rt['server_cpu_percent_mean']:.0f}% CPU on average.")
     sl = d["session_level"]["smoothing_on"]
-    extra.append(f"Through the day bar (dev, 2-of-3 smoothing, {sl['hours']} h of stitched audio): {f(sl['session_recall'])}% of "
+    extra.append(f"Through the day bar (dev, 2-of-3 smoothing and the 30-s bridging rule, {sl['hours']} h of stitched audio): {f(sl['session_recall'])}% of "
                  f"{sum(sl['sessions'])} activity sessions were caught as one block covering at least half of them, with "
                  f"{sl['false_alarms_per_hour']} false-alarm blocks per hour across all activities "
                  f"({d['session_level']['smoothing_off']['false_alarms_per_hour']} without smoothing).")
@@ -116,23 +116,20 @@ def blocks(m: dict) -> dict:
         fl.append(f"{i}. **{DISPLAY[x['true']]} heard as {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips; e.g. "
                   f"`{x['clip']}`: {probs}; it heard {snd}). {x['likely_cause']}")
     tt = d["theta_tradeoff"]
-    shipped = next((r for r in tt if r.get("shipped")), tt[0])
     lo = tt[0]
-    missed_all = {r["meal_sessions_missed"] for r in tt}
-    ms = d["meal_sessions_strict"]
-    fa_range = (min(r["meal_false_alarm_blocks"] for r in tt), max(r["meal_false_alarm_blocks"] for r in tt))
-    trade = (f"**The \"Not sure\" bar θ.** Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\". We chose θ on dev folds "
-             f"so that shown labels are right {d['not_sure']['shown_precision_metric']['value']:.0f}% of the time "
-             f"({d['not_sure']['coverage_metric']['value']:.0f}% of windows get a label). For Meera's check it barely matters on dev: across "
-             f"{lo['meal_sessions']} kitchen sessions ({lo['days']} days of stitched audio) "
-             + ("no kitchen session went unnoticed at any θ from 0.30 to 0.90" if missed_all == {0} else "kitchen sessions missed varied with θ")
-             + f", and θ only moved the count of false kitchen-activity blocks between {fa_range[0]} and {fa_range[1]} "
-             f"({shipped['meal_false_alarms_per_day']} per 16-hour day at the chosen θ, {lo['meal_false_alarms_per_day']} at θ = {lo['theta']:.2f}). "
-             f"\"Noticed\" means some kitchen-activity block overlapped the session; under the strict rule (the right kitchen activity covering at least half of it) "
-             f"{ms['n_caught']} of {ms['n_sessions']} were caught ({ms['caught']['value']:.0f}%, 95% CI {ms['caught']['ci95'][0]:.0f}–{ms['caught']['ci95'][1]:.0f}), "
-             f"so in {ms['n_sessions'] - ms['n_caught']} kitchen sessions the right activity never formed one block covering half of it (the bar showed another kitchen activity, \"Not sure\", or shorter blocks). "
-             f"Those are kitchen-level false alarms; the \"per hour\" figure above counts every activity confusion, including cooking vs washing up. "
-             f"The cost of a high θ shows up elsewhere: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e else "")
+    ks = d["kitchen_sessions"]
+    w, wo = ks["with_bridging"], ks["without_bridging"]
+    pc = lambda x: f"{x['caught']['value']:.0f}% (95% CI {x['caught']['ci95'][0]:.0f}–{x['caught']['ci95'][1]:.0f})"
+    trade = (f"**The \"Not sure\" bar θ and the day bar.** Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\"; we chose "
+             f"θ on dev folds so shown labels are right {d['not_sure']['shown_precision_metric']['value']:.0f}% of the time. Through the day bar "
+             f"on dev ({w['n_sessions']} kitchen sessions, {lo['days']} days of stitched audio), kitchen-activity blocks covered at least half of "
+             f"{w['merged']['n_caught']} of {w['n_sessions']} sessions. The stricter test, one block of the right activity covering half the session, "
+             f"first caught only {wo['strict']['n_caught']}: the right activity was there, split into pieces by short \"Not sure\" stretches. "
+             f"A timeline rule added after the frozen test run (a \"Not sure\" gap of up to {ks['bridge_s']:.0f} s inside one activity no longer splits "
+             f"it; θ and the model unchanged) raised that to {w['strict']['n_caught']} of {w['n_sessions']}, {pc(w['strict'])}, and cut false "
+             f"kitchen blocks from {wo['false_kitchen_blocks_per_day']} to {w['false_kitchen_blocks_per_day']} per 16-hour day. Raising θ trades "
+             f"false kitchen blocks ({lo['meal_false_alarms_per_day']} per day at θ = {lo['theta']:.2f}) for more \"Not sure\": "
+             f"{e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\" at the chosen θ." if e else "")
     lm, ap = d["baselines"]["logmel_lr"]["macro_f1"], d["baselines"].get("ast_probe", {})
     dev_line = (f"Development folds (optimistic; they chose the model): Kettle {f(d['ours_ch0']['macro_f1'])}, log-mel statistics + logistic "
                 f"regression (no deep model) {f(lm)}"
@@ -142,12 +139,12 @@ def blocks(m: dict) -> dict:
     fl_short = [f"{i}. **{DISPLAY[x['true']]} → {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips): {x['likely_cause']}"
                 for i, x in enumerate(pick, 1)]
     trade_short = (f"\"Not sure\" below θ = {d['not_sure']['theta']:.2f} (chosen on dev so shown labels are right "
-                   f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). Through the day bar on dev, {ms['n_caught']} of "
-                   f"{ms['n_sessions']} kitchen sessions ({ms['caught']['value']:.0f}%, 95% CI {ms['caught']['ci95'][0]:.0f}–{ms['caught']['ci95'][1]:.0f}) "
-                   f"were drawn as the right activity covering at least half the session; every one had some kitchen block on it, at any θ "
-                   f"from 0.30 to 0.90, so a \"kitchen activity\" check would have noticed each one. θ only moved false kitchen blocks "
-                   f"({lo['meal_false_alarms_per_day']} → {shipped['meal_false_alarms_per_day']} per 16-hour day). "
-                   f"Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e and missed_all == {0} else trade)
+                   f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). On dev, kitchen-activity blocks covered at least half of "
+                   f"{w['merged']['n_caught']} of {w['n_sessions']} kitchen sessions, but the right activity formed one such block in only "
+                   f"{wo['strict']['n_caught']}: short \"Not sure\" stretches split it. A timeline rule added after the frozen test run (bridge a "
+                   f"\"Not sure\" gap of up to {ks['bridge_s']:.0f} s inside one activity; model and θ unchanged) raised that to "
+                   f"{w['strict']['n_caught']} of {w['n_sessions']} and cut false kitchen blocks from {wo['false_kitchen_blocks_per_day']} to "
+                   f"{w['false_kitchen_blocks_per_day']} per 16-hour day. Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e else trade)
     return {"lead": "\n".join(lead), "results": "\n".join(held + dev_rows + [""] + extra),
             "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade,
             "failures_short": "\n".join(fl_short), "tradeoff_short": trade_short}

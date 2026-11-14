@@ -154,14 +154,14 @@ def pick_theta(curve: list[dict], target: float = 0.9) -> dict:
 
 # ---------------------------------------------------------------- session level (the shipped pipeline)
 
-def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0) -> dict:
+def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0, bridge_s: float | None = None) -> dict:
     """Stitch each test fold's sessions into a contiguous sequence (clips in segment order, sessions in random
     order) and run the real timeline rules (θ, 2-of-3 smoothing, merge). A true session is caught if a
     same-activity block overlaps >= 50% of it; a predicted activity block that isn't >= 50% inside a same-activity
     session is a false alarm. Each clip = one 10-s window."""
     from kettle import timeline
     rng = np.random.default_rng(seed)
-    caught = np.zeros(len(CLASSES)); total = np.zeros(len(CLASSES)); fa = np.zeros(len(CLASSES)); hours = 0.0
+    caught = np.zeros(len(CLASSES)); merged = np.zeros(len(CLASSES)); total = np.zeros(len(CLASSES)); fa = np.zeros(len(CLASSES)); hours = 0.0
     for k in FOLDS:
         idx = np.where(fold == k)[0]
         sess = sorted(set(session[idx]))
@@ -178,7 +178,7 @@ def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0) ->
             truth.append((a, t, int(y[ii[0]])))
         hours += t / 3600
         if smooth:
-            blks = timeline.blocks(events, theta, gap_s=1)
+            blks = timeline.blocks(events, theta, gap_s=1, **({} if bridge_s is None else {"bridge_s": bridge_s}))
         else:
             labs = [timeline.raw_label(e, theta) for e in events]
             blks = []
@@ -194,16 +194,21 @@ def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0) ->
             total[c] += 1
             if any(CLASSES.index(b["activity"]) == c and (min(z, b["end"]) - max(a, b["start"])) >= 0.5 * (z - a) for b in acts):
                 caught[c] += 1
+            if sum(max(0.0, min(z, b["end"]) - max(a, b["start"])) for b in acts if CLASSES.index(b["activity"]) == c) >= 0.5 * (z - a):
+                merged[c] += 1
         for b in acts:
             c = CLASSES.index(b["activity"])
             inside = sum(max(0.0, min(z, b["end"]) - max(a, b["start"])) for a, z, cc in truth if cc == c)
             if inside < 0.5 * (b["end"] - b["start"]):
                 fa[c] += 1
-    return {"caught": caught.astype(int).tolist(), "sessions": total.astype(int).tolist(), "false_alarm_blocks": fa.astype(int).tolist(),
+    return {"caught": caught.astype(int).tolist(), "caught_merged": merged.astype(int).tolist(), "sessions": total.astype(int).tolist(), "false_alarm_blocks": fa.astype(int).tolist(),
             "hours": round(hours, 2), "false_alarms_per_hour": round(float(fa.sum() / max(hours, 1e-9)), 2),
             "session_recall_point": round(float(caught.sum() / total.sum()), 3),
             "session_recall": num(float(caught.sum() / total.sum()), "dev folds, activity sessions through the shipped timeline",
-                                  int(total.sum()), int(total.sum()), M.wilson(int(caught.sum()), int(total.sum())))}
+                                  int(total.sum()), int(total.sum()), M.wilson(int(caught.sum()), int(total.sum()))),
+            "session_recall_merged": num(float(merged.sum() / total.sum()), "dev folds, activity sessions through the shipped timeline, "
+                                         "same-activity blocks together cover >= 50%", int(total.sum()), int(total.sum()),
+                                         M.wilson(int(merged.sum()), int(total.sum())))}
 
 
 # ---------------------------------------------------------------- the whole dev study
@@ -269,13 +274,16 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     R["session_level"] = {"smoothing_on": session_level(y, P0, session, seg, fold, theta, True),
                           "smoothing_off": session_level(y, P0, session, seg, fold, theta, False)}
     R["theta_tradeoff"] = theta_tradeoff(y, P0, session, seg, fold, theta)
-    # addendum item 9: the same kitchen sessions under the strict per-class rule, so both definitions are reported
-    on = R["session_level"]["smoothing_on"]
-    sc, st = sum(on["caught"][k] for k in MEAL_IDX), sum(on["sessions"][k] for k in MEAL_IDX)
-    R["meal_sessions_strict"] = {
-        "rule": "kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it",
-        "caught": num(sc / st, split + ", kitchen sessions through the shipped timeline at the shipped θ", st, st, M.wilson(sc, st)),
-        "n_caught": int(sc), "n_sessions": int(st)}
+    # addendum item 10: kitchen sessions under three rules, with and without the bridging rule (timeline rule 2b),
+    # which was added after the frozen held-out predictions were written; head and θ unchanged
+    R["session_level"]["smoothing_on_no_bridge"] = session_level(y, P0, session, seg, fold, theta, True, bridge_s=0)
+    before = theta_tradeoff(y, P0, session, seg, fold, theta, bridge_s=0)
+    R["kitchen_sessions"] = {"rules": {
+        "merged (headline)": "kitchen-activity blocks (cooking, washing up or eating) together cover >= 50% of the session",
+        "strict": "one block of the session's own activity covers >= 50% of it (the session_level rule)",
+        "any overlap": "any kitchen-activity block touches the session"},
+        "with_bridging": _kitchen_rules(R["theta_tradeoff"], split), "without_bridging": _kitchen_rules(before, split + ", bridging off"),
+        "bridge_s": timeline_bridge_s()}
 
     # 2. baselines (same folds, same weights)
     B = {}
@@ -459,11 +467,29 @@ def rates_idx(idx, ty, py, wy):
     return (tp / max(1e-9, (w_ * t).sum()), tp / max(1e-9, (w_ * p_).sum()), (w_ * (~t & p_)).sum() / max(1e-9, (w_ * ~t).sum()))
 
 
-def theta_tradeoff(y, P0, session, seg, fold, shipped: float | None = None) -> list[dict]:
+def timeline_bridge_s() -> float:
+    from kettle import timeline
+    return timeline.BRIDGE_S
+
+
+def _kitchen_rules(rows: list[dict], split: str) -> dict:
+    """The shipped-θ row of a θ trade-off as three kitchen-session catch rates with Wilson CIs."""
+    r = next(x for x in rows if x["shipped"])
+    n = r["meal_sessions"]
+    out = {"n_sessions": n, "false_kitchen_blocks_per_day": r["meal_false_alarms_per_day"]}
+    for name, key in (("merged", "meal_sessions_missed"), ("strict", "meal_sessions_missed_strict"), ("any_overlap", "meal_sessions_missed_any_overlap")):
+        k = n - r[key]
+        out[name] = {"n_caught": k, "caught": num(k / n, split + ", kitchen sessions through the shipped timeline at the shipped θ", n, n, M.wilson(k, n))}
+    return out
+
+
+def theta_tradeoff(y, P0, session, seg, fold, shipped: float | None = None, bridge_s: float | None = None) -> list[dict]:
     """The cost of θ for Meera's check, through the shipped timeline (dev folds, sessions stitched as in session_level).
-    Caregiver level: cooking, washing up and eating count as one "kitchen activity". A kitchen session is noticed if any
-    kitchen-activity block overlaps it; a kitchen-activity block is a false alarm if under half of it lies inside any
-    kitchen session. Reported per 16-hour day of stitched audio, for a grid of θ plus the shipped θ."""
+    Caregiver level: cooking, washing up and eating count as one "kitchen activity". Headline rule (stated once, used
+    everywhere; addendum item 10): a kitchen session is noticed if kitchen-activity blocks together cover >= 50% of it
+    (the pre-registered 50% threshold, applied to the merged caregiver class). Two extra columns: strict (one block of
+    the session's own activity covers >= 50%, as in session_level) and any overlap. A kitchen-activity block is a false
+    alarm if under half of it lies inside any kitchen session. Per 16-hour day of stitched audio, θ grid + shipped θ."""
     from kettle import timeline
     grid = sorted(set([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] + ([round(shipped, 2)] if shipped else [])))
     meal = set(MEAL_IDX)
@@ -476,7 +502,7 @@ def theta_tradeoff(y, P0, session, seg, fold, shipped: float | None = None) -> l
         order[k] = sess
     out = []
     for th in grid:
-        noticed = total = fa = 0
+        noticed = strict = anyov = total = fa = 0
         hours = 0.0
         for k in FOLDS:
             idx = np.where(fold == k)[0]
@@ -489,19 +515,24 @@ def theta_tradeoff(y, P0, session, seg, fold, shipped: float | None = None) -> l
                     pr = {c: float(v) for c, v in zip(CLASSES, P0[i])}
                     events.append({"start": t, "end": t + 10, "t": t + 10, "probs": pr, "sounds": [], "conf": max(pr.values())})
                     t += 10
-                truth.append((a, t, int(y[ii[0]]) in meal))
+                truth.append((a, t, int(y[ii[0]]) in meal, int(y[ii[0]])))
             hours += t / 3600
-            kb = [b for b in timeline.blocks(events, th, gap_s=1) if b["state"] == "activity" and CLASSES.index(b["activity"]) in meal]
-            for a, z, is_meal in truth:
+            blks = timeline.blocks(events, th, gap_s=1, **({} if bridge_s is None else {"bridge_s": bridge_s}))
+            kb = [b for b in blks if b["state"] == "activity" and CLASSES.index(b["activity"]) in meal]
+            for a, z, is_meal, c in truth:
                 if is_meal:
                     total += 1
-                    noticed += any(min(z, b["end"]) > max(a, b["start"]) for b in kb)
+                    ov = [(max(0.0, min(z, b["end"]) - max(a, b["start"])), b) for b in kb]
+                    noticed += sum(o for o, _ in ov) >= 0.5 * (z - a)
+                    strict += any(o >= 0.5 * (z - a) and CLASSES.index(b["activity"]) == c for o, b in ov)
+                    anyov += any(o > 0 for o, _ in ov)
             for b in kb:
-                inside = sum(max(0.0, min(z, b["end"]) - max(a, b["start"])) for a, z, m in truth if m)
+                inside = sum(max(0.0, min(z, b["end"]) - max(a, b["start"])) for a, z, m, _ in truth if m)
                 fa += inside < 0.5 * (b["end"] - b["start"])
         days = hours / 16
         out.append({"theta": th, "shipped": bool(shipped) and abs(th - round(shipped, 2)) < 1e-9,
                     "meal_sessions": total, "meal_sessions_missed": total - noticed,
+                    "meal_sessions_missed_strict": total - strict, "meal_sessions_missed_any_overlap": total - anyov,
                     "meal_false_alarm_blocks": fa, "meal_false_alarms_per_day": round(fa / days, 2), "days": round(days, 2)})
     return out
 def loudness_cv(rms_log, y, fold, w) -> np.ndarray:

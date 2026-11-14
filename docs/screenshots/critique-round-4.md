@@ -25,3 +25,6 @@ No regressions from round 3 in hierarchy, contrast or copy. Calm, not surveillan
 
 ## Recapture after the judge-round-2 copy change (16:45 CT)
 Full recapture: 136 screens, 0 problems. The How-sure lead now reads "close to the official 2018 DCASE baseline's published 85 (known microphones) / 83.1 (unseen), but not directly comparable… not yet a real kitchen. For context only, Apple's built-in sound classifier (zero-shot, a different label set) scores 31.8%", and it reads well in all four size/theme variants (sheet-10). Left for Lane B: the overall-score row still shows Apple's 31.8% as a third big tile next to Kettle's; shrinking it to a footnote is a one-line change in `static/howsure.js` if the team agrees with judge round 2.
+
+## Recapture after the bridging rule (addendum item 10, 17:05 CT)
+136 screens, 0 problems. The three sample days look the same as before (their single demo session per activity has no short "Not sure" gap inside an activity, so nothing is bridged); the How-sure θ section now has a "Not the right activity" column and the fragmentation sentence. No layout change.

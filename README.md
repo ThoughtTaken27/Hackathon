@@ -66,7 +66,7 @@ Dev, Meera's check: caught 95.3 [93.8, 96.5]% of 3,000 kitchen windows (missed 1
 
 On 260 sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident label to 0.4 [0.1, 2.1]% (vs 56.2 [50.1, 62.1]% without its 'unlike anything it learned' check).
 Live, on a laptop CPU (privacy-check run, 180 s through the browser's microphone, 8 activity changes): a new activity reached the timeline after a median 7.1 s (a 10-s window must fill with the new sound); each 2-s update took 64 ms (90th percentile 71 ms) and the server used 4% CPU on average.
-Through the day bar (dev, 2-of-3 smoothing, 24.78 h of stitched audio): 66.5 [60.6, 72.0]% of 257 activity sessions were caught as one block covering at least half of them, with 3.23 false-alarm blocks per hour across all activities (11.1 without smoothing).
+Through the day bar (dev, 2-of-3 smoothing and the 30-s bridging rule, 24.78 h of stitched audio): 80.2 [74.9, 84.6]% of 257 activity sessions were caught as one block covering at least half of them, with 2.99 false-alarm blocks per hour across all activities (11.1 without smoothing).
 <!-- results:end -->
 
 Full tables, plots and the failure gallery: [`results/metrics.md`](results/metrics.md), [`results/failures.md`](results/failures.md), and the app's **How sure is Kettle?** page.

@@ -1,8 +1,8 @@
-"""Addendum item 9: the θ trade-off counts kitchen sessions at the caregiver level (cooking, washing up and eating merged).
+"""Addendum items 9-10: the θ trade-off reports kitchen sessions under three stated rules.
 
-The first version reused the strict per-class session rule (the right class, as one block covering at least half of the
-session), so a cooking session drawn as "washing up" counted as a missed kitchen session: 17 of 33 looked missed while
-95% of kitchen windows were caught. These tests pin the caregiver-level definition the table and write-up state."""
+Headline: kitchen-activity blocks (cooking, washing up, eating merged) cover >= 50% of the session. Extra columns: strict
+(one block of the session's own activity covers >= 50%) and any overlap. The 17-of-33 that started this was the strict
+rule; on dev the misses were fragmentation by short "Not sure" stretches (fixed by timeline rule 2b, test_timeline.py)."""
 import numpy as np
 
 from eval.dev import theta_tradeoff
@@ -33,6 +33,16 @@ def test_cooking_drawn_as_washing_up_is_still_a_noticed_kitchen_session():
     y, P, session, seg, fold = _day([("cooking", "dishwashing"), ("watching_tv", "watching_tv")])
     r = _shipped_row(theta_tradeoff(y, P, session, seg, fold, shipped=0.66))
     assert r["meal_sessions"] == 1 and r["meal_sessions_missed"] == 0 and r["meal_false_alarm_blocks"] == 0
+    assert r["meal_sessions_missed_strict"] == 1 and r["meal_sessions_missed_any_overlap"] == 0   # wrong kitchen activity
+
+
+def test_a_short_kitchen_blip_is_touched_but_not_noticed():
+    # 6 cooking windows heard as TV except one: any-overlap says noticed, the merged 50% rule says not
+    y, P, session, seg, fold = _day([("cooking", "watching_tv")])
+    P[2] = _probs("cooking")
+    P[3] = _probs("cooking")
+    r = _shipped_row(theta_tradeoff(y, P, session, seg, fold, shipped=0.66))
+    assert r["meal_sessions_missed_any_overlap"] == 0 and r["meal_sessions_missed"] == 1
 
 
 def test_cooking_drawn_as_tv_is_missed_and_tv_drawn_as_eating_is_a_false_alarm():

@@ -33,7 +33,7 @@ from `results/metrics.json` (made by `python -m eval`); none is typed from memor
 Ranked by points at risk.
 1. **No real-kitchen number yet (Testing 15, finals Q&A).** Every result is SINS: one research home, fixed microphone arrays. The own-kitchen set is Lane A's job today (the build was not allowed to create or label it). Until it's scored, the write-up says "not yet a real kitchen". This is the judges' first question in both simulations.
 2. **The live microphone path has only been driven by Chromium's fake mic** (the privacy check, 180 s, 8 activity changes, median 7.1 s to the timeline). Parth's live rehearsal in a real kitchen (Lane C) is the first real-mic test. Have the sample day ready as the fallback.
-3. **The day bar draws only 15 of 33 dev kitchen sessions as the right activity covering at least half the session** (46%, CI 30–62); every one still had some kitchen block on it (addendum item 9: a definition difference, not a bug; both are reported). Expect "why trust Missed?". Answer: the check is "any kitchen activity" and no dev kitchen session went unnoticed, but which kitchen activity is shown is less reliable, and the evidence card shows how sure.
+3. **A day-bar rule changed after the frozen test run (addendum item 10).** The "17 of 33 kitchen sessions missed" was fragmentation: short "Not sure" stretches split each session into 3–12 pieces even though the right activity covered 64–94% of it. Timeline rule 2b now bridges a "Not sure" gap of ≤ 30 s inside one activity (dev-only choice; model and θ unchanged; the held-out numbers are window-level and don't use the timeline). Dev, shipped θ: strict 15 → 26 of 33 kitchen sessions; false kitchen blocks 3.87 → 3.23 per day; all activities 66.5% → 80.2%. The 13:27 switch to an "any overlap" rule was a post-hoc metric change, and DECISIONS (16:55) now says so. Expect a judge to ask "isn't that tuning after the test?"; the answer is in EXPLAIN (`kettle/timeline.py`).
 4. **Held-out recall dropped for moving about (76 → 55) and washing up (89 → 73).** The new per-microphone table shows moving about is low on every microphone (50–60%), so it isn't a microphone effect; one run can't separate the rest.
 5. **No unseen-microphone number** (the pre-registered fingerprint rule didn't confirm the nodes), **no log-mel baseline on held-out** (skipped: a post-hoc second look at the test set), **CLAP cut**, **AST only on a 2,700-clip dev subset**.
 6. **Write-up is ~1,390 words including tables and sources** (prose ~950). Lane B trims prose only; the number blocks regenerate.
@@ -44,14 +44,15 @@ Ranked by points at risk.
 |---|---|---|
 | 1 | Submission draft by Sat 9 PM | done: `docs/SUBMISSION-DRAFT.md`, numbers from `results/`; Parth presses submit |
 | 2a | Reliability plot + ECE with CI | done: ECE 1.6 → 1.5 [0.8, 2.6] points, `results/reliability_dev.png` |
-| 2b | θ cost story | done: trade-off table + plot; the write-up leads with the strict 15 of 33 |
+| 2b | θ cost story | done: trade-off table with three session rules + plot; the write-up explains fragmentation and the bridging rule |
 | 3 | Honest slices (no age/sex) | done: per microphone (dev and held-out × activity), per activity; per-home rows empty until Sunday |
 | 4 | Kitchen-activity metric in the headline | done: held-out caught 89.3 [85.3, 94.1]% of 1,183 windows, 144 missed; false alarms 0.5% of 6,608 |
 | 5 | Lead with a measured gap | done, then reframed by judge round 2: lead with the held-out score and the "not directly comparable" caveat; Apple's 31.8 is context, labelled zero-shot with a different label set |
 | 6 | Reproduce notebook < 5 min with outputs | done: 67 s re-run at 16:37 CT, ALL MATCH |
 | 7 | Per-judge Q&A | done: PRD §23 and `docs/EXPLAIN.md` |
 | 8 | Pitch quotes | **cut**: neither quote found as worded (DECISIONS 11:20); Parth may open them Sunday |
-| 9 | 17 of 33 kitchen sessions | done: a definition difference, not a bug; both numbers reported, regression tests (DECISIONS 16:15) |
+| 9 | 17 of 33 kitchen sessions | done with item 10: cause was fragmentation (diagnosed on dev) |
+| 10 | Metric softened, not fixed | done: one rule stated everywhere (merged kitchen blocks cover ≥ 50%: 33 of 33), strict and any-overlap columns beside it; bridging rule 2b (strict 15 → 26 of 33); DECISIONS 16:55 rows name the 13:27 change as post hoc; tests in `tests/test_timeline.py` and `tests/test_theta_tradeoff.py` |
 
 ## 3. Decisions made overnight that a human should confirm
 All in `docs/DECISIONS.md` (stage-3 rows from 10:12 onward). The ones to look at first:
@@ -109,4 +110,4 @@ Each person runs `/explain quiz <module>` until 4/5: `kettle/timeline.py` (Not s
 `docs/AI-USAGE-LOG.md` (stage-3 row), `docs/DATA-SOURCES.md` (stage-3 section), README "Credits".
 
 ---
-Final update: Sat Nov 14 2026, 4:38 PM (Central). Build finished early; nothing pushed.
+Final update: Sat Nov 14 2026, 4:38 PM (Central). Build finished early; nothing pushed. Addendum item 10 (added 4:20 PM) done at 5:00 PM.

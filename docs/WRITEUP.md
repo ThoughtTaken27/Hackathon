@@ -59,7 +59,7 @@ Development folds (optimistic; they chose the model): Kettle 85.1 [81.1, 87.4], 
 <!-- results:end -->
 
 <!-- tradeoff:start -->
-"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). Through the day bar on dev, 15 of 33 kitchen sessions (46%, 95% CI 30–62) were drawn as the right activity covering at least half the session; every one had some kitchen block on it, at any θ from 0.30 to 0.90, so a "kitchen activity" check would have noticed each one. θ only moved false kitchen blocks (7.75 → 3.87 per 16-hour day). Its cost: 14% of held-out windows were "Not sure".
+"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). On dev, kitchen-activity blocks covered at least half of 33 of 33 kitchen sessions, but the right activity formed one such block in only 15: short "Not sure" stretches split it. A timeline rule added after the frozen test run (bridge a "Not sure" gap of up to 30 s inside one activity; model and θ unchanged) raised that to 26 of 33 and cut false kitchen blocks from 3.87 to 3.23 per 16-hour day. Its cost: 14% of held-out windows were "Not sure".
 <!-- tradeoff:end -->
 
 **Where it fails** (real dev-fold mistakes, `results/failures.md`):

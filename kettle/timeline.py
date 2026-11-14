@@ -5,6 +5,10 @@ Rules, in order (all transparent, all unit-tested in tests/test_timeline.py):
    or "talk_or_tv" if TV and Conversation are the top two and within 0.15 of each other.
 2. Smoothing (2 of 3): a window shows the label that at least 2 of {previous, itself, next} share.
    If all three differ it shows "not_sure". The first and last window of a run keep their raw label.
+2b. Bridging: a "Not sure" stretch of at most BRIDGE_S seconds between two windows of the same activity takes that
+   activity, so one cooking session reads as one block instead of confetti (the block's "how sure" still averages
+   every window in it). Windows flagged as unlike anything Kettle learned are never bridged. Added Sat Nov 14 after
+   the frozen held-out run (addendum item 10); measured on dev folds only.
 3. Consecutive windows with the same shown label merge into one block.
 4. Gaps longer than STALE_S between windows (when not paused) become "Not listening" blocks;
    pause intervals become "Paused" blocks. Smoothing never reaches across a gap.
@@ -16,6 +20,7 @@ from kettle.labels import DISPLAY, PHRASE, TALK_OR_TV_MARGIN
 
 HOP_S = 2.0
 STALE_S = 2 * HOP_S + 30          # no window for longer than this = not listening
+BRIDGE_S = 30.0                    # a "Not sure" gap up to this long inside one activity doesn't split its block
 
 
 def raw_label(ev: dict, theta: float) -> str:
@@ -42,6 +47,27 @@ def smooth(labels: list[str]) -> list[str]:
             continue
         a, b, c = labels[i - 1], lab, labels[i + 1]
         out.append(b if b in (a, c) else a if a == c else "not_sure")
+    return out
+
+
+def bridge(labels: list[str], run: list[dict], max_s: float = BRIDGE_S) -> list[str]:
+    """Relabel a short 'not_sure' stretch to the activity on both sides of it (rule 2b); novel windows stay 'not_sure'."""
+    out = list(labels)
+    i = 1
+    while i < len(out):
+        if out[i] != "not_sure":
+            i += 1
+            continue
+        j = i
+        while j + 1 < len(out) and out[j + 1] == "not_sure":
+            j += 1
+        before = out[i - 1]
+        after = out[j + 1] if j + 1 < len(out) else None
+        short = run[j]["end"] - run[i - 1]["end"] <= max_s
+        novel = any(run[k].get("novel") for k in range(i, j + 1))
+        if before == after and before not in ("not_sure", "talk_or_tv") and short and not novel:
+            out[i:j + 1] = [before] * (j - i + 1)
+        i = j + 1
     return out
 
 
@@ -100,7 +126,7 @@ def _subtract(a: float, b: float, cuts: list[tuple[float, float]]) -> list[tuple
 
 def blocks(events: list[dict], theta: float, pauses: list = (),
            listening_from: float | None = None, now: float | None = None, listening_now: bool = False,
-           gap_s: float = STALE_S) -> list[dict]:
+           gap_s: float = STALE_S, bridge_s: float = BRIDGE_S) -> list[dict]:
     """All blocks for the day bar, in time order: activities, not sure, quiet, not listening, paused.
 
     pauses: [start, end] or [start, end, "off"] stretches when the parent paused or turned Kettle off.
@@ -110,7 +136,7 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
     events = sorted(events, key=lambda e: e["end"])
     out: list[dict] = []
     for run in runs(events, gap_s):
-        labs = smooth([raw_label(e, theta) for e in run])
+        labs = bridge(smooth([raw_label(e, theta) for e in run]), run, bridge_s)
         i = 0
         while i < len(run):
             j = i
