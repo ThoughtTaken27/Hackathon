@@ -247,6 +247,11 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
   .fold { transition: none !important; }
 }
 
+/* ---------- number transitions ---------- */
+.roll { display: inline-block; }
+.roll.tick { animation: roll 160ms var(--ease-out) both; }
+@keyframes roll { from { transform: translateY(-35%); opacity: .3; } to { transform: none; opacity: 1; } }
+
 /* ---------- how sure: stat row, dot chart ---------- */
 .stat-row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .stat-n { font-size: var(--fs-khead); line-height: 48px; color: var(--ink); font-weight: 600; letter-spacing: -0.02em; }
@@ -290,3 +295,5 @@ ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 figure { margin: 0; }
 figure img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; background: #fff; display: block; }
 tr.row-shipped td { color: var(--ink); font-weight: 600; }
+.gap { font-size: var(--fs-lead); line-height: var(--lh-lead); color: var(--text); margin: 8px 0 4px; max-width: 46em; }
+.gap strong { color: var(--ink); font-weight: 600; }

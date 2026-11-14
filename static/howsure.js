@@ -34,6 +34,19 @@ function verdict(per, conf) {
   parts.push(`${nm(weakest.class)} is its weakest activity.`);
   return parts.join(" ");
 }
+// Headline numbers count up once on load (600 ms, ease-out); reduced motion shows the final value at once.
+function countUp(node, x) {
+  if (!x || x.value == null || matchMedia("(prefers-reduced-motion: reduce)").matches) return node;
+  const end = x.value, t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / 600), e = 1 - Math.pow(1 - k, 3);
+    node.textContent = `${(end * e).toFixed(1)}%`;
+    if (k < 1) requestAnimationFrame(step);
+  };
+  node.textContent = "0.0%";
+  requestAnimationFrame(step);
+  return node;
+}
 function listWords(xs) { return xs.length <= 1 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`; }
 
 function section(title, id, ...kids) {
@@ -49,11 +62,21 @@ function renderResults(box, r) {
     : `Development folds (also used to choose the model), N = ${d.n_clips} clips from ${d.n_sessions} sessions. The held-out test hasn't been run yet.`;
   document.getElementById("split-line").textContent = splitText;
 
+  // lead with the measured gap (addendum item 5): what a Mac already ships vs Kettle, same clips, same metric
+  const apple = ev ? ev.baselines && ev.baselines.apple_zeroshot : d.baselines.apple_zeroshot && d.baselines.apple_zeroshot.macro_f1;
+  const oursHead = ev ? (ev.slices.unknown || ev.slices.all).ch0 : d.ours_ch0.macro_f1;
+  if (apple && apple.value != null) {
+    box.append(el("p", { class: "gap" },
+      el("span", { text: "A Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores " }),
+      el("strong", { class: "num", text: pct(apple) }), el("span", { text: "; Kettle, on one microphone, scores " }),
+      el("strong", { class: "num", text: pct(oursHead) }),
+      el("span", { class: "muted", text: ` (macro F1, ${ev ? "held-out test" : "development folds"}, same clips).` })));
+  }
   box.append(el("p", { class: "verdict", text: verdict(per, main.ours_ch0.confusion) }));
 
   // headline numbers
   const head = el("div", { class: "stat-row" });
-  const stat = (label, x, sub) => el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(x) }),
+  const stat = (label, x, sub) => el("div", { class: "stat" }, countUp(el("p", { class: "stat-n num", text: pct(x) }), x),
     el("p", { class: "meta", text: label }), el("p", { class: "meta muted", text: sub }));
   if (ev) {
     const u = ev.slices.unknown || ev.slices.all;

@@ -16,9 +16,23 @@ const bar = makeDayBar($("bar"), {
 $("bar").after(legend());
 
 function renderHeartbeat(hb, demo) {
+  // The "last heard 12 s ago" number rolls when it changes; the rest of the sentence stays still.
   const node = $("hb");
   node.dataset.state = hb.state;
-  setText(node.querySelector(".text"), hb.text, false);
+  const box = node.querySelector(".text");
+  const m = hb.text.match(/^(.*?)(\d+)( s| min| h)(.*)$/);
+  if (!m) { box.textContent = hb.text; return; }
+  let roll = box.querySelector(".roll");
+  if (!roll || box.dataset.prefix !== m[1]) {
+    box.textContent = "";
+    box.append(m[1], (roll = el("span", { class: "roll num" })), el("span", { class: "rest" }));
+    box.dataset.prefix = m[1];
+  }
+  box.lastChild.textContent = m[3] + m[4];
+  if (roll.textContent !== m[2]) {
+    roll.textContent = m[2];
+    roll.classList.remove("tick"); void roll.offsetWidth; roll.classList.add("tick");
+  }
 }
 
 function renderRules(rs) {
