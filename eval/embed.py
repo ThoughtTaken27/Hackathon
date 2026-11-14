@@ -23,9 +23,11 @@ SHARD = 256
 
 def encoder(name: str, device: str):
     """name -> f(waves [B, 160000]) -> (emb [B, D], scores [B, S] | None)."""
-    if name == "ced-tiny":
+    if name in ("ced-tiny", "ced-tiny-5s"):
         from kettle import encoders
         enc = encoders.load(device)
+        if name == "ced-tiny-5s":          # the kitchen chip: the last 5 s of the window
+            return lambda x: encoders.embed(enc, x[:, -80000:])
         return lambda x: encoders.embed(enc, x)
     from eval import encoders_extra as ex
     return {"ast": ex.make_ast, "ced-small": ex.make_ced_small, "clap": ex.make_clap, "logmel": ex.make_logmel}[name](device)

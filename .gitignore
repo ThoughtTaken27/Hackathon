@@ -43,3 +43,5 @@ data/emb/
 data/timeline/
 data/raw/
 results/*.tmp
+tools/apple_baseline/apple_classify
+data/timeline_privacy_check/

@@ -19,7 +19,12 @@ STALE_S = 2 * HOP_S + 30          # no window for longer than this = not listeni
 
 
 def raw_label(ev: dict, theta: float) -> str:
-    """One window's label before smoothing: an activity, 'talk_or_tv' or 'not_sure'."""
+    """One window's label before smoothing: an activity, 'talk_or_tv' or 'not_sure'.
+
+    'not_sure' when the top probability is below theta, or when the sound is unlike all 9 activities (ev['novel']).
+    """
+    if ev.get("novel"):
+        return "not_sure"
     probs = ev["probs"]
     top = sorted(probs, key=probs.get, reverse=True)
     if {top[0], top[1]} == {"watching_tv", "social_activity"} and probs[top[0]] - probs[top[1]] < TALK_OR_TV_MARGIN \

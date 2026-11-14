@@ -1,0 +1,3 @@
+file,start_s,end_s,activity,session,notes
+EXAMPLE_k1-cook-01.wav,0,62,cooking,k1-cook-01,example row: delete me
+EXAMPLE_k1-quiet-01.wav,0,60,absence,k1-quiet-01,example row: delete me

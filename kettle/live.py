@@ -131,11 +131,13 @@ def classify(enc: dict, head: dict, waves: np.ndarray) -> list[dict]:
     """float32 [B, samples] -> per window {'label', 'conf', 'probs', 'sounds'} (the model's output only)."""
     emb, audioset = encoders.embed(enc, waves)
     P = model.predict_proba(head, emb)
+    nov = model.novelty(head, emb) if "novelty" in head else np.zeros(len(P))
     out = []
-    for p, a in zip(P, audioset):
+    for p, a, d in zip(P, audioset, nov):
         k = int(p.argmax())
         out.append({"label": CLASSES[k], "conf": round(float(p[k]), 3),
                     "probs": {c: round(float(v), 4) for c, v in zip(CLASSES, p)},
+                    "novel": bool("novelty" in head and d > head["novelty"]["threshold"]),
                     "sounds": evidence.top_sounds(a)})
     return out
 

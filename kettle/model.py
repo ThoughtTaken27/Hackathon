@@ -79,3 +79,27 @@ def load(path: Path) -> dict:
     if head.get("sha256") != sha256(head):
         raise ValueError(f"{path}: sha256 does not match its contents")
     return head
+
+
+# ---------------------------------------------------------------- "this isn't one of the 9 activities"
+
+def fit_novelty(X: np.ndarray, y: np.ndarray, head: dict) -> dict:
+    """Class means and one shared covariance (Ledoit-Wolf shrinkage) of the standardised training embeddings.
+
+    A sound's novelty = its Mahalanobis distance to the nearest class mean: how unlike every activity Kettle learned
+    it is. Stored as plain numbers: 9 means + a 192 x 192 precision matrix.
+    """
+    from sklearn.covariance import LedoitWolf
+    Z = (X - np.asarray(head["mean"])) / np.asarray(head["std"])
+    means = np.stack([Z[y == k].mean(0) if (y == k).any() else np.zeros(Z.shape[1]) for k in range(len(CLASSES))])
+    lw = LedoitWolf().fit(Z - means[y])
+    return {"means": means.tolist(), "precision": lw.precision_.tolist()}
+
+
+def novelty(head: dict, X: np.ndarray, nov: dict | None = None) -> np.ndarray:
+    """Mahalanobis distance of each embedding to the nearest class mean (bigger = less like anything Kettle knows)."""
+    nov = nov or head["novelty"]
+    Z = (X - np.asarray(head["mean"])) / np.asarray(head["std"])
+    mu, Pm = np.asarray(nov["means"]), np.asarray(nov["precision"])
+    d = np.stack([np.einsum("ij,jk,ik->i", Z - m, Pm, Z - m) for m in mu], 1)
+    return np.sqrt(np.maximum(d.min(1), 0))

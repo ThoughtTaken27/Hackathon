@@ -1,0 +1,19 @@
+{
+ "split": "privacy-check live run, Chromium fake mic, held-out SINS clips",
+ "seconds": 45,
+ "per_hop_s_median": 0.0463,
+ "per_hop_s_p90": 0.1113,
+ "n_hops": 19,
+ "server_cpu_percent_mean": 2.4,
+ "server_rss_mb_max": 85.0,
+ "activity_change_to_window_label_s": [
+  {
+   "onset_s": 20.0,
+   "activity": "vacuum_cleaner",
+   "label_after_s": null
+  }
+ ],
+ "median_change_to_label_s": null,
+ "n_changes": 0,
+ "note": "per hop = one 5-s chip + one 10-s window through CED-tiny + head on CPU; latency counts only the 10-s timeline label"
+}

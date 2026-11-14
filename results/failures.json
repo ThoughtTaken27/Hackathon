@@ -1,0 +1,292 @@
+[
+ {
+  "clip": "DevNode1_ex69_23",
+  "session": "s69",
+  "node": "DevNode1",
+  "fold": 2,
+  "true": "eating",
+  "predicted": "cooking",
+  "probs": {
+   "cooking": 0.663,
+   "dishwashing": 0.306,
+   "eating": 0.013
+  },
+  "sounds": [
+   {
+    "name": "Dishes, pots, and pans",
+    "score": 0.237
+   },
+   {
+    "name": "Cupboard open or close",
+    "score": 0.206
+   },
+   {
+    "name": "Glass",
+    "score": 0.125
+   }
+  ],
+  "likely_cause": "Eating and cooking share plate, cutlery and tap sounds; the SINS authors note eating is hard to hear.",
+  "how_many_like_this": 1
+ },
+ {
+  "clip": "DevNode1_ex44_3",
+  "session": "s44",
+  "node": "DevNode1",
+  "fold": 2,
+  "true": "cooking",
+  "predicted": "eating",
+  "probs": {
+   "eating": 0.849,
+   "dishwashing": 0.118,
+   "cooking": 0.023
+  },
+  "sounds": [
+   {
+    "name": "Dishes, pots, and pans",
+    "score": 0.338
+   },
+   {
+    "name": "Cutlery, silverware",
+    "score": 0.166
+   },
+   {
+    "name": "Glass",
+    "score": 0.086
+   }
+  ],
+  "likely_cause": "Quiet stretches of cooking (stirring, waiting) sound like a meal at the table.",
+  "how_many_like_this": 2
+ },
+ {
+  "clip": "DevNode1_ex87_13",
+  "session": "s87",
+  "node": "DevNode1",
+  "fold": 4,
+  "true": "other",
+  "predicted": "absence",
+  "probs": {
+   "absence": 0.899,
+   "other": 0.068,
+   "working": 0.03
+  },
+  "sounds": [
+   {
+    "name": "Silence",
+    "score": 0.242
+   },
+   {
+    "name": "White noise",
+    "score": 0.195
+   },
+   {
+    "name": "Rustle",
+    "score": 0.101
+   }
+  ],
+  "likely_cause": "'Moving about' is often a few soft footsteps or a door in an otherwise quiet room.",
+  "how_many_like_this": 43
+ },
+ {
+  "clip": "DevNode1_ex10_2",
+  "session": "s10",
+  "node": "DevNode1",
+  "fold": 3,
+  "true": "absence",
+  "predicted": "other",
+  "probs": {
+   "other": 0.813,
+   "working": 0.149,
+   "absence": 0.02
+  },
+  "sounds": [
+   {
+    "name": "White noise",
+    "score": 0.217
+   },
+   {
+    "name": "Hum",
+    "score": 0.085
+   },
+   {
+    "name": "Silence",
+    "score": 0.079
+   }
+  ],
+  "likely_cause": "A single bump or creak in a quiet room looks like someone moving about.",
+  "how_many_like_this": 15
+ },
+ {
+  "clip": "DevNode2_ex229_151",
+  "session": "s229",
+  "node": "DevNode2",
+  "fold": 4,
+  "true": "watching_tv",
+  "predicted": "social_activity",
+  "probs": {
+   "social_activity": 0.709,
+   "watching_tv": 0.249,
+   "eating": 0.027
+  },
+  "sounds": [
+   {
+    "name": "Speech",
+    "score": 0.845
+   },
+   {
+    "name": "Narration, monologue",
+    "score": 0.225
+   },
+   {
+    "name": "Drawer open or close",
+    "score": 0.098
+   }
+  ],
+  "likely_cause": "TV audio is mostly people talking; the model can't always tell a broadcast from a conversation.",
+  "how_many_like_this": 3
+ },
+ {
+  "clip": "DevNode2_ex202_321",
+  "session": "s202",
+  "node": "DevNode2",
+  "fold": 3,
+  "true": "social_activity",
+  "predicted": "watching_tv",
+  "probs": {
+   "watching_tv": 0.856,
+   "social_activity": 0.136,
+   "other": 0.007
+  },
+  "sounds": [
+   {
+    "name": "Speech",
+    "score": 0.773
+   },
+   {
+    "name": "Television",
+    "score": 0.117
+   },
+   {
+    "name": "Radio",
+    "score": 0.094
+   }
+  ],
+  "likely_cause": "A conversation with background music or a raised voice sounds like TV.",
+  "how_many_like_this": 7
+ },
+ {
+  "clip": "DevNode1_ex58_18",
+  "session": "s58",
+  "node": "DevNode1",
+  "fold": 2,
+  "true": "dishwashing",
+  "predicted": "cooking",
+  "probs": {
+   "cooking": 0.674,
+   "dishwashing": 0.302,
+   "eating": 0.01
+  },
+  "sounds": [
+   {
+    "name": "Dishes, pots, and pans",
+    "score": 0.245
+   },
+   {
+    "name": "Drawer open or close",
+    "score": 0.107
+   },
+   {
+    "name": "Cupboard open or close",
+    "score": 0.071
+   }
+  ],
+  "likely_cause": "Taps and clattering pans happen during both cooking and washing up.",
+  "how_many_like_this": 6
+ },
+ {
+  "clip": "DevNode1_ex51_39",
+  "session": "s51",
+  "node": "DevNode1",
+  "fold": 3,
+  "true": "cooking",
+  "predicted": "dishwashing",
+  "probs": {
+   "dishwashing": 0.966,
+   "cooking": 0.018,
+   "eating": 0.007
+  },
+  "sounds": [
+   {
+    "name": "Drawer open or close",
+    "score": 0.091
+   },
+   {
+    "name": "Inside, small room",
+    "score": 0.071
+   },
+   {
+    "name": "Cupboard open or close",
+    "score": 0.062
+   }
+  ],
+  "likely_cause": "Rinsing and running water during cooking sounds like washing up.",
+  "how_many_like_this": 22
+ },
+ {
+  "clip": "DevNode2_ex260_16",
+  "session": "s260",
+  "node": "DevNode2",
+  "fold": 4,
+  "true": "working",
+  "predicted": "absence",
+  "probs": {
+   "absence": 0.898,
+   "working": 0.061,
+   "other": 0.034
+  },
+  "sounds": [
+   {
+    "name": "Silence",
+    "score": 0.31
+   },
+   {
+    "name": "White noise",
+    "score": 0.243
+   },
+   {
+    "name": "Rustle",
+    "score": 0.063
+   }
+  ],
+  "likely_cause": "Slow or quiet typing leaves a window that is mostly room noise.",
+  "how_many_like_this": 52
+ },
+ {
+  "clip": "DevNode1_ex238_32",
+  "session": "s238",
+  "node": "DevNode1",
+  "fold": 2,
+  "true": "working",
+  "predicted": "other",
+  "probs": {
+   "other": 0.979,
+   "dishwashing": 0.009,
+   "cooking": 0.007
+  },
+  "sounds": [
+   {
+    "name": "Walk, footsteps",
+    "score": 0.402
+   },
+   {
+    "name": "Shuffle",
+    "score": 0.262
+   },
+   {
+    "name": "Inside, small room",
+    "score": 0.061
+   }
+  ],
+  "likely_cause": "Shuffling papers or moving a chair while working sounds like moving about.",
+  "how_many_like_this": 58
+ }
+]

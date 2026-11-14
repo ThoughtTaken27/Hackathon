@@ -1,0 +1,58 @@
+{
+ "pass": true,
+ "seconds_listened": 45,
+ "windows_labelled": 17,
+ "kitchen_headlines_seen": [
+  "Listening for kitchen sounds",
+  "Listening\u2026"
+ ],
+ "checks": {
+  "python_write_opens_outside_labels_file": [],
+  "lsof_write_handles_outside_labels_file": [],
+  "new_or_changed_audio_extension_files": [],
+  "new_or_changed_files_with_audio_magic_bytes": [],
+  "outbound_connections": [],
+  "upload_5mb_status": "ok",
+  "files_new_after_5mb_upload": [
+   "/Users/parth/Library/Caches/zen/Profiles/hcl0aopx.Default (release)/cache2/entries/D26963B9E63A10A3D802477DF7032AF015E98082",
+   "/Users/parth/Library/Caches/zen/Profiles/hcl0aopx.Default (release)/cache2/entries/64F7E291869347E14DCB22E28036B4219FB959E3",
+   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/3849c680c8777e71_0",
+   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/ab6a8d0068bee3b4_0"
+  ]
+ },
+ "labels_file_fields": [
+  "conf",
+  "end",
+  "kind",
+  "label",
+  "novel",
+  "probs",
+  "sounds",
+  "start",
+  "state",
+  "t",
+  "type"
+ ],
+ "labels_files": [
+  "/Users/parth/Hackathon/data/timeline_privacy_check/2026-11-14.jsonl"
+ ],
+ "watched": [
+  "/Users/parth/Hackathon",
+  "/var/folders/6h/lwz2dqpx5zv1lb9phwfwm_r00000gn/T",
+  "/tmp",
+  "/Users/parth/Library/Caches"
+ ],
+ "skipped_dataset_caches": [
+  "/.git",
+  "/.venv",
+  "ms-playwright",
+  "/node_modules",
+  "/__pycache__",
+  "/data/raw",
+  "/data/clips",
+  "/data/emb"
+ ],
+ "n_files_new_or_changed_any_process": 39,
+ "threat_model": "Proves Kettle's own code doesn't write audio to disk or send it off the machine. Not a defence against a compromised OS, browser extensions, crash dumps or someone at the unlocked laptop. Not a kernel trace; OS swap is encrypted and outside our control.",
+ "ran_at": "2026-11-14 10:50 CST"
+}

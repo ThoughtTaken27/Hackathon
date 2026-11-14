@@ -46,3 +46,35 @@ def decide(dev: dict[str, dict[int, np.ndarray]], ev: dict[str, np.ndarray]) -> 
     return {"spread": spread, "nodes": rows, "known": known if confirmed else [],
             "unknown": sorted(set(ev) - set(known)) if confirmed else [],
             "confirmed": confirmed, "dev_match": one_to_one}
+
+
+def main() -> dict:
+    """Compute unlabelled per-node spectra for dev (per fold) and the eval sample, apply the rule, save it."""
+    import json
+    from collections import defaultdict
+    from pathlib import Path
+    import soundfile as sf
+    from kettle.data import load_meta
+    root = Path(__file__).resolve().parents[1]
+    dev_meta = {Path(r["file"]).stem: r for r in load_meta("dev")}
+    acc = defaultdict(lambda: defaultdict(list))
+    for p in sorted((root / "data" / "clips" / "dev").glob("*.flac")):
+        r = dev_meta[p.stem]
+        acc[r["node"]][r["fold"]].append(log_mel_mean(sf.read(p, dtype="float32", always_2d=True)[0][:, 0]))
+    dev = {nd: {f: np.mean(v, 0) for f, v in folds.items()} for nd, folds in acc.items()}
+    ev_meta = {Path(r["file"]).stem: r for r in load_meta("eval")}   # node names only; labels are never read here
+    eacc = defaultdict(list)
+    for p in sorted((root / "data" / "clips" / "eval").glob("*.flac")):
+        eacc[ev_meta[p.stem]["node"]].append(log_mel_mean(sf.read(p, dtype="float32", always_2d=True)[0][:, 0]))
+    ev = {nd: np.mean(v, 0) for nd, v in eacc.items()}
+    out = decide(dev, ev)
+    out["n_clips"] = {"dev": {k: sum(len(v) for v in f.values()) for k, f in acc.items()}, "eval": {k: len(v) for k, v in eacc.items()}}
+    out["rule"] = __doc__.strip().splitlines()[2:]
+    (root / "results").mkdir(exist_ok=True)
+    (root / "results" / "fingerprint.json").write_text(json.dumps(out, indent=1, default=float))
+    return out
+
+
+if __name__ == "__main__":
+    r = main()
+    print({k: r[k] for k in ("known", "unknown", "confirmed", "dev_match")})

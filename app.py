@@ -28,12 +28,13 @@ from kettle import audio, demo, encoders, live, model, rules, timeline, view
 
 ROOT = Path(__file__).resolve().parent
 STATIC = ROOT / "static"
-TIMELINE = ROOT / "data" / "timeline"
+TIMELINE = Path(os.environ.get("KETTLE_TIMELINE_DIR", ROOT / "data" / "timeline"))
 RESULTS = ROOT / "results"
 MAX_UPLOAD = 10 * 1024 * 1024
 KITCHEN_HOSTS = {"127.0.0.1", "::1", "localhost", "testclient"}
 
-APP: dict = {"enc": None, "head": None, "state": None, "demo": None, "demo_task": None, "cache": {}}
+APP: dict = {"enc": None, "head": None, "state": None, "demo": None, "demo_task": None,
+             "runtime": {"first_audio_t": None, "windows": 0, "infer_s": []}}
 
 
 # ---------------------------------------------------------------- labels-only persistence
@@ -135,6 +136,15 @@ def api_today():
     out = view.today(s, now, _theta(), demo.info(APP["demo"]))
     out["head"] = {"sha256": APP["head"].get("sha256", "")[:12], "trained_on": APP["head"].get("trained_on", "")}
     return out
+
+
+@app.get("/api/runtime")
+def api_runtime():
+    """How fast labelling runs on this machine (seconds per 2-s hop, including the 5-s chip and the 10-s window)."""
+    rt = APP["runtime"]
+    xs = sorted(rt["infer_s"])
+    return {"first_audio_t": rt["first_audio_t"], "windows": rt["windows"], "n_hops": len(xs),
+            "median_s": xs[len(xs) // 2] if xs else None, "p90_s": xs[int(len(xs) * 0.9)] if xs else None}
 
 
 @app.get("/api/results")
@@ -326,12 +336,20 @@ async def ws_audio(sock: WebSocket):
         return
     await sock.accept()
     st = live.new_stream()
+    rt = APP["runtime"]
     try:
         while True:
             pcm = await sock.receive_bytes()
             s, now = APP["state"], time.time()
-            for ev in live.feed(s, st, pcm, now, APP["enc"], APP["head"]):
+            t0 = time.perf_counter()
+            evs = live.feed(s, st, pcm, now, APP["enc"], APP["head"])
+            if evs:
+                rt["infer_s"] = (rt["infer_s"] + [round(time.perf_counter() - t0, 4)])[-500:]
+            if live.can_listen(s, now) and rt["first_audio_t"] is None:
+                rt["first_audio_t"] = now
+            for ev in evs:
                 if ev["kind"] == "window10":
+                    rt["windows"] += 1
                     persist({"kind": "window", **ev})
             del pcm
     except WebSocketDisconnect:

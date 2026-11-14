@@ -1,0 +1,1007 @@
+{
+ "slices": {
+  "all": {
+   "nodes": [
+    "DevNode1",
+    "DevNode2"
+   ],
+   "node_avg": {
+    "value": 0.3,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 782,
+    "n_sessions": 61,
+    "ci95": [
+     0.1,
+     0.6
+    ]
+   },
+   "ch0": {
+    "value": 0.4,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 782,
+    "n_sessions": 61,
+    "ci95": [
+     0.1,
+     1.0
+    ]
+   }
+  },
+  "known": {
+   "nodes": [
+    "DevNode1",
+    "DevNode2"
+   ],
+   "node_avg": {
+    "value": 0.3,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 782,
+    "n_sessions": 61,
+    "ci95": [
+     0.1,
+     0.6
+    ]
+   },
+   "ch0": {
+    "value": 0.4,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 782,
+    "n_sessions": 61,
+    "ci95": [
+     0.1,
+     1.0
+    ]
+   }
+  },
+  "unknown": {
+   "nodes": [
+    "DevNode3",
+    "DevNode4"
+   ],
+   "node_avg": {
+    "value": 0.0,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 0,
+    "n_sessions": 0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   },
+   "ch0": {
+    "value": 0.0,
+    "split": "REHEARSAL: dev fold 4, dummy head",
+    "n_clips": 0,
+    "n_sessions": 0,
+    "ci95": [
+     0.0,
+     0.0
+    ]
+   }
+  }
+ },
+ "per_node": {
+  "DevNode1": {
+   "node_avg": 0.3,
+   "ch0": 0.5,
+   "n_clips": 531
+  },
+  "DevNode2": {
+   "node_avg": 0.2,
+   "ch0": 0.3,
+   "n_clips": 251
+  }
+ },
+ "ours_node_avg": {
+  "macro_f1": {
+   "value": 0.0,
+   "split": "REHEARSAL: dev fold 4, dummy head",
+   "n_clips": 0,
+   "n_sessions": 0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  },
+  "macro_f1_raw": {
+   "value": 0.0,
+   "split": "REHEARSAL: dev fold 4, dummy head",
+   "n_clips": 0,
+   "n_sessions": 0
+  },
+  "per_class": [
+   {
+    "class": "absence",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "cooking",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "dishwashing",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "eating",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "other",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "social_activity",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "vacuum_cleaner",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "watching_tv",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "working",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   }
+  ],
+  "confusion": [
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ "ours_ch0": {
+  "macro_f1": {
+   "value": 0.0,
+   "split": "REHEARSAL: dev fold 4, dummy head",
+   "n_clips": 0,
+   "n_sessions": 0,
+   "ci95": [
+    0.0,
+    0.0
+   ]
+  },
+  "macro_f1_raw": {
+   "value": 0.0,
+   "split": "REHEARSAL: dev fold 4, dummy head",
+   "n_clips": 0,
+   "n_sessions": 0
+  },
+  "per_class": [
+   {
+    "class": "absence",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "cooking",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "dishwashing",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "eating",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "other",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "social_activity",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "vacuum_cleaner",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "watching_tv",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   },
+   {
+    "class": "working",
+    "recall": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "precision": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "f1": {
+     "value": 0.0,
+     "split": "REHEARSAL: dev fold 4, dummy head",
+     "n_clips": 0,
+     "n_sessions": 0,
+     "ci95": [
+      0.0,
+      0.0
+     ]
+    },
+    "missed": 0,
+    "false_alarms": 0,
+    "support": 0,
+    "precision_raw": 0.0
+   }
+  ],
+  "confusion": [
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ]
+  ]
+ },
+ "per_class_slice": "unknown",
+ "not_sure_share_at_theta": 0.003,
+ "n_clips": 782,
+ "n_moments": 641,
+ "note": "Rehearsal only: dummy random head on dev fold 4; checks the code path. Not a result."
+}

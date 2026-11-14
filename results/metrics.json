@@ -1,0 +1,4440 @@
+{
+ "generated": "2026-11-14 10:46 CST",
+ "commit": "9c95c8d809f51015206fcadea5ababade3a75c3d",
+ "head_sha256": "e9c8f1c928708771dfca29e3aca956b82a72a8a51fbc614ebcb07c159dda4cbf",
+ "head": {
+  "theta": 0.67,
+  "temperature": 1.05,
+  "trained_on": "SINS dev training subset: 3796 clips x 4 channels, 257 sessions, all 4 folds; 9 demo sessions held out (data/meta/plan.json)"
+ },
+ "primary_metric": "macro F1 over the 9 SINS activities (DCASE 2018 Task 5 metric), 10-s windows, with per-activity missed (FN) and false alarms (FP)",
+ "dev": {
+  "split": "dev folds (also used for selection)",
+  "n_clips": 3684,
+  "n_sessions": 257,
+  "class_counts_scored": {
+   "absence": 471,
+   "cooking": 283,
+   "dishwashing": 247,
+   "eating": 245,
+   "other": 457,
+   "social_activity": 527,
+   "vacuum_cleaner": 460,
+   "watching_tv": 499,
+   "working": 495
+  },
+  "weights": {
+   "absence": 40.04,
+   "cooking": 18.11,
+   "dishwashing": 5.77,
+   "eating": 9.42,
+   "other": 4.51,
+   "social_activity": 9.38,
+   "vacuum_cleaner": 2.11,
+   "watching_tv": 37.37,
+   "working": 37.66
+  },
+  "C_per_fold": {
+   "1": 0.03,
+   "2": 0.01,
+   "3": 0.03,
+   "4": 0.01
+  },
+  "temperature": 1.05,
+  "ours_node_avg": {
+   "macro_f1": {
+    "value": 85.6,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 3684,
+    "n_sessions": 257,
+    "ci95": [
+     81.7,
+     88.1
+    ]
+   },
+   "macro_f1_raw": {
+    "value": 89.1,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 3684,
+    "n_sessions": 257
+   },
+   "per_class": [
+    {
+     "class": "absence",
+     "recall": {
+      "value": 95.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 471,
+      "n_sessions": 39,
+      "ci95": [
+       93.0,
+       98.0
+      ]
+     },
+     "precision": {
+      "value": 87.1,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 579,
+      "n_sessions": 257,
+      "ci95": [
+       80.1,
+       92.1
+      ]
+     },
+     "f1": {
+      "value": 91.2,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 471,
+      "n_sessions": 39,
+      "ci95": [
+       87.0,
+       94.2
+      ]
+     },
+     "missed": 20,
+     "false_alarms": 128,
+     "support": 471,
+     "precision_raw": 77.9
+    },
+    {
+     "class": "cooking",
+     "recall": {
+      "value": 89.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 283,
+      "n_sessions": 12,
+      "ci95": [
+       84.1,
+       93.4
+      ]
+     },
+     "precision": {
+      "value": 85.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 282,
+      "n_sessions": 257,
+      "ci95": [
+       62.0,
+       98.5
+      ]
+     },
+     "f1": {
+      "value": 87.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 283,
+      "n_sessions": 12,
+      "ci95": [
+       72.8,
+       94.7
+      ]
+     },
+     "missed": 29,
+     "false_alarms": 28,
+     "support": 283,
+     "precision_raw": 90.1
+    },
+    {
+     "class": "dishwashing",
+     "recall": {
+      "value": 89.9,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 247,
+      "n_sessions": 9,
+      "ci95": [
+       85.9,
+       94.6
+      ]
+     },
+     "precision": {
+      "value": 64.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 269,
+      "n_sessions": 257,
+      "ci95": [
+       39.9,
+       80.2
+      ]
+     },
+     "f1": {
+      "value": 75.2,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 247,
+      "n_sessions": 9,
+      "ci95": [
+       55.5,
+       84.9
+      ]
+     },
+     "missed": 25,
+     "false_alarms": 47,
+     "support": 247,
+     "precision_raw": 82.5
+    },
+    {
+     "class": "eating",
+     "recall": {
+      "value": 92.2,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 245,
+      "n_sessions": 12,
+      "ci95": [
+       86.5,
+       97.6
+      ]
+     },
+     "precision": {
+      "value": 96.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 238,
+      "n_sessions": 257,
+      "ci95": [
+       89.9,
+       98.8
+      ]
+     },
+     "f1": {
+      "value": 94.1,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 245,
+      "n_sessions": 12,
+      "ci95": [
+       89.7,
+       97.0
+      ]
+     },
+     "missed": 19,
+     "false_alarms": 12,
+     "support": 245,
+     "precision_raw": 95.0
+    },
+    {
+     "class": "other",
+     "recall": {
+      "value": 74.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 457,
+      "n_sessions": 117,
+      "ci95": [
+       67.7,
+       79.6
+      ]
+     },
+     "precision": {
+      "value": 36.4,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 436,
+      "n_sessions": 257,
+      "ci95": [
+       25.4,
+       49.8
+      ]
+     },
+     "f1": {
+      "value": 48.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 457,
+      "n_sessions": 117,
+      "ci95": [
+       37.9,
+       59.6
+      ]
+     },
+     "missed": 119,
+     "false_alarms": 98,
+     "support": 457,
+     "precision_raw": 77.5
+    },
+    {
+     "class": "social_activity",
+     "recall": {
+      "value": 92.4,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 527,
+      "n_sessions": 20,
+      "ci95": [
+       86.7,
+       96.9
+      ]
+     },
+     "precision": {
+      "value": 93.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 498,
+      "n_sessions": 257,
+      "ci95": [
+       86.8,
+       97.4
+      ]
+     },
+     "f1": {
+      "value": 92.9,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 527,
+      "n_sessions": 20,
+      "ci95": [
+       88.4,
+       96.0
+      ]
+     },
+     "missed": 40,
+     "false_alarms": 11,
+     "support": 527,
+     "precision_raw": 97.8
+    },
+    {
+     "class": "vacuum_cleaner",
+     "recall": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 8,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 257,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 8,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "missed": 0,
+     "false_alarms": 0,
+     "support": 460,
+     "precision_raw": 100.0
+    },
+    {
+     "class": "watching_tv",
+     "recall": {
+      "value": 98.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 499,
+      "n_sessions": 8,
+      "ci95": [
+       97.4,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 99.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 498,
+      "n_sessions": 257,
+      "ci95": [
+       99.0,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 99.3,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 499,
+      "n_sessions": 8,
+      "ci95": [
+       98.4,
+       99.8
+      ]
+     },
+     "missed": 6,
+     "false_alarms": 5,
+     "support": 499,
+     "precision_raw": 99.0
+    },
+    {
+     "class": "working",
+     "recall": {
+      "value": 71.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 495,
+      "n_sessions": 32,
+      "ci95": [
+       62.2,
+       79.3
+      ]
+     },
+     "precision": {
+      "value": 94.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 424,
+      "n_sessions": 257,
+      "ci95": [
+       90.3,
+       97.3
+      ]
+     },
+     "f1": {
+      "value": 81.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 495,
+      "n_sessions": 32,
+      "ci95": [
+       74.6,
+       86.6
+      ]
+     },
+     "missed": 140,
+     "false_alarms": 69,
+     "support": 495,
+     "precision_raw": 83.7
+    }
+   ],
+   "confusion": [
+    [
+     451,
+     0,
+     0,
+     0,
+     8,
+     2,
+     0,
+     0,
+     10
+    ],
+    [
+     0,
+     254,
+     19,
+     2,
+     5,
+     0,
+     0,
+     0,
+     3
+    ],
+    [
+     0,
+     6,
+     222,
+     6,
+     11,
+     0,
+     0,
+     0,
+     2
+    ],
+    [
+     3,
+     1,
+     5,
+     226,
+     4,
+     0,
+     0,
+     0,
+     6
+    ],
+    [
+     55,
+     2,
+     10,
+     4,
+     338,
+     3,
+     0,
+     0,
+     45
+    ],
+    [
+     8,
+     0,
+     8,
+     0,
+     17,
+     487,
+     0,
+     5,
+     2
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     460,
+     0,
+     0
+    ],
+    [
+     0,
+     1,
+     0,
+     0,
+     1,
+     3,
+     0,
+     493,
+     1
+    ],
+    [
+     62,
+     18,
+     5,
+     0,
+     52,
+     3,
+     0,
+     0,
+     355
+    ]
+   ]
+  },
+  "ours_ch0": {
+   "macro_f1": {
+    "value": 84.9,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 3684,
+    "n_sessions": 257,
+    "ci95": [
+     81.3,
+     87.4
+    ]
+   },
+   "macro_f1_raw": {
+    "value": 88.5,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 3684,
+    "n_sessions": 257
+   },
+   "per_class": [
+    {
+     "class": "absence",
+     "recall": {
+      "value": 90.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 471,
+      "n_sessions": 39,
+      "ci95": [
+       87.0,
+       94.2
+      ]
+     },
+     "precision": {
+      "value": 88.3,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 534,
+      "n_sessions": 257,
+      "ci95": [
+       81.5,
+       92.8
+      ]
+     },
+     "f1": {
+      "value": 89.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 471,
+      "n_sessions": 39,
+      "ci95": [
+       85.6,
+       92.6
+      ]
+     },
+     "missed": 44,
+     "false_alarms": 107,
+     "support": 471,
+     "precision_raw": 80.0
+    },
+    {
+     "class": "cooking",
+     "recall": {
+      "value": 89.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 283,
+      "n_sessions": 12,
+      "ci95": [
+       82.6,
+       93.7
+      ]
+     },
+     "precision": {
+      "value": 84.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 282,
+      "n_sessions": 257,
+      "ci95": [
+       61.5,
+       98.2
+      ]
+     },
+     "f1": {
+      "value": 86.9,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 283,
+      "n_sessions": 12,
+      "ci95": [
+       72.0,
+       94.5
+      ]
+     },
+     "missed": 31,
+     "false_alarms": 30,
+     "support": 283,
+     "precision_raw": 89.4
+    },
+    {
+     "class": "dishwashing",
+     "recall": {
+      "value": 87.9,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 247,
+      "n_sessions": 9,
+      "ci95": [
+       83.6,
+       93.1
+      ]
+     },
+     "precision": {
+      "value": 67.6,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 259,
+      "n_sessions": 257,
+      "ci95": [
+       42.2,
+       82.3
+      ]
+     },
+     "f1": {
+      "value": 76.4,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 247,
+      "n_sessions": 9,
+      "ci95": [
+       57.5,
+       85.4
+      ]
+     },
+     "missed": 30,
+     "false_alarms": 42,
+     "support": 247,
+     "precision_raw": 83.8
+    },
+    {
+     "class": "eating",
+     "recall": {
+      "value": 91.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 245,
+      "n_sessions": 12,
+      "ci95": [
+       86.5,
+       96.9
+      ]
+     },
+     "precision": {
+      "value": 95.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 238,
+      "n_sessions": 257,
+      "ci95": [
+       89.4,
+       98.9
+      ]
+     },
+     "f1": {
+      "value": 93.7,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 245,
+      "n_sessions": 12,
+      "ci95": [
+       89.4,
+       96.8
+      ]
+     },
+     "missed": 20,
+     "false_alarms": 13,
+     "support": 245,
+     "precision_raw": 94.5
+    },
+    {
+     "class": "other",
+     "recall": {
+      "value": 74.2,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 457,
+      "n_sessions": 117,
+      "ci95": [
+       68.1,
+       79.9
+      ]
+     },
+     "precision": {
+      "value": 33.1,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 447,
+      "n_sessions": 257,
+      "ci95": [
+       23.4,
+       45.5
+      ]
+     },
+     "f1": {
+      "value": 45.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 457,
+      "n_sessions": 117,
+      "ci95": [
+       35.5,
+       56.2
+      ]
+     },
+     "missed": 118,
+     "false_alarms": 108,
+     "support": 457,
+     "precision_raw": 75.8
+    },
+    {
+     "class": "social_activity",
+     "recall": {
+      "value": 91.8,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 527,
+      "n_sessions": 20,
+      "ci95": [
+       85.9,
+       96.4
+      ]
+     },
+     "precision": {
+      "value": 93.2,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 497,
+      "n_sessions": 257,
+      "ci95": [
+       86.7,
+       97.3
+      ]
+     },
+     "f1": {
+      "value": 92.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 527,
+      "n_sessions": 20,
+      "ci95": [
+       88.0,
+       95.6
+      ]
+     },
+     "missed": 43,
+     "false_alarms": 13,
+     "support": 527,
+     "precision_raw": 97.4
+    },
+    {
+     "class": "vacuum_cleaner",
+     "recall": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 8,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 257,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 100.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 460,
+      "n_sessions": 8,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "missed": 0,
+     "false_alarms": 0,
+     "support": 460,
+     "precision_raw": 100.0
+    },
+    {
+     "class": "watching_tv",
+     "recall": {
+      "value": 99.0,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 499,
+      "n_sessions": 8,
+      "ci95": [
+       97.9,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 99.6,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 501,
+      "n_sessions": 257,
+      "ci95": [
+       98.6,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 99.3,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 499,
+      "n_sessions": 8,
+      "ci95": [
+       98.6,
+       99.8
+      ]
+     },
+     "missed": 5,
+     "false_alarms": 7,
+     "support": 499,
+     "precision_raw": 98.6
+    },
+    {
+     "class": "working",
+     "recall": {
+      "value": 72.9,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 495,
+      "n_sessions": 32,
+      "ci95": [
+       64.0,
+       80.2
+      ]
+     },
+     "precision": {
+      "value": 89.5,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 466,
+      "n_sessions": 257,
+      "ci95": [
+       83.4,
+       94.2
+      ]
+     },
+     "f1": {
+      "value": 80.4,
+      "split": "dev folds (also used for selection)",
+      "n_clips": 495,
+      "n_sessions": 32,
+      "ci95": [
+       73.4,
+       85.2
+      ]
+     },
+     "missed": 134,
+     "false_alarms": 105,
+     "support": 495,
+     "precision_raw": 77.5
+    }
+   ],
+   "confusion": [
+    [
+     427,
+     0,
+     0,
+     0,
+     15,
+     3,
+     0,
+     0,
+     26
+    ],
+    [
+     0,
+     252,
+     22,
+     2,
+     2,
+     0,
+     0,
+     0,
+     5
+    ],
+    [
+     0,
+     6,
+     217,
+     7,
+     13,
+     1,
+     0,
+     0,
+     3
+    ],
+    [
+     3,
+     1,
+     5,
+     225,
+     3,
+     0,
+     0,
+     0,
+     8
+    ],
+    [
+     43,
+     2,
+     9,
+     4,
+     339,
+     4,
+     0,
+     0,
+     56
+    ],
+    [
+     9,
+     1,
+     4,
+     0,
+     17,
+     484,
+     0,
+     7,
+     5
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     460,
+     0,
+     0
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     0,
+     494,
+     2
+    ],
+    [
+     52,
+     20,
+     2,
+     0,
+     58,
+     2,
+     0,
+     0,
+     361
+    ]
+   ]
+  },
+  "not_sure": {
+   "rule": "lowest \u03b8 with reweighted shown-label precision (macro over 9 classes) >= 0.90, channel 0",
+   "theta": 0.67,
+   "coverage": 0.8050927164318955,
+   "macro_precision_shown": 0.9040156843483244,
+   "curve": [
+    {
+     "theta": 0.2,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.21,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.22,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.23,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.24,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.25,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.26,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.27,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.28,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.29,
+     "coverage": 1.0,
+     "macro_precision_shown": 0.8354978546822461,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.3,
+     "coverage": 0.9988735234030337,
+     "macro_precision_shown": 0.8358207850881617,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.31,
+     "coverage": 0.9988117611175557,
+     "macro_precision_shown": 0.8359166844070837,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.32,
+     "coverage": 0.9982339316603052,
+     "macro_precision_shown": 0.836254726243247,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.33,
+     "coverage": 0.9980436288156009,
+     "macro_precision_shown": 0.8363619570638138,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.34,
+     "coverage": 0.9980436288156009,
+     "macro_precision_shown": 0.8363619570638138,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.35,
+     "coverage": 0.9967268493739306,
+     "macro_precision_shown": 0.8369889037572388,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.36,
+     "coverage": 0.9944068559593168,
+     "macro_precision_shown": 0.8374965469559198,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.37,
+     "coverage": 0.9913807544751594,
+     "macro_precision_shown": 0.8396004138603005,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.38,
+     "coverage": 0.9881441708984384,
+     "macro_precision_shown": 0.8410491885517426,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.39,
+     "coverage": 0.9867314308654846,
+     "macro_precision_shown": 0.8413107124369308,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.4,
+     "coverage": 0.9836925808248808,
+     "macro_precision_shown": 0.8417536777997131,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.41,
+     "coverage": 0.9813763419171171,
+     "macro_precision_shown": 0.8427599465245504,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.42,
+     "coverage": 0.9780729762472463,
+     "macro_precision_shown": 0.8446297003571718,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.43,
+     "coverage": 0.9712254006619662,
+     "macro_precision_shown": 0.8462677780175558,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.44,
+     "coverage": 0.9682074508695543,
+     "macro_precision_shown": 0.8474128784546592,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.45,
+     "coverage": 0.9623334237145824,
+     "macro_precision_shown": 0.8492883192406503,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.46,
+     "coverage": 0.9573713680691179,
+     "macro_precision_shown": 0.8512926120313964,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.47,
+     "coverage": 0.9523910932872792,
+     "macro_precision_shown": 0.8524457390567511,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.48,
+     "coverage": 0.9450865754201478,
+     "macro_precision_shown": 0.8549845458617873,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.49,
+     "coverage": 0.9419330172962781,
+     "macro_precision_shown": 0.8558495172332914,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.5,
+     "coverage": 0.9351935704478095,
+     "macro_precision_shown": 0.8596398280364383,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.51,
+     "coverage": 0.9268501507076967,
+     "macro_precision_shown": 0.861030709380789,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.52,
+     "coverage": 0.9199325819608436,
+     "macro_precision_shown": 0.8626708298520357,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.53,
+     "coverage": 0.9130020307017129,
+     "macro_precision_shown": 0.8648071990709452,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.54,
+     "coverage": 0.9085083848899187,
+     "macro_precision_shown": 0.8659487411501469,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.55,
+     "coverage": 0.9010537450291415,
+     "macro_precision_shown": 0.8706317809394668,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.56,
+     "coverage": 0.8895985743009192,
+     "macro_precision_shown": 0.8765720137199243,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.57,
+     "coverage": 0.8826951374352112,
+     "macro_precision_shown": 0.8795017734797388,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.58,
+     "coverage": 0.8778985011242549,
+     "macro_precision_shown": 0.8797268807296234,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.59,
+     "coverage": 0.866757325686728,
+     "macro_precision_shown": 0.8842122882797385,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.6,
+     "coverage": 0.8620580211259157,
+     "macro_precision_shown": 0.8865745986126536,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.61,
+     "coverage": 0.8556251844770907,
+     "macro_precision_shown": 0.8895607680042185,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.62,
+     "coverage": 0.8467842149129156,
+     "macro_precision_shown": 0.8918597047247131,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.63,
+     "coverage": 0.8412141100111238,
+     "macro_precision_shown": 0.8946477544108541,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.64,
+     "coverage": 0.8344489604015886,
+     "macro_precision_shown": 0.8949183909850803,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.65,
+     "coverage": 0.8275635055706648,
+     "macro_precision_shown": 0.8993131057344238,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.66,
+     "coverage": 0.816069327896214,
+     "macro_precision_shown": 0.8998316385374925,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.67,
+     "coverage": 0.8050927164318955,
+     "macro_precision_shown": 0.9040156843483244,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.68,
+     "coverage": 0.7972996996374679,
+     "macro_precision_shown": 0.9040198168427805,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.69,
+     "coverage": 0.7904844681045469,
+     "macro_precision_shown": 0.904349771213504,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.7,
+     "coverage": 0.7819265736640029,
+     "macro_precision_shown": 0.9083791912800206,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.71,
+     "coverage": 0.7687793425700857,
+     "macro_precision_shown": 0.9148366819085785,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.72,
+     "coverage": 0.7602022618750579,
+     "macro_precision_shown": 0.9181231329487676,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.73,
+     "coverage": 0.7492797114831948,
+     "macro_precision_shown": 0.9166516013701315,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.74,
+     "coverage": 0.7405404552898129,
+     "macro_precision_shown": 0.916991538017604,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.75,
+     "coverage": 0.727633481416269,
+     "macro_precision_shown": 0.9211937638662681,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.76,
+     "coverage": 0.7137322504133684,
+     "macro_precision_shown": 0.9231664239254097,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.77,
+     "coverage": 0.7036879526564747,
+     "macro_precision_shown": 0.9252802798025586,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.78,
+     "coverage": 0.692311176562666,
+     "macro_precision_shown": 0.9297639326008874,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.79,
+     "coverage": 0.6784642057950345,
+     "macro_precision_shown": 0.930422037592099,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.8,
+     "coverage": 0.6627228427916102,
+     "macro_precision_shown": 0.9339805099703837,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.81,
+     "coverage": 0.6453639529547356,
+     "macro_precision_shown": 0.937488850210117,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.82,
+     "coverage": 0.6308601795811343,
+     "macro_precision_shown": 0.9405318957090272,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.83,
+     "coverage": 0.617760231179969,
+     "macro_precision_shown": 0.939073590652073,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.84,
+     "coverage": 0.6030177598162852,
+     "macro_precision_shown": 0.9431171160598377,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.85,
+     "coverage": 0.5867785171896932,
+     "macro_precision_shown": 0.9454886646538291,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.86,
+     "coverage": 0.5765017730673264,
+     "macro_precision_shown": 0.9457613575293564,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.87,
+     "coverage": 0.5621207102144884,
+     "macro_precision_shown": 0.9464157196332924,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.88,
+     "coverage": 0.5499905086887198,
+     "macro_precision_shown": 0.9472529968036767,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.89,
+     "coverage": 0.5415740647839349,
+     "macro_precision_shown": 0.9494685195880194,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.9,
+     "coverage": 0.5269826121568457,
+     "macro_precision_shown": 0.9617444959992731,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.91,
+     "coverage": 0.5148110004081959,
+     "macro_precision_shown": 0.968862459715716,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.92,
+     "coverage": 0.5002074814173044,
+     "macro_precision_shown": 0.9703111206493572,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.93,
+     "coverage": 0.4845231050538286,
+     "macro_precision_shown": 0.9697716986202936,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.94,
+     "coverage": 0.4652491611800007,
+     "macro_precision_shown": 0.9717813738638095,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.95,
+     "coverage": 0.4466625488492408,
+     "macro_precision_shown": 0.9700602529441404,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.96,
+     "coverage": 0.4249838126848761,
+     "macro_precision_shown": 0.9704621256786101,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.97,
+     "coverage": 0.39212644605992597,
+     "macro_precision_shown": 0.971084055108865,
+     "classes_shown": 9
+    },
+    {
+     "theta": 0.98,
+     "coverage": 0.3446569698915731,
+     "macro_precision_shown": 0.9712657439111059,
+     "classes_shown": 8
+    }
+   ]
+  },
+  "novelty": {
+   "rule": "'Not sure' also when the sound's Mahalanobis distance to every activity is above the 99th percentile of dev clips (out-of-fold)",
+   "threshold": 29.0918787236025,
+   "share_flagged_in_distribution": 0.01,
+   "coverage_with_gate": 0.789
+  },
+  "calibration": {
+   "ece_after_temperature": 0.0199,
+   "ece_before": 0.0129,
+   "bins": [
+    {
+     "bin": [
+      0.2,
+      0.3
+     ],
+     "n": 3,
+     "accuracy": 0.333,
+     "confidence": 0.298
+    },
+    {
+     "bin": [
+      0.3,
+      0.4
+     ],
+     "n": 52,
+     "accuracy": 0.308,
+     "confidence": 0.368
+    },
+    {
+     "bin": [
+      0.4,
+      0.5
+     ],
+     "n": 147,
+     "accuracy": 0.476,
+     "confidence": 0.455
+    },
+    {
+     "bin": [
+      0.5,
+      0.6
+     ],
+     "n": 221,
+     "accuracy": 0.548,
+     "confidence": 0.55
+    },
+    {
+     "bin": [
+      0.6,
+      0.7
+     ],
+     "n": 252,
+     "accuracy": 0.714,
+     "confidence": 0.651
+    },
+    {
+     "bin": [
+      0.7,
+      0.8
+     ],
+     "n": 341,
+     "accuracy": 0.804,
+     "confidence": 0.752
+    },
+    {
+     "bin": [
+      0.8,
+      0.9
+     ],
+     "n": 402,
+     "accuracy": 0.896,
+     "confidence": 0.85
+    },
+    {
+     "bin": [
+      0.9,
+      1.0
+     ],
+     "n": 2266,
+     "accuracy": 0.987,
+     "confidence": 0.981
+    }
+   ],
+   "note": "unweighted, channel 0, out-of-fold"
+  },
+  "session_level": {
+   "smoothing_on": {
+    "caught": [
+     20,
+     8,
+     5,
+     10,
+     80,
+     18,
+     8,
+     8,
+     21
+    ],
+    "sessions": [
+     39,
+     12,
+     9,
+     12,
+     117,
+     20,
+     8,
+     8,
+     32
+    ],
+    "false_alarm_blocks": [
+     10,
+     2,
+     2,
+     1,
+     5,
+     0,
+     0,
+     0,
+     2
+    ],
+    "hours": 10.23,
+    "false_alarms_per_hour": 2.15,
+    "session_recall": 0.693
+   },
+   "smoothing_off": {
+    "caught": [
+     12,
+     5,
+     2,
+     8,
+     76,
+     15,
+     8,
+     6,
+     13
+    ],
+    "sessions": [
+     39,
+     12,
+     9,
+     12,
+     117,
+     20,
+     8,
+     8,
+     32
+    ],
+    "false_alarm_blocks": [
+     44,
+     4,
+     8,
+     6,
+     26,
+     4,
+     0,
+     4,
+     23
+    ],
+    "hours": 10.23,
+    "false_alarms_per_hour": 11.63,
+    "session_recall": 0.564
+   }
+  },
+  "baselines": {
+   "majority": {
+    "macro_f1": {
+     "value": 4.6,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257,
+     "ci95": [
+      3.4,
+      5.8
+     ]
+    },
+    "macro_f1_raw": {
+     "value": 2.5,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "precision": {
+       "value": 25.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 3684,
+       "n_sessions": 257,
+       "ci95": [
+        18.1,
+        35.0
+       ]
+      },
+      "f1": {
+       "value": 41.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        30.6,
+        51.8
+       ]
+      },
+      "missed": 0,
+      "false_alarms": 3213,
+      "support": 471,
+      "precision_raw": 12.8
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 283,
+      "false_alarms": 0,
+      "support": 283,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 247,
+      "false_alarms": 0,
+      "support": 247,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 245,
+      "false_alarms": 0,
+      "support": 245,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 457,
+      "false_alarms": 0,
+      "support": 457,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 527,
+      "false_alarms": 0,
+      "support": 527,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 460,
+      "false_alarms": 0,
+      "support": 460,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 499,
+      "false_alarms": 0,
+      "support": 499,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 495,
+      "false_alarms": 0,
+      "support": 495,
+      "precision_raw": 0.0
+     }
+    ],
+    "confusion": [
+     [
+      471,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      283,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      247,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      245,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      457,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      527,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      460,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      499,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      495,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   "loudness_rule": {
+    "macro_f1": {
+     "value": 10.0,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257,
+     "ci95": [
+      8.5,
+      11.4
+     ]
+    },
+    "macro_f1_raw": {
+     "value": 8.0,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "precision": {
+       "value": 26.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 3500,
+       "n_sessions": 257,
+       "ci95": [
+        18.3,
+        35.5
+       ]
+      },
+      "f1": {
+       "value": 41.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        30.9,
+        52.4
+       ]
+      },
+      "missed": 0,
+      "false_alarms": 3029,
+      "support": 471,
+      "precision_raw": 13.5
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 283,
+      "false_alarms": 0,
+      "support": 283,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 247,
+      "false_alarms": 0,
+      "support": 247,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 245,
+      "false_alarms": 0,
+      "support": 245,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 34.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        26.5,
+        41.4
+       ]
+      },
+      "precision": {
+       "value": 85.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 184,
+       "n_sessions": 257,
+       "ci95": [
+        72.9,
+        95.2
+       ]
+      },
+      "f1": {
+       "value": 48.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        40.3,
+        56.8
+       ]
+      },
+      "missed": 301,
+      "false_alarms": 28,
+      "support": 457,
+      "precision_raw": 84.8
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 527,
+      "false_alarms": 0,
+      "support": 527,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 460,
+      "false_alarms": 0,
+      "support": 460,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 499,
+      "false_alarms": 0,
+      "support": 499,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 495,
+      "false_alarms": 0,
+      "support": 495,
+      "precision_raw": 0.0
+     }
+    ],
+    "confusion": [
+     [
+      471,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      280,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      247,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      245,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      301,
+      0,
+      0,
+      0,
+      156,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      525,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      437,
+      0,
+      0,
+      0,
+      23,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      499,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ],
+     [
+      495,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    ]
+   },
+   "logmel_lr": {
+    "macro_f1": {
+     "value": 78.3,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257,
+     "ci95": [
+      73.8,
+      81.1
+     ]
+    },
+    "macro_f1_raw": {
+     "value": 82.2,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 86.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        80.2,
+        92.2
+       ]
+      },
+      "precision": {
+       "value": 81.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 586,
+       "n_sessions": 257,
+       "ci95": [
+        72.5,
+        88.1
+       ]
+      },
+      "f1": {
+       "value": 84.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        77.8,
+        88.4
+       ]
+      },
+      "missed": 63,
+      "false_alarms": 178,
+      "support": 471,
+      "precision_raw": 69.6
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 82.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        71.0,
+        90.3
+       ]
+      },
+      "precision": {
+       "value": 87.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 267,
+       "n_sessions": 257,
+       "ci95": [
+        69.5,
+        95.7
+       ]
+      },
+      "f1": {
+       "value": 84.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        72.8,
+        91.2
+       ]
+      },
+      "missed": 51,
+      "false_alarms": 35,
+      "support": 283,
+      "precision_raw": 86.9
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 80.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        74.7,
+        85.9
+       ]
+      },
+      "precision": {
+       "value": 49.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 287,
+       "n_sessions": 257,
+       "ci95": [
+        25.6,
+        68.0
+       ]
+      },
+      "f1": {
+       "value": 61.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        38.8,
+        74.1
+       ]
+      },
+      "missed": 48,
+      "false_alarms": 88,
+      "support": 247,
+      "precision_raw": 69.3
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 78.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        69.3,
+        85.9
+       ]
+      },
+      "precision": {
+       "value": 63.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 242,
+       "n_sessions": 257,
+       "ci95": [
+        43.1,
+        79.0
+       ]
+      },
+      "f1": {
+       "value": 70.3,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        54.3,
+        79.9
+       ]
+      },
+      "missed": 53,
+      "false_alarms": 50,
+      "support": 245,
+      "precision_raw": 79.3
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 61.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        53.8,
+        67.9
+       ]
+      },
+      "precision": {
+       "value": 38.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 376,
+       "n_sessions": 257,
+       "ci95": [
+        29.5,
+        49.8
+       ]
+      },
+      "f1": {
+       "value": 47.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        39.3,
+        55.5
+       ]
+      },
+      "missed": 178,
+      "false_alarms": 97,
+      "support": 457,
+      "precision_raw": 74.2
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 85.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        76.9,
+        92.2
+       ]
+      },
+      "precision": {
+       "value": 91.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 483,
+       "n_sessions": 257,
+       "ci95": [
+        82.9,
+        96.7
+       ]
+      },
+      "f1": {
+       "value": 88.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        81.7,
+        92.6
+       ]
+      },
+      "missed": 79,
+      "false_alarms": 35,
+      "support": 527,
+      "precision_raw": 92.8
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "precision": {
+       "value": 87.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 468,
+       "n_sessions": 257,
+       "ci95": [
+        57.6,
+        100.0
+       ]
+      },
+      "f1": {
+       "value": 93.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        73.1,
+        100.0
+       ]
+      },
+      "missed": 0,
+      "false_alarms": 8,
+      "support": 460,
+      "precision_raw": 98.3
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 98.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        96.8,
+        99.7
+       ]
+      },
+      "precision": {
+       "value": 99.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 257,
+       "ci95": [
+        99.7,
+        100.0
+       ]
+      },
+      "f1": {
+       "value": 99.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        98.3,
+        99.8
+       ]
+      },
+      "missed": 8,
+      "false_alarms": 4,
+      "support": 499,
+      "precision_raw": 99.2
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 70.3,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        63.1,
+        77.0
+       ]
+      },
+      "precision": {
+       "value": 83.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 480,
+       "n_sessions": 257,
+       "ci95": [
+        73.4,
+        91.4
+       ]
+      },
+      "f1": {
+       "value": 76.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        69.6,
+        81.4
+       ]
+      },
+      "missed": 147,
+      "false_alarms": 132,
+      "support": 495,
+      "precision_raw": 72.5
+     }
+    ],
+    "confusion": [
+     [
+      408,
+      1,
+      0,
+      6,
+      7,
+      1,
+      0,
+      0,
+      48
+     ],
+     [
+      2,
+      232,
+      13,
+      4,
+      14,
+      4,
+      8,
+      0,
+      6
+     ],
+     [
+      1,
+      5,
+      199,
+      14,
+      25,
+      2,
+      0,
+      1,
+      0
+     ],
+     [
+      8,
+      3,
+      16,
+      192,
+      3,
+      3,
+      0,
+      0,
+      20
+     ],
+     [
+      67,
+      6,
+      29,
+      6,
+      279,
+      21,
+      0,
+      3,
+      46
+     ],
+     [
+      17,
+      9,
+      17,
+      5,
+      19,
+      448,
+      0,
+      0,
+      12
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      460,
+      0,
+      0
+     ],
+     [
+      0,
+      1,
+      0,
+      6,
+      0,
+      1,
+      0,
+      491,
+      0
+     ],
+     [
+      83,
+      10,
+      13,
+      9,
+      29,
+      3,
+      0,
+      0,
+      348
+     ]
+    ]
+   },
+   "ced_tiny_zeroshot": {
+    "macro_f1": {
+     "value": 37.7,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257,
+     "ci95": [
+      34.3,
+      41.4
+     ]
+    },
+    "macro_f1_raw": {
+     "value": 42.5,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 93.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        91.5,
+        96.2
+       ]
+      },
+      "precision": {
+       "value": 53.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 1183,
+       "n_sessions": 257,
+       "ci95": [
+        41.8,
+        64.0
+       ]
+      },
+      "f1": {
+       "value": 68.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39,
+       "ci95": [
+        57.9,
+        76.0
+       ]
+      },
+      "missed": 29,
+      "false_alarms": 741,
+      "support": 471,
+      "precision_raw": 37.4
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 20.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        11.2,
+        31.1
+       ]
+      },
+      "precision": {
+       "value": 79.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 83,
+       "n_sessions": 257,
+       "ci95": [
+        51.0,
+        94.7
+       ]
+      },
+      "f1": {
+       "value": 33.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12,
+       "ci95": [
+        18.1,
+        45.6
+       ]
+      },
+      "missed": 224,
+      "false_alarms": 24,
+      "support": 283,
+      "precision_raw": 71.1
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 34.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        30.6,
+        38.5
+       ]
+      },
+      "precision": {
+       "value": 15.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 314,
+       "n_sessions": 257,
+       "ci95": [
+        6.8,
+        27.6
+       ]
+      },
+      "f1": {
+       "value": 21.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9,
+       "ci95": [
+        11.3,
+        31.2
+       ]
+      },
+      "missed": 161,
+      "false_alarms": 228,
+      "support": 247,
+      "precision_raw": 27.4
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "precision": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 0,
+       "n_sessions": 257,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "f1": {
+       "value": 0.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12,
+       "ci95": [
+        0.0,
+        0.0
+       ]
+      },
+      "missed": 245,
+      "false_alarms": 0,
+      "support": 245,
+      "precision_raw": 0.0
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 41.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        35.4,
+        48.0
+       ]
+      },
+      "precision": {
+       "value": 13.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 483,
+       "n_sessions": 257,
+       "ci95": [
+        9.5,
+        18.8
+       ]
+      },
+      "f1": {
+       "value": 20.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117,
+       "ci95": [
+        15.3,
+        26.1
+       ]
+      },
+      "missed": 267,
+      "false_alarms": 293,
+      "support": 457,
+      "precision_raw": 39.3
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 93.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        87.7,
+        98.2
+       ]
+      },
+      "precision": {
+       "value": 22.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 949,
+       "n_sessions": 257,
+       "ci95": [
+        11.2,
+        43.0
+       ]
+      },
+      "f1": {
+       "value": 35.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20,
+       "ci95": [
+        20.0,
+        59.3
+       ]
+      },
+      "missed": 32,
+      "false_alarms": 454,
+      "support": 527,
+      "precision_raw": 52.2
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "precision": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 257,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "f1": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8,
+       "ci95": [
+        100.0,
+        100.0
+       ]
+      },
+      "missed": 0,
+      "false_alarms": 0,
+      "support": 460,
+      "precision_raw": 100.0
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 13.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        8.6,
+        19.0
+       ]
+      },
+      "precision": {
+       "value": 96.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 81,
+       "n_sessions": 257,
+       "ci95": [
+        88.4,
+        98.7
+       ]
+      },
+      "f1": {
+       "value": 23.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8,
+       "ci95": [
+        15.7,
+        31.8
+       ]
+      },
+      "missed": 431,
+      "false_alarms": 13,
+      "support": 499,
+      "precision_raw": 84.0
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 22.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        19.1,
+        25.7
+       ]
+      },
+      "precision": {
+       "value": 94.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 131,
+       "n_sessions": 257,
+       "ci95": [
+        89.3,
+        97.2
+       ]
+      },
+      "f1": {
+       "value": 36.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32,
+       "ci95": [
+        31.7,
+        40.5
+       ]
+      },
+      "missed": 384,
+      "false_alarms": 20,
+      "support": 495,
+      "precision_raw": 84.7
+     }
+    ],
+    "confusion": [
+     [
+      442,
+      0,
+      0,
+      0,
+      24,
+      3,
+      0,
+      0,
+      2
+     ],
+     [
+      94,
+      59,
+      48,
+      0,
+      74,
+      0,
+      0,
+      2,
+      6
+     ],
+     [
+      26,
+      19,
+      86,
+      0,
+      111,
+      3,
+      0,
+      0,
+      2
+     ],
+     [
+      52,
+      1,
+      176,
+      0,
+      11,
+      2,
+      0,
+      1,
+      2
+     ],
+     [
+      239,
+      0,
+      1,
+      0,
+      190,
+      12,
+      0,
+      8,
+      7
+     ],
+     [
+      17,
+      0,
+      0,
+      0,
+      12,
+      495,
+      0,
+      2,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      460,
+      0,
+      0
+     ],
+     [
+      1,
+      0,
+      0,
+      0,
+      0,
+      430,
+      0,
+      68,
+      0
+     ],
+     [
+      312,
+      4,
+      3,
+      0,
+      61,
+      4,
+      0,
+      0,
+      111
+     ]
+    ]
+   },
+   "ast_probe": {
+    "missing": "embeddings not cached for every clip (FileNotFoundError)"
+   },
+   "ced_small_probe": {
+    "missing": "embeddings not cached for every clip (FileNotFoundError)"
+   },
+   "clap_probe": {
+    "missing": "embeddings not cached for every clip (FileNotFoundError)"
+   }
+  },
+  "ablations": {
+   "train_ch0_only": {
+    "macro_f1": {
+     "value": 83.6,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "macro_f1_raw": {
+     "value": 87.3,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 89.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39
+      },
+      "precision": {
+       "value": 88.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 525,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 88.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39
+      },
+      "missed": 51,
+      "false_alarms": 105,
+      "support": 471,
+      "precision_raw": 80.0
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 85.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12
+      },
+      "precision": {
+       "value": 81.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 288,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 83.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12
+      },
+      "missed": 41,
+      "false_alarms": 46,
+      "support": 283,
+      "precision_raw": 84.0
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 86.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9
+      },
+      "precision": {
+       "value": 64.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 261,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 73.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9
+      },
+      "missed": 34,
+      "false_alarms": 48,
+      "support": 247,
+      "precision_raw": 81.6
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 89.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12
+      },
+      "precision": {
+       "value": 93.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 237,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 91.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12
+      },
+      "missed": 25,
+      "false_alarms": 17,
+      "support": 245,
+      "precision_raw": 92.8
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 73.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117
+      },
+      "precision": {
+       "value": 31.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 453,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 43.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117
+      },
+      "missed": 121,
+      "false_alarms": 117,
+      "support": 457,
+      "precision_raw": 74.2
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 91.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20
+      },
+      "precision": {
+       "value": 92.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 498,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 91.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20
+      },
+      "missed": 45,
+      "false_alarms": 16,
+      "support": 527,
+      "precision_raw": 96.8
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8
+      },
+      "precision": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8
+      },
+      "missed": 0,
+      "false_alarms": 0,
+      "support": 460,
+      "precision_raw": 100.0
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 97.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8
+      },
+      "precision": {
+       "value": 99.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 493,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 98.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8
+      },
+      "missed": 11,
+      "false_alarms": 5,
+      "support": 499,
+      "precision_raw": 99.0
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 73.3,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32
+      },
+      "precision": {
+       "value": 88.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 469,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 80.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32
+      },
+      "missed": 132,
+      "false_alarms": 106,
+      "support": 495,
+      "precision_raw": 77.4
+     }
+    ],
+    "confusion": [
+     [
+      420,
+      1,
+      3,
+      0,
+      18,
+      3,
+      0,
+      0,
+      26
+     ],
+     [
+      2,
+      242,
+      19,
+      1,
+      10,
+      0,
+      0,
+      0,
+      9
+     ],
+     [
+      0,
+      10,
+      213,
+      7,
+      12,
+      1,
+      0,
+      0,
+      4
+     ],
+     [
+      3,
+      5,
+      6,
+      220,
+      5,
+      1,
+      0,
+      0,
+      5
+     ],
+     [
+      41,
+      6,
+      12,
+      5,
+      336,
+      5,
+      0,
+      0,
+      52
+     ],
+     [
+      8,
+      3,
+      7,
+      3,
+      13,
+      482,
+      0,
+      5,
+      6
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      460,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      1,
+      1,
+      5,
+      0,
+      488,
+      4
+     ],
+     [
+      51,
+      21,
+      1,
+      0,
+      58,
+      1,
+      0,
+      0,
+      363
+     ]
+    ]
+   },
+   "no_class_balancing": {
+    "macro_f1": {
+     "value": 85.1,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "macro_f1_raw": {
+     "value": 88.4,
+     "split": "dev folds (also used for selection)",
+     "n_clips": 3684,
+     "n_sessions": 257
+    },
+    "per_class": [
+     {
+      "class": "absence",
+      "recall": {
+       "value": 90.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39
+      },
+      "precision": {
+       "value": 88.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 531,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 89.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 471,
+       "n_sessions": 39
+      },
+      "missed": 45,
+      "false_alarms": 105,
+      "support": 471,
+      "precision_raw": 80.2
+     },
+     {
+      "class": "cooking",
+      "recall": {
+       "value": 87.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12
+      },
+      "precision": {
+       "value": 85.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 276,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 86.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 283,
+       "n_sessions": 12
+      },
+      "missed": 35,
+      "false_alarms": 28,
+      "support": 283,
+      "precision_raw": 89.9
+     },
+     {
+      "class": "dishwashing",
+      "recall": {
+       "value": 85.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9
+      },
+      "precision": {
+       "value": 71.2,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 77.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 247,
+       "n_sessions": 9
+      },
+      "missed": 36,
+      "false_alarms": 36,
+      "support": 247,
+      "precision_raw": 85.4
+     },
+     {
+      "class": "eating",
+      "recall": {
+       "value": 91.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12
+      },
+      "precision": {
+       "value": 96.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 234,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 93.9,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 245,
+       "n_sessions": 12
+      },
+      "missed": 21,
+      "false_alarms": 10,
+      "support": 245,
+      "precision_raw": 95.7
+     },
+     {
+      "class": "other",
+      "recall": {
+       "value": 74.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117
+      },
+      "precision": {
+       "value": 33.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 453,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 45.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 457,
+       "n_sessions": 117
+      },
+      "missed": 116,
+      "false_alarms": 112,
+      "support": 457,
+      "precision_raw": 75.3
+     },
+     {
+      "class": "social_activity",
+      "recall": {
+       "value": 91.8,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20
+      },
+      "precision": {
+       "value": 93.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 498,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 92.4,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 527,
+       "n_sessions": 20
+      },
+      "missed": 43,
+      "false_alarms": 14,
+      "support": 527,
+      "precision_raw": 97.2
+     },
+     {
+      "class": "vacuum_cleaner",
+      "recall": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8
+      },
+      "precision": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 100.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 460,
+       "n_sessions": 8
+      },
+      "missed": 0,
+      "false_alarms": 0,
+      "support": 460,
+      "precision_raw": 100.0
+     },
+     {
+      "class": "watching_tv",
+      "recall": {
+       "value": 99.0,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8
+      },
+      "precision": {
+       "value": 99.6,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 501,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 99.3,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 499,
+       "n_sessions": 8
+      },
+      "missed": 5,
+      "false_alarms": 7,
+      "support": 499,
+      "precision_raw": 98.6
+     },
+     {
+      "class": "working",
+      "recall": {
+       "value": 74.1,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32
+      },
+      "precision": {
+       "value": 88.5,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 484,
+       "n_sessions": 257
+      },
+      "f1": {
+       "value": 80.7,
+       "split": "dev folds (also used for selection)",
+       "n_clips": 495,
+       "n_sessions": 32
+      },
+      "missed": 128,
+      "false_alarms": 117,
+      "support": 495,
+      "precision_raw": 75.8
+     }
+    ],
+    "confusion": [
+     [
+      426,
+      0,
+      0,
+      0,
+      14,
+      3,
+      0,
+      0,
+      28
+     ],
+     [
+      0,
+      248,
+      19,
+      2,
+      5,
+      0,
+      0,
+      0,
+      9
+     ],
+     [
+      0,
+      6,
+      211,
+      5,
+      15,
+      3,
+      0,
+      0,
+      7
+     ],
+     [
+      3,
+      1,
+      4,
+      224,
+      4,
+      0,
+      0,
+      0,
+      9
+     ],
+     [
+      44,
+      2,
+      8,
+      3,
+      341,
+      3,
+      0,
+      0,
+      56
+     ],
+     [
+      9,
+      1,
+      4,
+      0,
+      16,
+      484,
+      0,
+      7,
+      6
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      460,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      494,
+      2
+     ],
+     [
+      49,
+      18,
+      1,
+      0,
+      58,
+      2,
+      0,
+      0,
+      367
+     ]
+    ]
+   }
+  }
+ },
+ "offlist": {
+  "n": 260,
+  "theta": 0.67,
+  "confident_wrong": {
+   "value": 0.8,
+   "split": "off-list (ESC-50 non-activity + noise + silence)",
+   "n_clips": 260,
+   "n_sessions": 260,
+   "ci95": [
+    0.2,
+    2.8
+   ]
+  },
+  "confident_wrong_without_novelty_gate": {
+   "value": 52.7,
+   "split": "off-list",
+   "n_clips": 260,
+   "n_sessions": 260,
+   "ci95": [
+    46.6,
+    58.7
+   ]
+  },
+  "esc50_confident": 0,
+  "esc50_n": 200,
+  "by_category": {
+   "airplane": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "car_horn": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "cat": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "chainsaw": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "chirping_birds": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "church_bells": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "clapping": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "clock_alarm": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "clock_tick": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "crying_baby": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "dog": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "fireworks": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "glass_breaking": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "helicopter": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "pink noise": {
+    "n": 20,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "rain": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "rooster": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "sea_waves": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "silence": {
+    "n": 20,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "siren": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "thunderstorm": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "washing_machine": {
+    "n": 10,
+    "confident": 0,
+    "labelled_as": {}
+   },
+   "white noise": {
+    "n": 20,
+    "confident": 2,
+    "labelled_as": {
+     "Cooking": 2
+    }
+   }
+  },
+  "curve": [
+   {
+    "theta": 0.2,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.22,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.24,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.26,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.28,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.3,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.32,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.34,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.36,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.38,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.4,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.42,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.44,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.46,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.48,
+    "share_shown": 0.011538461538461539
+   },
+   {
+    "theta": 0.5,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.52,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.54,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.56,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.58,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.6,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.62,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.64,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.66,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.68,
+    "share_shown": 0.007692307692307693
+   },
+   {
+    "theta": 0.7,
+    "share_shown": 0.0038461538461538464
+   },
+   {
+    "theta": 0.72,
+    "share_shown": 0.0038461538461538464
+   },
+   {
+    "theta": 0.74,
+    "share_shown": 0.0038461538461538464
+   },
+   {
+    "theta": 0.76,
+    "share_shown": 0.0038461538461538464
+   },
+   {
+    "theta": 0.78,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.8,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.82,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.84,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.86,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.88,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.9,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.92,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.94,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.96,
+    "share_shown": 0.0
+   },
+   {
+    "theta": 0.98,
+    "share_shown": 0.0
+   }
+  ],
+  "note": "Every label shown here is wrong by construction (none of these are household activities). Wilson 95% CI."
+ },
+ "published": {
+  "source": "https://dcase.community/challenge2018/task-monitoring-domestic-activities-results (opened 2026-11-14)",
+  "caveat": "Published systems scored all 72,972 eval clips and trained on all 72,984 dev clips with 4-channel posterior averaging; ours is a seeded, reweighted subsample with a head trained on <= 1,000 clips per class.",
+  "dcase2018_baseline": {
+   "dev_cv": 84.5,
+   "eval_known_mic": 85.0,
+   "eval_unknown_mic": 83.1,
+   "other_class_unknown_mic": 35.0,
+   "what": "official log-mel CNN baseline, 4-mic posterior averaging"
+  },
+  "best_entry": {
+   "system": "Inoue_IBM_task5_1",
+   "dev_cv": 90.0,
+   "eval_known_mic": 90.4,
+   "eval_unknown_mic": 88.4,
+   "note": "tied at 88.4 unknown-mic with Tanabe_HIT_task5_1 and _4; the page lists no rank column"
+  },
+  "ranking_metric": "macro-averaged F1 on the evaluation set, unknown microphones"
+ },
+ "dcase_eval": null,
+ "own_kitchen": null
+}
