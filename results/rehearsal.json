@@ -3,26 +3,28 @@
   "all": {
    "nodes": [
     "DevNode1",
-    "DevNode2"
+    "DevNode2",
+    "DevNode3",
+    "DevNode4"
    ],
    "node_avg": {
-    "value": 0.3,
+    "value": 1.0,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 782,
+    "n_clips": 2133,
     "n_sessions": 61,
     "ci95": [
-     0.1,
-     0.6
+     0.2,
+     1.9
     ]
    },
    "ch0": {
-    "value": 0.4,
+    "value": 0.5,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 782,
+    "n_clips": 2133,
     "n_sessions": 61,
     "ci95": [
      0.1,
-     1.0
+     1.2
     ]
    }
   },
@@ -32,23 +34,23 @@
     "DevNode2"
    ],
    "node_avg": {
-    "value": 0.3,
+    "value": 1.0,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 782,
+    "n_clips": 1084,
     "n_sessions": 61,
     "ci95": [
      0.1,
-     0.6
+     1.9
     ]
    },
    "ch0": {
-    "value": 0.4,
+    "value": 0.6,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 782,
+    "n_clips": 1084,
     "n_sessions": 61,
     "ci95": [
      0.1,
-     1.0
+     1.5
     ]
    }
   },
@@ -58,101 +60,111 @@
     "DevNode4"
    ],
    "node_avg": {
-    "value": 0.0,
+    "value": 0.9,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 0,
-    "n_sessions": 0,
+    "n_clips": 1049,
+    "n_sessions": 61,
     "ci95": [
-     0.0,
-     0.0
+     0.1,
+     2.0
     ]
    },
    "ch0": {
-    "value": 0.0,
+    "value": 0.4,
     "split": "REHEARSAL: dev fold 4, dummy head",
-    "n_clips": 0,
-    "n_sessions": 0,
+    "n_clips": 1049,
+    "n_sessions": 61,
     "ci95": [
      0.0,
-     0.0
+     0.8
     ]
    }
   }
  },
  "per_node": {
   "DevNode1": {
-   "node_avg": 0.3,
-   "ch0": 0.5,
+   "node_avg": 0.5,
+   "ch0": 0.8,
    "n_clips": 531
   },
   "DevNode2": {
-   "node_avg": 0.2,
-   "ch0": 0.3,
-   "n_clips": 251
+   "node_avg": 1.5,
+   "ch0": 0.5,
+   "n_clips": 553
+  },
+  "DevNode3": {
+   "node_avg": 0.5,
+   "ch0": 0.5,
+   "n_clips": 502
+  },
+  "DevNode4": {
+   "node_avg": 1.2,
+   "ch0": 0.2,
+   "n_clips": 547
   }
  },
  "ours_node_avg": {
   "macro_f1": {
-   "value": 0.0,
+   "value": 0.9,
    "split": "REHEARSAL: dev fold 4, dummy head",
-   "n_clips": 0,
-   "n_sessions": 0,
+   "n_clips": 1049,
+   "n_sessions": 61,
    "ci95": [
-    0.0,
-    0.0
+    0.1,
+    2.0
    ]
   },
   "macro_f1_raw": {
-   "value": 0.0,
+   "value": 0.8,
    "split": "REHEARSAL: dev fold 4, dummy head",
-   "n_clips": 0,
-   "n_sessions": 0
+   "n_clips": 1049,
+   "n_sessions": 61
   },
   "per_class": [
    {
     "class": "absence",
     "recall": {
-     "value": 0.0,
+     "value": 9.3,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 97,
+     "n_sessions": 8,
      "ci95": [
       0.0,
-      0.0
+      24.6
      ]
     },
     "precision": {
-     "value": 0.0,
+     "value": 4.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 508,
+     "n_sessions": 61,
      "ci95": [
       0.0,
-      0.0
+      13.3
      ]
     },
     "f1": {
-     "value": 0.0,
+     "value": 5.6,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 97,
+     "n_sessions": 8,
      "ci95": [
       0.0,
-      0.0
+      15.2
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
-    "precision_raw": 0.0
+    "missed": 88,
+    "false_alarms": 499,
+    "support": 97,
+    "precision_raw": 1.8
    },
    {
     "class": "cooking",
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 124,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
@@ -161,8 +173,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 4,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -171,16 +183,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 124,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 124,
+    "false_alarms": 4,
+    "support": 124,
     "precision_raw": 0.0
    },
    {
@@ -188,8 +200,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 161,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
@@ -198,8 +210,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 8,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -208,62 +220,62 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 161,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 161,
+    "false_alarms": 8,
+    "support": 161,
     "precision_raw": 0.0
    },
    {
     "class": "eating",
     "recall": {
-     "value": 0.0,
+     "value": 1.1,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 87,
+     "n_sessions": 2,
      "ci95": [
       0.0,
-      0.0
+      2.2
      ]
     },
     "precision": {
-     "value": 0.0,
+     "value": 8.2,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 4,
+     "n_sessions": 61,
      "ci95": [
       0.0,
-      0.0
+      100.0
      ]
     },
     "f1": {
-     "value": 0.0,
+     "value": 2.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 87,
+     "n_sessions": 2,
      "ci95": [
       0.0,
-      0.0
+      4.3
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
-    "precision_raw": 0.0
+    "missed": 86,
+    "false_alarms": 3,
+    "support": 87,
+    "precision_raw": 25.0
    },
    {
     "class": "other",
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 121,
+     "n_sessions": 29,
      "ci95": [
       0.0,
       0.0
@@ -273,7 +285,7 @@
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
      "n_clips": 0,
-     "n_sessions": 0,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -282,16 +294,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 121,
+     "n_sessions": 29,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
+    "missed": 121,
     "false_alarms": 0,
-    "support": 0,
+    "support": 121,
     "precision_raw": 0.0
    },
    {
@@ -299,8 +311,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 114,
+     "n_sessions": 5,
      "ci95": [
       0.0,
       0.0
@@ -309,8 +321,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 49,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -319,62 +331,62 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 114,
+     "n_sessions": 5,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 114,
+    "false_alarms": 49,
+    "support": 114,
     "precision_raw": 0.0
    },
    {
     "class": "vacuum_cleaner",
     "recall": {
-     "value": 0.0,
+     "value": 5.3,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 94,
+     "n_sessions": 1,
      "ci95": [
       0.0,
-      0.0
+      5.3
      ]
     },
     "precision": {
-     "value": 0.0,
+     "value": 0.2,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 473,
+     "n_sessions": 61,
      "ci95": [
       0.0,
-      0.0
+      0.8
      ]
     },
     "f1": {
-     "value": 0.0,
+     "value": 0.4,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 94,
+     "n_sessions": 1,
      "ci95": [
       0.0,
-      0.0
+      1.4
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
-    "precision_raw": 0.0
+    "missed": 89,
+    "false_alarms": 468,
+    "support": 94,
+    "precision_raw": 1.1
    },
    {
     "class": "watching_tv",
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 117,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
@@ -383,8 +395,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 3,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -393,16 +405,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 117,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 117,
+    "false_alarms": 3,
+    "support": 117,
     "precision_raw": 0.0
    },
    {
@@ -410,8 +422,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 134,
+     "n_sessions": 8,
      "ci95": [
       0.0,
       0.0
@@ -421,7 +433,7 @@
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
      "n_clips": 0,
-     "n_sessions": 0,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -430,183 +442,183 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 134,
+     "n_sessions": 8,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
+    "missed": 134,
     "false_alarms": 0,
-    "support": 0,
+    "support": 134,
     "precision_raw": 0.0
    }
   ],
   "confusion": [
    [
+    9,
+    0,
+    3,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    12,
+    73,
     0,
     0
    ],
    [
+    68,
     0,
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    5,
+    51,
     0,
     0
    ],
    [
+    79,
     0,
     0,
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    82,
     0,
     0
    ],
    [
+    68,
     0,
     0,
+    1,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    3,
+    15,
     0,
     0
    ],
    [
+    11,
+    3,
+    3,
+    0,
+    0,
+    5,
+    99,
+    0,
+    0
+   ],
+   [
+    49,
+    0,
+    2,
+    0,
+    0,
+    0,
+    63,
+    0,
+    0
+   ],
+   [
+    89,
     0,
     0,
     0,
     0,
     0,
+    5,
+    0,
+    0
+   ],
+   [
+    87,
+    0,
+    0,
+    3,
+    0,
+    0,
+    27,
+    0,
+    0
+   ],
+   [
+    48,
+    1,
     0,
     0,
     0,
+    24,
+    58,
+    3,
     0
    ]
   ]
  },
  "ours_ch0": {
   "macro_f1": {
-   "value": 0.0,
+   "value": 0.4,
    "split": "REHEARSAL: dev fold 4, dummy head",
-   "n_clips": 0,
-   "n_sessions": 0,
+   "n_clips": 1049,
+   "n_sessions": 61,
    "ci95": [
     0.0,
-    0.0
+    0.8
    ]
   },
   "macro_f1_raw": {
-   "value": 0.0,
+   "value": 0.4,
    "split": "REHEARSAL: dev fold 4, dummy head",
-   "n_clips": 0,
-   "n_sessions": 0
+   "n_clips": 1049,
+   "n_sessions": 61
   },
   "per_class": [
    {
     "class": "absence",
     "recall": {
-     "value": 0.0,
+     "value": 4.1,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 97,
+     "n_sessions": 8,
      "ci95": [
       0.0,
-      0.0
+      7.9
      ]
     },
     "precision": {
-     "value": 0.0,
+     "value": 2.2,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 443,
+     "n_sessions": 61,
      "ci95": [
       0.0,
-      0.0
+      7.0
      ]
     },
     "f1": {
-     "value": 0.0,
+     "value": 2.9,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 97,
+     "n_sessions": 8,
      "ci95": [
       0.0,
-      0.0
+      6.6
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
-    "precision_raw": 0.0
+    "missed": 93,
+    "false_alarms": 439,
+    "support": 97,
+    "precision_raw": 0.9
    },
    {
     "class": "cooking",
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 124,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
@@ -615,8 +627,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 4,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -625,16 +637,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 124,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 124,
+    "false_alarms": 4,
+    "support": 124,
     "precision_raw": 0.0
    },
    {
@@ -642,8 +654,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 161,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
@@ -652,8 +664,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 5,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -662,16 +674,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 161,
+     "n_sessions": 3,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 161,
+    "false_alarms": 5,
+    "support": 161,
     "precision_raw": 0.0
    },
    {
@@ -679,8 +691,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 87,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
@@ -689,8 +701,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 5,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -699,16 +711,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 87,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 87,
+    "false_alarms": 5,
+    "support": 87,
     "precision_raw": 0.0
    },
    {
@@ -716,8 +728,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 121,
+     "n_sessions": 29,
      "ci95": [
       0.0,
       0.0
@@ -727,7 +739,7 @@
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
      "n_clips": 0,
-     "n_sessions": 0,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -736,16 +748,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 121,
+     "n_sessions": 29,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
+    "missed": 121,
     "false_alarms": 0,
-    "support": 0,
+    "support": 121,
     "precision_raw": 0.0
    },
    {
@@ -753,8 +765,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 114,
+     "n_sessions": 5,
      "ci95": [
       0.0,
       0.0
@@ -763,8 +775,8 @@
     "precision": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 90,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -773,62 +785,62 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 114,
+     "n_sessions": 5,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
+    "missed": 114,
+    "false_alarms": 90,
+    "support": 114,
     "precision_raw": 0.0
    },
    {
     "class": "vacuum_cleaner",
     "recall": {
-     "value": 0.0,
+     "value": 5.3,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 94,
+     "n_sessions": 1,
      "ci95": [
       0.0,
-      0.0
+      5.3
      ]
     },
     "precision": {
-     "value": 0.0,
+     "value": 0.2,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 502,
+     "n_sessions": 61,
      "ci95": [
       0.0,
-      0.0
+      0.8
      ]
     },
     "f1": {
-     "value": 0.0,
+     "value": 0.4,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 94,
+     "n_sessions": 1,
      "ci95": [
       0.0,
-      0.0
+      1.3
      ]
     },
-    "missed": 0,
-    "false_alarms": 0,
-    "support": 0,
-    "precision_raw": 0.0
+    "missed": 89,
+    "false_alarms": 497,
+    "support": 94,
+    "precision_raw": 1.0
    },
    {
     "class": "watching_tv",
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 117,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
@@ -838,7 +850,7 @@
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
      "n_clips": 0,
-     "n_sessions": 0,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -847,16 +859,16 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 117,
+     "n_sessions": 2,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
+    "missed": 117,
     "false_alarms": 0,
-    "support": 0,
+    "support": 117,
     "precision_raw": 0.0
    },
    {
@@ -864,8 +876,8 @@
     "recall": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 134,
+     "n_sessions": 8,
      "ci95": [
       0.0,
       0.0
@@ -875,7 +887,7 @@
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
      "n_clips": 0,
-     "n_sessions": 0,
+     "n_sessions": 61,
      "ci95": [
       0.0,
       0.0
@@ -884,124 +896,124 @@
     "f1": {
      "value": 0.0,
      "split": "REHEARSAL: dev fold 4, dummy head",
-     "n_clips": 0,
-     "n_sessions": 0,
+     "n_clips": 134,
+     "n_sessions": 8,
      "ci95": [
       0.0,
       0.0
      ]
     },
-    "missed": 0,
+    "missed": 134,
     "false_alarms": 0,
-    "support": 0,
+    "support": 134,
     "precision_raw": 0.0
    }
   ],
   "confusion": [
    [
+    4,
+    0,
+    2,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    22,
+    69,
     0,
     0
    ],
    [
+    66,
     0,
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    8,
+    50,
     0,
     0
    ],
    [
+    74,
     0,
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    1,
+    86,
     0,
     0
    ],
    [
+    64,
     0,
     0,
     0,
     0,
-    0,
-    0,
-    0,
-    0,
-    0
-   ],
-   [
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
+    2,
+    21,
     0,
     0
    ],
    [
+    8,
+    2,
+    2,
+    0,
+    0,
+    11,
+    98,
+    0,
+    0
+   ],
+   [
+    36,
+    0,
+    1,
+    0,
+    0,
+    0,
+    77,
+    0,
+    0
+   ],
+   [
+    89,
     0,
     0,
     0,
     0,
     0,
+    5,
+    0,
+    0
+   ],
+   [
+    80,
+    1,
+    0,
+    5,
     0,
     0,
+    31,
+    0,
+    0
+   ],
+   [
+    22,
+    1,
+    0,
+    0,
+    0,
+    46,
+    65,
     0,
     0
    ]
   ]
  },
  "per_class_slice": "unknown",
- "not_sure_share_at_theta": 0.003,
- "n_clips": 782,
- "n_moments": 641,
+ "not_sure_share_at_theta": 0.012,
+ "n_clips": 2133,
+ "n_moments": 1102,
  "note": "Rehearsal only: dummy random head on dev fold 4; checks the code path. Not a result."
 }
