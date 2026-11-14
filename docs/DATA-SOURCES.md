@@ -55,3 +55,15 @@ Reachability checked from the Claude Code cloud container on **Nov 13, 2026**. C
 | Apple SoundAnalysis `.version1` (macOS 27.2.1) | Zero-shot baseline | Apple SDK | No | ✅ | 303 classes; 0.08 s/clip; frozen map `probes/maps/apple_map.json` |
 | [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans) | Problem statistic | US gov | — | ✅ opened | Quote: "Of older adults 65 and older living in the community, 59% lived with their spouse/partner in 2023. About 28% lived alone." |
 | Unverified, do not quote yet | — | — | — | ⚠️ | ACL PDF count (16.2 M living alone); AARP/NAC long-distance caregiver share; Alzheimer's Association dementia living-alone share; Pew 26% (2025 short read): seen in snippets only |
+
+## Added in stage 3 (build, Sat Nov 14, 2026)
+
+| Source | Use | Licence | Notes |
+| --- | --- | --- | --- |
+| [ESC-50](https://github.com/karolpiczak/ESC-50) (K. J. Piczak, ACM MM 2015) | 200 off-list clips (20 non-household categories) to test "Not sure" | CC BY-NC 3.0 | Fetched to `data/clips/offlist/` (git-ignored), never committed; repeated to 10 s |
+| DCASE 2018 Task 5 results page (re-opened by a scout, Nov 14) | Published numbers | page | Baseline 84.5 dev / 85.0 known-mic / 83.1 unknown-mic; best entry Inoue_IBM_task5_1 90.0 / 90.4 / 88.4 (tied at 88.4 with two Tanabe_HIT entries; no rank column); ranking metric = macro F1 on unknown mics; the pages don't map EvalNode ids to known/unknown |
+| Caregiver Aware (Cognitive Systems; Wi-Fi motion via smart plugs) | studied in stage 1 (`docs/research/kettle/feature-matrix.md`); no URL recorded there | patterns only | "Rise and Shine" check naming |
+| WellNest (Devpost) | https://devpost.com/software/wellnest-rplons | — | Prior hackathon project (simulated events, no accuracy); cited as prior art |
+| Libraries | PyTorch 2.15 (BSD-3), torchaudio (BSD-2), transformers 5.23 (Apache-2.0), scikit-learn 1.9 (BSD-3), NumPy/SciPy (BSD-3), soundfile/libsndfile (BSD-3/LGPL), PyAV 18.1 (BSD-3; FFmpeg LGPL), FastAPI/Starlette (MIT), uvicorn (BSD-3), matplotlib (PSF-based), Playwright 1.65 (Apache-2.0), Pillow (HPND), nbconvert (BSD-3) | as listed | Pinned in `requirements.txt` / `requirements-dev.txt` |
+| Dataviz validator | `validate_palette.js` from Claude Code's bundled dataviz skill | — | Used to validate the activity colours; reference palette hues adopted |
+| AudioSet ontology label names | via `models/audioset_labels.json` (from the AST config, same 527-label order) | CC BY 4.0 (Google) | Evidence names and zero-shot maps |

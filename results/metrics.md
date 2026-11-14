@@ -1,4 +1,4 @@
-# Kettle results (2026-11-14 13:02 CST, commit 4076fdec29, head fa5de76a7970)
+# Kettle results (2026-11-14 13:27 CST, commit 321521b2bf, head fa5de76a7970)
 
 Primary metric: macro F1 over the 9 SINS activities, 10-s windows. Dev numbers: **dev folds (also used for selection)**, N = 8920 clips from 257 sessions, prevalence-reweighted, 95% session-bootstrap CI.
 
@@ -18,15 +18,15 @@ Mic mapping: NOT confirmed by the mic-fingerprint rule; per-node numbers only.
 
 | Eval node | 4-mic average | Single mic | N clips |
 |---|---|---|---|
-| EvalNode1 | 86.3 | 85.2 | 1113 |
-| EvalNode2 | 86.7 | 84.4 | 1113 |
-| EvalNode3 | 80.5 | 79.9 | 1113 |
-| EvalNode4 | 87.3 | 85.6 | 1113 |
-| EvalNode5 | 86.5 | 85.6 | 1113 |
-| EvalNode6 | 85.0 | 85.0 | 1113 |
-| EvalNode7 | 84.8 | 83.4 | 1113 |
+| EvalNode1 | 86.3 [76.5, 89.3] | 85.2 [75.2, 87.5] | 1113 |
+| EvalNode2 | 86.7 [76.6, 89.4] | 84.4 [74.4, 87.0] | 1113 |
+| EvalNode3 | 80.5 [70.7, 84.0] | 79.9 [70.5, 83.6] | 1113 |
+| EvalNode4 | 87.3 [77.2, 90.6] | 85.6 [75.6, 89.0] | 1113 |
+| EvalNode5 | 86.5 [76.4, 89.3] | 85.6 [75.5, 88.7] | 1113 |
+| EvalNode6 | 85.0 [74.9, 88.8] | 85.0 [74.9, 88.1] | 1113 |
+| EvalNode7 | 84.8 [75.5, 87.5] | 83.4 [74.5, 86.6] | 1113 |
 
-Baselines on the same held-out clips (single mic): majority 5.0 [1.6, 7.8]; ced tiny zeroshot 38.5 [30.9, 47.2]; ast zeroshot: not run (FileNotFoundError); apple zeroshot 31.8 [25.7, 37.9]. Share of windows shown as 'Not sure' at θ: 14.2%.
+Baselines on the same held-out clips (single mic): majority 5.0 [1.6, 7.8]; ced tiny zeroshot 38.5 [30.9, 47.2]; ast zeroshot: not run (no AST embeddings of the eval clips; AST is reported on dev); apple zeroshot 31.8 [25.7, 37.9]. Share of windows below θ ('Not sure'): 14.2 [13.5, 15.0]%.
 
 ## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic
 
@@ -63,25 +63,22 @@ Caught 95.3 [93.8, 96.5]% of 3000 kitchen-activity windows (missed 164); right 8
 | TV | 98.1 [95.9, 99.8] | 99.5 [98.4, 99.9] | 19 | 15 | 1000 |
 | Working (typing) | 73.8 [65.1, 80.5] | 91.5 [87.1, 94.6] | 262 | 211 | 1000 |
 
-**Not sure:** θ = 0.66 (chosen on dev: reweighted shown-label precision ≥ 0.90); coverage 85.0% of windows get a label, precision of shown labels 90.1%. Temperature 1.00; expected calibration error 1.5 [0.8, 2.6] points.
+**Not sure:** θ = 0.66 (chosen on dev: reweighted shown-label precision ≥ 0.90); coverage 85.0 [81.8, 88.1]% of windows get a label, precision of shown labels 90.1 [86.8, 92.4]%. Temperature 1.00; expected calibration error 1.5 [0.8, 2.6] points.
 
 **Calibration:** expected calibration error 1.6 [0.9, 2.6] points before temperature scaling, 1.5 [0.8, 2.6] after (temperature cross-fitted across folds). Plot: `results/reliability_dev.png`.
 
-## The cost of θ for Meera (dev, through the shipped timeline)
+## The cost of θ for Meera's check (dev, through the shipped timeline; kitchen activity = cooking, washing up or eating)
 
-| θ | Kitchen-activity sessions missed | False kitchen-activity blocks per day | All false-alarm blocks per hour |
-|---|---|---|---|
-| 0.30 | 12 of 33 | 23.89 | 7.39 |
-| 0.40 | 12 of 33 | 21.31 | 6.78 |
-| 0.50 | 14 of 33 | 18.08 | 5.49 |
-| 0.55 | 15 of 33 | 16.79 | 4.88 |
-| 0.60 | 16 of 33 | 14.85 | 4.24 |
-| 0.65 (shipped) | 17 of 33 | 12.91 | 3.51 |
-| 0.70 | 19 of 33 | 12.91 | 2.91 |
-| 0.75 | 21 of 33 | 11.62 | 2.26 |
-| 0.80 | 21 of 33 | 10.33 | 1.65 |
-| 0.85 | 24 of 33 | 7.75 | 0.97 |
-| 0.90 | 26 of 33 | 6.46 | 0.48 |
+| θ | Kitchen sessions not noticed | False kitchen-activity blocks per 16-h day |
+|---|---|---|
+| 0.30 | 0 of 33 | 7.75 |
+| 0.40 | 0 of 33 | 6.46 |
+| 0.50 | 0 of 33 | 5.17 |
+| 0.60 | 0 of 33 | 3.87 |
+| 0.66 (shipped) | 0 of 33 | 3.87 |
+| 0.70 | 0 of 33 | 4.52 |
+| 0.80 | 0 of 33 | 5.17 |
+| 0.90 | 0 of 33 | 4.52 |
 
 Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.
 
@@ -100,7 +97,7 @@ SINS is one person in one home, so **age and sex can't be tested**. What we can 
 
 ## Through the shipped timeline (activity sessions, dev)
 
-With 2-of-3 smoothing: 66.5% of 257 activity sessions caught, 3.23 false-alarm blocks per hour of audio. Without smoothing: 47.1% caught, 11.1 per hour (24.78 h of stitched audio).
+With 2-of-3 smoothing: 66.5 [60.6, 72.0]% of 257 activity sessions caught, 3.23 false-alarm blocks per hour of audio. Without smoothing: 47.1 [41.1, 53.2]% caught, 11.1 per hour (24.78 h of stitched audio).
 
 ## Off-list sounds (not one of the 9 activities)
 
@@ -108,11 +105,11 @@ With 2-of-3 smoothing: 66.5% of 257 activity sessions caught, 3.23 false-alarm b
 
 ## Ablations (dev, single mic)
 
-- train ch0 only: 85.3
-- no class balancing: 85.1
-- mlp head: 84.7
-- leave one mic node out: held-out node mean 82.7 vs same nodes 85.2 ({'DevNode1': 81.5, 'DevNode2': 82.7, 'DevNode3': 85.7, 'DevNode4': 81.0})
-- chip 5s window: 80.8
+- train ch0 only: 85.3 [81.2, 87.5]
+- no class balancing: 85.1 [81.0, 87.4]
+- mlp head: 84.7 [80.8, 87.0]
+- leave one mic node out: held-out node mean 82.7 vs same nodes 85.2 (DevNode1 81.5 [78.0, 83.9], DevNode2 82.7 [78.3, 85.8], DevNode3 85.7 [81.9, 88.3], DevNode4 81.0 [76.9, 84.1])
+- chip 5s window: 80.8 [77.0, 83.0]
 
 ## Published DCASE 2018 Task 5 numbers
 

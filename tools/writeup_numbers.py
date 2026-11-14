@@ -70,7 +70,7 @@ def blocks(m: dict) -> dict:
                      f"label to {f(o['confident_wrong'])}% (vs {f(o['confident_wrong_without_novelty_gate'])}% without its "
                      f"'unlike anything it learned' check).")
     sl = d["session_level"]
-    extra.append(f"Through the day bar (2-of-3 smoothing), {100 * sl['smoothing_on']['session_recall']:.0f}% of "
+    extra.append(f"Through the day bar (2-of-3 smoothing), {sl['smoothing_on']['session_recall']['value']:.0f}% of "
                  f"{sum(sl['smoothing_on']['sessions'])} activity sessions were caught with {sl['smoothing_on']['false_alarms_per_hour']} "
                  f"false-alarm blocks per hour ({sl['smoothing_off']['false_alarms_per_hour']} without smoothing).")
     split = (f"Held-out numbers: the official DCASE 2018 Task 5 evaluation set, a pre-registered seeded sample "
@@ -87,15 +87,41 @@ def blocks(m: dict) -> dict:
         fl.append(f"{i}. **{DISPLAY[x['true']]} heard as {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips; e.g. "
                   f"`{x['clip']}`: {probs}; it heard {snd}). {x['likely_cause']}")
     tt = d["theta_tradeoff"]
-    shipped = min(tt, key=lambda r: abs(r["theta"] - d["not_sure"]["theta"]))
+    shipped = next((r for r in tt if r.get("shipped")), min(tt, key=lambda r: abs(r["theta"] - d["not_sure"]["theta"])))
     lo = tt[0]
     trade = (f"Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\" (chosen on dev folds so shown labels are right "
-             f"{100 * d['not_sure']['macro_precision_shown']:.0f}% of the time; {100 * d['not_sure']['coverage']:.0f}% of windows get a label). "
+             f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time; {d['not_sure']['coverage_metric']['value']:.0f}% of windows get a label). "
              f"A false \"kitchen activity\" could hide a skipped breakfast; a missed one costs Meera an unnecessary call. We lean toward fewer "
-             f"false ones: through the day bar, θ = {shipped['theta']:.2f} gives {shipped['meal_false_alarms_per_day']} false kitchen-activity "
-             f"blocks per 16-hour day and misses {shipped['meal_sessions_missed']} of {shipped['meal_sessions']} meal sessions, versus "
-             f"{lo['meal_false_alarms_per_day']} and {lo['meal_sessions_missed']} at θ = {lo['theta']:.2f} (dev folds).")
+             f"false ones: through the day bar on dev folds, θ = {shipped['theta']:.2f} gives {shipped['meal_false_alarms_per_day']} false kitchen-activity "
+             f"blocks per 16-hour day and doesn't notice {shipped['meal_sessions_missed']} of {shipped['meal_sessions']} kitchen sessions, versus "
+             f"{lo['meal_false_alarms_per_day']} and {lo['meal_sessions_missed']} at θ = {lo['theta']:.2f}.")
+    short = ["| System (macro F1, 95% CI) | Held-out test, one mic | Dev folds, one mic |", "|---|---|---|"]
+    if e:
+        a = e["slices"]["all"]
+        short.append(f"| **Kettle** | **{f(a['ch0'])}** | {f(d['ours_ch0']['macro_f1'])} |")
+        for k, label in (("apple_zeroshot", "Apple SoundAnalysis, zero-shot"), ("ced_tiny_zeroshot", "Same encoder, zero-shot label map"),
+                         ("majority", "Always \"Quiet\"")):
+            v = e.get("baselines", {}).get(k, {})
+            dv = d["baselines"].get(k, {}).get("macro_f1")
+            short.append(f"| {label} | {f(v) if 'value' in v else '–'} | {f(dv) if dv else '–'} |")
+        lm = d["baselines"]["logmel_lr"]["macro_f1"]
+        short.append(f"| Log-mel + logistic regression (no deep model) | – | {f(lm)} |")
+        short.append(f"| DCASE 2018 baseline / best entry (published, full data) | {pub['dcase2018_baseline']['eval_known_mic']}–{pub['dcase2018_baseline']['eval_unknown_mic']} / {pub['best_entry']['eval_known_mic']}–{pub['best_entry']['eval_unknown_mic']} | – |")
+        em = e.get("meal_activity", ma)
+        short_meal = (f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
+                      f"(**missed {em['missed']}**); **false alarms** on {f(em['false_alarm_rate'])}% of {em['n_other']:,} other windows ({em['false_alarms']}).")
+        hs = (f"Held-out = the official DCASE 2018 Task 5 test set: a pre-registered seeded sample, {e['n_clips']:,} clips × all 7 microphones, "
+              f"{e['slices']['all']['ch0']['n_sessions']} sessions, run once with the frozen model. Our pre-registered check couldn't tell which "
+              f"microphones are the 3 unseen ones, so we report all 7 together (published systems: known {pub['dcase2018_baseline']['eval_known_mic']}, unseen {pub['dcase2018_baseline']['eval_unknown_mic']} for the baseline).")
+        worst = sorted(per, key=lambda c: c["recall"]["value"])[:3]
+        weak = "Weakest on the held-out test: " + "; ".join(
+            f"{DISPLAY[c['class']].lower()} (caught {c['recall']['value']:.0f}%, {c['missed']} missed, {c['false_alarms']} false alarms of {c['support']:,})"
+            for c in worst) + ". Every activity's misses and false alarms: README and the app's \"How sure is Kettle?\" page."
+        short_rows = [hs, "", *short, "", short_meal, "", weak]
+    else:
+        short_rows = ["The held-out run hasn't happened yet."]
     return {"lead": "\n".join(lead), "results": "\n".join([split, "", *rows, "", meal, "", *per_rows, "", *extra]),
+            "results_short": "\n".join(short_rows),
             "failures": "\n".join(fl), "tradeoff": trade}
 
 
@@ -109,6 +135,8 @@ def fill(path: Path, parts: dict) -> None:
 if __name__ == "__main__":
     m = json.loads((ROOT / "results" / "metrics.json").read_text())
     parts = blocks(m)
-    for p in (ROOT / "docs" / "WRITEUP.md", ROOT / "README.md"):
-        fill(p, parts)
+    fill(ROOT / "README.md", parts)
+    wp = dict(parts)
+    wp["results"] = parts["results_short"]
+    fill(ROOT / "docs" / "WRITEUP.md", wp)
     print(parts["lead"])

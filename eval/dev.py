@@ -94,10 +94,10 @@ def report(y, p, session, w, split, boot=True) -> dict:
                     "recall": num(rw["recall"][k], split, sup, sess_k, ci["recall"][:, k] if ci else None),
                     "precision": num(rw["precision"][k], split, int((p == k).sum()), n_s, ci["precision"][:, k] if ci else None),
                     "f1": num(rw["f1"][k], split, sup, sess_k, ci["f1"][:, k] if ci else None),
-                    "missed": int(raw["missed"][k]), "false_alarms": int(raw["false_alarms"][k]), "support": sup,
-                    "precision_raw": round(float(raw["precision"][k]) * 100, 1)})
+                    "missed": int(raw["missed"][k]), "false_alarms": int(raw["false_alarms"][k]), "support": sup})
+    ci_raw = M.session_bootstrap(y, p, session, None, n=300) if boot else None
     return {"macro_f1": num(rw["macro_f1"], split, len(y), n_s, ci["macro_f1"] if ci else None),
-            "macro_f1_raw": num(raw["macro_f1"], split, len(y), n_s),
+            "macro_f1_raw": num(raw["macro_f1"], split + ", not reweighted", len(y), n_s, ci_raw["macro_f1"] if ci_raw else None),
             "per_class": per, "confusion": C.astype(int).tolist()}
 
 
@@ -121,6 +121,30 @@ def theta_curve(P: np.ndarray, y: np.ndarray, w: np.ndarray) -> list[dict]:
         out.append({"theta": float(th), "coverage": float((wy * shown).sum() / wy.sum()),
                     "macro_precision_shown": float(np.nanmean(precs)), "classes_shown": int(np.sum(~np.isnan(precs)))})
     return out
+
+
+def shown_stats(P, y, w, th):
+    conf, pred = P.max(1), P.argmax(1)
+    wy = w[y]
+    shown = conf >= th
+    precs = [(wy[shown & (pred == k)] * (y[shown & (pred == k)] == k)).sum() / wy[shown & (pred == k)].sum()
+             for k in range(len(CLASSES)) if wy[shown & (pred == k)].sum() > 0]
+    return float((wy * shown).sum() / wy.sum()), float(np.mean(precs))
+
+
+def theta_ci(P, y, w, session, th, split, n=300) -> dict:
+    """Coverage and shown-label precision at θ with session-bootstrap 95% CIs."""
+    uniq, inv = np.unique(session, return_inverse=True)
+    groups = [np.where(inv == i)[0] for i in range(len(uniq))]
+    rng = np.random.default_rng(0)
+    B = []
+    for _ in range(n):
+        idx = np.concatenate([groups[i] for i in rng.integers(0, len(uniq), len(uniq))])
+        B.append(shown_stats(P[idx], y[idx], w, th))
+    cov, prec = shown_stats(P, y, w, th)
+    B = np.array(B)
+    return {"coverage_metric": num(cov, split, len(y), len(uniq), np.percentile(B[:, 0], [2.5, 97.5])),
+            "shown_precision_metric": num(prec, split, len(y), len(uniq), np.percentile(B[:, 1], [2.5, 97.5]))}
 
 
 def pick_theta(curve: list[dict], target: float = 0.9) -> dict:
@@ -177,7 +201,9 @@ def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0) ->
                 fa[c] += 1
     return {"caught": caught.astype(int).tolist(), "sessions": total.astype(int).tolist(), "false_alarm_blocks": fa.astype(int).tolist(),
             "hours": round(hours, 2), "false_alarms_per_hour": round(float(fa.sum() / max(hours, 1e-9)), 2),
-            "session_recall": round(float(caught.sum() / total.sum()), 3)}
+            "session_recall_point": round(float(caught.sum() / total.sum()), 3),
+            "session_recall": num(float(caught.sum() / total.sum()), "dev folds, activity sessions through the shipped timeline",
+                                  int(total.sum()), int(total.sum()), M.wilson(int(caught.sum()), int(total.sum())))}
 
 
 # ---------------------------------------------------------------- the whole dev study
@@ -218,17 +244,20 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     curve = theta_curve(P0, y, w)
     pick = pick_theta(curve)
     R["not_sure"] = {"rule": "lowest θ with reweighted shown-label precision (macro over 9 classes) >= 0.90, channel 0",
-                     "theta": pick["theta"], "coverage": pick["coverage"], "macro_precision_shown": pick["macro_precision_shown"],
+                     "theta": pick["theta"], "coverage_point": pick["coverage"], "precision_shown_point": pick["macro_precision_shown"],
                      "curve": curve}
     theta = pick["theta"]
+    R["not_sure"].update(theta_ci(P0, y, w, session, theta, split))
     # novelty gate: Mahalanobis distance to the nearest class mean, out-of-fold; threshold = 99th percentile in-distribution
     nov = cv_novelty(X, y, fold, chosen)
     nov_th = float(np.percentile(nov, NOVELTY_PCT))
     shown = (P0.max(1) >= theta) & (nov <= nov_th)
     wy = w[y]
     R["novelty"] = {"rule": f"'Not sure' also when the sound's Mahalanobis distance to every activity is above the {NOVELTY_PCT}th percentile of dev clips (out-of-fold)",
-                    "threshold": nov_th, "share_flagged_in_distribution": round(float((nov > nov_th).mean()), 4),
-                    "coverage_with_gate": round(float((wy * shown).sum() / wy.sum()), 4)}
+                    "threshold": nov_th,
+                    "flagged_in_distribution": num(float((nov > nov_th).mean()), split, len(y), len(np.unique(session)),
+                                                   M.wilson(int((nov > nov_th).sum()), len(y)), ),
+                    "coverage_with_gate_point": round(float((wy * shown).sum() / wy.sum()), 4)}
     R["_nov"] = nov
     # ECE (calibration) on channel 0
     R["calibration"] = calibration(P0_cross, y, L[:, 0], w, session)
@@ -239,7 +268,7 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     # session level, through the shipped timeline rules
     R["session_level"] = {"smoothing_on": session_level(y, P0, session, seg, fold, theta, True),
                           "smoothing_off": session_level(y, P0, session, seg, fold, theta, False)}
-    R["theta_tradeoff"] = theta_tradeoff(y, P0, session, seg, fold)
+    R["theta_tradeoff"] = theta_tradeoff(y, P0, session, seg, fold, theta)
 
     # 2. baselines (same folds, same weights)
     B = {}
@@ -312,12 +341,12 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     # 3. ablations
     A = {}
     Lch0, _ = cv_logits(X, y, fold, train_channels=[0], nested=not fast)
-    A["train_ch0_only"] = report(y, Lch0[:, 0].argmax(-1), session, w, split, boot=False)
+    A["train_ch0_only"] = report(y, Lch0[:, 0].argmax(-1), session, w, split)
     Lnb, _ = cv_logits(X, y, fold, C=float(np.median(list(chosen.values()))), balanced=False)
-    A["no_class_balancing"] = report(y, Lnb[:, 0].argmax(-1), session, w, split, boot=False)
+    A["no_class_balancing"] = report(y, Lnb[:, 0].argmax(-1), session, w, split)
     if not fast:
         A["mlp_head"] = mlp_cv(X, y, fold, session, w, split)
-        A["leave_one_node_out"] = lono(X, y, fold, node, w, float(np.median(list(chosen.values()))), nov_th)
+        A["leave_one_node_out"] = lono(X, y, fold, node, w, float(np.median(list(chosen.values()))), nov_th, session)
         try:
             E5 = align(T, table("ced-tiny-5s", "dev", train_files))
             p5 = np.zeros(len(y), int)
@@ -325,7 +354,7 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
                 tr, te = fold != k, fold == k
                 h = fit_head(X[tr], y[tr], chosen[k])
                 p5[te] = head_logits(h, E5["emb"][te][:, :1]).argmax(-1)[:, 0]
-            A["chip_5s_window"] = report(y, p5, session, w, split, boot=False)
+            A["chip_5s_window"] = report(y, p5, session, w, split)
         except (FileNotFoundError, KeyError, ValueError) as e:
             A["chip_5s_window"] = {"missing": f"5-s embeddings not cached for every clip ({type(e).__name__})"}
     R["ablations"] = A
@@ -423,22 +452,51 @@ def rates_idx(idx, ty, py, wy):
     return (tp / max(1e-9, (w_ * t).sum()), tp / max(1e-9, (w_ * p_).sum()), (w_ * (~t & p_)).sum() / max(1e-9, (w_ * ~t).sum()))
 
 
-def theta_tradeoff(y, P0, session, seg, fold) -> list[dict]:
-    """The cost of θ for Meera, through the shipped timeline: as θ rises, how many kitchen-activity sessions are
-    missed and how many false kitchen-activity blocks appear, per 16-hour day of stitched dev audio."""
+def theta_tradeoff(y, P0, session, seg, fold, shipped: float | None = None) -> list[dict]:
+    """The cost of θ for Meera's check, through the shipped timeline (dev folds, sessions stitched as in session_level).
+    Caregiver level: cooking, washing up and eating count as one "kitchen activity". A kitchen session is noticed if any
+    kitchen-activity block overlaps it; a kitchen-activity block is a false alarm if under half of it lies inside any
+    kitchen session. Reported per 16-hour day of stitched audio, for a grid of θ plus the shipped θ."""
+    from kettle import timeline
+    grid = sorted(set([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9] + ([round(shipped, 2)] if shipped else [])))
+    meal = set(MEAL_IDX)
+    rng0 = np.random.default_rng(0)
+    order = {}
+    for k in FOLDS:                                   # same session order for every θ
+        idx = np.where(fold == k)[0]
+        sess = sorted(set(session[idx]))
+        rng0.shuffle(sess)
+        order[k] = sess
     out = []
-    for th in (0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9):
-        s = session_level(y, P0, session, seg, fold, th, True)
-        days = s["hours"] / 16
-        meal_missed = sum(s["sessions"][k] - s["caught"][k] for k in MEAL_IDX)
-        meal_total = sum(s["sessions"][k] for k in MEAL_IDX)
-        meal_fa = sum(s["false_alarm_blocks"][k] for k in MEAL_IDX)
-        out.append({"theta": th, "meal_sessions_missed": int(meal_missed), "meal_sessions": int(meal_total),
-                    "meal_false_alarm_blocks": int(meal_fa), "meal_false_alarms_per_day": round(meal_fa / days, 2),
-                    "all_false_alarms_per_hour": s["false_alarms_per_hour"], "session_recall": s["session_recall"], "days": round(days, 2)})
+    for th in grid:
+        noticed = total = fa = 0
+        hours = 0.0
+        for k in FOLDS:
+            idx = np.where(fold == k)[0]
+            events, truth, t = [], [], 0.0
+            for s in order[k]:
+                ii = idx[session[idx] == s]
+                ii = ii[np.argsort(seg[ii])]
+                a = t
+                for i in ii:
+                    pr = {c: float(v) for c, v in zip(CLASSES, P0[i])}
+                    events.append({"start": t, "end": t + 10, "t": t + 10, "probs": pr, "sounds": [], "conf": max(pr.values())})
+                    t += 10
+                truth.append((a, t, int(y[ii[0]]) in meal))
+            hours += t / 3600
+            kb = [b for b in timeline.blocks(events, th, gap_s=1) if b["state"] == "activity" and CLASSES.index(b["activity"]) in meal]
+            for a, z, is_meal in truth:
+                if is_meal:
+                    total += 1
+                    noticed += any(min(z, b["end"]) > max(a, b["start"]) for b in kb)
+            for b in kb:
+                inside = sum(max(0.0, min(z, b["end"]) - max(a, b["start"])) for a, z, m in truth if m)
+                fa += inside < 0.5 * (b["end"] - b["start"])
+        days = hours / 16
+        out.append({"theta": th, "shipped": bool(shipped) and abs(th - round(shipped, 2)) < 1e-9,
+                    "meal_sessions": total, "meal_sessions_missed": total - noticed,
+                    "meal_false_alarm_blocks": fa, "meal_false_alarms_per_day": round(fa / days, 2), "days": round(days, 2)})
     return out
-
-
 def loudness_cv(rms_log, y, fold, w) -> np.ndarray:
     """No-AI floor: loud (log RMS above a threshold chosen on the training folds) -> 'other', else 'absence'."""
     p = np.zeros_like(y)
@@ -464,28 +522,30 @@ def mlp_cv(X, y, fold, session, w, split) -> dict:
         clf = MLPClassifier(hidden_layer_sizes=(256,), alpha=1e-3, max_iter=60, early_stopping=True, random_state=0)
         clf.fit((X[tr].reshape(-1, d) - mu) / sd, np.repeat(y[tr], ch))
         p[te] = clf.predict((X[te][:, 0] - mu) / sd)
-    return report(y, p, session, w, split, boot=False)
+    return report(y, p, session, w, split)
 
 
-def lono(X, y, fold, node, w, C, nov_th=None) -> dict:
+def lono(X, y, fold, node, w, C, nov_th=None, session=None) -> dict:
     """Leave-one-node-out: train on 3 dev nodes (training folds), test on the 4th node (test fold), channel 0.
     Also: what share of the unseen microphone's windows the novelty gate flags (a proxy for a new kitchen's mic)."""
     out, flagged = {}, {}
     nodes = sorted(set(node))
     for nd in nodes:
-        ys, ps = [], []
+        ys, ps, sess_l = [], [], []
         for k in FOLDS:
             tr = (fold != k) & (node != nd)
             te = (fold == k) & (node == nd)
             h = fit_head(X[tr], y[tr], C)
             ps.append(head_logits(h, X[te][:, :1]).argmax(-1)[:, 0])
             ys.append(y[te])
+            sess_l.append(session[te])
             if nov_th is not None:
                 n_, ch_, d_ = X[tr].shape
                 nv = model.fit_novelty(X[tr].reshape(n_ * ch_, d_), np.repeat(y[tr], ch_), h)
                 flagged.setdefault(nd, []).extend((model.novelty(h, X[te][:, 0], nv) > nov_th).tolist())
         yy, pp = np.concatenate(ys), np.concatenate(ps)
-        out[nd] = round(100 * macro(yy, pp, w), 1)
+        ss = np.concatenate(sess_l)
+        out[nd] = report(yy, pp, ss, w, "dev folds, microphone node left out of training")["macro_f1"]
     same = []
     for nd in nodes:
         ys, ps = [], []
@@ -494,8 +554,8 @@ def lono(X, y, fold, node, w, C, nov_th=None) -> dict:
             h = fit_head(X[tr], y[tr], C)
             ps.append(head_logits(h, X[te][:, :1]).argmax(-1)[:, 0]); ys.append(y[te])
         same.append(round(100 * macro(np.concatenate(ys), np.concatenate(ps), w), 1))
-    return {"held_out_node_macro_f1": out, "same_nodes_macro_f1": dict(zip(nodes, same)),
-            "mean_held_out": round(float(np.mean(list(out.values()))), 1), "mean_same": round(float(np.mean(same)), 1),
+    return {"held_out_node_macro_f1": out, "same_nodes_macro_f1_point": dict(zip(nodes, same)),
+            "mean_held_out": round(float(np.mean([v["value"] for v in out.values()])), 1), "mean_same": round(float(np.mean(same)), 1),
             "novelty_flagged_share_held_out_node": {k: round(float(np.mean(v)), 3) for k, v in flagged.items()},
             "note": "channel 0, reweighted, fixed C; train folds x 3 nodes -> test fold x held-out node"}
 

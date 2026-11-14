@@ -194,11 +194,12 @@ def markdown(m: dict) -> str:
         L += ["", f"Mic mapping: {e['fingerprint_summary']}.", "",
               "| Eval node | 4-mic average | Single mic | N clips |", "|---|---|---|---|"]
         for nd, v in e["per_node"].items():
-            L.append(f"| {nd} | {v['node_avg']} | {v['ch0']} | {v['n_clips']} |")
+            L.append(f"| {nd} | {f(v['node_avg']) if isinstance(v['node_avg'], dict) else v['node_avg']} | "
+                     f"{f(v['ch0']) if isinstance(v['ch0'], dict) else v['ch0']} | {v['n_clips']} |")
         B = e.get("baselines", {})
         L += ["", "Baselines on the same held-out clips (single mic): " + "; ".join(
-            f"{k.replace('_', ' ')} {f(v)}" if "value" in v else f"{k.replace('_', ' ')}: not run ({v.get('missing', '')[:60]})"
-            for k, v in B.items()) + f". Share of windows shown as 'Not sure' at θ: {100 * e['not_sure_share_at_theta']:.1f}%.", ""]
+            f"{k.replace('_', ' ')} {f(v)}" if "value" in v else f"{k.replace('_', ' ')}: not run (no AST embeddings of the eval clips; AST is reported on dev)"
+            for k, v in B.items()) + f". Share of windows below θ ('Not sure'): {f(e['not_sure_share_at_theta']) if isinstance(e['not_sure_share_at_theta'], dict) else e['not_sure_share_at_theta']}%.", ""]
     ma = d["meal_activity"]
     L += ["## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic", "",
           f"Caught {f(ma['caught'])}% of {ma['n_meal']} kitchen-activity windows (missed {ma['missed']}); "
@@ -219,15 +220,15 @@ def markdown(m: dict) -> str:
         L.append(f"| {DISPLAY[c['class']]} | {f(c['recall'])} | {f(c['precision'])} | {c['missed']} | {c['false_alarms']} | {c['support']} |")
     ns = d["not_sure"]
     L += ["", f"**Not sure:** θ = {ns['theta']:.2f} (chosen on dev: reweighted shown-label precision ≥ 0.90); "
-              f"coverage {100 * ns['coverage']:.1f}% of windows get a label, precision of shown labels {100 * ns['macro_precision_shown']:.1f}%. "
+              f"coverage {f(ns['coverage_metric'])}% of windows get a label, precision of shown labels {f(ns['shown_precision_metric'])}%. "
               f"Temperature {d['temperature']:.2f}; expected calibration error {f(d['calibration']['ece_after_temperature'])} points.", ""]
     cal = d["calibration"]
     L += [f"**Calibration:** expected calibration error {f(cal['ece_before'])} points before temperature scaling, "
           f"{f(cal['ece_after_temperature'])} after (temperature cross-fitted across folds). Plot: `results/reliability_dev.png`.", ""]
-    L += ["## The cost of θ for Meera (dev, through the shipped timeline)", "",
-          "| θ | Kitchen-activity sessions missed | False kitchen-activity blocks per day | All false-alarm blocks per hour |", "|---|---|---|---|"]
+    L += ["## The cost of θ for Meera's check (dev, through the shipped timeline; kitchen activity = cooking, washing up or eating)", "",
+          "| θ | Kitchen sessions not noticed | False kitchen-activity blocks per 16-h day |", "|---|---|---|"]
     for r in d["theta_tradeoff"]:
-        L.append(f"| {r['theta']:.2f}{' (shipped)' if abs(r['theta'] - ns['theta']) < 0.026 else ''} | {r['meal_sessions_missed']} of {r['meal_sessions']} | {r['meal_false_alarms_per_day']} | {r['all_false_alarms_per_hour']} |")
+        L.append(f"| {r['theta']:.2f}{' (shipped)' if r.get('shipped') else ''} | {r['meal_sessions_missed']} of {r['meal_sessions']} | {r['meal_false_alarms_per_day']} |")
     L += ["", "Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.", ""]
     L += ["## Slices we can check (and the ones we can't)", "",
           "SINS is one person in one home, so **age and sex can't be tested**. What we can show:", "",
@@ -238,8 +239,8 @@ def markdown(m: dict) -> str:
           "| Home 2: teammate kitchen (Sunday, own-kitchen set) | not measured yet |", ""]
     s_on, s_off = d["session_level"]["smoothing_on"], d["session_level"]["smoothing_off"]
     L += ["## Through the shipped timeline (activity sessions, dev)", "",
-          f"With 2-of-3 smoothing: {100 * s_on['session_recall']:.1f}% of {sum(s_on['sessions'])} activity sessions caught, "
-          f"{s_on['false_alarms_per_hour']} false-alarm blocks per hour of audio. Without smoothing: {100 * s_off['session_recall']:.1f}% caught, "
+          f"With 2-of-3 smoothing: {f(s_on['session_recall'])}% of {sum(s_on['sessions'])} activity sessions caught, "
+          f"{s_on['false_alarms_per_hour']} false-alarm blocks per hour of audio. Without smoothing: {f(s_off['session_recall'])}% caught, "
           f"{s_off['false_alarms_per_hour']} per hour ({s_on['hours']} h of stitched audio).", ""]
     if "missing" not in m.get("offlist", {"missing": 1}):
         o = m["offlist"]
@@ -252,7 +253,8 @@ def markdown(m: dict) -> str:
         if isinstance(v, dict) and "macro_f1" in v:
             L.append(f"- {k.replace('_', ' ')}: {f(v['macro_f1'])}")
         elif k == "leave_one_node_out":
-            L.append(f"- leave one mic node out: held-out node mean {v['mean_held_out']} vs same nodes {v['mean_same']} ({v['held_out_node_macro_f1']})")
+            L.append(f"- leave one mic node out: held-out node mean {v['mean_held_out']} vs same nodes {v['mean_same']} ("
+                     + ", ".join(f"{k} {f(x)}" for k, x in v['held_out_node_macro_f1'].items()) + ")")
     L += ["", "## Published DCASE 2018 Task 5 numbers", "", PUBLISHED["caveat"], f"Source: {PUBLISHED['source']}", ""]
     return "\n".join(L) + "\n"
 
@@ -288,6 +290,32 @@ def eval_meal_metric() -> dict:
     return out
 
 
+def rescore_eval(e: dict) -> dict:
+    """Re-score the held-out run's SAVED predictions with the current metric code (CIs everywhere). The model is not
+    re-run; predictions and labels are fixed."""
+    from eval.common import full_counts
+    from kettle.data import load_meta
+    meta = {r["file"][:-4]: r for r in load_meta("eval")}
+    rows = [json.loads(l) for l in open(RESULTS / "eval_predictions.jsonl")]
+    y = np.array([CLASSES.index(meta[r["file"]]["label"]) for r in rows])
+    pn = np.array([CLASSES.index(r["node_avg"]) for r in rows])
+    p0 = np.array([CLASSES.index(r["ch0"]) for r in rows])
+    s = np.array([meta[r["file"]]["session"] for r in rows])
+    node = np.array([r["node"] for r in rows])
+    w = M.class_weights(full_counts("eval"), np.bincount(y, minlength=9))
+    split = "DCASE 2018 Task 5 eval sample (held-out test, run once)"
+    e["ours_node_avg"] = dev.report(y, pn, s, w, split)
+    e["ours_ch0"] = dev.report(y, p0, s, w, split)
+    e["per_node"] = {nd: {"node_avg": dev.report(y[node == nd], pn[node == nd], s[node == nd], w, split)["macro_f1"],
+                          "ch0": dev.report(y[node == nd], p0[node == nd], s[node == nd], w, split)["macro_f1"],
+                          "n_clips": int((node == nd).sum())} for nd in sorted(set(node))}
+    th = model.load(ROOT / "models" / "head.json")["theta"]
+    low = np.array([r["ch0_conf"] < th for r in rows])
+    e["not_sure_share_at_theta"] = num(float(low.mean()), split + "; top probability below θ (novelty check not included)",
+                                       len(rows), len(set(s)), M.wilson(int(low.sum()), len(rows)))
+    return e
+
+
 def render_only() -> None:
     """Refresh results/metrics.json's held-out and own-kitchen sections and rebuild metrics.md, without recomputing dev."""
     m = json.loads((RESULTS / "metrics.json").read_text())
@@ -295,6 +323,7 @@ def render_only() -> None:
         p = RESULTS / name
         m[key] = json.loads(p.read_text()) if p.exists() else None
     if m.get("dcase_eval") and (RESULTS / "eval_predictions.jsonl").exists():
+        m["dcase_eval"] = rescore_eval(m["dcase_eval"])
         m["dcase_eval"]["meal_activity"] = eval_meal_metric()
     (RESULTS / "metrics.json").write_text(json.dumps(m, indent=1, default=float))
     (RESULTS / "metrics.md").write_text(markdown(m))
@@ -336,6 +365,9 @@ def write_results(R: dict) -> dict:
          "dev": R, "offlist": offlist(head), "published": PUBLISHED}
     prev = RESULTS / "dcase_eval.json"
     m["dcase_eval"] = json.loads(prev.read_text()) if prev.exists() else None
+    if m["dcase_eval"] and (RESULTS / "eval_predictions.jsonl").exists():
+        m["dcase_eval"] = rescore_eval(m["dcase_eval"])
+        m["dcase_eval"]["meal_activity"] = eval_meal_metric()
     ok = RESULTS / "own_kitchen.json"
     m["own_kitchen"] = json.loads(ok.read_text()) if ok.exists() else None
     RESULTS.mkdir(exist_ok=True)

@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-14 13:02 CST",
- "commit": "4076fdec2946e25136c45967d5be93486e27bc91",
+ "generated": "2026-11-14 13:27 CST",
+ "commit": "321521b2bfe37296e936a958bfb8712ed1af0415",
  "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
  "head": {
   "theta": 0.66,
@@ -54,9 +54,13 @@
    },
    "macro_f1_raw": {
     "value": 90.0,
-    "split": "dev folds (also used for selection)",
+    "split": "dev folds (also used for selection), not reweighted",
     "n_clips": 8920,
-    "n_sessions": 257
+    "n_sessions": 257,
+    "ci95": [
+     88.3,
+     91.2
+    ]
    },
    "per_class": [
     {
@@ -93,8 +97,7 @@
      },
      "missed": 44,
      "false_alarms": 265,
-     "support": 1000,
-     "precision_raw": 78.3
+     "support": 1000
     },
     {
      "class": "cooking",
@@ -130,8 +133,7 @@
      },
      "missed": 104,
      "false_alarms": 72,
-     "support": 1000,
-     "precision_raw": 92.6
+     "support": 1000
     },
     {
      "class": "dishwashing",
@@ -167,8 +169,7 @@
      },
      "missed": 90,
      "false_alarms": 116,
-     "support": 1000,
-     "precision_raw": 88.7
+     "support": 1000
     },
     {
      "class": "eating",
@@ -204,8 +205,7 @@
      },
      "missed": 78,
      "false_alarms": 35,
-     "support": 1000,
-     "precision_raw": 96.3
+     "support": 1000
     },
     {
      "class": "other",
@@ -241,8 +241,7 @@
      },
      "missed": 243,
      "false_alarms": 204,
-     "support": 1000,
-     "precision_raw": 78.8
+     "support": 1000
     },
     {
      "class": "social_activity",
@@ -278,8 +277,7 @@
      },
      "missed": 60,
      "false_alarms": 27,
-     "support": 1000,
-     "precision_raw": 97.2
+     "support": 1000
     },
     {
      "class": "vacuum_cleaner",
@@ -315,8 +313,7 @@
      },
      "missed": 0,
      "false_alarms": 0,
-     "support": 920,
-     "precision_raw": 100.0
+     "support": 920
     },
     {
      "class": "watching_tv",
@@ -352,8 +349,7 @@
      },
      "missed": 15,
      "false_alarms": 11,
-     "support": 1000,
-     "precision_raw": 98.9
+     "support": 1000
     },
     {
      "class": "working",
@@ -389,8 +385,7 @@
      },
      "missed": 265,
      "false_alarms": 169,
-     "support": 1000,
-     "precision_raw": 81.3
+     "support": 1000
     }
    ],
    "confusion": [
@@ -508,9 +503,13 @@
    },
    "macro_f1_raw": {
     "value": 89.4,
-    "split": "dev folds (also used for selection)",
+    "split": "dev folds (also used for selection), not reweighted",
     "n_clips": 8920,
-    "n_sessions": 257
+    "n_sessions": 257,
+    "ci95": [
+     87.7,
+     90.8
+    ]
    },
    "per_class": [
     {
@@ -547,8 +546,7 @@
      },
      "missed": 85,
      "false_alarms": 222,
-     "support": 1000,
-     "precision_raw": 80.5
+     "support": 1000
     },
     {
      "class": "cooking",
@@ -584,8 +582,7 @@
      },
      "missed": 103,
      "false_alarms": 72,
-     "support": 1000,
-     "precision_raw": 92.6
+     "support": 1000
     },
     {
      "class": "dishwashing",
@@ -621,8 +618,7 @@
      },
      "missed": 107,
      "false_alarms": 115,
-     "support": 1000,
-     "precision_raw": 88.6
+     "support": 1000
     },
     {
      "class": "eating",
@@ -658,8 +654,7 @@
      },
      "missed": 79,
      "false_alarms": 44,
-     "support": 1000,
-     "precision_raw": 95.4
+     "support": 1000
     },
     {
      "class": "other",
@@ -695,8 +690,7 @@
      },
      "missed": 235,
      "false_alarms": 244,
-     "support": 1000,
-     "precision_raw": 75.8
+     "support": 1000
     },
     {
      "class": "social_activity",
@@ -732,8 +726,7 @@
      },
      "missed": 66,
      "false_alarms": 34,
-     "support": 1000,
-     "precision_raw": 96.5
+     "support": 1000
     },
     {
      "class": "vacuum_cleaner",
@@ -769,8 +762,7 @@
      },
      "missed": 1,
      "false_alarms": 0,
-     "support": 920,
-     "precision_raw": 100.0
+     "support": 920
     },
     {
      "class": "watching_tv",
@@ -806,8 +798,7 @@
      },
      "missed": 19,
      "false_alarms": 15,
-     "support": 1000,
-     "precision_raw": 98.5
+     "support": 1000
     },
     {
      "class": "working",
@@ -843,8 +834,7 @@
      },
      "missed": 262,
      "false_alarms": 211,
-     "support": 1000,
-     "precision_raw": 77.8
+     "support": 1000
     }
    ],
    "confusion": [
@@ -952,8 +942,8 @@
   "not_sure": {
    "rule": "lowest \u03b8 with reweighted shown-label precision (macro over 9 classes) >= 0.90, channel 0",
    "theta": 0.66,
-   "coverage": 0.8503926268532948,
-   "macro_precision_shown": 0.9009323310220734,
+   "coverage_point": 0.8503926268532948,
+   "precision_shown_point": 0.9009323310220734,
    "curve": [
     {
      "theta": 0.2,
@@ -1429,13 +1419,42 @@
      "macro_precision_shown": 0.9726412313011006,
      "classes_shown": 9
     }
-   ]
+   ],
+   "coverage_metric": {
+    "value": 85.0,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 8920,
+    "n_sessions": 257,
+    "ci95": [
+     81.8,
+     88.1
+    ]
+   },
+   "shown_precision_metric": {
+    "value": 90.1,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 8920,
+    "n_sessions": 257,
+    "ci95": [
+     86.8,
+     92.4
+    ]
+   }
   },
   "novelty": {
    "rule": "'Not sure' also when the sound's Mahalanobis distance to every activity is above the 99th percentile of dev clips (out-of-fold)",
    "threshold": 28.147967767837542,
-   "share_flagged_in_distribution": 0.0101,
-   "coverage_with_gate": 0.8304
+   "flagged_in_distribution": {
+    "value": 1.0,
+    "split": "dev folds (also used for selection)",
+    "n_clips": 8920,
+    "n_sessions": 257,
+    "ci95": [
+     0.8,
+     1.2
+    ]
+   },
+   "coverage_with_gate_point": 0.8304
   },
   "calibration": {
    "ece_after_temperature": {
@@ -1692,7 +1711,17 @@
     ],
     "hours": 24.78,
     "false_alarms_per_hour": 3.23,
-    "session_recall": 0.665
+    "session_recall_point": 0.665,
+    "session_recall": {
+     "value": 66.5,
+     "split": "dev folds, activity sessions through the shipped timeline",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      60.6,
+      72.0
+     ]
+    }
    },
    "smoothing_off": {
     "caught": [
@@ -1730,118 +1759,90 @@
     ],
     "hours": 24.78,
     "false_alarms_per_hour": 11.1,
-    "session_recall": 0.471
+    "session_recall_point": 0.471,
+    "session_recall": {
+     "value": 47.1,
+     "split": "dev folds, activity sessions through the shipped timeline",
+     "n_clips": 257,
+     "n_sessions": 257,
+     "ci95": [
+      41.1,
+      53.2
+     ]
+    }
    }
   },
   "theta_tradeoff": [
    {
     "theta": 0.3,
-    "meal_sessions_missed": 12,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 37,
-    "meal_false_alarms_per_day": 23.89,
-    "all_false_alarms_per_hour": 7.39,
-    "session_recall": 0.802,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 12,
+    "meal_false_alarms_per_day": 7.75,
     "days": 1.55
    },
    {
     "theta": 0.4,
-    "meal_sessions_missed": 12,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 33,
-    "meal_false_alarms_per_day": 21.31,
-    "all_false_alarms_per_hour": 6.78,
-    "session_recall": 0.79,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 10,
+    "meal_false_alarms_per_day": 6.46,
     "days": 1.55
    },
    {
     "theta": 0.5,
-    "meal_sessions_missed": 14,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 28,
-    "meal_false_alarms_per_day": 18.08,
-    "all_false_alarms_per_hour": 5.49,
-    "session_recall": 0.767,
-    "days": 1.55
-   },
-   {
-    "theta": 0.55,
-    "meal_sessions_missed": 15,
-    "meal_sessions": 33,
-    "meal_false_alarm_blocks": 26,
-    "meal_false_alarms_per_day": 16.79,
-    "all_false_alarms_per_hour": 4.88,
-    "session_recall": 0.739,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 8,
+    "meal_false_alarms_per_day": 5.17,
     "days": 1.55
    },
    {
     "theta": 0.6,
-    "meal_sessions_missed": 16,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 23,
-    "meal_false_alarms_per_day": 14.85,
-    "all_false_alarms_per_hour": 4.24,
-    "session_recall": 0.704,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 6,
+    "meal_false_alarms_per_day": 3.87,
     "days": 1.55
    },
    {
-    "theta": 0.65,
-    "meal_sessions_missed": 17,
+    "theta": 0.66,
+    "shipped": true,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 20,
-    "meal_false_alarms_per_day": 12.91,
-    "all_false_alarms_per_hour": 3.51,
-    "session_recall": 0.677,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 6,
+    "meal_false_alarms_per_day": 3.87,
     "days": 1.55
    },
    {
     "theta": 0.7,
-    "meal_sessions_missed": 19,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 20,
-    "meal_false_alarms_per_day": 12.91,
-    "all_false_alarms_per_hour": 2.91,
-    "session_recall": 0.607,
-    "days": 1.55
-   },
-   {
-    "theta": 0.75,
-    "meal_sessions_missed": 21,
-    "meal_sessions": 33,
-    "meal_false_alarm_blocks": 18,
-    "meal_false_alarms_per_day": 11.62,
-    "all_false_alarms_per_hour": 2.26,
-    "session_recall": 0.533,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 7,
+    "meal_false_alarms_per_day": 4.52,
     "days": 1.55
    },
    {
     "theta": 0.8,
-    "meal_sessions_missed": 21,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 16,
-    "meal_false_alarms_per_day": 10.33,
-    "all_false_alarms_per_hour": 1.65,
-    "session_recall": 0.482,
-    "days": 1.55
-   },
-   {
-    "theta": 0.85,
-    "meal_sessions_missed": 24,
-    "meal_sessions": 33,
-    "meal_false_alarm_blocks": 12,
-    "meal_false_alarms_per_day": 7.75,
-    "all_false_alarms_per_hour": 0.97,
-    "session_recall": 0.424,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 8,
+    "meal_false_alarms_per_day": 5.17,
     "days": 1.55
    },
    {
     "theta": 0.9,
-    "meal_sessions_missed": 26,
+    "shipped": false,
     "meal_sessions": 33,
-    "meal_false_alarm_blocks": 10,
-    "meal_false_alarms_per_day": 6.46,
-    "all_false_alarms_per_hour": 0.48,
-    "session_recall": 0.358,
+    "meal_sessions_missed": 0,
+    "meal_false_alarm_blocks": 7,
+    "meal_false_alarms_per_day": 4.52,
     "days": 1.55
    }
   ],
@@ -1859,9 +1860,13 @@
     },
     "macro_f1_raw": {
      "value": 2.2,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      1.6,
+      3.0
+     ]
     },
     "per_class": [
      {
@@ -1898,8 +1903,7 @@
       },
       "missed": 0,
       "false_alarms": 7920,
-      "support": 1000,
-      "precision_raw": 11.2
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -1935,8 +1939,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -1972,8 +1975,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "eating",
@@ -2009,8 +2011,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "other",
@@ -2046,8 +2047,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -2083,8 +2083,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -2120,8 +2119,7 @@
       },
       "missed": 920,
       "false_alarms": 0,
-      "support": 920,
-      "precision_raw": 0.0
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -2157,8 +2155,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "working",
@@ -2194,8 +2191,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      }
     ],
     "confusion": [
@@ -2313,9 +2309,13 @@
     },
     "macro_f1_raw": {
      "value": 7.9,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      6.8,
+      9.0
+     ]
     },
     "per_class": [
      {
@@ -2352,8 +2352,7 @@
       },
       "missed": 0,
       "false_alarms": 7474,
-      "support": 1000,
-      "precision_raw": 11.8
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -2389,8 +2388,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -2426,8 +2424,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "eating",
@@ -2463,8 +2460,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "other",
@@ -2500,8 +2496,7 @@
       },
       "missed": 638,
       "false_alarms": 84,
-      "support": 1000,
-      "precision_raw": 81.2
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -2537,8 +2532,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -2574,8 +2568,7 @@
       },
       "missed": 920,
       "false_alarms": 0,
-      "support": 920,
-      "precision_raw": 0.0
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -2611,8 +2604,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      },
      {
       "class": "working",
@@ -2648,8 +2640,7 @@
       },
       "missed": 1000,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 0.0
+      "support": 1000
      }
     ],
     "confusion": [
@@ -2767,9 +2758,13 @@
     },
     "macro_f1_raw": {
      "value": 83.3,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      80.9,
+      84.9
+     ]
     },
     "per_class": [
      {
@@ -2806,8 +2801,7 @@
       },
       "missed": 87,
       "false_alarms": 428,
-      "support": 1000,
-      "precision_raw": 68.1
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -2843,8 +2837,7 @@
       },
       "missed": 85,
       "false_alarms": 106,
-      "support": 1000,
-      "precision_raw": 89.6
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -2880,8 +2873,7 @@
       },
       "missed": 178,
       "false_alarms": 201,
-      "support": 1000,
-      "precision_raw": 80.4
+      "support": 1000
      },
      {
       "class": "eating",
@@ -2917,8 +2909,7 @@
       },
       "missed": 271,
       "false_alarms": 160,
-      "support": 1000,
-      "precision_raw": 82.0
+      "support": 1000
      },
      {
       "class": "other",
@@ -2954,8 +2945,7 @@
       },
       "missed": 363,
       "false_alarms": 244,
-      "support": 1000,
-      "precision_raw": 72.3
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -2991,8 +2981,7 @@
       },
       "missed": 151,
       "false_alarms": 41,
-      "support": 1000,
-      "precision_raw": 95.4
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -3028,8 +3017,7 @@
       },
       "missed": 0,
       "false_alarms": 1,
-      "support": 920,
-      "precision_raw": 99.9
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -3065,8 +3053,7 @@
       },
       "missed": 14,
       "false_alarms": 3,
-      "support": 1000,
-      "precision_raw": 99.7
+      "support": 1000
      },
      {
       "class": "working",
@@ -3102,8 +3089,7 @@
       },
       "missed": 353,
       "false_alarms": 318,
-      "support": 1000,
-      "precision_raw": 67.0
+      "support": 1000
      }
     ],
     "confusion": [
@@ -3221,9 +3207,13 @@
     },
     "macro_f1_raw": {
      "value": 41.3,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      38.2,
+      44.4
+     ]
     },
     "per_class": [
      {
@@ -3260,8 +3250,7 @@
       },
       "missed": 51,
       "false_alarms": 1903,
-      "support": 1000,
-      "precision_raw": 33.3
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -3297,8 +3286,7 @@
       },
       "missed": 794,
       "false_alarms": 96,
-      "support": 1000,
-      "precision_raw": 68.2
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -3334,8 +3322,7 @@
       },
       "missed": 619,
       "false_alarms": 905,
-      "support": 1000,
-      "precision_raw": 29.6
+      "support": 1000
      },
      {
       "class": "eating",
@@ -3371,8 +3358,7 @@
       },
       "missed": 993,
       "false_alarms": 0,
-      "support": 1000,
-      "precision_raw": 100.0
+      "support": 1000
      },
      {
       "class": "other",
@@ -3408,8 +3394,7 @@
       },
       "missed": 577,
       "false_alarms": 857,
-      "support": 1000,
-      "precision_raw": 33.0
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -3445,8 +3430,7 @@
       },
       "missed": 54,
       "false_alarms": 924,
-      "support": 1000,
-      "precision_raw": 50.6
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -3482,8 +3466,7 @@
       },
       "missed": 2,
       "false_alarms": 2,
-      "support": 920,
-      "precision_raw": 99.8
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -3519,8 +3502,7 @@
       },
       "missed": 875,
       "false_alarms": 38,
-      "support": 1000,
-      "precision_raw": 76.7
+      "support": 1000
      },
      {
       "class": "working",
@@ -3556,8 +3538,7 @@
       },
       "missed": 804,
       "false_alarms": 44,
-      "support": 1000,
-      "precision_raw": 81.7
+      "support": 1000
      }
     ],
     "confusion": [
@@ -3675,9 +3656,13 @@
     },
     "macro_f1_raw": {
      "value": 87.7,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 2700,
-     "n_sessions": 247
+     "n_sessions": 247,
+     "ci95": [
+      85.3,
+      88.9
+     ]
     },
     "per_class": [
      {
@@ -3714,8 +3699,7 @@
       },
       "missed": 20,
       "false_alarms": 89,
-      "support": 300,
-      "precision_raw": 75.9
+      "support": 300
      },
      {
       "class": "cooking",
@@ -3751,8 +3735,7 @@
       },
       "missed": 46,
       "false_alarms": 37,
-      "support": 300,
-      "precision_raw": 87.3
+      "support": 300
      },
      {
       "class": "dishwashing",
@@ -3788,8 +3771,7 @@
       },
       "missed": 38,
       "false_alarms": 58,
-      "support": 300,
-      "precision_raw": 81.9
+      "support": 300
      },
      {
       "class": "eating",
@@ -3825,8 +3807,7 @@
       },
       "missed": 34,
       "false_alarms": 19,
-      "support": 300,
-      "precision_raw": 93.3
+      "support": 300
      },
      {
       "class": "other",
@@ -3862,8 +3843,7 @@
       },
       "missed": 85,
       "false_alarms": 66,
-      "support": 300,
-      "precision_raw": 76.5
+      "support": 300
      },
      {
       "class": "social_activity",
@@ -3899,8 +3879,7 @@
       },
       "missed": 24,
       "false_alarms": 14,
-      "support": 300,
-      "precision_raw": 95.2
+      "support": 300
      },
      {
       "class": "vacuum_cleaner",
@@ -3936,8 +3915,7 @@
       },
       "missed": 1,
       "false_alarms": 0,
-      "support": 300,
-      "precision_raw": 100.0
+      "support": 300
      },
      {
       "class": "watching_tv",
@@ -3973,8 +3951,7 @@
       },
       "missed": 12,
       "false_alarms": 6,
-      "support": 300,
-      "precision_raw": 98.0
+      "support": 300
      },
      {
       "class": "working",
@@ -4010,8 +3987,7 @@
       },
       "missed": 73,
       "false_alarms": 44,
-      "support": 300,
-      "precision_raw": 83.8
+      "support": 300
      }
     ],
     "confusion": [
@@ -4140,9 +4116,13 @@
     },
     "macro_f1_raw": {
      "value": 42.3,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 2700,
-     "n_sessions": 247
+     "n_sessions": 247,
+     "ci95": [
+      39.3,
+      44.9
+     ]
     },
     "per_class": [
      {
@@ -4179,8 +4159,7 @@
       },
       "missed": 36,
       "false_alarms": 470,
-      "support": 300,
-      "precision_raw": 36.0
+      "support": 300
      },
      {
       "class": "cooking",
@@ -4216,8 +4195,7 @@
       },
       "missed": 226,
       "false_alarms": 54,
-      "support": 300,
-      "precision_raw": 57.8
+      "support": 300
      },
      {
       "class": "dishwashing",
@@ -4253,8 +4231,7 @@
       },
       "missed": 227,
       "false_alarms": 232,
-      "support": 300,
-      "precision_raw": 23.9
+      "support": 300
      },
      {
       "class": "eating",
@@ -4290,8 +4267,7 @@
       },
       "missed": 277,
       "false_alarms": 0,
-      "support": 300,
-      "precision_raw": 100.0
+      "support": 300
      },
      {
       "class": "other",
@@ -4327,8 +4303,7 @@
       },
       "missed": 171,
       "false_alarms": 364,
-      "support": 300,
-      "precision_raw": 26.2
+      "support": 300
      },
      {
       "class": "social_activity",
@@ -4364,8 +4339,7 @@
       },
       "missed": 28,
       "false_alarms": 260,
-      "support": 300,
-      "precision_raw": 51.1
+      "support": 300
      },
      {
       "class": "vacuum_cleaner",
@@ -4401,8 +4375,7 @@
       },
       "missed": 3,
       "false_alarms": 0,
-      "support": 300,
-      "precision_raw": 100.0
+      "support": 300
      },
      {
       "class": "watching_tv",
@@ -4438,8 +4411,7 @@
       },
       "missed": 240,
       "false_alarms": 43,
-      "support": 300,
-      "precision_raw": 58.3
+      "support": 300
      },
      {
       "class": "working",
@@ -4475,8 +4447,7 @@
       },
       "missed": 243,
       "false_alarms": 28,
-      "support": 300,
-      "precision_raw": 67.1
+      "support": 300
      }
     ],
     "confusion": [
@@ -4605,9 +4576,13 @@
     },
     "macro_f1_raw": {
      "value": 89.8,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      88.0,
+      91.1
+     ]
     },
     "per_class": [
      {
@@ -4644,8 +4619,7 @@
       },
       "missed": 47,
       "false_alarms": 258,
-      "support": 1000,
-      "precision_raw": 78.7
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -4681,8 +4655,7 @@
       },
       "missed": 110,
       "false_alarms": 81,
-      "support": 1000,
-      "precision_raw": 91.7
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -4718,8 +4691,7 @@
       },
       "missed": 93,
       "false_alarms": 121,
-      "support": 1000,
-      "precision_raw": 88.2
+      "support": 1000
      },
      {
       "class": "eating",
@@ -4755,8 +4727,7 @@
       },
       "missed": 77,
       "false_alarms": 56,
-      "support": 1000,
-      "precision_raw": 94.3
+      "support": 1000
      },
      {
       "class": "other",
@@ -4792,8 +4763,7 @@
       },
       "missed": 242,
       "false_alarms": 205,
-      "support": 1000,
-      "precision_raw": 78.7
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -4829,8 +4799,7 @@
       },
       "missed": 71,
       "false_alarms": 19,
-      "support": 1000,
-      "precision_raw": 98.0
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -4866,8 +4835,7 @@
       },
       "missed": 0,
       "false_alarms": 0,
-      "support": 920,
-      "precision_raw": 100.0
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -4903,8 +4871,7 @@
       },
       "missed": 15,
       "false_alarms": 14,
-      "support": 1000,
-      "precision_raw": 98.6
+      "support": 1000
      },
      {
       "class": "working",
@@ -4940,8 +4907,7 @@
       },
       "missed": 262,
       "false_alarms": 163,
-      "support": 1000,
-      "precision_raw": 81.9
+      "support": 1000
      }
     ],
     "confusion": [
@@ -5062,9 +5028,13 @@
     },
     "macro_f1_raw": {
      "value": 38.7,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      36.5,
+      40.8
+     ]
     },
     "per_class": [
      {
@@ -5101,8 +5071,7 @@
       },
       "missed": 939,
       "false_alarms": 656,
-      "support": 1000,
-      "precision_raw": 8.5
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -5138,8 +5107,7 @@
       },
       "missed": 881,
       "false_alarms": 141,
-      "support": 1000,
-      "precision_raw": 45.8
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -5175,8 +5143,7 @@
       },
       "missed": 784,
       "false_alarms": 705,
-      "support": 1000,
-      "precision_raw": 23.5
+      "support": 1000
      },
      {
       "class": "eating",
@@ -5212,8 +5179,7 @@
       },
       "missed": 622,
       "false_alarms": 62,
-      "support": 1000,
-      "precision_raw": 85.9
+      "support": 1000
      },
      {
       "class": "other",
@@ -5249,8 +5215,7 @@
       },
       "missed": 492,
       "false_alarms": 1407,
-      "support": 1000,
-      "precision_raw": 26.5
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -5286,8 +5251,7 @@
       },
       "missed": 115,
       "false_alarms": 718,
-      "support": 1000,
-      "precision_raw": 55.2
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -5323,8 +5287,7 @@
       },
       "missed": 33,
       "false_alarms": 6,
-      "support": 920,
-      "precision_raw": 99.3
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -5360,8 +5323,7 @@
       },
       "missed": 754,
       "false_alarms": 1707,
-      "support": 1000,
-      "precision_raw": 12.6
+      "support": 1000
      },
      {
       "class": "working",
@@ -5397,8 +5359,7 @@
       },
       "missed": 816,
       "false_alarms": 34,
-      "support": 1000,
-      "precision_raw": 84.4
+      "support": 1000
      }
     ],
     "confusion": [
@@ -5518,13 +5479,21 @@
      "value": 85.3,
      "split": "dev folds (also used for selection)",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      81.2,
+      87.5
+     ]
     },
     "macro_f1_raw": {
      "value": 89.5,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      87.7,
+      90.8
+     ]
     },
     "per_class": [
      {
@@ -5533,24 +5502,35 @@
        "value": 94.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        92.2,
+        96.0
+       ]
       },
       "precision": {
        "value": 87.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1187,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        81.1,
+        92.3
+       ]
       },
       "f1": {
        "value": 90.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        87.1,
+        93.4
+       ]
       },
       "missed": 59,
       "false_alarms": 246,
-      "support": 1000,
-      "precision_raw": 79.3
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -5558,24 +5538,35 @@
        "value": 89.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        85.2,
+        92.5
+       ]
       },
       "precision": {
        "value": 84.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 977,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        61.8,
+        96.7
+       ]
       },
       "f1": {
        "value": 86.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        73.7,
+        93.3
+       ]
       },
       "missed": 108,
       "false_alarms": 85,
-      "support": 1000,
-      "precision_raw": 91.3
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -5583,24 +5574,35 @@
        "value": 90.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        86.9,
+        93.4
+       ]
       },
       "precision": {
        "value": 63.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1035,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        37.5,
+        78.4
+       ]
       },
       "f1": {
        "value": 74.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        52.9,
+        84.1
+       ]
       },
       "missed": 97,
       "false_alarms": 132,
-      "support": 1000,
-      "precision_raw": 87.2
+      "support": 1000
      },
      {
       "class": "eating",
@@ -5608,24 +5610,35 @@
        "value": 92.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        87.5,
+        96.5
+       ]
       },
       "precision": {
        "value": 86.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 972,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        73.6,
+        93.1
+       ]
       },
       "f1": {
        "value": 89.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        81.8,
+        93.0
+       ]
       },
       "missed": 79,
       "false_alarms": 51,
-      "support": 1000,
-      "precision_raw": 94.8
+      "support": 1000
      },
      {
       "class": "other",
@@ -5633,24 +5646,35 @@
        "value": 75.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        70.2,
+        80.8
+       ]
       },
       "precision": {
        "value": 39.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 964,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        29.3,
+        50.6
+       ]
       },
       "f1": {
        "value": 51.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        42.5,
+        61.1
+       ]
       },
       "missed": 244,
       "false_alarms": 208,
-      "support": 1000,
-      "precision_raw": 78.4
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -5658,24 +5682,35 @@
        "value": 93.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        87.6,
+        97.5
+       ]
       },
       "precision": {
        "value": 93.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 964,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        85.9,
+        97.1
+       ]
       },
       "f1": {
        "value": 93.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        88.2,
+        96.4
+       ]
       },
       "missed": 65,
       "false_alarms": 29,
-      "support": 1000,
-      "precision_raw": 97.0
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -5683,24 +5718,35 @@
        "value": 99.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        99.6,
+        100.0
+       ]
       },
       "precision": {
        "value": 100.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 919,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        100.0,
+        100.0
+       ]
       },
       "f1": {
        "value": 99.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        99.8,
+        100.0
+       ]
       },
       "missed": 1,
       "false_alarms": 0,
-      "support": 920,
-      "precision_raw": 100.0
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -5708,24 +5754,35 @@
        "value": 98.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        96.9,
+        99.8
+       ]
       },
       "precision": {
        "value": 99.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 997,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        98.7,
+        99.9
+       ]
       },
       "f1": {
        "value": 99.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        98.1,
+        99.7
+       ]
       },
       "missed": 15,
       "false_alarms": 12,
-      "support": 1000,
-      "precision_raw": 98.8
+      "support": 1000
      },
      {
       "class": "working",
@@ -5733,24 +5790,35 @@
        "value": 73.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        65.0,
+        79.6
+       ]
       },
       "precision": {
        "value": 93.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 905,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        90.1,
+        96.2
+       ]
       },
       "f1": {
        "value": 82.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        76.2,
+        86.2
+       ]
       },
       "missed": 270,
       "false_alarms": 175,
-      "support": 1000,
-      "precision_raw": 80.7
+      "support": 1000
      }
     ],
     "confusion": [
@@ -5860,13 +5928,21 @@
      "value": 85.1,
      "split": "dev folds (also used for selection)",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      81.0,
+      87.4
+     ]
     },
     "macro_f1_raw": {
      "value": 89.3,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      87.6,
+      90.6
+     ]
     },
     "per_class": [
      {
@@ -5875,24 +5951,35 @@
        "value": 91.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        89.4,
+        93.6
+       ]
       },
       "precision": {
        "value": 88.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1140,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        81.7,
+        92.5
+       ]
       },
       "f1": {
        "value": 89.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        86.3,
+        92.4
+       ]
       },
       "missed": 84,
       "false_alarms": 224,
-      "support": 1000,
-      "precision_raw": 80.4
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -5900,24 +5987,35 @@
        "value": 89.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        85.6,
+        92.5
+       ]
       },
       "precision": {
        "value": 86.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 971,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        64.5,
+        97.8
+       ]
       },
       "f1": {
        "value": 88.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        75.4,
+        94.2
+       ]
       },
       "missed": 105,
       "false_alarms": 76,
-      "support": 1000,
-      "precision_raw": 92.2
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -5925,24 +6023,35 @@
        "value": 89.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        85.8,
+        92.6
+       ]
       },
       "precision": {
        "value": 64.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1011,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        38.8,
+        81.1
+       ]
       },
       "f1": {
        "value": 74.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        54.0,
+        85.3
+       ]
       },
       "missed": 108,
       "false_alarms": 119,
-      "support": 1000,
-      "precision_raw": 88.2
+      "support": 1000
      },
      {
       "class": "eating",
@@ -5950,24 +6059,35 @@
        "value": 92.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        87.7,
+        96.1
+       ]
       },
       "precision": {
        "value": 89.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 963,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        77.3,
+        95.4
+       ]
       },
       "f1": {
        "value": 90.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        84.2,
+        94.2
+       ]
       },
       "missed": 80,
       "false_alarms": 43,
-      "support": 1000,
-      "precision_raw": 95.5
+      "support": 1000
      },
      {
       "class": "other",
@@ -5975,24 +6095,35 @@
        "value": 76.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        70.8,
+        81.5
+       ]
       },
       "precision": {
        "value": 36.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1006,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        26.8,
+        46.8
+       ]
       },
       "f1": {
        "value": 49.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        39.9,
+        58.2
+       ]
       },
       "missed": 237,
       "false_alarms": 243,
-      "support": 1000,
-      "precision_raw": 75.8
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -6000,24 +6131,35 @@
        "value": 93.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        87.9,
+        97.3
+       ]
       },
       "precision": {
        "value": 91.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 967,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        82.4,
+        96.9
+       ]
       },
       "f1": {
        "value": 92.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        86.4,
+        96.0
+       ]
       },
       "missed": 66,
       "false_alarms": 33,
-      "support": 1000,
-      "precision_raw": 96.6
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -6025,24 +6167,35 @@
        "value": 99.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        99.6,
+        100.0
+       ]
       },
       "precision": {
        "value": 100.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 919,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        100.0,
+        100.0
+       ]
       },
       "f1": {
        "value": 99.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        99.8,
+        100.0
+       ]
       },
       "missed": 1,
       "false_alarms": 0,
-      "support": 920,
-      "precision_raw": 100.0
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -6050,24 +6203,35 @@
        "value": 98.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        95.9,
+        99.8
+       ]
       },
       "precision": {
        "value": 99.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 996,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        98.4,
+        99.9
+       ]
       },
       "f1": {
        "value": 98.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        97.6,
+        99.6
+       ]
       },
       "missed": 19,
       "false_alarms": 15,
-      "support": 1000,
-      "precision_raw": 98.5
+      "support": 1000
      },
      {
       "class": "working",
@@ -6075,24 +6239,35 @@
        "value": 73.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        65.0,
+        80.6
+       ]
       },
       "precision": {
        "value": 91.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 947,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        87.2,
+        94.5
+       ]
       },
       "f1": {
        "value": 81.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        75.2,
+        86.0
+       ]
       },
       "missed": 262,
       "false_alarms": 209,
-      "support": 1000,
-      "precision_raw": 77.9
+      "support": 1000
      }
     ],
     "confusion": [
@@ -6202,13 +6377,21 @@
      "value": 84.7,
      "split": "dev folds (also used for selection)",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      80.8,
+      87.0
+     ]
     },
     "macro_f1_raw": {
      "value": 89.2,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      87.5,
+      90.5
+     ]
     },
     "per_class": [
      {
@@ -6217,24 +6400,35 @@
        "value": 87.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        83.8,
+        91.1
+       ]
       },
       "precision": {
        "value": 88.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1080,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        82.4,
+        92.9
+       ]
       },
       "f1": {
        "value": 88.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        84.5,
+        90.9
+       ]
       },
       "missed": 125,
       "false_alarms": 205,
-      "support": 1000,
-      "precision_raw": 81.0
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -6242,24 +6436,35 @@
        "value": 93.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        89.5,
+        95.5
+       ]
       },
       "precision": {
        "value": 85.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1030,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        63.6,
+        97.2
+       ]
       },
       "f1": {
        "value": 89.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        75.8,
+        95.4
+       ]
       },
       "missed": 70,
       "false_alarms": 100,
-      "support": 1000,
-      "precision_raw": 90.3
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -6267,24 +6472,35 @@
        "value": 89.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        84.5,
+        93.6
+       ]
       },
       "precision": {
        "value": 70.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 988,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        44.9,
+        83.5
+       ]
       },
       "f1": {
        "value": 78.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        59.5,
+        86.7
+       ]
       },
       "missed": 106,
       "false_alarms": 94,
-      "support": 1000,
-      "precision_raw": 90.5
+      "support": 1000
      },
      {
       "class": "eating",
@@ -6292,24 +6508,35 @@
        "value": 92.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        87.8,
+        96.2
+       ]
       },
       "precision": {
        "value": 86.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 972,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        72.4,
+        93.7
+       ]
       },
       "f1": {
        "value": 89.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        80.8,
+        93.4
+       ]
       },
       "missed": 77,
       "false_alarms": 49,
-      "support": 1000,
-      "precision_raw": 95.0
+      "support": 1000
      },
      {
       "class": "other",
@@ -6317,24 +6544,35 @@
        "value": 75.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        70.1,
+        80.4
+       ]
       },
       "precision": {
        "value": 31.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1007,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        23.2,
+        41.8
+       ]
       },
       "f1": {
        "value": 44.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        35.5,
+        54.1
+       ]
       },
       "missed": 245,
       "false_alarms": 252,
-      "support": 1000,
-      "precision_raw": 75.0
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -6342,24 +6580,35 @@
        "value": 93.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        87.3,
+        97.2
+       ]
       },
       "precision": {
        "value": 94.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 967,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        86.7,
+        97.9
+       ]
       },
       "f1": {
        "value": 93.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        88.3,
+        96.6
+       ]
       },
       "missed": 70,
       "false_alarms": 37,
-      "support": 1000,
-      "precision_raw": 96.2
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -6367,24 +6616,35 @@
        "value": 100.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        100.0,
+        100.0
+       ]
       },
       "precision": {
        "value": 98.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 921,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        91.6,
+        100.0
+       ]
       },
       "f1": {
        "value": 99.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        95.6,
+        100.0
+       ]
       },
       "missed": 0,
       "false_alarms": 1,
-      "support": 920,
-      "precision_raw": 99.9
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -6392,24 +6652,35 @@
        "value": 98.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        97.2,
+        100.0
+       ]
       },
       "precision": {
        "value": 99.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1005,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        97.9,
+        99.8
+       ]
       },
       "f1": {
        "value": 99.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        97.9,
+        99.7
+       ]
       },
       "missed": 13,
       "false_alarms": 18,
-      "support": 1000,
-      "precision_raw": 98.2
+      "support": 1000
      },
      {
       "class": "working",
@@ -6417,24 +6688,35 @@
        "value": 73.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        64.3,
+        80.6
+       ]
       },
       "precision": {
        "value": 89.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 950,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        84.1,
+        93.9
+       ]
       },
       "f1": {
        "value": 80.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        74.2,
+        85.5
+       ]
       },
       "missed": 266,
       "false_alarms": 216,
-      "support": 1000,
-      "precision_raw": 77.3
+      "support": 1000
      }
     ],
     "confusion": [
@@ -6541,12 +6823,48 @@
    },
    "leave_one_node_out": {
     "held_out_node_macro_f1": {
-     "DevNode1": 81.5,
-     "DevNode2": 82.7,
-     "DevNode3": 85.7,
-     "DevNode4": 81.0
+     "DevNode1": {
+      "value": 81.5,
+      "split": "dev folds, microphone node left out of training",
+      "n_clips": 2214,
+      "n_sessions": 257,
+      "ci95": [
+       78.0,
+       83.9
+      ]
+     },
+     "DevNode2": {
+      "value": 82.7,
+      "split": "dev folds, microphone node left out of training",
+      "n_clips": 2281,
+      "n_sessions": 257,
+      "ci95": [
+       78.3,
+       85.8
+      ]
+     },
+     "DevNode3": {
+      "value": 85.7,
+      "split": "dev folds, microphone node left out of training",
+      "n_clips": 2193,
+      "n_sessions": 256,
+      "ci95": [
+       81.9,
+       88.3
+      ]
+     },
+     "DevNode4": {
+      "value": 81.0,
+      "split": "dev folds, microphone node left out of training",
+      "n_clips": 2232,
+      "n_sessions": 257,
+      "ci95": [
+       76.9,
+       84.1
+      ]
+     }
     },
-    "same_nodes_macro_f1": {
+    "same_nodes_macro_f1_point": {
      "DevNode1": 83.9,
      "DevNode2": 86.2,
      "DevNode3": 86.7,
@@ -6567,13 +6885,21 @@
      "value": 80.8,
      "split": "dev folds (also used for selection)",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      77.0,
+      83.0
+     ]
     },
     "macro_f1_raw": {
      "value": 85.1,
-     "split": "dev folds (also used for selection)",
+     "split": "dev folds (also used for selection), not reweighted",
      "n_clips": 8920,
-     "n_sessions": 257
+     "n_sessions": 257,
+     "ci95": [
+      83.1,
+      86.4
+     ]
     },
     "per_class": [
      {
@@ -6582,24 +6908,35 @@
        "value": 89.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        87.1,
+        91.8
+       ]
       },
       "precision": {
        "value": 82.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 1254,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        74.5,
+        88.9
+       ]
       },
       "f1": {
        "value": 86.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 39
+       "n_sessions": 39,
+       "ci95": [
+        81.4,
+        89.4
+       ]
       },
       "missed": 105,
       "false_alarms": 359,
-      "support": 1000,
-      "precision_raw": 71.4
+      "support": 1000
      },
      {
       "class": "cooking",
@@ -6607,24 +6944,35 @@
        "value": 86.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        82.0,
+        90.0
+       ]
       },
       "precision": {
        "value": 83.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 977,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        59.0,
+        96.2
+       ]
       },
       "f1": {
        "value": 84.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        69.6,
+        91.7
+       ]
       },
       "missed": 138,
       "false_alarms": 115,
-      "support": 1000,
-      "precision_raw": 88.2
+      "support": 1000
      },
      {
       "class": "dishwashing",
@@ -6632,24 +6980,35 @@
        "value": 79.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        73.7,
+        84.6
+       ]
       },
       "precision": {
        "value": 55.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 949,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        31.2,
+        70.1
+       ]
       },
       "f1": {
        "value": 65.1,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 9
+       "n_sessions": 9,
+       "ci95": [
+        44.9,
+        75.1
+       ]
       },
       "missed": 206,
       "false_alarms": 155,
-      "support": 1000,
-      "precision_raw": 83.7
+      "support": 1000
      },
      {
       "class": "eating",
@@ -6657,24 +7016,35 @@
        "value": 86.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        81.7,
+        90.8
+       ]
       },
       "precision": {
        "value": 84.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 929,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        71.2,
+        92.2
+       ]
       },
       "f1": {
        "value": 85.6,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 12
+       "n_sessions": 12,
+       "ci95": [
+        77.5,
+        89.9
+       ]
       },
       "missed": 137,
       "false_alarms": 66,
-      "support": 1000,
-      "precision_raw": 92.9
+      "support": 1000
      },
      {
       "class": "other",
@@ -6682,24 +7052,35 @@
        "value": 71.3,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        65.9,
+        76.4
+       ]
       },
       "precision": {
        "value": 29.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1057,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        21.4,
+        37.6
+       ]
       },
       "f1": {
        "value": 41.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 117
+       "n_sessions": 117,
+       "ci95": [
+        32.9,
+        49.5
+       ]
       },
       "missed": 287,
       "false_alarms": 344,
-      "support": 1000,
-      "precision_raw": 67.5
+      "support": 1000
      },
      {
       "class": "social_activity",
@@ -6707,24 +7088,35 @@
        "value": 88.7,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        82.1,
+        94.3
+       ]
       },
       "precision": {
        "value": 93.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 917,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        84.4,
+        98.2
+       ]
       },
       "f1": {
        "value": 91.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 20
+       "n_sessions": 20,
+       "ci95": [
+        85.0,
+        94.9
+       ]
       },
       "missed": 113,
       "false_alarms": 30,
-      "support": 1000,
-      "precision_raw": 96.7
+      "support": 1000
      },
      {
       "class": "vacuum_cleaner",
@@ -6732,24 +7124,35 @@
        "value": 99.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        99.6,
+        100.0
+       ]
       },
       "precision": {
        "value": 99.0,
        "split": "dev folds (also used for selection)",
        "n_clips": 921,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        94.8,
+        100.0
+       ]
       },
       "f1": {
        "value": 99.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 920,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        97.3,
+        100.0
+       ]
       },
       "missed": 1,
       "false_alarms": 2,
-      "support": 920,
-      "precision_raw": 99.8
+      "support": 920
      },
      {
       "class": "watching_tv",
@@ -6757,24 +7160,35 @@
        "value": 96.9,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        94.2,
+        99.0
+       ]
       },
       "precision": {
        "value": 99.5,
        "split": "dev folds (also used for selection)",
        "n_clips": 989,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        98.1,
+        99.9
+       ]
       },
       "f1": {
        "value": 98.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 8
+       "n_sessions": 8,
+       "ci95": [
+        96.6,
+        99.2
+       ]
       },
       "missed": 31,
       "false_alarms": 20,
-      "support": 1000,
-      "precision_raw": 98.0
+      "support": 1000
      },
      {
       "class": "working",
@@ -6782,24 +7196,35 @@
        "value": 66.4,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        59.0,
+        73.2
+       ]
       },
       "precision": {
        "value": 88.2,
        "split": "dev folds (also used for selection)",
        "n_clips": 927,
-       "n_sessions": 257
+       "n_sessions": 257,
+       "ci95": [
+        82.4,
+        92.1
+       ]
       },
       "f1": {
        "value": 75.8,
        "split": "dev folds (also used for selection)",
        "n_clips": 1000,
-       "n_sessions": 32
+       "n_sessions": 32,
+       "ci95": [
+        69.5,
+        80.5
+       ]
       },
       "missed": 336,
       "false_alarms": 263,
-      "support": 1000,
-      "precision_raw": 71.6
+      "support": 1000
      }
     ],
     "confusion": [
@@ -7269,38 +7694,164 @@
   },
   "per_node": {
    "EvalNode1": {
-    "node_avg": 86.3,
-    "ch0": 85.2,
+    "node_avg": {
+     "value": 86.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      76.5,
+      89.3
+     ]
+    },
+    "ch0": {
+     "value": 85.2,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      75.2,
+      87.5
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode2": {
-    "node_avg": 86.7,
-    "ch0": 84.4,
+    "node_avg": {
+     "value": 86.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      76.6,
+      89.4
+     ]
+    },
+    "ch0": {
+     "value": 84.4,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      74.4,
+      87.0
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode3": {
-    "node_avg": 80.5,
-    "ch0": 79.9,
+    "node_avg": {
+     "value": 80.5,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      70.7,
+      84.0
+     ]
+    },
+    "ch0": {
+     "value": 79.9,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      70.5,
+      83.6
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode4": {
-    "node_avg": 87.3,
-    "ch0": 85.6,
+    "node_avg": {
+     "value": 87.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      77.2,
+      90.6
+     ]
+    },
+    "ch0": {
+     "value": 85.6,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      75.6,
+      89.0
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode5": {
-    "node_avg": 86.5,
-    "ch0": 85.6,
+    "node_avg": {
+     "value": 86.5,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      76.4,
+      89.3
+     ]
+    },
+    "ch0": {
+     "value": 85.6,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      75.5,
+      88.7
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode6": {
-    "node_avg": 85.0,
-    "ch0": 85.0,
+    "node_avg": {
+     "value": 85.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      74.9,
+      88.8
+     ]
+    },
+    "ch0": {
+     "value": 85.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      74.9,
+      88.1
+     ]
+    },
     "n_clips": 1113
    },
    "EvalNode7": {
-    "node_avg": 84.8,
-    "ch0": 83.4,
+    "node_avg": {
+     "value": 84.8,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      75.5,
+      87.5
+     ]
+    },
+    "ch0": {
+     "value": 83.4,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 1113,
+     "n_sessions": 91,
+     "ci95": [
+      74.5,
+      86.6
+     ]
+    },
     "n_clips": 1113
    }
   },
@@ -7317,9 +7868,13 @@
    },
    "macro_f1_raw": {
     "value": 85.9,
-    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once), not reweighted",
     "n_clips": 7791,
-    "n_sessions": 91
+    "n_sessions": 91,
+    "ci95": [
+     74.9,
+     88.4
+    ]
    },
    "per_class": [
     {
@@ -7356,8 +7911,7 @@
      },
      "missed": 41,
      "false_alarms": 234,
-     "support": 1988,
-     "precision_raw": 89.3
+     "support": 1988
     },
     {
      "class": "cooking",
@@ -7393,8 +7947,7 @@
      },
      "missed": 53,
      "false_alarms": 37,
-     "support": 483,
-     "precision_raw": 92.1
+     "support": 483
     },
     {
      "class": "dishwashing",
@@ -7430,8 +7983,7 @@
      },
      "missed": 85,
      "false_alarms": 40,
-     "support": 350,
-     "precision_raw": 86.9
+     "support": 350
     },
     {
      "class": "eating",
@@ -7467,8 +8019,7 @@
      },
      "missed": 51,
      "false_alarms": 30,
-     "support": 350,
-     "precision_raw": 90.9
+     "support": 350
     },
     {
      "class": "other",
@@ -7504,8 +8055,7 @@
      },
      "missed": 170,
      "false_alarms": 202,
-     "support": 350,
-     "precision_raw": 47.1
+     "support": 350
     },
     {
      "class": "social_activity",
@@ -7541,8 +8091,7 @@
      },
      "missed": 8,
      "false_alarms": 72,
-     "support": 350,
-     "precision_raw": 82.6
+     "support": 350
     },
     {
      "class": "vacuum_cleaner",
@@ -7578,8 +8127,7 @@
      },
      "missed": 24,
      "false_alarms": 0,
-     "support": 350,
-     "precision_raw": 100.0
+     "support": 350
     },
     {
      "class": "watching_tv",
@@ -7615,8 +8163,7 @@
      },
      "missed": 22,
      "false_alarms": 2,
-     "support": 2107,
-     "precision_raw": 99.9
+     "support": 2107
     },
     {
      "class": "working",
@@ -7652,8 +8199,7 @@
      },
      "missed": 286,
      "false_alarms": 123,
-     "support": 1463,
-     "precision_raw": 90.5
+     "support": 1463
     }
    ],
    "confusion": [
@@ -7771,9 +8317,13 @@
    },
    "macro_f1_raw": {
     "value": 84.9,
-    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once), not reweighted",
     "n_clips": 7791,
-    "n_sessions": 91
+    "n_sessions": 91,
+    "ci95": [
+     74.1,
+     87.2
+    ]
    },
    "per_class": [
     {
@@ -7810,8 +8360,7 @@
      },
      "missed": 97,
      "false_alarms": 198,
-     "support": 1988,
-     "precision_raw": 90.5
+     "support": 1988
     },
     {
      "class": "cooking",
@@ -7847,8 +8396,7 @@
      },
      "missed": 67,
      "false_alarms": 36,
-     "support": 483,
-     "precision_raw": 92.0
+     "support": 483
     },
     {
      "class": "dishwashing",
@@ -7884,8 +8432,7 @@
      },
      "missed": 96,
      "false_alarms": 35,
-     "support": 350,
-     "precision_raw": 87.9
+     "support": 350
     },
     {
      "class": "eating",
@@ -7921,8 +8468,7 @@
      },
      "missed": 53,
      "false_alarms": 42,
-     "support": 350,
-     "precision_raw": 87.6
+     "support": 350
     },
     {
      "class": "other",
@@ -7958,8 +8504,7 @@
      },
      "missed": 156,
      "false_alarms": 248,
-     "support": 350,
-     "precision_raw": 43.9
+     "support": 350
     },
     {
      "class": "social_activity",
@@ -7995,8 +8540,7 @@
      },
      "missed": 11,
      "false_alarms": 81,
-     "support": 350,
-     "precision_raw": 80.7
+     "support": 350
     },
     {
      "class": "vacuum_cleaner",
@@ -8032,8 +8576,7 @@
      },
      "missed": 24,
      "false_alarms": 0,
-     "support": 350,
-     "precision_raw": 100.0
+     "support": 350
     },
     {
      "class": "watching_tv",
@@ -8069,8 +8612,7 @@
      },
      "missed": 29,
      "false_alarms": 4,
-     "support": 2107,
-     "precision_raw": 99.8
+     "support": 2107
     },
     {
      "class": "working",
@@ -8106,8 +8648,7 @@
      },
      "missed": 284,
      "false_alarms": 173,
-     "support": 1463,
-     "precision_raw": 87.2
+     "support": 1463
     }
    ],
    "confusion": [
@@ -8213,7 +8754,16 @@
    ]
   },
   "per_class_slice": "all",
-  "not_sure_share_at_theta": 0.142,
+  "not_sure_share_at_theta": {
+   "value": 14.2,
+   "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); top probability below \u03b8 (novelty check not included)",
+   "n_clips": 7791,
+   "n_sessions": 91,
+   "ci95": [
+    13.5,
+    15.0
+   ]
+  },
   "n_clips": 7791,
   "n_moments": 1113,
   "fingerprint_summary": "NOT confirmed by the mic-fingerprint rule; per-node numbers only",

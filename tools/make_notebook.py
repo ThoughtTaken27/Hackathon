@@ -72,7 +72,7 @@ reliability_png(R["calibration"], __import__("pathlib").Path("results/notebook/r
 tradeoff_png(R["theta_tradeoff"], R["not_sure"]["theta"], __import__("pathlib").Path("results/notebook/theta_tradeoff_dev.png"))
 display(Image("results/notebook/reliability_dev.png", width=420)); display(Image("results/notebook/theta_tradeoff_dev.png", width=520))
 print("ECE before / after temperature:", R["calibration"]["ece_before"]["value"], "/", R["calibration"]["ece_after_temperature"]["value"], "points")
-print("theta", R["not_sure"]["theta"], "coverage", round(R["not_sure"]["coverage"], 3), "shown-label precision", round(R["not_sure"]["macro_precision_shown"], 3))"""),
+print("theta", R["not_sure"]["theta"], "coverage", R["not_sure"]["coverage_metric"], "shown-label precision", R["not_sure"]["shown_precision_metric"])"""),
     ("md", "## 6. Slices we can check\nSINS is one person in one home, so age and sex can't be tested. Microphone positions and activities can; the team's own kitchens are added on Sunday (`python -m eval --split own-kitchen`)."),
     ("code", """for nd, m in R["per_node"].items():
     print(f"{nd}: {m['value']} [{m['ci95'][0]}, {m['ci95'][1]}]  N={m['n_clips']}")

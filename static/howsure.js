@@ -139,11 +139,11 @@ function renderResults(box, r) {
   // not sure + off-list
   const ns = d.not_sure, off = r.offlist;
   const nsBox = el("div", { class: "stack" },
-    el("p", { text: `Below ${Math.round(ns.theta * 100)}% confidence Kettle says "Not sure" instead of guessing. On development clips that leaves ${(100 * ns.coverage).toFixed(0)}% of windows labelled, and those labels are right ${(100 * ns.macro_precision_shown).toFixed(0)}% of the time.` }));
-  if (d.novelty) nsBox.append(el("p", { text: `It also says "Not sure" when a sound is unlike all 9 activities it learned (${(100 * d.novelty.share_flagged_in_distribution).toFixed(0)}% of development windows get flagged this way).` }));
+    el("p", { text: `Below ${Math.round(ns.theta * 100)}% confidence Kettle says "Not sure" instead of guessing. On development clips that leaves ${ns.coverage_metric.value.toFixed(0)}% of windows labelled, and those labels are right ${ns.shown_precision_metric.value.toFixed(0)}% of the time.` }));
+  if (d.novelty) nsBox.append(el("p", { text: `It also says "Not sure" when a sound is unlike all 9 activities it learned (${d.novelty.flagged_in_distribution.value.toFixed(0)}% of development windows get flagged this way).` }));
   if (off && off.confident_wrong) nsBox.append(el("p", { text: `On ${off.n} sounds that aren't household activities at all (dogs, sirens, rain, alarm clocks, noise, silence), Kettle gave a confident label to ${pct(off.confident_wrong)} (95% CI ${ci(off.confident_wrong)}). Without the "unlike anything it learned" check it would have been ${pct(off.confident_wrong_without_novelty_gate)}. Every one of those labels would have been wrong.` }));
   const sl = d.session_level;
-  if (sl) nsBox.append(el("p", { text: `On the day bar, a block needs 2 of 3 windows to agree. That caught ${(100 * sl.smoothing_on.session_recall).toFixed(0)}% of ${sl.smoothing_on.sessions.reduce((a, b) => a + b, 0)} activity sessions with ${sl.smoothing_on.false_alarms_per_hour} false-alarm blocks per hour of sound, versus ${sl.smoothing_off.false_alarms_per_hour} per hour without it.` }));
+  if (sl) nsBox.append(el("p", { text: `On the day bar, a block needs 2 of 3 windows to agree. That caught ${sl.smoothing_on.session_recall.value.toFixed(0)}% of ${sl.smoothing_on.sessions.reduce((a, b) => a + b, 0)} activity sessions with ${sl.smoothing_on.false_alarms_per_hour} false-alarm blocks per hour of sound, versus ${sl.smoothing_off.false_alarms_per_hour} per hour without it.` }));
   box.append(section("When Kettle isn't sure", "not-sure", nsBox));
 
   // calibration and the cost of θ
