@@ -100,6 +100,7 @@ def blocks(m: dict) -> dict:
     shipped = next((r for r in tt if r.get("shipped")), tt[0])
     lo = tt[0]
     missed_all = {r["meal_sessions_missed"] for r in tt}
+    ms = d["meal_sessions_strict"]
     fa_range = (min(r["meal_false_alarm_blocks"] for r in tt), max(r["meal_false_alarm_blocks"] for r in tt))
     trade = (f"**The \"Not sure\" bar θ.** Below θ = {d['not_sure']['theta']:.2f} confidence Kettle says \"Not sure\". We chose θ on dev folds "
              f"so that shown labels are right {d['not_sure']['shown_precision_metric']['value']:.0f}% of the time "
@@ -108,6 +109,9 @@ def blocks(m: dict) -> dict:
              + ("no kitchen session went unnoticed at any θ from 0.30 to 0.90" if missed_all == {0} else "kitchen sessions missed varied with θ")
              + f", and θ only moved the count of false kitchen-activity blocks between {fa_range[0]} and {fa_range[1]} "
              f"({shipped['meal_false_alarms_per_day']} per 16-hour day at the chosen θ, {lo['meal_false_alarms_per_day']} at θ = {lo['theta']:.2f}). "
+             f"\"Noticed\" means some kitchen-activity block overlapped the session; under the strict rule (the right kitchen activity covering at least half of it) "
+             f"{ms['n_caught']} of {ms['n_sessions']} were caught ({ms['caught']['value']:.0f}%, 95% CI {ms['caught']['ci95'][0]:.0f}–{ms['caught']['ci95'][1]:.0f}), "
+             f"so in {ms['n_sessions'] - ms['n_caught']} kitchen sessions the right activity never formed one block covering half of it (the bar showed another kitchen activity, \"Not sure\", or shorter blocks). "
              f"Those are kitchen-level false alarms; the \"per hour\" figure above counts every activity confusion, including cooking vs washing up. "
              f"The cost of a high θ shows up elsewhere: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e else "")
     lm, ap = d["baselines"]["logmel_lr"]["macro_f1"], d["baselines"].get("ast_probe", {})
@@ -121,7 +125,9 @@ def blocks(m: dict) -> dict:
     trade_short = (f"\"Not sure\" below θ = {d['not_sure']['theta']:.2f} (chosen on dev so shown labels are right "
                    f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). On dev, no kitchen session went unnoticed at any θ "
                    f"from 0.30 to 0.90; θ only moved false kitchen blocks ({lo['meal_false_alarms_per_day']} → {shipped['meal_false_alarms_per_day']} "
-                   f"per 16-hour day). Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e and missed_all == {0} else trade)
+                   f"per 16-hour day). But \"noticed\" only means some kitchen block overlapped: with the right activity covering half the session, "
+                   f"{ms['n_caught']} of {ms['n_sessions']} kitchen sessions were caught; in the rest the right activity never formed one block that long. "
+                   f"Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e and missed_all == {0} else trade)
     return {"lead": "\n".join(lead), "results": "\n".join(held + dev_rows + [""] + extra),
             "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade,
             "failures_short": "\n".join(fl_short), "tradeoff_short": trade_short}

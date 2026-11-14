@@ -57,7 +57,7 @@ Development folds (optimistic; they chose the model): Kettle 85.1 [81.1, 87.4], 
 <!-- results:end -->
 
 <!-- tradeoff:start -->
-"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). On dev, no kitchen session went unnoticed at any θ from 0.30 to 0.90; θ only moved false kitchen blocks (7.75 → 3.87 per 16-hour day). Its cost: 14% of held-out windows were "Not sure".
+"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). On dev, no kitchen session went unnoticed at any θ from 0.30 to 0.90; θ only moved false kitchen blocks (7.75 → 3.87 per 16-hour day). But "noticed" only means some kitchen block overlapped: with the right activity covering half the session, 15 of 33 kitchen sessions were caught; in the rest the right activity never formed one block that long. Its cost: 14% of held-out windows were "Not sure".
 <!-- tradeoff:end -->
 
 **Where it fails** (real dev-fold mistakes, `results/failures.md`):

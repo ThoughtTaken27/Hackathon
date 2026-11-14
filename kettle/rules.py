@@ -108,9 +108,9 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
     unsure = [b for b in blocks if b["state"] in ("not_sure", "talk_or_tv") and b["start"] < deadline and b["end"] > start]
     note = (f"First heard at {_clock(later['start'], tz)}. " if later else "") + "You might call to say hello."
     if unsure:      # Kettle heard something it couldn't name: say so instead of "Not heard"
-        a, z = unsure[0]["start"], max(b["end"] for b in unsure)
+        mins = sum(min(b["end"], deadline) - max(b["start"], start) for b in unsure)
         return {"state": "missed", "at": deadline,
-                "detail": f"No clear kitchen activity by {_hhmm(r['time'])}. Kettle heard sounds it couldn't name ({clock_range(a, min(z, deadline), tz)}).",
+                "detail": f"No clear kitchen activity by {_hhmm(r['time'])}. Kettle heard sounds it couldn't name for {_dur(mins)} before then.",
                 "note": note}
     return {"state": "missed", "at": deadline, "detail": f"Not heard by {_hhmm(r['time'])}. {whole}", "note": note}
 

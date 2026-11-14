@@ -1,4 +1,4 @@
-# Kettle results (2026-11-14 13:27 CST, commit 321521b2bf, head fa5de76a7970)
+# Kettle results (2026-11-14 16:18 CST, commit 298da1c195, head fa5de76a7970)
 
 Primary metric: macro F1 over the 9 SINS activities, 10-s windows. Dev numbers: **dev folds (also used for selection)**, N = 8920 clips from 257 sessions, prevalence-reweighted, 95% session-bootstrap CI.
 
@@ -81,6 +81,8 @@ Caught 95.3 [93.8, 96.5]% of 3000 kitchen-activity windows (missed 164); right 8
 | 0.90 | 0 of 33 | 4.52 |
 
 Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.
+
+'Noticed' here means any kitchen-activity block overlaps the session. Under the strict rule (kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it), 15 of 33 kitchen sessions are caught (45.5 [29.8, 62.0]%): the day bar notices every kitchen session, but in the rest the right activity never formed one block covering half of it (another kitchen activity, 'Not sure' or shorter blocks filled the gap; we haven't measured which most often). Window-level kitchen recall and these session counts measure different things.
 
 ## Slices we can check (and the ones we can't)
 

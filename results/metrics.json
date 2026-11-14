@@ -1,6 +1,6 @@
 {
- "generated": "2026-11-14 13:27 CST",
- "commit": "321521b2bfe37296e936a958bfb8712ed1af0415",
+ "generated": "2026-11-14 16:18 CST",
+ "commit": "298da1c195bdc3fc07789c74b46d0c667102435b",
  "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
  "head": {
   "theta": 0.66,
@@ -1846,6 +1846,21 @@
     "days": 1.55
    }
   ],
+  "meal_sessions_strict": {
+   "rule": "kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it",
+   "caught": {
+    "value": 45.5,
+    "split": "dev folds (also used for selection), kitchen sessions through the shipped timeline at the shipped \u03b8",
+    "n_clips": 33,
+    "n_sessions": 33,
+    "ci95": [
+     29.8,
+     62.0
+    ]
+   },
+   "n_caught": 15,
+   "n_sessions": 33
+  },
   "baselines": {
    "majority": {
     "macro_f1": {

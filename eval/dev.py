@@ -269,6 +269,13 @@ def run(fast: bool = False, Cs: dict | None = None) -> dict:
     R["session_level"] = {"smoothing_on": session_level(y, P0, session, seg, fold, theta, True),
                           "smoothing_off": session_level(y, P0, session, seg, fold, theta, False)}
     R["theta_tradeoff"] = theta_tradeoff(y, P0, session, seg, fold, theta)
+    # addendum item 9: the same kitchen sessions under the strict per-class rule, so both definitions are reported
+    on = R["session_level"]["smoothing_on"]
+    sc, st = sum(on["caught"][k] for k in MEAL_IDX), sum(on["sessions"][k] for k in MEAL_IDX)
+    R["meal_sessions_strict"] = {
+        "rule": "kitchen session caught only if one block of its own activity (cooking, washing up or eating) covers at least half of it",
+        "caught": num(sc / st, split + ", kitchen sessions through the shipped timeline at the shipped θ", st, st, M.wilson(sc, st)),
+        "n_caught": int(sc), "n_sessions": int(st)}
 
     # 2. baselines (same folds, same weights)
     B = {}

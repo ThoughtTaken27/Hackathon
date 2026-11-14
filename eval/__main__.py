@@ -230,6 +230,12 @@ def markdown(m: dict) -> str:
     for r in d["theta_tradeoff"]:
         L.append(f"| {r['theta']:.2f}{' (shipped)' if r.get('shipped') else ''} | {r['meal_sessions_missed']} of {r['meal_sessions']} | {r['meal_false_alarms_per_day']} |")
     L += ["", "Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.", ""]
+    ms = d.get("meal_sessions_strict")
+    if ms:
+        L += [f"'Noticed' here means any kitchen-activity block overlaps the session. Under the strict rule ({ms['rule']}), "
+              f"{ms['n_caught']} of {ms['n_sessions']} kitchen sessions are caught ({f(ms['caught'])}%): the day bar notices every "
+              "kitchen session, but in the rest the right activity never formed one block covering half of it (another kitchen "
+              "activity, 'Not sure' or shorter blocks filled the gap; we haven't measured which most often). Window-level kitchen recall and these session counts measure different things.", ""]
     L += ["## Slices we can check (and the ones we can't)", "",
           "SINS is one person in one home, so **age and sex can't be tested**. What we can show:", "",
           "| Slice | Macro F1 [95% CI], single mic |", "|---|---|"]

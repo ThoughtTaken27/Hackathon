@@ -18,7 +18,7 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 ### `kettle/audio.py`
 - **What it does:** decodes an uploaded file from bytes in memory (WAV, FLAC, OGG, MP3 via libsndfile; M4A via PyAV), converts to 16 kHz mono and cuts 10-second windows. Raises a reason ("unreadable", "too short") the UI turns into a designed message.
 - **Why this way:** nothing touches disk; the upload endpoint reads the raw request body, because multipart uploads over 1 MB get spooled to a temp file by the web framework.
-- **Known limit:** reads only the first 60 seconds; a clip under 10 seconds can't be scored.
+- **Known limit:** reads only the first 60 seconds (decoding itself stops there, so a tiny file holding hours of silence can't exhaust memory: a review finding, tested); a clip under 10 seconds can't be scored.
 - **Judge question:** *What if I upload a photo?* You get "That isn't audio Kettle can read", not a crash; the smoke test sends a JPEG and a text file.
 
 ### `kettle/encoders.py` (+ `kettle/vendor/ced/`)
@@ -43,7 +43,7 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 - **What it does:** the kitchen state (consent, pause, off, weekly check) and the live listening loop: 16-bit audio chunks from the browser go into a NumPy ring buffer of at most 10 s; every 2 s it labels the last 5 s (the "Sounds like…" chip) and the last 10 s (the timeline window). Audio is refused (and the buffer emptied) unless the parent said yes and Kettle isn't paused or off.
 - **Why this way:** the gate is in the server, not just the page, and only the kitchen laptop itself can open the gate (127.0.0.1). 10-s windows every 2 s keep the label fresh (2.6 s for a loud new sound in probe 4) while every number is measured on the same 10-s unit SINS is labelled in.
 - **Known limit:** when one activity changes to another, the old sound still fills the window, so the new label takes ~6–8 s.
-- **Judge question:** *Could a caregiver turn it on remotely?* No: consent, pause, resume and audio are only accepted from the kitchen laptop; `tests/test_heartbeat_consent.py` checks the gate.
+- **Judge question:** *Could a caregiver turn it on remotely?* No: consent, pause, resume, sample days and audio are only accepted from the kitchen laptop's own browser (`app._is_kitchen`: a local connection, a local Host name and, if sent, a local Origin, so another web page or DNS rebinding can't press the parent's buttons either); `tests/test_heartbeat_consent.py` and `tests/test_app.py` check it.
 
 ### `kettle/timeline.py`
 - **What it does:** turns window events into day-bar blocks with these rules: below θ or novel → "Not sure"; TV and Conversation within 0.15 → "Talking or TV"; 2-of-3 smoothing; merge equal neighbours; gaps over 34 s → "Not listening"; pauses drawn as "Paused by Dad". Also writes the one-line summary from the blocks only.
@@ -60,12 +60,13 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 ### `kettle/rules.py`
 - **What it does:** up to 3 checks Meera sets ("Kitchen activity by 10:00 AM", "Some sound of activity by …", "TV on for more than N hours"), each Met / Not yet / Missed / Can't tell (or over/under for TV), with the exact sentence shown.
 - **Why this way:** rules decide, the model only labels (AGENTS.md §5). A learned "unusual day" model can't be validated on SINS (no clock times). The safety rule: if Kettle didn't hear more than 25% of the check's window, the answer is "Can't tell", never "Missed" and never "Met"; "Not sure" blocks never satisfy a check.
-- **Known limit:** "Met" means kitchen sounds were heard, not that Dad ate; the copy says "kitchen activity", never "Dad ate".
+- **Known limit:** "Met" means kitchen sounds were heard, not that Dad ate; the copy says "kitchen activity", never "Dad ate", and Met always says how sure ("Met at 8:05 AM (cooking, how sure: medium)").
+- **Details added after review:** only blocks inside the check's window (from 6 AM) count, so a 1 AM snack can't satisfy "by 10:00 AM" (a reviewer found that bug; `tests/test_app.py`). If Kettle heard sounds it couldn't name before the deadline, Missed says so ("No clear kitchen activity by 10:00 AM. Kettle heard sounds it couldn't name for 30 min before then.") instead of "Not heard". If Kettle only started after the check's time: "Can't tell: Kettle started at 12:30 PM, after this check's time."
 - **Judge question:** *Why no alert when a check is missed?* Alerts are the false-alarm pain, and sending one needs a cloud relay; Meera sees the state when she looks. With another week: an opt-in browser notification.
 
 ### `kettle/view.py`
 - **What it does:** builds everything both screens show from the state: the heartbeat sentence, the blocks with their evidence-card text, the summary and the checks, in the kitchen laptop's time zone ("Dad's local time").
-- **Why this way:** all caregiver copy in one testable place (`tests/test_view.py` bans words like "safe", "fine", "normal day", "!").
+- **Why this way:** all caregiver copy in one testable place (`tests/test_view.py` bans words like "safe", "fine", "normal day", "!"). When Kettle is paused, asleep or off, the summary adds "Nothing is known after {time}." so a gap never reads as a settled day (usability walkthrough finding).
 - **Judge question:** *What does Meera see if the laptop died at midnight?* "Not listening since 11:59 PM… Nothing is known after that", and the new day's bar is cross-hatched, not blank (a test covers it).
 
 ### `kettle/demo.py` (+ `demo_cache/`)
@@ -82,7 +83,7 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 ### `app.py`
 - **What it does:** one FastAPI process: the three pages, `/api/today` (polled once a second), the parent's controls (kitchen laptop only), checks, "Try your own sound", sample days and the mic WebSocket. Writes only `data/timeline/<date>.jsonl` (labels and times, never audio).
 - **Why this way:** boring, explainable stack; polling instead of a second WebSocket; no accounts or database.
-- **Judge question:** *What's in the file it writes?* Window labels, the 9 probabilities, the top 3 evidence sounds, times, and consent/pause events. The privacy check lists the exact fields.
+- **Judge question:** *What's in the file it writes?* Window labels, the 9 probabilities, the novelty flag, the top 3 evidence sounds, times, and consent/pause events. The privacy check lists the exact fields. After a restart the day is rebuilt from this file (a reviewer found windows were being saved under the wrong `kind` and lost on restart; fixed and tested).
 
 ### `static/` (the three pages)
 - **What it does:** plain HTML, CSS and JavaScript, no build step. `common.js` draws the day bar (existing blocks are never removed and re-added; only new ones animate in) and the evidence card; `caregiver.js`, `kitchen.js`, `howsure.js` drive each page; `worklet.js` passes mic samples from the browser's audio thread.
@@ -135,3 +136,46 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 ### `tools/apple_baseline/`
 - **What it does:** a Swift command-line tool that runs Apple's built-in SoundAnalysis classifier (303 sound classes, the one a Mac ships) on channel 0 of each clip; `run.py` maps classes to our 9 activities with a map frozen before any score was computed.
 - **Judge question (Batool): what did you add beyond the pretrained encoder?** A trained head, calibration, an abstain rule measured on off-list sounds, a session-level pipeline, and the comparison with what a Mac already does out of the box.
+
+## Evaluation helpers and training (added in M10 so every module is covered)
+
+### `eval/__main__.py` (`python -m eval`)
+- **What it does:** the one command that regenerates every number: the dev-fold study (`eval/dev.py`), the off-list test, the plots (confusion, reliability, θ trade-off), `results/metrics.json`, `results/metrics.md` and `results/failures.md`. `--split dcase-eval` was the one frozen held-out run; `--rehearse` tested that code path on a dev stand-in first; `--render` rebuilds the markdown and plots from the saved JSON without recomputing.
+- **Why this way:** one command, one output file, and the write-up copies from that file (`tools/writeup_numbers.py`), so no number is ever typed by hand.
+- **Known limit:** the dev study takes several minutes on a laptop CPU because the session bootstrap resamples many times; the notebook reuses a committed cache to stay under 5 minutes.
+- **Judge question:** *How do I know the write-up numbers aren't edited?* Delete `results/`, run `python -m eval` and `python tools/writeup_numbers.py`, and diff: the markers in README/WRITEUP are rewritten from `metrics.json`.
+
+### `eval/check_metrics.py`
+- **What it does:** walks `results/metrics.json` and fails if any metric lacks its split, N or CI (or if a bare score appears).
+- **Why this way:** AGENTS.md §6 says no bare percentages; a 50-line checker enforces it on every run instead of trusting us to remember.
+- **Judge question:** *Does every number have an N?* `python -m eval.check_metrics` prints "0 problems".
+
+### `eval/common.py`
+- **What it does:** lines cached embeddings up with labels, folds, sessions and microphone nodes; maps AudioSet or Apple classes to our 9 activities for the zero-shot baselines; `num()` wraps every number with its split, N and CI.
+- **Known limit:** the zero-shot class maps were written by hand once, before any score was computed, and frozen; a different map would give a different zero-shot number (we say so).
+
+### `eval/embed.py` + `eval/encoders_extra.py`
+- **What they do:** run each encoder once over the fetched clips and cache the embeddings on disk (git-ignored; only the small committed cache in `results/cache` ships). `encoders_extra.py` holds the encoders used only for baselines and ablations: AST, CED-small, CLAP, log-mel statistics.
+- **Why this way:** embedding is the slow step (minutes to hours); caching it means every head, threshold and ablation reruns in seconds and the same numbers feed every table.
+- **Judge question:** *Why CED-tiny over AST?* On dev, AST + the same head scored 83.0 vs Kettle 85.5 on the same 2,700 clips, at 16× the size; CED-small scored 85.9 vs Kettle 85.1 on all 8,920 dev clips (inside the CI), at 4× the size. We picked the small one for live latency on a laptop.
+
+### `eval/train.py`
+- **What it does:** fits the shipped head (`models/head.json`) on every dev training clip with C, temperature and θ chosen only from dev folds; `--freeze` writes the SHA-256 to `models/FROZEN`, and retraining is refused after the held-out run.
+- **Judge question:** *Could you have retrained after seeing the test score?* The code refuses (`held_out_run_done`), and `results/eval_run.json` logs the frozen head hash, the commit and one attempt.
+
+### `eval/own_kitchen_check.py`
+- **What it does:** format checks on the teammates' `labels.csv` (activity names, stretches under 10 s, missing audio files, overlaps); it never changes a label.
+
+### `smoke_test.py`
+- **What it does:** runs the real app in-process with no network, microphone or keys: pages load, the consent gate, a sample day through the real model, heartbeat, checks, pause, "Try your own sound" on a real, unclear, silent, white-noise and non-audio input, and live audio refused before consent. Exit 0 = pass, in well under 60 s.
+- **Judge question:** *Does it run for a stranger?* The fresh-clone test (M8) followed the README on a new venv with no keys and ran this.
+
+### `tools/` (build helpers, never used by the app)
+- `screenshots.py`: Playwright captures every designed state at 1440×900 and 393×852, light and dark, with a fake microphone playing held-out SINS clips; it also fails if any screen shows an uncaught page error, a server traceback or broken text ("undefined", "NaN").
+- `contact_sheets.py`: tiles a round's screenshots so a reviewer can open them all at a glance.
+- `stability_check.py`: while a sample day plays, counts day-bar blocks that get re-created instead of extended (they should not jump).
+- `make_notebook.py`: builds `notebooks/kettle_reproduce.ipynb`, then nbconvert executes it with outputs saved.
+- `writeup_numbers.py`: fills the number blocks in README and WRITEUP from `results/metrics.json`.
+
+### Research scripts (`docs/research/kettle/probes/`, `docs/research/kettle/raw/`)
+Stage-2 probes (encoder speed, Apple's classifier, live latency) and the pain-point coding scripts. They produced the decisions in `docs/DECISIONS.md`; no reported number comes from them except where labelled "probe".

@@ -60,6 +60,7 @@ def main() -> None:
     fake_mic(240)
     srv = start_server(tmp)
     shots = []
+    problems: list[str] = []          # uncaught page errors or stack-trace text on any captured screen
     from playwright.sync_api import sync_playwright
     try:
         with sync_playwright() as p:
@@ -72,13 +73,18 @@ def main() -> None:
                 ctx = b.new_context(viewport={"width": w, "height": h}, color_scheme=theme, device_scale_factor=1 if size == "desktop" else 2)
                 if init:
                     ctx.add_init_script(init)
-                return ctx, ctx.new_page()
+                pg = ctx.new_page()
+                pg.on("pageerror", lambda e: problems.append(f"page error: {e}"))
+                return ctx, pg
 
             def snap(pg, name, size, theme, full=False):
                 pg.wait_for_timeout(600)
                 f = out / f"{name}-{size}-{theme}.png"
                 pg.screenshot(path=str(f), full_page=full)
                 shots.append(f.name)
+                body = pg.inner_text("body")
+                if any(t in body for t in ("Traceback", "Internal Server Error", "Exception", "undefined", "NaN")):
+                    problems.append(f"{f.name}: stack-trace or broken text on screen")
 
             def each(name, url, prep=None, init=None, wait=1200, full=False, route=None):
                 for size, theme in combos:
@@ -172,9 +178,17 @@ def main() -> None:
     finally:
         srv.terminate()
         srv.wait(10)
+        err = srv.stderr.read().decode(errors="replace") if srv.stderr else ""
+        if "Traceback" in err:
+            problems.append("server log has a Traceback:\n" + err[-2000:])
         shutil.rmtree(tmp, ignore_errors=True)
-    (out / "index.md").write_text("# Screenshots, round " + a.round + "\n\n" + "\n".join(f"- {s}" for s in sorted(shots)) + "\n")
+    check = (f"\nDesigned-screen check: {len(shots)} screens, {len(problems)} problems "
+             "(uncaught page errors, server tracebacks, or 'Traceback' / 'Exception' / 'undefined' / 'NaN' on screen).\n"
+             + "".join(f"- {p}\n" for p in problems))
+    (out / "index.md").write_text("# Screenshots, round " + a.round + "\n\n" + "\n".join(f"- {s}" for s in sorted(shots)) + "\n" + check)
     print(f"{len(shots)} screenshots -> {out}")
+    print(check)
+    sys.exit(1 if problems else 0)
 
 
 if __name__ == "__main__":
