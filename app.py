@@ -147,6 +147,15 @@ def api_runtime():
             "median_s": xs[len(xs) // 2] if xs else None, "p90_s": xs[int(len(xs) * 0.9)] if xs else None}
 
 
+@app.get("/api/results/{name}.png")
+def api_results_png(name: str):
+    """The plots python -m eval draws (confusion matrix, reliability, θ trade-off)."""
+    p = (RESULTS / f"{name}.png").resolve()
+    if p.parent != RESULTS.resolve() or not p.exists():
+        raise HTTPException(404)
+    return FileResponse(p)
+
+
 @app.get("/api/results")
 def api_results():
     """results/metrics.json for the 'How sure is Kettle?' page; a designed empty state if missing."""

@@ -285,3 +285,8 @@ ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 }
 .intro { margin: 16px 0 4px; }
 .intro-head { color: var(--ink); font-size: var(--fs-lead); line-height: var(--lh-lead); font-weight: 600; margin-bottom: 4px; }
+.two-col { display: grid; gap: 24px; }
+@media (min-width: 900px) { .two-col { grid-template-columns: 5fr 7fr; align-items: start; } }
+figure { margin: 0; }
+figure img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; background: #fff; display: block; }
+tr.row-shipped td { color: var(--ink); font-weight: 600; }

@@ -132,6 +132,42 @@ def confusion_png(C: np.ndarray, path: Path, title: str) -> None:
     fig.tight_layout(); fig.savefig(path); plt.close(fig)
 
 
+def reliability_png(cal: dict, path: Path) -> None:
+    """Reliability plot: confidence of the top label vs how often it was right, before and after temperature."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(4.8, 4.6), dpi=150)
+    ax.plot([0, 1], [0, 1], color="#c3c2b7", lw=1, label="perfectly calibrated")
+    for rows, col, lab in ((cal["bins_before"], "#8a919a", "before (T = 1)"), (cal["bins"], "#2a78d6", "after temperature")):
+        ax.plot([r["confidence"] for r in rows], [r["accuracy"] for r in rows], "o-", color=col, lw=2, ms=5, label=lab)
+    ax.set_xlabel("Kettle's confidence in its top label"); ax.set_ylabel("How often that label was right")
+    ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.legend(frameon=False, fontsize=8)
+    e, e0 = cal["ece_after_temperature"], cal["ece_before"]
+    ax.set_title(f"Dev folds, single mic, N = {e['n_clips']}: ECE {e0['value']:.1f} -> {e['value']:.1f} pts", fontsize=9)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout(); fig.savefig(path); plt.close(fig)
+
+
+def tradeoff_png(rows: list[dict], theta: float, path: Path) -> None:
+    """θ trade-off for the caregiver: missed kitchen-activity sessions vs false kitchen-activity blocks per day."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(5.6, 3.8), dpi=150)
+    th = [r["theta"] for r in rows]
+    ax.plot(th, [100 * r["meal_sessions_missed"] / max(1, r["meal_sessions"]) for r in rows], "o-", color="#eb6834", lw=2, ms=4, label="kitchen-activity sessions missed (%)")
+    ax.plot(th, [r["meal_false_alarms_per_day"] for r in rows], "s-", color="#2a78d6", lw=2, ms=4, label="false kitchen-activity blocks per 16-h day")
+    ax.axvline(theta, color="#15181c", lw=1, ls=":")
+    ax.text(theta + 0.01, ax.get_ylim()[1] * 0.92, f"θ = {theta:.2f} (shipped)", fontsize=8)
+    ax.set_xlabel("θ: below this confidence Kettle says 'Not sure'"); ax.legend(frameon=False, fontsize=8)
+    ax.set_title(f"Dev folds through the shipped timeline ({rows[0]['meal_sessions']} kitchen-activity sessions, {rows[0]['days']} days of audio)", fontsize=8)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    fig.tight_layout(); fig.savefig(path); plt.close(fig)
+
+
 def markdown(m: dict) -> str:
     d = m["dev"]
     f = lambda x: f"{x['value']:.1f} [{x['ci95'][0]:.1f}, {x['ci95'][1]:.1f}]" if "ci95" in x else f"{x['value']:.1f}"
@@ -148,6 +184,11 @@ def markdown(m: dict) -> str:
             if s:
                 L.append(f"| {name} | {f(s['node_avg'])} | {f(s['ch0'])} | {PUBLISHED['dcase2018_baseline'].get(pub, '–') if pub else '–'} | {PUBLISHED['best_entry'].get(pub, '–') if pub else '–'} |")
         L += ["", f"Mic mapping: {e['fingerprint_summary']}", ""]
+    ma = d["meal_activity"]
+    L += ["## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic", "",
+          f"Caught {f(ma['caught'])}% of {ma['n_meal']} kitchen-activity windows (missed {ma['missed']}); "
+          f"right {f(ma['right_when_it_says_so'])}% of the time it said kitchen activity; "
+          f"false alarms on {f(ma['false_alarm_rate'])}% of {ma['n_other']} other windows ({ma['false_alarms']} windows). Reweighted to true prevalence; session-bootstrap 95% CI.", ""]
     L += ["## Dev folds: ours vs baselines (macro F1, %)", "", "| System | Macro F1 [95% CI] |", "|---|---|",
           f"| **Kettle: CED-tiny + logistic head, 4-mic node average** | {f(d['ours_node_avg']['macro_f1'])} |",
           f"| **Kettle, single mic (channel 0, what one laptop hears)** | {f(d['ours_ch0']['macro_f1'])} |"]
@@ -164,6 +205,21 @@ def markdown(m: dict) -> str:
     L += ["", f"**Not sure:** θ = {ns['theta']:.2f} (chosen on dev: reweighted shown-label precision ≥ 0.90); "
               f"coverage {100 * ns['coverage']:.1f}% of windows get a label, precision of shown labels {100 * ns['macro_precision_shown']:.1f}%. "
               f"Temperature {d['temperature']:.2f}; ECE {d['calibration']['ece_after_temperature']:.3f}.", ""]
+    cal = d["calibration"]
+    L += [f"**Calibration:** expected calibration error {f(cal['ece_before'])} points before temperature scaling, "
+          f"{f(cal['ece_after_temperature'])} after (temperature cross-fitted across folds). Plot: `results/reliability_dev.png`.", ""]
+    L += ["## The cost of θ for Meera (dev, through the shipped timeline)", "",
+          "| θ | Kitchen-activity sessions missed | False kitchen-activity blocks per day | All false-alarm blocks per hour |", "|---|---|---|---|"]
+    for r in d["theta_tradeoff"]:
+        L.append(f"| {r['theta']:.2f}{' (shipped)' if abs(r['theta'] - ns['theta']) < 0.026 else ''} | {r['meal_sessions_missed']} of {r['meal_sessions']} | {r['meal_false_alarms_per_day']} | {r['all_false_alarms_per_hour']} |")
+    L += ["", "Plot: `results/theta_tradeoff_dev.png`. A false 'kitchen activity' can hide a skipped breakfast (Meera isn't told); a missed one can make a normal morning look like 'Not heard by 10:00 AM' (Meera calls). See the write-up for which way we lean.", ""]
+    L += ["## Slices we can check (and the ones we can't)", "",
+          "SINS is one person in one home, so **age and sex can't be tested**. What we can show:", "",
+          "| Slice | Macro F1 [95% CI], single mic |", "|---|---|"]
+    for nd, v in d["per_node"].items():
+        L.append(f"| Microphone position {nd} (dev) | {f(v)} |")
+    L += ["| Home 1: teammate kitchen (Sunday, own-kitchen set) | not measured yet |",
+          "| Home 2: teammate kitchen (Sunday, own-kitchen set) | not measured yet |", ""]
     s_on, s_off = d["session_level"]["smoothing_on"], d["session_level"]["smoothing_off"]
     L += ["## Through the shipped timeline (activity sessions, dev)", "",
           f"With 2-of-3 smoothing: {100 * s_on['session_recall']:.1f}% of {sum(s_on['sessions'])} activity sessions caught, "
@@ -206,6 +262,10 @@ def run_default(fast: bool) -> dict:
     R = dev.run(fast=fast)
     oof = R.pop("_oof")
     R.pop("_nov", None)
+    stored = R.pop("_stored_predictions", {})
+    if stored and len(stored) >= 3:          # keep the big-encoder baselines reproducible from the committed cache
+        (RESULTS / "cache").mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(RESULTS / "cache" / "probes_dev.npz", files=oof["files"], **{k: v.astype(np.int8) for k, v in stored.items()})
     fs = failures(oof)
     m = {"generated": time.strftime("%Y-%m-%d %H:%M %Z"), "commit": commit_hash(), "head_sha256": head["sha256"],
          "head": {"theta": head["theta"], "temperature": head["temperature"], "trained_on": head.get("trained_on")},
@@ -220,6 +280,8 @@ def run_default(fast: bool) -> dict:
     (RESULTS / "metrics.md").write_text(markdown(m))
     (RESULTS / "failures.json").write_text(json.dumps(fs, indent=1))
     (RESULTS / "failures.md").write_text(failures_md(fs))
+    reliability_png(R["calibration"], RESULTS / "reliability_dev.png")
+    tradeoff_png(R["theta_tradeoff"], R["not_sure"]["theta"], RESULTS / "theta_tradeoff_dev.png")
     confusion_png(np.array(R["ours_ch0"]["confusion"]), RESULTS / "confusion_dev.png",
                   f"Dev folds, single mic, N = {R['n_clips']} clips (counts; colour = share of the true row)")
     print(f"wrote results/ in {time.time() - t0:.0f} s: dev macro F1 node-avg {R['ours_node_avg']['macro_f1']['value']} "

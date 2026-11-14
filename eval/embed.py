@@ -79,7 +79,14 @@ def load(name: str, split: str) -> dict:
     if split.startswith("eval"):
         from eval.guard import assert_eval_allowed
         assert_eval_allowed()
+    import os
     shards = sorted((EMB / name / split).glob("shard_*.npz"))
+    if os.environ.get("KETTLE_USE_CACHE") == "1":   # the notebook: use only what is committed
+        shards = []
+    cached = ROOT / "results" / "cache" / f"{name}_{split}.npz"
+    if not shards and cached.exists():          # the small committed cache (see eval/cache.py)
+        c = np.load(cached)
+        return {"files": c["files"], "emb": c["emb"].astype(np.float32), "scores": c["scores"]}
     if not shards:
         raise FileNotFoundError(f"no embeddings for {name}/{split}; run python -m eval.embed {name} {split}")
     parts = [np.load(p) for p in shards]

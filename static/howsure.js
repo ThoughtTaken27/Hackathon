@@ -69,6 +69,20 @@ function renderResults(box, r) {
   }
   box.append(el("section", { class: "card" }, el("h2", { class: "section-title", text: "Macro F1: the average, over the 9 activities, of how well each is caught without false alarms" }), head));
 
+  // the caregiver's metric
+  const ma = d.meal_activity;
+  if (ma) {
+    box.append(section("What Meera's check uses: any kitchen activity (cooking, washing up or eating)", "meal",
+      el("div", { class: "stat-row" },
+        el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(ma.caught) }), el("p", { class: "meta", text: "of kitchen-activity windows caught" }),
+          el("p", { class: "meta muted", text: `missed ${ma.missed} of ${ma.n_meal} · CI ${ci(ma.caught)}` })),
+        el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(ma.false_alarm_rate) }), el("p", { class: "meta", text: "of other windows wrongly called kitchen activity" }),
+          el("p", { class: "meta muted", text: `${ma.false_alarms} of ${ma.n_other} · CI ${ci(ma.false_alarm_rate)}` })),
+        el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(ma.right_when_it_says_so) }), el("p", { class: "meta", text: "right when it says kitchen activity" }),
+          el("p", { class: "meta muted", text: `CI ${ci(ma.right_when_it_says_so)}` }))),
+      el("p", { class: "meta muted", style: "margin-top:8px", text: "Development folds, one microphone, 10-second windows, reweighted to how common each activity really is." })));
+  }
+
   // per activity: misses and false alarms
   const tb = el("tbody");
   for (const c of per) {
@@ -108,6 +122,32 @@ function renderResults(box, r) {
   const sl = d.session_level;
   if (sl) nsBox.append(el("p", { text: `On the day bar, a block needs 2 of 3 windows to agree. That caught ${(100 * sl.smoothing_on.session_recall).toFixed(0)}% of ${sl.smoothing_on.sessions.reduce((a, b) => a + b, 0)} activity sessions with ${sl.smoothing_on.false_alarms_per_hour} false-alarm blocks per hour of sound, versus ${sl.smoothing_off.false_alarms_per_hour} per hour without it.` }));
   box.append(section("When Kettle isn't sure", "not-sure", nsBox));
+
+  // calibration and the cost of θ
+  const cal = d.calibration, tt = d.theta_tradeoff;
+  if (cal && tt) {
+    const shipped = tt.reduce((b, r) => (Math.abs(r.theta - d.not_sure.theta) < Math.abs(b.theta - d.not_sure.theta) ? r : b), tt[0]);
+    const low = tt[0], high = tt[tt.length - 1];
+    const tb = el("tbody");
+    for (const r of tt) tb.append(el("tr", { class: r === shipped ? "row-shipped" : "" }, el("td", { class: "num", text: `${Math.round(r.theta * 100)}%${r === shipped ? " (now)" : ""}` }),
+      el("td", { class: "num", text: `${r.meal_sessions_missed} of ${r.meal_sessions}` }), el("td", { class: "num", text: String(r.meal_false_alarms_per_day) })));
+    box.append(section("How much to trust \"how sure\"", "calibration",
+      el("div", { class: "two-col" },
+        el("figure", {}, el("img", { src: "/api/results/reliability_dev.png", alt: `Reliability plot: confidence against observed accuracy. Expected calibration error ${cal.ece_after_temperature.value} points.`, loading: "lazy" }),
+          el("figcaption", { class: "meta muted", text: `When Kettle says it is X% sure, it is right about X% of the time: the average gap (ECE) is ${cal.ece_after_temperature.value} percentage points (95% CI ${ci(cal.ece_after_temperature)}).` })),
+        el("div", {},
+          el("p", { text: `A higher "Not sure" bar trades one mistake for another. A false "kitchen activity" could hide a skipped breakfast; a missed one could make a normal morning look like "Not heard by 10:00 AM" and prompt a call. Through the shipped day bar, raising the bar from ${Math.round(low.theta * 100)}% to ${Math.round(high.theta * 100)}% cuts false kitchen-activity blocks from ${low.meal_false_alarms_per_day} to ${high.meal_false_alarms_per_day} a day, but misses ${high.meal_sessions_missed} instead of ${low.meal_sessions_missed} of ${low.meal_sessions} meal sessions.` }),
+          el("div", { class: "scroll-x" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", { class: "num", text: "Not-sure bar" }), el("th", { class: "num", text: "Meal sessions missed" }), el("th", { class: "num", text: "False kitchen blocks / day" }))), tb))))));
+  }
+
+  // slices
+  const sl2 = el("tbody");
+  for (const [nd, v] of Object.entries(d.per_node || {})) sl2.append(el("tr", {}, el("td", { text: `Microphone position ${nd.replace("DevNode", "")}` }), el("td", { class: "num" }, pct(v), el("span", { class: "ci", text: ci(v) }))));
+  const home = r.own_kitchen;
+  sl2.append(el("tr", {}, el("td", { text: "Teammates' kitchens (laptop mic)" }), el("td", { class: "num", text: home ? pct(home.macro_f1_present_classes) : "Sunday" })));
+  box.append(section("Who and where it was tested", "slices",
+    el("p", { text: "The public recordings are one person in one home, so we can't test whether Kettle works equally well across ages or sexes. We say so rather than guess. What we can check is different microphones, different activities and, from Sunday, different kitchens." }),
+    el("div", { class: "scroll-x", style: "margin-top:12px" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", { text: "Slice" }), el("th", { class: "num", text: "Macro F1, one mic" }))), sl2))));
 
   // failures
   if (r.failures && r.failures.length) {

@@ -139,3 +139,25 @@ def rehearse() -> None:
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / "rehearsal.json").write_text(json.dumps(out, indent=1, default=float))
     print("rehearsal ok:", {k: v["node_avg"]["value"] for k, v in out["slices"].items()})
+
+
+def score_saved_predictions() -> dict:
+    """Recompute the held-out numbers from results/eval_predictions.jsonl + the public eval labels (no audio,
+    no embeddings): what the reproduce notebook shows."""
+    from kettle.data import load_meta
+    meta = {r["file"][:-4]: r for r in load_meta("eval")}
+    rows = [json.loads(l) for l in open(RESULTS / "eval_predictions.jsonl")]
+    fp = json.loads((RESULTS / "fingerprint.json").read_text())
+    y = np.array([CLASSES.index(meta[r["file"]]["label"]) for r in rows])
+    session = np.array([meta[r["file"]]["session"] for r in rows])
+    node = np.array([r["node"] for r in rows])
+    pn = np.array([CLASSES.index(r["node_avg"]) for r in rows])
+    p0 = np.array([CLASSES.index(r["ch0"]) for r in rows])
+    w = M.class_weights(full_counts("eval"), np.bincount(y, minlength=9))
+    split = "DCASE 2018 Task 5 eval sample (held-out test, run once)"
+    out = {"slices": {}}
+    for name, nodes in (("all", sorted(set(node))), ("known", fp["known"]), ("unknown", fp["unknown"])):
+        if nodes:
+            m = np.isin(node, nodes)
+            out["slices"][name] = {"node_avg": _slice(y[m], pn[m], session[m], w, split), "ch0": _slice(y[m], p0[m], session[m], w, split)}
+    return out

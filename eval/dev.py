@@ -62,14 +62,17 @@ def choose_C(X, y, fold, train_folds, balanced=True) -> float:
     return best_c
 
 
-def cv_logits(X, y, fold, C=None, balanced=True, train_channels=None, nested=True) -> tuple[np.ndarray, dict]:
-    """Out-of-fold logits [n, channels, 9]; C chosen by inner CV per outer fold unless given."""
+def cv_logits(X, y, fold, C=None, balanced=True, train_channels=None, nested=True, C_per_fold=None) -> tuple[np.ndarray, dict]:
+    """Out-of-fold logits [n, channels, 9]; C chosen by inner CV per outer fold unless given (one C, or one per fold)."""
     out = np.zeros((len(y), X.shape[1], len(CLASSES)), np.float32)
     chosen = {}
     for k in FOLDS:
         tr, te = fold != k, fold == k
         Xtr = X[tr] if train_channels is None else X[tr][:, train_channels]
-        c = C if C is not None else (choose_C(Xtr, y[tr], fold[tr], [f for f in FOLDS if f != k], balanced) if nested else 1.0)
+        if C_per_fold:
+            c = float(C_per_fold[k] if k in C_per_fold else C_per_fold[str(k)])
+        else:
+            c = C if C is not None else (choose_C(Xtr, y[tr], fold[tr], [f for f in FOLDS if f != k], balanced) if nested else 1.0)
         chosen[k] = c
         h = fit_head(Xtr, y[tr], c, balanced)
         out[te] = head_logits(h, X[te])
@@ -179,13 +182,15 @@ def session_level(y, p_probs, session, seg, fold, theta, smooth=True, seed=0) ->
 
 # ---------------------------------------------------------------- the whole dev study
 
-def run(fast: bool = False) -> dict:
-    """Everything reported on dev folds. fast=True skips the slow extras (for the smoke of the harness)."""
+def run(fast: bool = False, Cs: dict | None = None) -> dict:
+    """Everything reported on dev folds. fast=True skips the slow extras (MLP, leave-one-node-out, 5-s chip).
+    Cs = {"ours": {fold: C}, "logmel_lr": {fold: C}} reuses C values already chosen by nested CV (the notebook)."""
+    Cs = Cs or {}
     plan = json.loads((ROOT / "data" / "meta" / "plan.json").read_text())
-    from eval.embed import EMB, done_files
+    from eval import embed
     train_files = {Path(f).stem for f in plan["train_files"]}
     for enc in ("ced-tiny", "logmel"):                 # required caches: score only clips both have
-        train_files &= done_files(EMB / enc / "dev")
+        train_files &= {str(f) for f in embed.load(enc, "dev")["files"]}
     T = table("ced-tiny", "dev", train_files)
     y, fold, session, node, seg = T["y"], T["fold"], T["session"], T["node"], T["seg"]
     X = T["emb"]
@@ -196,9 +201,14 @@ def run(fast: bool = False) -> dict:
                "class_counts_scored": dict(zip(CLASSES, scored.tolist())), "weights": dict(zip(CLASSES, np.round(w, 2).tolist()))}
 
     # 1. ours
-    L, chosen = cv_logits(X, y, fold)
+    L, chosen = cv_logits(X, y, fold, C_per_fold=Cs.get("ours"))
     R["C_per_fold"] = chosen
     temp = model.fit_temperature(L[:, 0], y)
+    # honest calibration: each fold's temperature is fitted on the other three folds' out-of-fold logits
+    P0_cross = np.zeros((len(y), len(CLASSES)))
+    for k in FOLDS:
+        m = fold == k
+        P0_cross[m] = model.softmax(L[m][:, 0], model.fit_temperature(L[~m][:, 0], y[~m]))
     P = softmax(L, temp)
     P_node = P.mean(1)
     P0 = P[:, 0]
@@ -221,11 +231,15 @@ def run(fast: bool = False) -> dict:
                     "coverage_with_gate": round(float((wy * shown).sum() / wy.sum()), 4)}
     R["_nov"] = nov
     # ECE (calibration) on channel 0
-    R["calibration"] = calibration(P0, y, L[:, 0], w)
+    R["calibration"] = calibration(P0_cross, y, L[:, 0], w, session)
+    R["meal_activity"] = meal_metric(y, P0.argmax(1), session, w, split)
+    R["per_node"] = {nd: report(y[node == nd], P0.argmax(1)[node == nd], session[node == nd], w, split)["macro_f1"]
+                     for nd in sorted(set(node))}
 
     # session level, through the shipped timeline rules
     R["session_level"] = {"smoothing_on": session_level(y, P0, session, seg, fold, theta, True),
                           "smoothing_off": session_level(y, P0, session, seg, fold, theta, False)}
+    R["theta_tradeoff"] = theta_tradeoff(y, P0, session, seg, fold)
 
     # 2. baselines (same folds, same weights)
     B = {}
@@ -234,25 +248,37 @@ def run(fast: bool = False) -> dict:
     lm = align(T, lm)
     rms = lm["emb"][:, 0, -1]
     B["loudness_rule"] = report(y, loudness_cv(rms, y, fold, w), session, w, split)
-    Llm, _ = cv_logits(lm["emb"], y, fold, nested=not fast)
+    Llm, c_lm = cv_logits(lm["emb"], y, fold, C_per_fold=Cs.get("logmel_lr"))
     B["logmel_lr"] = report(y, Llm[:, 0].argmax(-1), session, w, split)
     B["ced_tiny_zeroshot"] = report(y, audioset_map_predict(T["scores"][:, 0], NAMES), session, w, split)
     for enc in ("ast", "ced-small", "clap"):
+        key = enc.replace("-", "_")
         try:
             E = align(T, table(enc, "dev", train_files))
         except (FileNotFoundError, KeyError, ValueError) as e:
-            B[f"{enc.replace('-', '_')}_probe"] = {"missing": f"embeddings not cached for every clip ({type(e).__name__})"}
+            for name in (f"{key}_probe", f"{key}_zeroshot"):           # fall back to committed predictions
+                sp = stored_probe(name, T["files"])
+                if sp is not None:
+                    B[name] = {**report(y, sp, session, w, split), "from": "committed out-of-fold predictions"}
+            if f"{key}_probe" not in B:
+                B[f"{key}_probe"] = {"missing": f"embeddings not cached for every clip ({type(e).__name__})"}
             continue
         Le, _ = cv_logits(E["emb"], y, fold, nested=not fast)
-        B[f"{enc.replace('-', '_')}_probe"] = report(y, Le[:, 0].argmax(-1), session, w, split)
+        stored[f"{key}_probe"] = Le[:, 0].argmax(-1)
+        B[f"{key}_probe"] = report(y, stored[f"{key}_probe"], session, w, split)
         if enc == "ast":
-            B["ast_zeroshot"] = report(y, audioset_map_predict(E["scores"][:, 0], NAMES), session, w, split)
+            stored["ast_zeroshot"] = audioset_map_predict(E["scores"][:, 0], NAMES)
+            B["ast_zeroshot"] = report(y, stored["ast_zeroshot"], session, w, split)
         if enc == "clap":
-            B["clap_zeroshot"] = report(y, E["scores"][:, 0].argmax(-1), session, w, split)
-    apple = apple_rows(T["files"])
-    if apple is not None:
-        B["apple_zeroshot"] = report(y, apple_map_predict(apple), session, w, split)
+            stored["clap_zeroshot"] = E["scores"][:, 0].argmax(-1)
+            B["clap_zeroshot"] = report(y, stored["clap_zeroshot"], session, w, split)
+    ap = apple_predictions(T["files"])
+    if ap is not None:
+        B["apple_zeroshot"] = report(y, ap, session, w, split)
+    stored = {}
     R["baselines"] = B
+    R["C_per_fold_baselines"] = {"logmel_lr": c_lm}
+    R["_stored_predictions"] = stored
 
     # 3. ablations
     A = {}
@@ -294,25 +320,94 @@ def cv_novelty(X, y, fold, chosen) -> np.ndarray:
     return out
 
 
-def calibration(P, y, L, w, bins=10) -> dict:
+def ece(P, y, bins=10) -> float:
+    """Expected calibration error of the top label: sum over confidence bins of share x |accuracy - confidence|."""
     conf, pred = P.max(1), P.argmax(1)
-    ece, rows = 0.0, []
+    edges = np.linspace(0, 1, bins + 1)
+    out = 0.0
+    for a, b in zip(edges[:-1], edges[1:]):
+        m = (conf > a) & (conf <= b)
+        if m.any():
+            out += m.mean() * abs(float((pred[m] == y[m]).mean()) - float(conf[m].mean()))
+    return out
+
+
+def calibration(P, y, L, w, session, bins=10, n_boot=500) -> dict:
+    """Reliability table (confidence vs observed accuracy of the top label) and ECE with a session-bootstrap CI,
+    before temperature scaling (T = 1) and after (temperature cross-fitted: each fold's T from the other folds)."""
+    conf, pred = P.max(1), P.argmax(1)
+    rows = []
     edges = np.linspace(0, 1, bins + 1)
     for a, b in zip(edges[:-1], edges[1:]):
         m = (conf > a) & (conf <= b)
-        if m.sum() == 0:
-            continue
-        acc, cf = float((pred[m] == y[m]).mean()), float(conf[m].mean())
-        ece += m.mean() * abs(acc - cf)
-        rows.append({"bin": [round(a, 1), round(b, 1)], "n": int(m.sum()), "accuracy": round(acc, 3), "confidence": round(cf, 3)})
-    raw = model.softmax(L, 1.0)
-    ece_raw = 0.0
-    for a, b in zip(edges[:-1], edges[1:]):
-        m = (raw.max(1) > a) & (raw.max(1) <= b)
         if m.sum():
-            ece_raw += m.mean() * abs(float((raw.argmax(1)[m] == y[m]).mean()) - float(raw.max(1)[m].mean()))
-    return {"ece_after_temperature": round(float(ece), 4), "ece_before": round(float(ece_raw), 4), "bins": rows,
-            "note": "unweighted, channel 0, out-of-fold"}
+            rows.append({"bin": [round(a, 1), round(b, 1)], "n": int(m.sum()), "accuracy": round(float((pred[m] == y[m]).mean()), 3),
+                         "confidence": round(float(conf[m].mean()), 3)})
+    raw = model.softmax(L, 1.0)
+    uniq, inv = np.unique(session, return_inverse=True)
+    rng = np.random.default_rng(0)
+    boots_after, boots_before = [], []
+    groups = [np.where(inv == i)[0] for i in range(len(uniq))]
+    for _ in range(n_boot):
+        idx = np.concatenate([groups[i] for i in rng.integers(0, len(uniq), len(uniq))])
+        boots_after.append(ece(P[idx], y[idx], bins))
+        boots_before.append(ece(raw[idx], y[idx], bins))
+    split = "dev folds (out-of-fold, channel 0, unweighted)"
+    return {"ece_after_temperature": num(ece(P, y, bins), split, len(y), len(uniq), np.percentile(boots_after, [2.5, 97.5])),
+            "ece_before": num(ece(raw, y, bins), split, len(y), len(uniq), np.percentile(boots_before, [2.5, 97.5])),
+            "bins": rows, "bins_before": [{"confidence": round(float(raw.max(1)[(raw.max(1) > a) & (raw.max(1) <= b)].mean()), 3),
+                                          "accuracy": round(float((raw.argmax(1) == y)[(raw.max(1) > a) & (raw.max(1) <= b)].mean()), 3),
+                                          "n": int(((raw.max(1) > a) & (raw.max(1) <= b)).sum())}
+                                         for a, b in zip(edges[:-1], edges[1:]) if ((raw.max(1) > a) & (raw.max(1) <= b)).any()],
+            "note": "ECE in percentage points; temperature cross-fitted across folds so the 'after' number isn't fitted on itself"}
+
+
+MEAL_IDX = [CLASSES.index(c) for c in ("cooking", "dishwashing", "eating")]
+
+
+def meal_metric(y, p, session, w, split, n_boot=1000) -> dict:
+    """The caregiver's metric: 'kitchen activity' (cooking, washing up, eating merged) vs everything else, per window.
+    Missed = a meal-activity window called something else; false alarm = another window called meal activity."""
+    ty, py = np.isin(y, MEAL_IDX), np.isin(p, MEAL_IDX)
+    wy = w[y]
+    rec, prec, far = rates_idx(np.arange(len(y)), ty, py, wy)
+    uniq, inv = np.unique(session, return_inverse=True)
+    groups = [np.where(inv == i)[0] for i in range(len(uniq))]
+    rng = np.random.default_rng(0)
+    B = []
+    for _ in range(n_boot):
+        idx = np.concatenate([groups[i] for i in rng.integers(0, len(uniq), len(uniq))])
+        B.append(rates_idx(idx, ty, py, wy))
+    B = np.array(B)
+    ns = len(uniq)
+    return {"what": "kitchen activity = cooking, washing up or eating (merged), per 10-s window, single mic",
+            "caught": num(rec, split, int(ty.sum()), len(set(session[ty])), np.percentile(B[:, 0], [2.5, 97.5])),
+            "right_when_it_says_so": num(prec, split, int(py.sum()), ns, np.percentile(B[:, 1], [2.5, 97.5])),
+            "false_alarm_rate": num(far, split, int((~ty).sum()), ns, np.percentile(B[:, 2], [2.5, 97.5])),
+            "missed": int((ty & ~py).sum()), "false_alarms": int((~ty & py).sum()), "n_meal": int(ty.sum()), "n_other": int((~ty).sum())}
+
+
+def rates_idx(idx, ty, py, wy):
+    """Reweighted recall, precision and false-alarm rate of a binary label on the rows idx."""
+    t, p_, w_ = ty[idx], py[idx], wy[idx]
+    tp = (w_ * (t & p_)).sum()
+    return (tp / max(1e-9, (w_ * t).sum()), tp / max(1e-9, (w_ * p_).sum()), (w_ * (~t & p_)).sum() / max(1e-9, (w_ * ~t).sum()))
+
+
+def theta_tradeoff(y, P0, session, seg, fold) -> list[dict]:
+    """The cost of θ for Meera, through the shipped timeline: as θ rises, how many kitchen-activity sessions are
+    missed and how many false kitchen-activity blocks appear, per 16-hour day of stitched dev audio."""
+    out = []
+    for th in (0.3, 0.4, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9):
+        s = session_level(y, P0, session, seg, fold, th, True)
+        days = s["hours"] / 16
+        meal_missed = sum(s["sessions"][k] - s["caught"][k] for k in MEAL_IDX)
+        meal_total = sum(s["sessions"][k] for k in MEAL_IDX)
+        meal_fa = sum(s["false_alarm_blocks"][k] for k in MEAL_IDX)
+        out.append({"theta": th, "meal_sessions_missed": int(meal_missed), "meal_sessions": int(meal_total),
+                    "meal_false_alarm_blocks": int(meal_fa), "meal_false_alarms_per_day": round(meal_fa / days, 2),
+                    "all_false_alarms_per_hour": s["false_alarms_per_hour"], "session_recall": s["session_recall"], "days": round(days, 2)})
+    return out
 
 
 def loudness_cv(rms_log, y, fold, w) -> np.ndarray:
@@ -376,11 +471,34 @@ def lono(X, y, fold, node, w, C, nov_th=None) -> dict:
             "note": "channel 0, reweighted, fixed C; train folds x 3 nodes -> test fold x held-out node"}
 
 
-def apple_rows(files) -> list[dict] | None:
-    p = ROOT / "results" / "baselines" / "apple_dev.jsonl"
+def apple_predictions(files) -> np.ndarray | None:
+    """Apple zero-shot predictions with the frozen map: from the raw scores if present, else the committed
+    per-activity scores (results/baselines/apple_dev_activity.csv = the same map already applied)."""
+    raw = ROOT / "results" / "baselines" / "apple_dev.jsonl"
+    if raw.exists():
+        a = {json.loads(l)["file"]: json.loads(l) for l in open(raw)}
+        if all(f in a for f in files):
+            return apple_map_predict([a[f] for f in files])
+    csv = ROOT / "results" / "baselines" / "apple_dev_activity.csv"
+    if csv.exists():
+        rows = {l.split(",")[0]: np.array(l.strip().split(",")[1:], float) for l in list(open(csv))[1:]}
+        if all(f in rows for f in files):
+            S = np.stack([rows[f] for f in files])
+            p = S.argmax(1)
+            p[S.max(1) <= 0] = 0
+            return p
+    return None
+
+
+def stored_probe(name: str, files) -> np.ndarray | None:
+    """Out-of-fold predictions of a big-encoder baseline from the committed cache (results/cache/probes_dev.npz)."""
+    p = ROOT / "results" / "cache" / "probes_dev.npz"
     if not p.exists():
         return None
-    a = {json.loads(l)["file"]: json.loads(l) for l in open(p)}
-    if not all(f in a for f in files):
+    z = np.load(p)
+    if name not in z.files:
         return None
-    return [a[f] for f in files]
+    idx = {f: i for i, f in enumerate(z["files"])}
+    if not all(f in idx for f in files):
+        return None
+    return z[name][[idx[f] for f in files]]
