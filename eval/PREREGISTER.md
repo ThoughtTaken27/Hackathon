@@ -1,6 +1,6 @@
 # Pre-registration: the one frozen run on the DCASE 2018 Task 5 evaluation set
 
-Written and committed **before any evaluation-set audio was fetched** (Sat Nov 14 2026, ~10:35 AM CT).
+Written and committed **before any evaluation-set audio was fetched** (Sat Nov 14 2026, 10:29 AM CT).
 The commit that adds this file is the pre-registration; its hash goes in `.overnight/kettle/STATE.md` and in
 `results/eval_run.json`.
 
