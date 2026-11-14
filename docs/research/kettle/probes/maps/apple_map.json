@@ -1,0 +1,17 @@
+{
+  "_frozen": "Written Sat Nov 14 2026 ~10:05 AM CT by the stage-2 session BEFORE any Apple zero-shot score was computed. Do not edit after seeing results; any change must be a new file with a new name and both reported.",
+  "_source_classes": "docs/research/kettle/apple-soundanalysis-classes.txt (303 classes, SNClassifySoundRequest .version1, macOS 27.2.1)",
+  "_rule": "Run Apple's classifier over the clip (default 1.5 s windows). For each Apple class take its mean confidence over windows. Activity score = max over that activity's mapped classes. Predict the activity with the highest score; ties or all-zero -> absence. Classes not listed are ignored. No threshold is tuned.",
+  "_known_gaps": "Apple has no television class, so watching_tv relies on music/applause/crowd classes while speech goes to social_activity; TV with mostly speech will be called social_activity. 'other' (present, no listed activity) is mapped to movement/door/body sounds, a guess.",
+  "map": {
+    "absence": ["silence", "mechanical_fan", "air_conditioner", "rain", "raindrop", "wind", "wind_rustling_leaves", "bird", "bird_chirp_tweet", "bird_vocalization", "traffic_noise", "car_passing_by", "tick_tock", "clock"],
+    "cooking": ["frying_food", "boiling", "chopping_food", "microwave_oven", "blender"],
+    "dishwashing": ["dishes_pots_pans", "sink_filling_washing", "water_tap_faucet", "water", "liquid_splashing", "liquid_sloshing", "glass_clink"],
+    "eating": ["chewing", "biting", "slurp", "cutlery_silverware", "burp"],
+    "other": ["door", "door_slam", "door_sliding", "drawer_open_close", "person_walking", "person_shuffling", "keys_jangling", "zipper", "squeak", "knock", "thump_thud", "cough", "sneeze", "nose_blowing", "breathing", "sigh"],
+    "social_activity": ["speech", "chatter", "babble", "laughter", "giggling", "chuckle_chortle", "belly_laugh", "snicker", "whispering", "shout", "yell", "telephone", "telephone_bell_ringing", "ringtone"],
+    "vacuum_cleaner": ["vacuum_cleaner"],
+    "watching_tv": ["music", "singing", "choir_singing", "applause", "cheering", "crowd", "booing", "orchestra", "piano", "guitar", "acoustic_guitar", "electric_guitar", "bass_guitar", "drum", "drum_kit", "synthesizer", "rapping", "violin_fiddle", "trumpet", "saxophone", "keyboard_musical"],
+    "working": ["typing", "typing_computer_keyboard", "typewriter", "click", "writing", "printer"]
+  }
+}

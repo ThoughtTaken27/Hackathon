@@ -1,0 +1,19 @@
+Probe 6: own-kitchen domain shift (planned only; Sat Nov 14 2026)
+Nothing was recorded by the agent: no unattended microphone use in Parth's home, and AGENTS.md §0.5/§0.6 require the test
+set to be labelled by someone who did not write the code, with consent and no conversation captured.
+
+PLAN (assigned in PRD §17 Lane A; the guide lands in eval/OWN_KITCHEN_GUIDE.md during stage 3 M4)
+- Who: Lane A teammate records and labels; Parth (code author) does not label. Every person audible gives written consent
+  first (template in the guide). No conversation or phone calls; radio/TV only with no identifiable people talking about
+  themselves; nobody else in the home recorded without asking them.
+- Device: the laptop that will run Kettle, built-in mic, on the counter about 1-2 m from the sink and hob, plugged in.
+- What: the same 9 SINS activities where they exist in a real kitchen. Target 8 activities x 5 sessions x ~1 min of
+  continuous activity = ~40 min, which becomes ~240 ten-second windows. Sessions on at least two days or two kitchens
+  (two teammates' homes if possible) so it isn't one session per class. "Social activity" is acted with scripted
+  small talk read from a card by consenting teammates only (no real private conversation), or skipped and reported missing.
+- Labels: a CSV written by the recorder during recording (start, end, activity), refined afterwards by listening;
+  windows that straddle two activities are dropped (rule written in the guide, not decided after scoring).
+- Where the audio lives: on the recorder's laptop in data/private/own_kitchen/ (git-ignored). Only labels and Kettle's
+  predictions are committed. The clips are not shared outside the team.
+- How it's scored: once, with the frozen model, `python -m eval --split own-kitchen`, per class missed and false alarms
+  with N and a session-bootstrap CI. Expect a large drop vs SINS (different mic, room, person): it is the honest worst slice.

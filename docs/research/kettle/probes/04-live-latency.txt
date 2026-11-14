@@ -1,0 +1,36 @@
+Probe 4: live latency, browser mic -> WebSocket -> FastAPI -> CED-tiny -> label on screen (Sat Nov 14 2026, 09:47-09:55 CT)
+Scripts: probe_live_server.py, probe_live_drive.py. Raw: live_h2_w10.json, live_h5_w10.json, live_h2_w5.json.
+Stack: FastAPI 0.162.7 + uvicorn 0.54.0, one inline HTML page, AudioWorklet in an AudioContext({sampleRate:16000}),
+Int16 PCM chunks of 1,600 samples (0.1 s) over ws://127.0.0.1:8765/ws; server keeps a numpy ring buffer, runs CED-tiny
++ a throwaway logistic head (fit on the 304 probe clips: latency test only, not a model we report) every HOP seconds.
+Browser: Playwright 1.65.2 headless Chromium 159 with --use-fake-device-for-media-stream and
+--use-file-for-fake-audio-capture = a 60-s WAV built from real SINS dev clips: 0-20 s absence, 20-40 s vacuum, 40-60 s
+dishwashing. The page records each label with its time since the first audio frame (performance.now()).
+"Sound onset -> label" = time from the start of the new sound in the file to the first label of that activity on screen.
+
+RESULTS
+| Hop | Window | Server inference (median) | Vacuum onset -> label | Dishes onset (after vacuum) -> label | Labels shown | Flicker |
+| 2 s | 10 s | 0.034 s | 2.58 s | 7.55 s | 25 | 1 wrong label at the absence->vacuum edge (dishwashing 0.39) |
+| 5 s | 10 s | 0.035 s | 5.40 s | 10.88 s | 12 | 1 wrong label at the edge (dishwashing at 20.3 s) |
+| 2 s | 5 s  | 0.024 s | 1.75 s | 4.63 s | 30 | 3 wrong labels (other 0.67 at 11.3 s; cooking 0.46/0.51 mid-dishes) |
+(The 5-s window reuses a head fit on 10-s clips; its accuracy is unmeasured here.)
+Secure context: window.isSecureContext = true on http://127.0.0.1 in Chromium, and AudioContext honoured 16 kHz.
+
+READING
+- Compute is not the bottleneck (24-35 ms per window on CPU). Latency is the window: a new sound has to fill enough of it.
+- A loud onset into a quiet room meets the <= 3 s target with hop 2 s even at 10 s (2.6 s). A change from one activity to
+  another does not (7.6 s), because the old sound still fills the window.
+- Smaller windows are faster but flicker. Every edge produced a low-confidence wrong label, which is why the timeline needs
+  a "not sure" threshold and 2-of-3 smoothing.
+
+MIC PERMISSION ON LOCALHOST
+- Chromium: tested above (fake-UI flag grants the prompt; a real Chrome shows the normal prompt on http://localhost).
+- Safari: NOT tested (no unattended way to answer the mic prompt). WebKit treats http://localhost as a potentially
+  trustworthy origin, so getUserMedia should be allowed after the prompt. Stage 3 / a teammate checks it once by hand.
+- Any other host is NOT a secure context: a phone opening http://<laptop-ip>:8000 on the home Wi-Fi cannot use its mic.
+  So the kitchen device is the machine running the server (laptop at localhost); phones can open the caregiver view
+  (no mic needed). Phone-as-kitchen-device needs HTTPS (self-signed cert) and is a Could.
+
+DECISION INPUT: two tiers. A "Sounds like..." chip on the kitchen screen from the last 5 s, every 2 s (fast feedback for
+the demo, measured separately on dev folds in stage 3). The timeline and every reported number use 10-s windows (the
+unit the model is trained and evaluated on), with 2-of-3 smoothing and the "not sure" threshold.

@@ -1,0 +1,4 @@
+{"encoder": "ast", "n_clips": 306, "torch": "2.15.0", "load_s_mps": 3.1, "s_per_clip_mps_batch8": 0.213, "emb_dim": 768, "emb": "saved", "s_single_clip_mps": 0.257, "load_s_cpu": 0.3, "s_per_clip_cpu_batch8": 0.541, "s_single_clip_cpu": 0.523, "peak_rss_mb": 976.0}
+{"encoder": "ced-small", "n_clips": 306, "torch": "2.15.0", "load_s_mps": 2.7, "s_per_clip_mps_batch8": 0.016, "emb_dim": 384, "emb": "saved", "s_single_clip_mps": 0.038, "load_s_cpu": 0.3, "s_per_clip_cpu_batch8": 0.025, "s_single_clip_cpu": 0.029, "peak_rss_mb": 863.0}
+{"encoder": "clap", "n_clips": 306, "torch": "2.15.0", "load_s_mps": 5.1, "s_per_clip_mps_batch8": 0.04, "emb_dim": 512, "emb": "saved", "s_single_clip_mps": 0.192, "load_s_cpu": 2.0, "s_per_clip_cpu_batch8": 0.054, "s_single_clip_cpu": 0.072, "peak_rss_mb": 1044.0}
+done

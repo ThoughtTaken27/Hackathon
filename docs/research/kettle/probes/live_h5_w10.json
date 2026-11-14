@@ -1,0 +1,106 @@
+{
+ "hop_s": 5.0,
+ "window_s": 10.0,
+ "secure_context_localhost": true,
+ "audiocontext_sr": 16000,
+ "n_labels_shown": 12,
+ "server_infer_s_median": 0.035,
+ "sound_onset_to_label_s": {
+  "vacuum_cleaner": 5.4,
+  "dishwashing": 10.88
+ },
+ "timeline": [
+  [
+   10.1,
+   "absence",
+   0.9
+  ],
+  [
+   15.2,
+   "absence",
+   0.81
+  ],
+  [
+   20.3,
+   "dishwashing",
+   0.54
+  ],
+  [
+   25.4,
+   "vacuum_cleaner",
+   0.93
+  ],
+  [
+   30.5,
+   "vacuum_cleaner",
+   1
+  ],
+  [
+   35.6,
+   "vacuum_cleaner",
+   0.99
+  ],
+  [
+   40.7,
+   "vacuum_cleaner",
+   0.97
+  ],
+  [
+   45.8,
+   "vacuum_cleaner",
+   0.75
+  ],
+  [
+   50.9,
+   "dishwashing",
+   0.98
+  ],
+  [
+   56.0,
+   "dishwashing",
+   0.91
+  ],
+  [
+   61.1,
+   "dishwashing",
+   1
+  ],
+  [
+   66.2,
+   "dishwashing",
+   0.96
+  ]
+ ],
+ "privacy": {
+  "files_new_or_changed_in_watched_dirs": 22,
+  "audio_extension_files": [],
+  "audio_magic_bytes_files": [],
+  "python_open_for_write_events": [],
+  "lsof_regular_files_open_for_write": [
+   "$TMPDIR/kettle_audit_33239.jsonl"
+  ],
+  "watched": [
+   "~/Hackathon",
+   "$TMPDIR",
+   "/tmp",
+   "~/Library/Caches"
+  ],
+  "changed_sample": [
+   "~/Hackathon/docs/research/kettle/probes/scores_probe_dev.json",
+   "~/Hackathon/.overnight/kettle/logs/k2-prd-1.jsonl",
+   "$TMPDIR/kettle_audit_33239.jsonl",
+   "/tmp/__KMP_REGISTERED_LIB_33335",
+   "/tmp/__KMP_REGISTERED_LIB_33516",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "~/Library/Caches/com.apple.AppleMediaServices/Metrics/com.apple.AppleMediaServices/metrics.sqlitedb-wal",
+   "~/Library/Caches/com.apple.AppleMediaServices/Engagement/clientData.txt",
+   "~/Library/Caches/com.apple.AppleMediaServices/Engagement/analytics/defaults.json",
+   "~/Library/Caches/com.apple.AppleMediaServices/Engagement/analytics/source/metadata.plist",
+   "~/Library/Caches/com.apple.AppleMediaServices/Engagement/analytics/source/output.jetpack",
+   "~/Library/Caches/at.studio.AsideUpdater/Cache.db-shm",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/227d72974a4f41a4_0"
+  ]
+ }
+}

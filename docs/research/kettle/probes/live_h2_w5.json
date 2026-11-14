@@ -1,0 +1,196 @@
+{
+ "hop_s": 2.0,
+ "window_s": 5.0,
+ "secure_context_localhost": true,
+ "audiocontext_sr": 16000,
+ "n_labels_shown": 30,
+ "server_infer_s_median": 0.024,
+ "sound_onset_to_label_s": {
+  "vacuum_cleaner": 1.75,
+  "dishwashing": 4.63
+ },
+ "timeline": [
+  [
+   5.2,
+   "absence",
+   0.91
+  ],
+  [
+   7.2,
+   "absence",
+   0.9
+  ],
+  [
+   9.3,
+   "absence",
+   0.85
+  ],
+  [
+   11.3,
+   "other",
+   0.67
+  ],
+  [
+   13.4,
+   "absence",
+   0.6
+  ],
+  [
+   15.5,
+   "absence",
+   0.82
+  ],
+  [
+   17.6,
+   "absence",
+   0.81
+  ],
+  [
+   19.7,
+   "absence",
+   0.29
+  ],
+  [
+   21.7,
+   "vacuum_cleaner",
+   0.79
+  ],
+  [
+   23.8,
+   "vacuum_cleaner",
+   0.93
+  ],
+  [
+   25.9,
+   "vacuum_cleaner",
+   0.93
+  ],
+  [
+   28.0,
+   "vacuum_cleaner",
+   0.92
+  ],
+  [
+   30.1,
+   "vacuum_cleaner",
+   0.98
+  ],
+  [
+   32.1,
+   "vacuum_cleaner",
+   0.99
+  ],
+  [
+   34.2,
+   "vacuum_cleaner",
+   0.98
+  ],
+  [
+   36.3,
+   "vacuum_cleaner",
+   0.88
+  ],
+  [
+   38.4,
+   "vacuum_cleaner",
+   0.97
+  ],
+  [
+   40.5,
+   "vacuum_cleaner",
+   0.96
+  ],
+  [
+   42.5,
+   "vacuum_cleaner",
+   0.76
+  ],
+  [
+   44.6,
+   "dishwashing",
+   0.84
+  ],
+  [
+   46.7,
+   "dishwashing",
+   0.89
+  ],
+  [
+   48.8,
+   "dishwashing",
+   1
+  ],
+  [
+   50.9,
+   "dishwashing",
+   0.94
+  ],
+  [
+   52.9,
+   "dishwashing",
+   0.91
+  ],
+  [
+   55.0,
+   "cooking",
+   0.46
+  ],
+  [
+   57.1,
+   "cooking",
+   0.51
+  ],
+  [
+   59.2,
+   "dishwashing",
+   1
+  ],
+  [
+   61.3,
+   "dishwashing",
+   1
+  ],
+  [
+   63.3,
+   "dishwashing",
+   0.98
+  ],
+  [
+   65.4,
+   "absence",
+   0.95
+  ]
+ ],
+ "privacy": {
+  "files_new_or_changed_in_watched_dirs": 55,
+  "audio_extension_files": [],
+  "audio_magic_bytes_files": [],
+  "python_open_for_write_events": [],
+  "lsof_regular_files_open_for_write": [
+   "$TMPDIR/kettle_audit_33656.jsonl"
+  ],
+  "watched": [
+   "~/Hackathon",
+   "$TMPDIR",
+   "/tmp",
+   "~/Library/Caches"
+  ],
+  "changed_sample": [
+   "~/Hackathon/docs/research/kettle/probes/03-apple-baseline.txt",
+   "~/Hackathon/docs/research/kettle/probes/05-nothing-saved.txt",
+   "~/Hackathon/docs/research/kettle/probes/live_h5_w10.json",
+   "~/Hackathon/docs/research/kettle/probes/06-own-kitchen-plan.txt",
+   "~/Hackathon/docs/research/kettle/probes/02-encoders.txt",
+   "~/Hackathon/docs/research/kettle/probes/01-data-access.txt",
+   "~/Hackathon/.overnight/kettle/logs/k2-prd-1.jsonl",
+   "$TMPDIR/kettle_audit_33656.jsonl",
+   "/tmp/__KMP_REGISTERED_LIB_33725",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>",
+   "/tmp/<agent-task-output>"
+  ]
+ }
+}

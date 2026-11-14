@@ -1,0 +1,138 @@
+{
+ "n_clips": 304,
+ "per_class": 33,
+ "results": {
+  "majority (always 'absence', the most common dev class)": 2.2,
+  "apple_soundanalysis_zeroshot": 40.0,
+  "ast_zeroshot_audioset_map": 45.4,
+  "ast_linear_probe_train_f12_test_f3_f4": [
+   80.1,
+   71.5,
+   75.8
+  ],
+  "ced-tiny_zeroshot_audioset_map": 42.1,
+  "ced-tiny_linear_probe_train_f12_test_f3_f4": [
+   82.8,
+   80.4,
+   81.6
+  ],
+  "ced-small_zeroshot_audioset_map": 40.6,
+  "ced-small_linear_probe_train_f12_test_f3_f4": [
+   81.7,
+   80.4,
+   81.1
+  ],
+  "clap_zeroshot_prompts": 48.8,
+  "clap_linear_probe_train_f12_test_f3_f4": [
+   81.7,
+   78.8,
+   80.2
+  ]
+ },
+ "apple_confusion": [
+  [
+   4,
+   0,
+   7,
+   0,
+   2,
+   0,
+   0,
+   21,
+   0
+  ],
+  [
+   11,
+   3,
+   8,
+   0,
+   12,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   3,
+   3,
+   5,
+   2,
+   18,
+   0,
+   1,
+   1,
+   1
+  ],
+  [
+   7,
+   0,
+   7,
+   12,
+   4,
+   0,
+   0,
+   4,
+   0
+  ],
+  [
+   2,
+   0,
+   3,
+   0,
+   16,
+   0,
+   0,
+   11,
+   2
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   2,
+   31,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   33,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   25,
+   0,
+   9,
+   0
+  ],
+  [
+   5,
+   0,
+   1,
+   0,
+   6,
+   0,
+   0,
+   11,
+   11
+  ]
+ ],
+ "probe_test_n": {
+  "3": 79,
+  "4": 76
+ },
+ "probe_train_n": 149
+}

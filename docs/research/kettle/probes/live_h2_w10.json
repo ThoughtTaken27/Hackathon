@@ -1,0 +1,166 @@
+{
+ "hop_s": 2.0,
+ "window_s": 10.0,
+ "secure_context_localhost": true,
+ "audiocontext_sr": 16000,
+ "n_labels_shown": 25,
+ "server_infer_s_median": 0.034,
+ "sound_onset_to_label_s": {
+  "vacuum_cleaner": 2.58,
+  "dishwashing": 7.55
+ },
+ "timeline": [
+  [
+   10.2,
+   "absence",
+   0.81
+  ],
+  [
+   12.2,
+   "absence",
+   0.66
+  ],
+  [
+   14.3,
+   "absence",
+   0.82
+  ],
+  [
+   16.3,
+   "absence",
+   0.86
+  ],
+  [
+   18.4,
+   "absence",
+   0.84
+  ],
+  [
+   20.5,
+   "dishwashing",
+   0.39
+  ],
+  [
+   22.6,
+   "vacuum_cleaner",
+   0.66
+  ],
+  [
+   24.7,
+   "vacuum_cleaner",
+   0.93
+  ],
+  [
+   26.7,
+   "vacuum_cleaner",
+   0.99
+  ],
+  [
+   28.8,
+   "vacuum_cleaner",
+   0.99
+  ],
+  [
+   30.9,
+   "vacuum_cleaner",
+   0.99
+  ],
+  [
+   33.0,
+   "vacuum_cleaner",
+   1
+  ],
+  [
+   35.1,
+   "vacuum_cleaner",
+   1
+  ],
+  [
+   37.1,
+   "vacuum_cleaner",
+   1
+  ],
+  [
+   39.2,
+   "vacuum_cleaner",
+   1
+  ],
+  [
+   41.3,
+   "vacuum_cleaner",
+   0.97
+  ],
+  [
+   43.4,
+   "vacuum_cleaner",
+   0.98
+  ],
+  [
+   45.5,
+   "vacuum_cleaner",
+   0.92
+  ],
+  [
+   47.6,
+   "dishwashing",
+   0.65
+  ],
+  [
+   49.6,
+   "dishwashing",
+   0.99
+  ],
+  [
+   51.7,
+   "dishwashing",
+   0.99
+  ],
+  [
+   53.8,
+   "dishwashing",
+   1
+  ],
+  [
+   55.9,
+   "dishwashing",
+   0.83
+  ],
+  [
+   57.9,
+   "dishwashing",
+   0.82
+  ],
+  [
+   60.0,
+   "dishwashing",
+   0.99
+  ]
+ ],
+ "privacy": {
+  "files_new_or_changed_in_watched_dirs": 10,
+  "audio_extension_files": [],
+  "audio_magic_bytes_files": [],
+  "python_open_for_write_events": [],
+  "lsof_regular_files_open_for_write": [
+   "$TMPDIR/kettle_audit_32556.jsonl"
+  ],
+  "watched": [
+   "~/Hackathon",
+   "$TMPDIR",
+   "/tmp",
+   "~/Library/Caches"
+  ],
+  "changed_sample": [
+   "~/Hackathon/.overnight/kettle/logs/k2-prd-1.jsonl",
+   "$TMPDIR/kettle_audit_32556.jsonl",
+   "$TMPDIR/com.apple.tccd/kTCCServiceMicrophone@2x.png",
+   "/tmp/__KMP_REGISTERED_LIB_32590",
+   "/tmp/<agent-task-output>",
+   "/tmp/cc-socks/33046.sock",
+   "~/Library/Caches/at.studio.AsideUpdater/Cache.db-shm",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/3849c680c8777e71_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/a52a972030932550_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/ab6a8d0068bee3b4_0"
+  ]
+ }
+}

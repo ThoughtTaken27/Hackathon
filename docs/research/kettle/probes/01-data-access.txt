@@ -1,0 +1,46 @@
+Probe 1: SINS / DCASE 2018 Task 5 data access by HTTP range reads (Sat Nov 14 2026, 09:35-09:44 CT)
+Machine: Parth's 8 GB M-series MacBook (8 cores), macOS 27.2.1 (26B131), Python 3.11.18, requests 2.34.2, soundfile 0.14.0
+Script: probe_data.py (this folder). Raw outputs: data_dev.json, data_eval.json. Audio lands in data/raw/sins/ (git-ignored).
+
+HOW IT WORKS
+- Read each remote zip's central directory once with zipfile over a seekable HTTP object (EOCD + one read of the directory),
+  cache name -> [zip URL, local-header offset, compressed size, method] as data/raw/sins/{dev,eval}_zip_index.json.
+- Fetch one clip = ONE range GET of local header + compressed data, inflate in memory, decode WAV, keep channel 0.
+- Dev index (23 zips, 72,984 entries): 35.4 s. Eval index (23 zips, 72,972 entries): built the same way (~35 s).
+
+RATE LIMIT (the real constraint)
+- Zenodo answers x-ratelimit-limit: 133 (requests per 60 s window) for guests. The first unthrottled run with 8 threads
+  failed (truncated / refused responses). The script now spaces request starts >= 0.5 s apart (<= 120/min) and retries
+  with backoff; the final runs had 0 retries.
+- Single-stream bandwidth: 2.6 MB/s and 0.86 MB/s on two 100 MB ranges (38 s and 116 s). Zip member order is NOT
+  session order (DevNode1_ex100_1/2/3 sit at offsets 647.6 M, 686.1 M, 768.7 M), so merging neighbours does not help.
+
+RESULTS
+Dev: 306 clips drawn (balanced, 34 per class, round-robin over sessions; 304 unique after dropping repeats),
+     176 sessions, nodes 1-4 = 91/73/73/69, official folds 1-4 = 81/69/80/76.
+     Wall 155.1 s, 1.97 clips/s (rate-limited), median request latency 4.05 s (queued behind the throttle),
+     681,775 bytes per clip on the wire (4 channels, 16 kHz, 16-bit, deflated).
+Eval: 108 clips (12 per class), 71 sessions, all 7 nodes; 55.0 s, 1.97 clips/s, 681,672 bytes per clip.
+
+ESTIMATES (at the measured 1.97 clips/s)
+- 6,000 clips: ~51 min. 12,000 clips: ~101 min. Whole dev set (72,984): ~10.3 h -> not feasible; subsample.
+- Each fetch returns all 4 channels, so embedding all 4 channels costs no extra download.
+
+EVAL LABELS: PUBLIC
+- Record 1291760 (v1.0.0, CC BY-NC-ND 4.0) has file lists only ("Ground truth will be made available after the challenge").
+- Record 1964758 (v2.0.0, same audio zips, identical sizes) ships meta.zip with labels: meta.txt / evaluation_setup/evaluate.txt
+  ([file][label][session]) and evaluation_setup/map.txt (1.wav -> EvalNode1_ex50_156.wav). Linked from the task page:
+  "Ground truth annotations for the evaluation dataset have also been released" -> https://zenodo.org/record/1964758
+- Eval class counts: absence 21,112 · cooking 4,221 · dishwashing 1,477 · eating 2,100 · other 1,960 · social 3,815 ·
+  vacuum 868 · watching_tv 21,116 · working 16,303 (total 72,972); 10,424-10,425 clips per EvalNode1..7.
+- Audio for eval is range-read from record 1291760's zips (v2's HEAD responses lacked Accept-Ranges; v1 works; same bytes by size).
+
+LEAKAGE CHECKS
+- Dev folds re-verified in code (Sat 09:50 CT): fold k train vs test sessions shared = 0 for k = 1..4 (197/69, 200/66,
+  199/67, 202/64); no session in two test folds (0 of 266); all node copies of a moment stay in one fold (0 of 18,405 moments).
+- Dev vs eval session ids: 129 ids appear in both, but their majority labels agree for only 35 (chance ~ 32.6), so the ids
+  are numbered independently per partition; the README says the partitioning was random with whole activity sessions kept
+  together. Dev and eval are therefore disjoint recordings of the same home and the same person (same-home caveat stands).
+- OPEN: which EvalNode ids are the 3 unknown microphones is not stated in the files we opened. Default assumption
+  EvalNode1-4 = dev nodes, 5-7 unknown; a quick embedding-based node classifier (N=108) was inconclusive. Stage 3 must
+  confirm from the task paper or a mic-fingerprint test before reporting the unknown-mic slice.

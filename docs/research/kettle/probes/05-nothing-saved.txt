@@ -1,0 +1,41 @@
+Probe 5: proving no audio touches disk, on macOS without sudo (Sat Nov 14 2026, 09:47-09:53 CT)
+Scripts: probe_live_server.py (the server under test), probe_live_drive.py (the checker). Raw: live_h2_w10.json, live_h5_w10.json.
+
+WHAT WE CAN USE WITHOUT SUDO (fs_usage, opensnoop and dtruss all need root, and SIP restricts DTrace)
+Four independent checks, all run while real SINS audio streams from headless Chromium's fake mic through the WebSocket:
+ 1. Python audit hook (sys.addaudithook, installed before the server code loads) logs every open() with a write/append/
+    create mode, plus os.rename, shutil.copyfile, tempfile.mkstemp/mkdtemp. It catches every Python-level write, including
+    ones inside torch, transformers, numpy and soundfile's Python wrappers.
+ 2. lsof -p <server pid> every 3 s: regular files the server holds open for writing (catches C-level writes such as
+    libsndfile that bypass Python's open()).
+ 3. Before/after snapshot (size + mtime) of every file under the repo, $TMPDIR, /tmp and ~/Library/Caches (skipping .git,
+    the probe venv, Playwright's browser cache and data/raw, the dataset folder we fill on purpose). Any new or changed file
+    with an audio extension (.wav .flac .mp3 .ogg .webm .m4a .aiff .pcm .raw .npy .npz) is flagged.
+ 4. Magic-byte scan of every new or changed file for RIFF / fLaC / OggS headers (catches audio saved under an odd name).
+
+RESULTS (two 66-s live runs, ~56 s of audio streamed each, 25 and 12 labels shown)
+- Python write-opens by the server: 0 (both runs).
+- lsof regular files open for write: only the audit hook's own log (kettle_audit_<pid>.jsonl, opened by the checker
+  before the hook existed and deleted after the run).
+- New/changed files in the watched folders: 10 (run 1). None has an audio extension or audio magic bytes. All belong to
+  other processes: this agent's own logs, macOS TCC's microphone icon (com.apple.tccd/kTCCServiceMicrophone@2x.png:
+  Chromium asked for the mic), an OpenMP lock file (/tmp/__KMP_REGISTERED_LIB_<pid>, torch's runtime, zero bytes), the
+  Aside browser's caches and a socket.
+- Verdict: PASS on the probe server. The audio never leaves a numpy array in RAM; the 10-s ring buffer is overwritten.
+
+LIMITS (say these to a judge)
+- Not a kernel-level trace. A write through an unusual syscall path that lsof misses between 3-s samples, outside the
+  watched folders, would slip through check 2-4, so the code audit stays part of the proof: stage 3 adds a test that greps
+  kettle/ for open(..., 'w'|'a'|'x'), sf.write, wave.open, np.save, tempfile, pickle.dump and fails if any of them touches
+  an audio buffer.
+- macOS swap: the OS may page RAM (including audio) to the encrypted swapfile. We can't control that; it's encrypted
+  and not readable by apps. Say so.
+- Browser side: Chromium keeps the mic stream in memory; our page never calls MediaRecorder and never creates a Blob of
+  audio. Stage 3's test greps static/ for MediaRecorder, createObjectURL on audio and IndexedDB.
+
+STRONGER OPTIONAL CHECK FOR THE LEAD (needs sudo, ~2 min): in one terminal `python app.py`; in another
+  sudo fs_usage -w -f filesys $(pgrep -f "python app.py") | grep -v -E "/(\.venv|site-packages|huggingface)/" | grep -E "WrData|open .*W"
+Speak and run a tap near the mic for 60 s; expect no write lines to any file except logs/kettle.log (labels only).
+
+STAGE 3 WIRING: `python -m eval.privacy_check` runs checks 1-4 against the real app for 60 s with a recorded sample day as
+the fake mic, writes results/privacy_check.json + .txt, and exits non-zero on any audio-like write.

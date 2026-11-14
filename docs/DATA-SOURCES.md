@@ -39,3 +39,19 @@ Reachability checked from the Claude Code cloud container on **Nov 13, 2026**. C
 | Care Daily (People Power) | https://caredaily.ai | Status sentence + "checked 10 s ago" |
 | Snug | https://apps.apple.com/us/app/snug-daily-safety-check-in/id1122758716 | Older adults' own complaints about check-in burden |
 | DCASE 2018 Task 5 baseline + results | https://github.com/DCASE-REPO/dcase2018_baseline · https://dcase.community/challenge2018/task-monitoring-domestic-activities-results | Published comparison numbers (baseline 83.1, best 88.4 unknown-mic macro F1) |
+
+## Kettle data, models and statistics (stage 2, accessed Sat Nov 14, 2026; probes in `docs/research/kettle/probes/`)
+
+| Source | Use | Licence | Key? | Status Nov 14 | Notes |
+| --- | --- | --- | --- | --- | --- |
+| [SINS / DCASE 2018 Task 5 dev](https://doi.org/10.5281/zenodo.1247102) (Zenodo 1247102) | Train head, dev folds, demo clips | CC BY-NC 4.0 | No | ✅ range reads work | 23 zips, 46 GB; 72,984 clips, 4 nodes × 4 ch; Zenodo caps guests at **133 requests/min** (`x-ratelimit-limit`) → ~2 clips/s; index built in 35 s (probe 1) |
+| [SINS / DCASE 2018 Task 5 eval audio](https://zenodo.org/records/1291760) (v1.0.0) | One frozen test run | CC BY-NC-ND 4.0 | No | ✅ range reads work | Same audio zips as v2; never commit (ND) |
+| [DCASE 2018 Task 5 eval labels](https://zenodo.org/records/1964758) (v2.0.0) | Eval ground truth | CC BY-NC-ND 4.0 | No | ✅ | `meta.txt` + `evaluation_setup/map.txt` (1.wav → EvalNode1_ex50_156.wav); 7 nodes, 72,972 clips. Which nodes are the 3 unseen arrays is not stated: verify |
+| [DCASE 2018 Task 5 results](https://dcase.community/challenge2018/task-monitoring-domestic-activities-results) | Published comparison | page | No | ✅ | Baseline 83.1, best 88.4 macro F1 (unknown mic) |
+| [CED-tiny](https://huggingface.co/mispeech/ced-tiny) (rev `ace276d2…`) | Encoder + AudioSet evidence | Apache-2.0 | No | ✅ | 21 MB weights; 0.014 s per 10-s window on CPU (probe 2) |
+| [CED-small](https://huggingface.co/mispeech/ced-small) | Ablation | Apache-2.0 | No | ✅ | |
+| [AST AudioSet](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593) | Ablation, zero-shot baseline | BSD-3-Clause | No | ✅ | 0.52 s/window CPU |
+| [LAION CLAP htsat-unfused](https://huggingface.co/laion/clap-htsat-unfused) | Zero-shot baseline | Apache-2.0 | No | ✅ | |
+| Apple SoundAnalysis `.version1` (macOS 27.2.1) | Zero-shot baseline | Apple SDK | No | ✅ | 303 classes; 0.08 s/clip; frozen map `probes/maps/apple_map.json` |
+| [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans) | Problem statistic | US gov | — | ✅ opened | Quote: "Of older adults 65 and older living in the community, 59% lived with their spouse/partner in 2023. About 28% lived alone." |
+| Unverified, do not quote yet | — | — | — | ⚠️ | ACL PDF count (16.2 M living alone); AARP/NAC long-distance caregiver share; Alzheimer's Association dementia living-alone share; Pew 26% (2025 short read): seen in snippets only |

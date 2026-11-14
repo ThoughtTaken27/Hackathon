@@ -1,0 +1,15 @@
+{
+  "_frozen": "Written Sat Nov 14 2026 ~10:10 AM CT BEFORE any CLAP zero-shot score was computed. One prompt per activity, fixed template, no prompt tuning. Do not edit after seeing results.",
+  "_rule": "Cosine similarity between the clip's CLAP audio embedding and each prompt's text embedding; predict the most similar activity.",
+  "prompts": {
+    "absence": "the sound of an empty, quiet room",
+    "cooking": "the sound of someone cooking food in a kitchen",
+    "dishwashing": "the sound of someone washing dishes",
+    "eating": "the sound of someone eating a meal with cutlery",
+    "other": "the sound of a person moving around a room",
+    "social_activity": "the sound of people having a conversation",
+    "vacuum_cleaner": "the sound of a vacuum cleaner",
+    "watching_tv": "the sound of a television playing",
+    "working": "the sound of someone typing on a computer keyboard"
+  }
+}

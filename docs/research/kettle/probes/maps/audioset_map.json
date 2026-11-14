@@ -1,0 +1,16 @@
+{
+  "_frozen": "Written Sat Nov 14 2026 ~10:10 AM CT BEFORE any AudioSet-label zero-shot score was computed (AST and CED share the 527 AudioSet labels). Do not edit after seeing results.",
+  "_rule": "Take the model's 527 sigmoid scores for the clip. Activity score = max over that activity's mapped labels. Predict the highest-scoring activity; ties -> absence. Unlisted labels are ignored. No tuned threshold.",
+  "_known_gaps": "AudioSet has a 'Television' label but TV audio is mostly speech and music; speech goes to social_activity, so TV speech will often be called social. 'other' mapping is a guess (movement and body sounds).",
+  "map": {
+    "absence": ["Silence", "Static", "Mains hum", "Hum", "White noise", "Pink noise", "Noise", "Environmental noise", "Mechanical fan", "Air conditioning", "Inside, small room", "Inside, large room or hall", "Wind", "Rain", "Bird", "Traffic noise, roadway noise", "Tick-tock", "Clock"],
+    "cooking": ["Frying (food)", "Sizzle", "Boiling", "Chopping (food)", "Microwave oven", "Blender", "Stir", "Steam"],
+    "dishwashing": ["Dishes, pots, and pans", "Sink (filling or washing)", "Water tap, faucet", "Water", "Splash, splatter", "Slosh", "Chink, clink", "Clatter", "Gush", "Fill (with liquid)"],
+    "eating": ["Chewing, mastication", "Biting", "Cutlery, silverware", "Burping, eructation", "Crunch"],
+    "other": ["Door", "Sliding door", "Slam", "Cupboard open or close", "Drawer open or close", "Walk, footsteps", "Shuffle", "Keys jangling", "Zipper (clothing)", "Squeak", "Creak", "Knock", "Thump, thud", "Cough", "Sneeze", "Sniff", "Breathing", "Sigh", "Rustle"],
+    "social_activity": ["Conversation", "Chatter", "Hubbub, speech noise, speech babble", "Laughter", "Giggle", "Chuckle, chortle", "Belly laugh", "Snicker", "Whispering", "Shout", "Yell", "Telephone", "Telephone bell ringing", "Ringtone", "Male speech, man speaking", "Female speech, woman speaking", "Speech"],
+    "vacuum_cleaner": ["Vacuum cleaner"],
+    "watching_tv": ["Television", "Radio", "Music", "Narration, monologue", "Background music", "Theme music", "Soundtrack music", "Jingle (music)", "Singing", "Applause", "Cheering", "Crowd", "Speech synthesizer"],
+    "working": ["Typing", "Computer keyboard", "Typewriter", "Clicking", "Writing", "Printer", "Tap"]
+  }
+}

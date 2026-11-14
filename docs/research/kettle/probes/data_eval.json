@@ -1,0 +1,37 @@
+{
+ "split": "eval",
+ "n": 108,
+ "index_build_s": 0.0,
+ "wall_s": 55.0,
+ "per_clip_latency_s_median": 4.04,
+ "throughput_clips_per_s_8_threads": 1.97,
+ "mean_bytes_per_clip": 681672,
+ "channels_in_file": 4,
+ "est_minutes_6k": 50.9,
+ "est_minutes_12k": 101.8,
+ "classes": {
+  "absence": 12,
+  "cooking": 12,
+  "dishwashing": 12,
+  "eating": 12,
+  "other": 12,
+  "social_activity": 12,
+  "vacuum_cleaner": 12,
+  "watching_tv": 12,
+  "working": 12
+ },
+ "sessions": 71,
+ "nodes": {
+  "EvalNode1": 24,
+  "EvalNode3": 14,
+  "EvalNode2": 17,
+  "EvalNode5": 15,
+  "EvalNode7": 15,
+  "EvalNode4": 13,
+  "EvalNode6": 10
+ },
+ "folds": {
+  "null": 108
+ },
+ "retries_by_status": {}
+}

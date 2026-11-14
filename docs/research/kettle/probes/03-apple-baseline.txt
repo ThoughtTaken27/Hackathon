@@ -1,0 +1,26 @@
+Probe 3: Apple SoundAnalysis built-in classifier as the "what an iPhone/Mac already does" baseline (Sat Nov 14 2026, ~10:00 CT)
+Tool: apple_classify.swift (this folder), built with swiftc -O; SNClassifySoundRequest(classifierIdentifier: .version1),
+303 classes (list: ../apple-soundanalysis-classes.txt), macOS 27.2.1 (26B131). SNAudioFileAnalyzer, default window
+(5 windows per 10-s clip). Output per clip: mean confidence of every class over its windows (apple_scores.jsonl, local).
+
+FROZEN MAP: maps/apple_map.json, written before any Apple score was computed. 89 of 303 classes mapped to the 9 activities,
+each Apple class to at most one activity. Rule: activity score = max of its mapped classes' mean confidence; argmax; ties or
+all-zero -> absence. Known gaps written into the file before scoring: no television class (TV relies on music/applause/crowd
+classes while speech goes to social); 'other' is a guess (door/movement/body sounds).
+
+RESULT on the 304 balanced dev probe clips (33-34 per class): macro F1 40.0. Time: 23.97 s wall for 304 files (0.08 s per clip).
+Confusion (rows = true, cols = predicted; order absence, cooking, dishwashing, eating, other, social, vacuum, tv, working):
+ absence    [ 4, 0, 7, 0, 2, 0, 0,21, 0]
+ cooking    [11, 3, 8, 0,12, 0, 0, 0, 0]
+ dishwash   [ 3, 3, 5, 2,18, 0, 1, 1, 1]
+ eating     [ 7, 0, 7,12, 4, 0, 0, 4, 0]
+ other      [ 2, 0, 3, 0,16, 0, 0,11, 2]
+ social     [ 0, 0, 0, 0, 2,31, 0, 0, 0]
+ vacuum     [ 0, 0, 0, 0, 0, 0,33, 0, 0]
+ tv         [ 0, 0, 0, 0, 0,25, 0, 9, 0]
+ working    [ 5, 0, 1, 0, 6, 0, 0,11,11]
+Reading: vacuum (33/33) and conversation (31/33) are easy for Apple; cooking (3/34) and dishwashing (5/34) mostly come out as
+door/drawer sounds ("other"); TV is called conversation 25 of 34 times (no TV class, as predicted); quiet rooms are called TV
+21 of 34 times (music-class confidences on hum). Same pattern as the wow-round anecdote (door 0.25 on a cooking clip).
+This is a fair zero-shot use of Apple's classifier, not Apple's product (Sound Recognition alerts on 15 sounds, not activities).
+Stage 3 runs it on the full dev folds and the frozen eval run with the SAME map file.
