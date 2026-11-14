@@ -46,6 +46,12 @@ Pair this with the other bundled skills:
 | useplanes.com/components/heroes, /sections | Hero and section composition for web pages |
 | ui.spectrumhq.in, 21st.dev, shadcnblocks.com, reactbits.dev | Component ideas; filter hard for taste |
 | evilcharts.com | Chart styling (bars, grids, tooltips) for the results chart |
+| useplanes.com/components | Animated text, headlines, heroes, reasoning traces, command palette: the one "wow" moment |
+| uiarc.dev/components | Dense data blocks, charts, tabular numbers, foundation tokens |
+| aisdkagents.com/ai-components | AI and agent surfaces: answers with citations, tool/step trails, attachments, questions panels |
+| affectui.com/components | Thinking states, text reveals, number tickers, shimmer loaders, toasts, message actions |
+
+These libraries are for patterns and measured values. Rebuild the idea in our own code; never paste their source, and never use paid (Pro) source at all.
 
 Reject purple glows, hover-only tricks, tilt cards on touch, and black halos on light surfaces.
 

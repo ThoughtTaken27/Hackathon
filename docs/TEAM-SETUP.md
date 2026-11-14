@@ -85,6 +85,28 @@ Everything under `.claude/` is shared through git, so all three Claude Code sess
 
 Polish is worth points only on the one demo screen and the first 15 seconds of the video. Use these in P4/P5 (Sunday), after the GATE passes. Never let them hold up the core flow or the metrics table.
 
+### Optional: REA (reverse-engineer-anything)
+
+REA is an open-source (MIT) tool and skill for studying how existing software works. It is not stored in this repo (it is about 190 MB); install it per machine if you need it:
+
+```bash
+npx -y rea-agents@latest setup --client claude_code
+```
+
+It adds a `rea` tool server to your Claude Code and the `/reverse-engineer-anything` skill, then needs a Claude Code restart. Use it only on things we're allowed to examine (public, no login, no paywall) and never to copy code or assets. For "why do people use this and what would we add", use `/product-teardown`.
+
+### Kickoff night (repo owner only)
+
+```bash
+bash .claude/overnight/run.sh check
+```
+
+```bash
+bash .claude/overnight/run.sh
+```
+
+Start it before 11 PM CT in a terminal on a plugged-in laptop and leave the window open. It waits for kickoff, takes the brief, writes `docs/PRD.md`, then builds on the local branch `overnight/build` until morning. It never pushes. Read `docs/MORNING-BRIEF.md` when you wake up.
+
 ## 5. How we work together
 
 - **GitHub Issues are the task board.** One issue per task, with an owner, a contract and a done-check. Agents claim issues with `gh issue edit <n> --add-assignee @me`. No `gh`? Tell your Claude the issue number.

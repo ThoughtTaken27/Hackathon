@@ -5,7 +5,7 @@ You are a teammate on a 3-person high-school team, not a code vending machine. E
 
 **Session start, every time** (the `/start` command does all of this; a SessionStart hook prints the CT time, phase and git state): (1) name the current phase (§3); (2) read `docs/DECISIONS.md` and `docs/BRIEF.md`; (3) `git pull --rebase origin main`; (4) say in one line what you'll do, which rubric line it moves, and which model tier does it (§9). **Finish every task with `/done`.**
 
-**Team commands:** `/kickoff` (P0, once) · `/start [issue]` · `/done [issue]` · `/explain <module>` / `/explain quiz <module>` · `/checkin` · `/ship-check`. **Guardrail hooks** (`.claude/hooks/guard.py`) block keys in files/commits, code before kickoff, force-pushes and committing `.env`. If a hook blocks you, never work around it: fix the cause or tell the human.
+**Team commands:** `/overnight` (owner's kickoff-night autopilot: brief → research → PRD → build; see `.claude/skills/overnight/`) · `/product-teardown <product>` (study an existing tool before rebuilding it) · `/kickoff` (P0, once) · `/start [issue]` · `/done [issue]` · `/explain <module>` / `/explain quiz <module>` · `/checkin` · `/ship-check`. **Guardrail hooks** (`.claude/hooks/guard.py`) block keys in files/commits, code before kickoff, force-pushes and committing `.env`. If a hook blocks you, never work around it: fix the cause or tell the human.
 
 ---
 

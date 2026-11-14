@@ -29,6 +29,8 @@ Team repo for the [Veritas AI International High School Hackathon](https://highs
 | `/explain <module>` · `/explain quiz <module>` | After each change · Q&A drills |
 | `/checkin` | Team check-ins |
 | `/ship-check` | Sun 5 PM CT, before submitting |
+| `/product-teardown <product>` | Before rebuilding an existing tool: why people use it, how it works, what we add |
+| `/overnight` | Kickoff night, repo owner only: brief → research → PRD → overnight build (`bash .claude/overnight/run.sh`) |
 
 ## Start here
 
@@ -54,6 +56,7 @@ CLAUDE.md          Imports AGENTS.md so Claude Code loads it automatically
 .claude/skills/    Team slash commands: /kickoff /start /done /explain /checkin /ship-check,
                    plus build/design skills /agentic-build /ui-polish /component-craft
                    /frontend-design /emil-design-eng /apple-design
+.claude/overnight/ Kickoff-night runner and playbooks (research → PRD → build); local only, never pushes
 .claude/agents/    Haiku-pinned workers: scout (search), builder (routine code), runner (run + report)
 .github/           Issue + PR templates (done-check, explain-back, AI-usage row)
 .env.example       Key names only; copy to .env (git-ignored)
