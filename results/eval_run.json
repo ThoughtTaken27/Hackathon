@@ -1,0 +1,13 @@
+{
+ "attempts": [
+  {
+   "started": "2026-11-14 13:04:02 CST",
+   "commit": "351e929292b81f201608506524272cb2ab9a2ec0",
+   "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
+   "preregister_commit": "0119c57f1d683126813529236faa330fc2150563",
+   "predictions_written": true,
+   "predictions_at": "2026-11-14 13:04:03 CST",
+   "ended": "2026-11-14 13:15:09 CST"
+  }
+ ]
+}
