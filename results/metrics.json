@@ -7233,6 +7233,1073 @@
   },
   "ranking_metric": "macro-averaged F1 on the evaluation set, unknown microphones"
  },
- "dcase_eval": null,
+ "dcase_eval": {
+  "slices": {
+   "all": {
+    "nodes": [
+     "EvalNode1",
+     "EvalNode2",
+     "EvalNode3",
+     "EvalNode4",
+     "EvalNode5",
+     "EvalNode6",
+     "EvalNode7"
+    ],
+    "node_avg": {
+     "value": 85.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 7791,
+     "n_sessions": 91,
+     "ci95": [
+      75.5,
+      88.1
+     ]
+    },
+    "ch0": {
+     "value": 84.1,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+     "n_clips": 7791,
+     "n_sessions": 91,
+     "ci95": [
+      74.4,
+      86.7
+     ]
+    }
+   }
+  },
+  "per_node": {
+   "EvalNode1": {
+    "node_avg": 86.3,
+    "ch0": 85.2,
+    "n_clips": 1113
+   },
+   "EvalNode2": {
+    "node_avg": 86.7,
+    "ch0": 84.4,
+    "n_clips": 1113
+   },
+   "EvalNode3": {
+    "node_avg": 80.5,
+    "ch0": 79.9,
+    "n_clips": 1113
+   },
+   "EvalNode4": {
+    "node_avg": 87.3,
+    "ch0": 85.6,
+    "n_clips": 1113
+   },
+   "EvalNode5": {
+    "node_avg": 86.5,
+    "ch0": 85.6,
+    "n_clips": 1113
+   },
+   "EvalNode6": {
+    "node_avg": 85.0,
+    "ch0": 85.0,
+    "n_clips": 1113
+   },
+   "EvalNode7": {
+    "node_avg": 84.8,
+    "ch0": 83.4,
+    "n_clips": 1113
+   }
+  },
+  "ours_node_avg": {
+   "macro_f1": {
+    "value": 85.3,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91,
+    "ci95": [
+     75.5,
+     88.1
+    ]
+   },
+   "macro_f1_raw": {
+    "value": 85.9,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91
+   },
+   "per_class": [
+    {
+     "class": "absence",
+     "recall": {
+      "value": 97.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1988,
+      "n_sessions": 17,
+      "ci95": [
+       96.9,
+       98.4
+      ]
+     },
+     "precision": {
+      "value": 90.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2181,
+      "n_sessions": 91,
+      "ci95": [
+       63.4,
+       96.9
+      ]
+     },
+     "f1": {
+      "value": 94.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1988,
+      "n_sessions": 17,
+      "ci95": [
+       76.8,
+       97.5
+      ]
+     },
+     "missed": 41,
+     "false_alarms": 234,
+     "support": 1988,
+     "precision_raw": 89.3
+    },
+    {
+     "class": "cooking",
+     "recall": {
+      "value": 89.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 483,
+      "n_sessions": 6,
+      "ci95": [
+       72.4,
+       95.2
+      ]
+     },
+     "precision": {
+      "value": 94.2,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 467,
+      "n_sessions": 91,
+      "ci95": [
+       74.5,
+       98.4
+      ]
+     },
+     "f1": {
+      "value": 91.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 483,
+      "n_sessions": 6,
+      "ci95": [
+       75.0,
+       95.7
+      ]
+     },
+     "missed": 53,
+     "false_alarms": 37,
+     "support": 483,
+     "precision_raw": 92.1
+    },
+    {
+     "class": "dishwashing",
+     "recall": {
+      "value": 75.7,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       55.8,
+       89.0
+      ]
+     },
+     "precision": {
+      "value": 77.7,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 305,
+      "n_sessions": 91,
+      "ci95": [
+       38.1,
+       92.5
+      ]
+     },
+     "f1": {
+      "value": 76.7,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       47.9,
+       86.0
+      ]
+     },
+     "missed": 85,
+     "false_alarms": 40,
+     "support": 350,
+     "precision_raw": 86.9
+    },
+    {
+     "class": "eating",
+     "recall": {
+      "value": 85.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       75.0,
+       92.4
+      ]
+     },
+     "precision": {
+      "value": 89.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 329,
+      "n_sessions": 91,
+      "ci95": [
+       49.9,
+       96.8
+      ]
+     },
+     "f1": {
+      "value": 87.2,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       62.2,
+       91.9
+      ]
+     },
+     "missed": 51,
+     "false_alarms": 30,
+     "support": 350,
+     "precision_raw": 90.9
+    },
+    {
+     "class": "other",
+     "recall": {
+      "value": 51.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 27,
+      "ci95": [
+       36.2,
+       71.1
+      ]
+     },
+     "precision": {
+      "value": 36.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 382,
+      "n_sessions": 91,
+      "ci95": [
+       21.4,
+       59.8
+      ]
+     },
+     "f1": {
+      "value": 42.7,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 27,
+      "ci95": [
+       28.6,
+       59.3
+      ]
+     },
+     "missed": 170,
+     "false_alarms": 202,
+     "support": 350,
+     "precision_raw": 47.1
+    },
+    {
+     "class": "social_activity",
+     "recall": {
+      "value": 97.7,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 10,
+      "ci95": [
+       92.9,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 88.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 414,
+      "n_sessions": 91,
+      "ci95": [
+       70.4,
+       96.5
+      ]
+     },
+     "f1": {
+      "value": 92.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 10,
+      "ci95": [
+       80.8,
+       97.5
+      ]
+     },
+     "missed": 8,
+     "false_alarms": 72,
+     "support": 350,
+     "precision_raw": 82.6
+    },
+    {
+     "class": "vacuum_cleaner",
+     "recall": {
+      "value": 93.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 4,
+      "ci95": [
+       71.4,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 100.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 326,
+      "n_sessions": 91,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 96.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 4,
+      "ci95": [
+       83.3,
+       100.0
+      ]
+     },
+     "missed": 24,
+     "false_alarms": 0,
+     "support": 350,
+     "precision_raw": 100.0
+    },
+    {
+     "class": "watching_tv",
+     "recall": {
+      "value": 99.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2107,
+      "n_sessions": 4,
+      "ci95": [
+       97.9,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 99.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2087,
+      "n_sessions": 91,
+      "ci95": [
+       98.3,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 99.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2107,
+      "n_sessions": 4,
+      "ci95": [
+       98.7,
+       99.9
+      ]
+     },
+     "missed": 22,
+     "false_alarms": 2,
+     "support": 2107,
+     "precision_raw": 99.9
+    },
+    {
+     "class": "working",
+     "recall": {
+      "value": 80.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1463,
+      "n_sessions": 13,
+      "ci95": [
+       71.7,
+       87.1
+      ]
+     },
+     "precision": {
+      "value": 93.8,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1300,
+      "n_sessions": 91,
+      "ci95": [
+       81.8,
+       97.6
+      ]
+     },
+     "f1": {
+      "value": 86.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1463,
+      "n_sessions": 13,
+      "ci95": [
+       78.4,
+       90.8
+      ]
+     },
+     "missed": 286,
+     "false_alarms": 123,
+     "support": 1463,
+     "precision_raw": 90.5
+    }
+   ],
+   "confusion": [
+    [
+     1947,
+     1,
+     1,
+     0,
+     14,
+     3,
+     0,
+     0,
+     22
+    ],
+    [
+     4,
+     430,
+     26,
+     8,
+     1,
+     0,
+     0,
+     0,
+     14
+    ],
+    [
+     0,
+     18,
+     265,
+     6,
+     50,
+     11,
+     0,
+     0,
+     0
+    ],
+    [
+     15,
+     5,
+     1,
+     299,
+     10,
+     3,
+     0,
+     0,
+     17
+    ],
+    [
+     66,
+     2,
+     4,
+     0,
+     180,
+     32,
+     0,
+     0,
+     66
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     4,
+     342,
+     0,
+     1,
+     3
+    ],
+    [
+     0,
+     2,
+     4,
+     6,
+     10,
+     0,
+     326,
+     1,
+     1
+    ],
+    [
+     0,
+     0,
+     0,
+     1,
+     0,
+     21,
+     0,
+     2085,
+     0
+    ],
+    [
+     149,
+     9,
+     4,
+     9,
+     113,
+     2,
+     0,
+     0,
+     1177
+    ]
+   ]
+  },
+  "ours_ch0": {
+   "macro_f1": {
+    "value": 84.1,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91,
+    "ci95": [
+     74.4,
+     86.7
+    ]
+   },
+   "macro_f1_raw": {
+    "value": 84.9,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91
+   },
+   "per_class": [
+    {
+     "class": "absence",
+     "recall": {
+      "value": 95.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1988,
+      "n_sessions": 17,
+      "ci95": [
+       93.1,
+       95.9
+      ]
+     },
+     "precision": {
+      "value": 91.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2089,
+      "n_sessions": 91,
+      "ci95": [
+       65.3,
+       97.3
+      ]
+     },
+     "f1": {
+      "value": 93.3,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1988,
+      "n_sessions": 17,
+      "ci95": [
+       77.2,
+       96.4
+      ]
+     },
+     "missed": 97,
+     "false_alarms": 198,
+     "support": 1988,
+     "precision_raw": 90.5
+    },
+    {
+     "class": "cooking",
+     "recall": {
+      "value": 86.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 483,
+      "n_sessions": 6,
+      "ci95": [
+       71.4,
+       93.0
+      ]
+     },
+     "precision": {
+      "value": 94.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 452,
+      "n_sessions": 91,
+      "ci95": [
+       74.8,
+       98.6
+      ]
+     },
+     "f1": {
+      "value": 90.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 483,
+      "n_sessions": 6,
+      "ci95": [
+       76.7,
+       94.2
+      ]
+     },
+     "missed": 67,
+     "false_alarms": 36,
+     "support": 483,
+     "precision_raw": 92.0
+    },
+    {
+     "class": "dishwashing",
+     "recall": {
+      "value": 72.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       49.5,
+       84.9
+      ]
+     },
+     "precision": {
+      "value": 78.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 289,
+      "n_sessions": 91,
+      "ci95": [
+       39.2,
+       92.9
+      ]
+     },
+     "f1": {
+      "value": 75.2,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       45.3,
+       85.0
+      ]
+     },
+     "missed": 96,
+     "false_alarms": 35,
+     "support": 350,
+     "precision_raw": 87.9
+    },
+    {
+     "class": "eating",
+     "recall": {
+      "value": 84.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       75.0,
+       91.8
+      ]
+     },
+     "precision": {
+      "value": 84.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 339,
+      "n_sessions": 91,
+      "ci95": [
+       40.9,
+       94.6
+      ]
+     },
+     "f1": {
+      "value": 84.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 5,
+      "ci95": [
+       54.3,
+       90.4
+      ]
+     },
+     "missed": 53,
+     "false_alarms": 42,
+     "support": 350,
+     "precision_raw": 87.6
+    },
+    {
+     "class": "other",
+     "recall": {
+      "value": 55.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 27,
+      "ci95": [
+       40.6,
+       73.5
+      ]
+     },
+     "precision": {
+      "value": 33.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 442,
+      "n_sessions": 91,
+      "ci95": [
+       19.6,
+       53.5
+      ]
+     },
+     "f1": {
+      "value": 41.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 27,
+      "ci95": [
+       27.8,
+       56.8
+      ]
+     },
+     "missed": 156,
+     "false_alarms": 248,
+     "support": 350,
+     "precision_raw": 43.9
+    },
+    {
+     "class": "social_activity",
+     "recall": {
+      "value": 96.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 10,
+      "ci95": [
+       92.5,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 86.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 420,
+      "n_sessions": 91,
+      "ci95": [
+       66.8,
+       96.0
+      ]
+     },
+     "f1": {
+      "value": 91.2,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 10,
+      "ci95": [
+       78.7,
+       96.6
+      ]
+     },
+     "missed": 11,
+     "false_alarms": 81,
+     "support": 350,
+     "precision_raw": 80.7
+    },
+    {
+     "class": "vacuum_cleaner",
+     "recall": {
+      "value": 93.1,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 4,
+      "ci95": [
+       71.4,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 100.0,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 326,
+      "n_sessions": 91,
+      "ci95": [
+       100.0,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 96.4,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 350,
+      "n_sessions": 4,
+      "ci95": [
+       83.3,
+       100.0
+      ]
+     },
+     "missed": 24,
+     "false_alarms": 0,
+     "support": 350,
+     "precision_raw": 100.0
+    },
+    {
+     "class": "watching_tv",
+     "recall": {
+      "value": 98.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2107,
+      "n_sessions": 4,
+      "ci95": [
+       97.6,
+       100.0
+      ]
+     },
+     "precision": {
+      "value": 99.8,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2082,
+      "n_sessions": 91,
+      "ci95": [
+       92.8,
+       100.0
+      ]
+     },
+     "f1": {
+      "value": 99.2,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 2107,
+      "n_sessions": 4,
+      "ci95": [
+       96.3,
+       99.8
+      ]
+     },
+     "missed": 29,
+     "false_alarms": 4,
+     "support": 2107,
+     "precision_raw": 99.8
+    },
+    {
+     "class": "working",
+     "recall": {
+      "value": 80.6,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1463,
+      "n_sessions": 13,
+      "ci95": [
+       72.7,
+       87.1
+      ]
+     },
+     "precision": {
+      "value": 90.9,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1352,
+      "n_sessions": 91,
+      "ci95": [
+       75.2,
+       96.5
+      ]
+     },
+     "f1": {
+      "value": 85.5,
+      "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+      "n_clips": 1463,
+      "n_sessions": 13,
+      "ci95": [
+       76.0,
+       89.8
+      ]
+     },
+     "missed": 284,
+     "false_alarms": 173,
+     "support": 1463,
+     "precision_raw": 87.2
+    }
+   ],
+   "confusion": [
+    [
+     1891,
+     0,
+     0,
+     2,
+     38,
+     5,
+     0,
+     0,
+     52
+    ],
+    [
+     7,
+     416,
+     27,
+     9,
+     1,
+     0,
+     0,
+     0,
+     23
+    ],
+    [
+     0,
+     21,
+     254,
+     10,
+     53,
+     10,
+     0,
+     0,
+     2
+    ],
+    [
+     11,
+     4,
+     1,
+     297,
+     12,
+     3,
+     0,
+     0,
+     22
+    ],
+    [
+     49,
+     1,
+     2,
+     1,
+     194,
+     34,
+     0,
+     0,
+     69
+    ],
+    [
+     0,
+     0,
+     0,
+     0,
+     5,
+     339,
+     0,
+     4,
+     2
+    ],
+    [
+     0,
+     2,
+     1,
+     6,
+     12,
+     0,
+     326,
+     0,
+     3
+    ],
+    [
+     1,
+     0,
+     0,
+     1,
+     0,
+     27,
+     0,
+     2078,
+     0
+    ],
+    [
+     130,
+     8,
+     4,
+     13,
+     127,
+     2,
+     0,
+     0,
+     1179
+    ]
+   ]
+  },
+  "per_class_slice": "all",
+  "not_sure_share_at_theta": 0.142,
+  "n_clips": 7791,
+  "n_moments": 1113,
+  "fingerprint_summary": "NOT confirmed by the mic-fingerprint rule; per-node numbers only",
+  "baselines": {
+   "majority": {
+    "value": 5.0,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91,
+    "ci95": [
+     1.6,
+     7.8
+    ]
+   },
+   "ced_tiny_zeroshot": {
+    "value": 38.5,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91,
+    "ci95": [
+     30.9,
+     47.2
+    ]
+   },
+   "ast_zeroshot": {
+    "missing": "FileNotFoundError"
+   },
+   "apple_zeroshot": {
+    "value": 31.8,
+    "split": "DCASE 2018 Task 5 eval sample (held-out test, run once)",
+    "n_clips": 7791,
+    "n_sessions": 91,
+    "ci95": [
+     25.7,
+     37.9
+    ]
+   }
+  },
+  "baselines_slice": "all",
+  "run": {
+   "started": "2026-11-14 13:04:02 CST",
+   "commit": "351e929292b81f201608506524272cb2ab9a2ec0",
+   "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
+   "preregister_commit": "0119c57f1d683126813529236faa330fc2150563",
+   "predictions_written": true,
+   "predictions_at": "2026-11-14 13:04:03 CST",
+   "ended": "2026-11-14 13:15:09 CST"
+  },
+  "meal_activity": {
+   "what": "kitchen activity = cooking, washing up or eating (merged), per 10-s window, single mic",
+   "caught": {
+    "value": 89.3,
+    "split": "DCASE 2018 Task 5 eval sample (held-out, run once; metric computed after the run from its saved predictions)",
+    "n_clips": 1183,
+    "n_sessions": 16,
+    "ci95": [
+     85.3,
+     94.1
+    ]
+   },
+   "right_when_it_says_so": {
+    "value": 95.2,
+    "split": "DCASE 2018 Task 5 eval sample (held-out, run once; metric computed after the run from its saved predictions)",
+    "n_clips": 1080,
+    "n_sessions": 91,
+    "ci95": [
+     86.6,
+     98.4
+    ]
+   },
+   "false_alarm_rate": {
+    "value": 0.5,
+    "split": "DCASE 2018 Task 5 eval sample (held-out, run once; metric computed after the run from its saved predictions)",
+    "n_clips": 6608,
+    "n_sessions": 91,
+    "ci95": [
+     0.2,
+     1.1
+    ]
+   },
+   "missed": 144,
+   "false_alarms": 41,
+   "n_meal": 1183,
+   "n_other": 6608,
+   "note": "computed after the run from the same frozen predictions; not in the pre-registration"
+  }
+ },
  "own_kitchen": null
 }

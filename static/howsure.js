@@ -93,7 +93,7 @@ function renderResults(box, r) {
   box.append(el("section", { class: "card" }, el("h2", { class: "section-title", text: "Macro F1: the average, over the 9 activities, of how well each is caught without false alarms" }), head));
 
   // the caregiver's metric
-  const ma = d.meal_activity;
+  const ma = (ev && ev.meal_activity) || d.meal_activity;
   if (ma) {
     box.append(section("What Meera's check uses: any kitchen activity (cooking, washing up or eating)", "meal",
       el("div", { class: "stat-row" },
@@ -103,7 +103,7 @@ function renderResults(box, r) {
           el("p", { class: "meta muted", text: `${ma.false_alarms} of ${ma.n_other} · CI ${ci(ma.false_alarm_rate)}` })),
         el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(ma.right_when_it_says_so) }), el("p", { class: "meta", text: "right when it says kitchen activity" }),
           el("p", { class: "meta muted", text: `CI ${ci(ma.right_when_it_says_so)}` }))),
-      el("p", { class: "meta muted", style: "margin-top:8px", text: "Development folds, one microphone, 10-second windows, reweighted to how common each activity really is." })));
+      el("p", { class: "meta muted", style: "margin-top:8px", text: `${ev && ev.meal_activity ? "Held-out test (the same frozen predictions; this metric was computed after the run)" : "Development folds"}, one microphone, 10-second windows, reweighted to how common each activity really is.` })));
   }
 
   // per activity: misses and false alarms

@@ -6,7 +6,49 @@ Track: AI + Health ("manage an ongoing one better"). Built for an adult child ca
 
 > **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't detect falls or call for help.
 
-_Results table, screenshots and limits are filled in from `results/` as the build finishes (see below)._
+<!-- lead:start -->
+Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
+<!-- lead:end -->
+
+## Results (every number from `results/metrics.json`; reproduce with `notebooks/kettle_reproduce.ipynb`)
+<!-- results:start -->
+Held-out numbers: the official DCASE 2018 Task 5 evaluation set, a pre-registered seeded sample (7,791 clips, 1,113 moments × 7 microphones), run once on 2026-11-14 13:04:02 CST with the frozen model (commit 351e929, model fa5de76a), reweighted to the true class counts. Not confirmed by the mic-fingerprint rule; per-node numbers only.
+
+| System | Macro F1 [95% CI] | Data |
+|---|---|---|
+| **Kettle, one mic** (all 7 eval microphones) | **84.1 [74.4, 86.7]** | held-out test, N = 7,791 clips / 91 sessions |
+| Kettle, 4-mic average (all 7 eval microphones) | 85.3 [75.5, 88.1] | held-out test |
+| Apple SoundAnalysis, zero-shot | 31.8 [25.7, 37.9] | held-out test, same clips |
+| CED-tiny, zero-shot | 38.5 [30.9, 47.2] | held-out test, same clips |
+| Always 'Quiet' | 5.0 [1.6, 7.8] | held-out test, same clips |
+| Kettle, one mic | 85.1 [81.1, 87.4] | dev folds, N = 8,920 clips / 257 sessions |
+| Log-mel statistics + logistic regression (no deep model) | 79.7 [75.5, 82.4] | dev folds |
+| AST + same head | 83.0 [79.1, 85.7] | dev folds; seeded subset: 2700 clips (ast_subset.json), Kettle 85.5 on the same clips |
+| Apple SoundAnalysis, zero-shot | 32.4 [29.9, 35.1] | dev folds |
+| AST, zero-shot | 38.9 [35.6, 42.7] | dev folds; seeded subset: 2700 clips (ast_subset.json), Kettle 85.5 on the same clips |
+| Always 'Quiet' | 4.6 [3.5, 5.7] | dev folds |
+| DCASE 2018 baseline (published) | 85.0 known mics · 83.1 unseen mics | full eval set, all dev data |
+| Best DCASE 2018 entry (published) | 90.4 · 88.4 | full eval set |
+
+**For Meera's check (any kitchen activity: cooking, washing up or eating), dev folds:** caught 95.3 [93.8, 96.5]% of 3,000 windows (missed 164); wrongly called kitchen activity on 1.8 [0.7, 3.7]% of 5,920 other windows (106).
+
+| Activity | Caught | Missed | False alarms | N |
+|---|---|---|---|---|
+| Quiet | 95.1 [93.1, 95.9] | 97 | 198 | 1988 |
+| Cooking | 86.1 [71.4, 93.0] | 67 | 36 | 483 |
+| Washing up | 72.6 [49.5, 84.9] | 96 | 35 | 350 |
+| Eating | 84.9 [75.0, 91.8] | 53 | 42 | 350 |
+| Moving about | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
+| Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
+| Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
+| TV | 98.6 [97.6, 100.0] | 29 | 4 | 2107 |
+| Working (typing) | 80.6 [72.7, 87.1] | 284 | 173 | 1463 |
+
+On 260 sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident label to 0.4 [0.1, 2.1]% (vs 56.2 [50.1, 62.1]% without its 'unlike anything it learned' check).
+Through the day bar (2-of-3 smoothing), 66% of 257 activity sessions were caught with 3.23 false-alarm blocks per hour (11.1 without smoothing).
+<!-- results:end -->
+
+Full tables, plots and the failure gallery: [`results/metrics.md`](results/metrics.md), [`results/failures.md`](results/failures.md), and the app's **How sure is Kettle?** page.
 
 ## Run it (no keys, no account, no network)
 

@@ -183,7 +183,22 @@ def markdown(m: dict) -> str:
             s = e["slices"].get(key)
             if s:
                 L.append(f"| {name} | {f(s['node_avg'])} | {f(s['ch0'])} | {PUBLISHED['dcase2018_baseline'].get(pub, '–') if pub else '–'} | {PUBLISHED['best_entry'].get(pub, '–') if pub else '–'} |")
-        L += ["", f"Mic mapping: {e['fingerprint_summary']}", ""]
+        if not e["slices"].get("unknown"):
+            L += ["", f"Published DCASE 2018 Task 5 (full eval set, all dev data): baseline {PUBLISHED['dcase2018_baseline']['eval_known_mic']} known mics / "
+                      f"{PUBLISHED['dcase2018_baseline']['eval_unknown_mic']} unseen mics; best entry {PUBLISHED['best_entry']['eval_known_mic']} / "
+                      f"{PUBLISHED['best_entry']['eval_unknown_mic']}. Our 'all 7 nodes' mixes known and unseen microphones, so it sits between those columns by construction; not strictly comparable."]
+        if e.get("meal_activity"):
+            ma = e["meal_activity"]
+            L += ["", f"**Kitchen activity (caregiver metric), held-out:** caught {f(ma['caught'])}% of {ma['n_meal']} windows (missed {ma['missed']}); "
+                      f"false alarms on {f(ma['false_alarm_rate'])}% of {ma['n_other']} other windows ({ma['false_alarms']}). {ma['note'].capitalize()}."]
+        L += ["", f"Mic mapping: {e['fingerprint_summary']}.", "",
+              "| Eval node | 4-mic average | Single mic | N clips |", "|---|---|---|---|"]
+        for nd, v in e["per_node"].items():
+            L.append(f"| {nd} | {v['node_avg']} | {v['ch0']} | {v['n_clips']} |")
+        B = e.get("baselines", {})
+        L += ["", "Baselines on the same held-out clips (single mic): " + "; ".join(
+            f"{k.replace('_', ' ')} {f(v)}" if "value" in v else f"{k.replace('_', ' ')}: not run ({v.get('missing', '')[:60]})"
+            for k, v in B.items()) + f". Share of windows shown as 'Not sure' at θ: {100 * e['not_sure_share_at_theta']:.1f}%.", ""]
     ma = d["meal_activity"]
     L += ["## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic", "",
           f"Caught {f(ma['caught'])}% of {ma['n_meal']} kitchen-activity windows (missed {ma['missed']}); "
@@ -257,6 +272,39 @@ def failures_md(fs: list[dict]) -> str:
 
 # ---------------------------------------------------------------- the default run
 
+def eval_meal_metric() -> dict:
+    """The caregiver's 'kitchen activity' metric on the held-out run's saved predictions (single mic).
+    Computed after the run from the same frozen predictions (nothing retrained); not in the pre-registration."""
+    from eval.common import full_counts
+    from kettle.data import load_meta
+    meta = {r["file"][:-4]: r for r in load_meta("eval")}
+    rows = [json.loads(l) for l in open(RESULTS / "eval_predictions.jsonl")]
+    y = np.array([CLASSES.index(meta[r["file"]]["label"]) for r in rows])
+    p = np.array([CLASSES.index(r["ch0"]) for r in rows])
+    s = np.array([meta[r["file"]]["session"] for r in rows])
+    w = M.class_weights(full_counts("eval"), np.bincount(y, minlength=9))
+    out = dev.meal_metric(y, p, s, w, "DCASE 2018 Task 5 eval sample (held-out, run once; metric computed after the run from its saved predictions)")
+    out["note"] = "computed after the run from the same frozen predictions; not in the pre-registration"
+    return out
+
+
+def render_only() -> None:
+    """Refresh results/metrics.json's held-out and own-kitchen sections and rebuild metrics.md, without recomputing dev."""
+    m = json.loads((RESULTS / "metrics.json").read_text())
+    for key, name in (("dcase_eval", "dcase_eval.json"), ("own_kitchen", "own_kitchen.json")):
+        p = RESULTS / name
+        m[key] = json.loads(p.read_text()) if p.exists() else None
+    if m.get("dcase_eval") and (RESULTS / "eval_predictions.jsonl").exists():
+        m["dcase_eval"]["meal_activity"] = eval_meal_metric()
+    (RESULTS / "metrics.json").write_text(json.dumps(m, indent=1, default=float))
+    (RESULTS / "metrics.md").write_text(markdown(m))
+    if m.get("dcase_eval"):
+        e = m["dcase_eval"]
+        confusion_png(np.array(e["ours_ch0"]["confusion"]), RESULTS / "confusion_eval.png",
+                      f"Held-out DCASE eval sample, single mic, N = {e['n_clips']} clips (run once)")
+    print("rendered results/metrics.md")
+
+
 def run_default(fast: bool) -> dict:
     return write_results(dev.run(fast=fast))
 
@@ -309,8 +357,11 @@ if __name__ == "__main__":
     ap.add_argument("--split", default="dev", choices=["dev", "dcase-eval", "own-kitchen"])
     ap.add_argument("--rehearse", action="store_true")
     ap.add_argument("--fast", action="store_true")
+    ap.add_argument("--render", action="store_true", help="rebuild metrics.md and plots from the saved metrics.json (no recompute)")
     a = ap.parse_args()
-    if a.rehearse:
+    if a.render:
+        render_only()
+    elif a.rehearse:
         from eval.dcase import rehearse
         rehearse()
     elif a.split == "dcase-eval":

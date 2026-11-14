@@ -1,57 +1,77 @@
-# Write-up and video script (living draft)
+# Kettle
 
-Owner: Storyteller (Lane B). Every number is copied from `results/metrics.json` with its N; `{}` marks a number the build hasn't produced yet. Never type a number by hand. Keep names and school out (Round 1 is blind). Final version: one page (~550 words). Template follows the brief: Problem / What we built / What we added / How it works / Results / What we'd do next / Sources.
+**Track:** AI + Health · **Team:** (names on the submission form; Round 1 is blind)
+*This project is a prototype and is not medical advice. Kettle is not an emergency device.*
 
----
-
-# Kettle: know Dad's day went normally, from kitchen sounds, without watching him
-
-**Track:** AI + Health. *This project is a prototype and is not medical advice.*
+<!-- lead:start -->
+Your Mac already hears a kettle. Asked which of 9 household activities is happening, Apple's built-in sound classifier scores **31.8** macro F1 on the official DCASE 2018 test clips; Kettle, on one microphone, scores **84.1** (95% CI 74.4–86.7, 7,791 clips, run once with a frozen model).
+<!-- lead:end -->
 
 ## The problem
-About 28% of US adults 65 and over who live in the community live alone (US Administration for Community Living, 2023 Profile of Older Americans). For an adult child far away from a parent with early memory loss, "did Dad get up and have breakfast?" has no good answer: calling feels like checking up, cameras feel like spying, and the sensor kits sold for this cost £419 plus £29 a month or $95–119 a month. We coded 418 real reviews and posts about these products: the most painful complaints were the parent feeling watched (17), being made to do something every day (25), and alerts that miss real problems (15) or cry wolf (16). None of the nine products we studied publishes how often it is wrong (that we could find).
-
-## Who it's for
-Meera, 34 (invented persona), lives 300 miles from her father Ravi, 79, who has mild cognitive impairment and lives alone. At 11 AM she opens Kettle on her phone and sees "Listening · last heard 40 s ago. So far today: cooking around 8:15–8:45, washing up around 8:45, TV from about 9:15," and her own check, "kitchen activity by 10:00 AM: met." Ravi agreed to it on the kitchen laptop and can pause it any time; Meera sees when he does.
+About 28% of US adults 65 and over who live in the community live alone (US Administration for Community Living, *2023 Profile of Older Americans*). For an adult child far from a parent with early memory loss, "did Dad get up and have breakfast?" has no good answer: calling feels like checking up, cameras feel like spying, and sensor kits cost £419 plus £29 a month or $95–119 a month. In 418 reviews and posts we coded, the top pains were the parent feeling watched, being made to do something every day, and alerts that miss real problems or cry wolf. None of the nine products we studied publishes how often it's wrong (that we could find).
 
 ## What we built
-A laptop in the kitchen listens in 10-second windows. A pretrained audio encoder (CED-tiny) and a classifier we trained turn each window into one of 9 household activities, with the sounds behind it and a "not sure" state. Audio stays in memory and is never saved or sent; speech becomes the word "Conversation", never a transcript. The caregiver page shows a heartbeat (so silence never looks like a normal day), a day bar, one summary sentence and up to three rules she sets herself. A demo mode plays recorded sample days through the same pipeline with no mic or network.
+Meera, 34 (invented persona), lives 300 miles from her father Ravi, 79. A laptop on his kitchen counter listens in 10-second windows and turns them into a day bar ("cooking around 8:15–8:30 AM, washing up, TV from about 9:30") with the sounds behind each block and a "Not sure" state. Audio stays in memory and is never saved or sent; speech becomes the word "Conversation", never words. Meera sees a heartbeat ("Listening · last heard 40 s ago", or "Not listening since 10:42 AM"), so silence never looks like a normal day, and up to three checks she sets ("Kitchen activity by 10:00 AM": Met / Not yet / Missed / Can't tell). Ravi says yes on his own screen, sees exactly what Meera sees, and can pause it; she sees "Paused by Dad". A sample-day mode and "Try your own sound" run the same model with no microphone.
 
 ## What we added
-Our own question and setting: can one ordinary laptop mic do the job of a sensor kit, and **how often does it miss an activity or raise a false one?** Our own data: recordings from our own kitchens, labelled by a teammate who didn't write the code, as the honest worst case.
+Our own question: can one ordinary laptop microphone do a sensor kit's job, and **how often does it miss an activity or raise a false one**, per activity and per activity session? Our own setting: a distant caregiver of a parent with memory loss, with the parent's consent and pause as product states. Our own data: two teammates' kitchens, recorded with consent and labelled by a teammate who didn't write the code (Sunday; the honest worst case).
 
 ## How it works
-Mic → 16 kHz audio in memory → 10-s window → CED-tiny embedding (192 numbers) → logistic-regression head → activity + confidence → "not sure" below a threshold chosen on development data → 2-of-3 smoothing → day bar → caregiver rules (transparent, not learned). We chose CED-tiny because it matched larger encoders on a quick session-disjoint check while running ~40× faster than AST on a laptop CPU. We rejected an LLM (it can't hear the kitchen without sending audio to a cloud) and a learned "unusual day" model (the public data has no clock times to test it).
+Data: SINS / DCASE 2018 Task 5, one person living alone for a week, 4 microphone arrays; we trained on 8,920 development clips (≤ 1,000 per activity, all sessions, folds and microphones; 9 sessions held out for the sample days). Model: a frozen pretrained audio encoder (CED-tiny, 5.5 M parameters: within a point of CED-small and ahead of AST on our folds, and ~40× faster than AST on a laptop CPU) plus a logistic-regression head we trained. Transparent rules then decide what the screen says: "Not sure" below a confidence threshold θ or when a sound is unlike every activity it learned, 2-of-3 smoothing, "Can't tell" when it wasn't listening. No LLM: it can't hear the kitchen without sending audio to a cloud.
 
 ## Results
-Public data: SINS / DCASE 2018 Task 5, a week-long recording of one person living alone. Model choices used the official session-disjoint development folds only; the official evaluation set was run **once** with the frozen model (commit {hash}).
+<!-- results:start -->
+Held-out numbers: the official DCASE 2018 Task 5 evaluation set, a pre-registered seeded sample (7,791 clips, 1,113 moments × 7 microphones), run once on 2026-11-14 13:04:02 CST with the frozen model (commit 351e929, model fa5de76a), reweighted to the true class counts. Not confirmed by the mic-fingerprint rule; per-node numbers only.
 
-| System | Macro F1 (N=) | Missed / false alarms | Notes |
-| --- | --- | --- | --- |
-| Always "Quiet" (most common class) | {} | | trivial baseline |
-| Apple SoundAnalysis, zero-shot | {} | | what a Mac already ships |
-| CLAP, zero-shot | {} | | |
-| DCASE 2018 baseline (published) | 83.1 | — | unseen mics, full eval set |
-| DCASE 2018 best (published) | 88.4 | — | unseen mics, full eval set |
-| **Kettle** | {} | {} | unseen mics, seeded eval sample, 95% CI by session |
+| System | Macro F1 [95% CI] | Data |
+|---|---|---|
+| **Kettle, one mic** (all 7 eval microphones) | **84.1 [74.4, 86.7]** | held-out test, N = 7,791 clips / 91 sessions |
+| Kettle, 4-mic average (all 7 eval microphones) | 85.3 [75.5, 88.1] | held-out test |
+| Apple SoundAnalysis, zero-shot | 31.8 [25.7, 37.9] | held-out test, same clips |
+| CED-tiny, zero-shot | 38.5 [30.9, 47.2] | held-out test, same clips |
+| Always 'Quiet' | 5.0 [1.6, 7.8] | held-out test, same clips |
+| Kettle, one mic | 85.1 [81.1, 87.4] | dev folds, N = 8,920 clips / 257 sessions |
+| Log-mel statistics + logistic regression (no deep model) | 79.7 [75.5, 82.4] | dev folds |
+| AST + same head | 83.0 [79.1, 85.7] | dev folds; seeded subset: 2700 clips (ast_subset.json), Kettle 85.5 on the same clips |
+| Apple SoundAnalysis, zero-shot | 32.4 [29.9, 35.1] | dev folds |
+| AST, zero-shot | 38.9 [35.6, 42.7] | dev folds; seeded subset: 2700 clips (ast_subset.json), Kettle 85.5 on the same clips |
+| Always 'Quiet' | 4.6 [3.5, 5.7] | dev folds |
+| DCASE 2018 baseline (published) | 85.0 known mics · 83.1 unseen mics | full eval set, all dev data |
+| Best DCASE 2018 entry (published) | 90.4 · 88.4 | full eval set |
 
-**Where it does worst** (worst first): {our own kitchens}, {"Moving about"}, {cooking vs eating}.
+**For Meera's check (any kitchen activity: cooking, washing up or eating), dev folds:** caught 95.3 [93.8, 96.5]% of 3,000 windows (missed 164); wrongly called kitchen activity on 1.8 [0.7, 3.7]% of 5,920 other windows (106).
 
-**Real failures:** 1. {} 2. {} 3. {}
+| Activity | Caught | Missed | False alarms | N |
+|---|---|---|---|---|
+| Quiet | 95.1 [93.1, 95.9] | 97 | 198 | 1988 |
+| Cooking | 86.1 [71.4, 93.0] | 67 | 36 | 483 |
+| Washing up | 72.6 [49.5, 84.9] | 96 | 35 | 350 |
+| Eating | 84.9 [75.0, 91.8] | 53 | 42 | 350 |
+| Moving about | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
+| Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
+| Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
+| TV | 98.6 [97.6, 100.0] | 29 | 4 | 2107 |
+| Working (typing) | 80.6 [72.7, 87.1] | 284 | 173 | 1463 |
 
-## Limits
-One home and one person in the public data, so we can't show fairness across ages or households; our kitchens are the only other homes. Eating is hard to hear. Our evaluation uses a seeded subsample of the official test set, so it is close to, not exactly, a leaderboard number. Kettle is not an emergency device: it doesn't detect falls and doesn't call anyone.
+On 260 sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident label to 0.4 [0.1, 2.1]% (vs 56.2 [50.1, 62.1]% without its 'unlike anything it learned' check).
+Through the day bar (2-of-3 smoothing), 66% of 257 activity sessions were caught with 3.23 false-alarm blocks per hour (11.1 without smoothing).
+<!-- results:end -->
+
+<!-- tradeoff:start -->
+Below θ = 0.66 confidence Kettle says "Not sure" (chosen on dev folds so shown labels are right 90% of the time; 85% of windows get a label). A false "kitchen activity" could hide a skipped breakfast; a missed one costs Meera an unnecessary call. We lean toward fewer false ones: through the day bar, θ = 0.65 gives 12.91 false kitchen-activity blocks per 16-hour day and misses 17 of 33 meal sessions, versus 23.89 and 12 at θ = 0.30 (dev folds).
+<!-- tradeoff:end -->
+
+**Where it fails** (real dev-fold mistakes, `results/failures.md`):
+<!-- failures:start -->
+1. **Cooking heard as washing up** (63 dev clips; e.g. `DevNode2_ex46_83`: Washing up 0.98, Cooking 0.01; it heard door, dishes, drawer open or close). Rinsing and running water during cooking sounds like washing up.
+2. **TV heard as conversation** (12 dev clips; e.g. `DevNode4_ex229_102`: Conversation 0.88, TV 0.11; it heard speech, silence, television). TV audio is mostly people talking; the model can't always tell a broadcast from a conversation.
+3. **Moving about heard as quiet** (91 dev clips; e.g. `DevNode1_ex87_13`: Quiet 0.93, Moving about 0.05; it heard silence, rustle, tick-tock). 'Moving about' is often a few soft footsteps or a door in an otherwise quiet room.
+<!-- failures:end -->
+
+**What we can't test:** the public recordings are one person in one home, so age and sex can't be checked; our kitchens are the only other homes (exploratory, small N). Every development number was also used to choose the model, so it's optimistic; the held-out run is the unbiased one, and it's a seeded sample of the official test set, not the full leaderboard set.
 
 ## What we'd do next
-Five consenting households for two weeks, scored against a written diary; fine-tuning with microphone augmentation for new rooms; an old phone as the kitchen device; secure access from outside the house.
+Five consenting households for two weeks, scored against a written diary; fine-tuning with microphone augmentation for new rooms; an old phone as the kitchen device; private access from outside the home.
 
 ## Sources
-SINS / DCASE 2018 Task 5 (KU Leuven, CC BY-NC 4.0 / CC BY-NC-ND 4.0); CED-tiny (Apache-2.0); AST (BSD-3); LAION CLAP (Apache-2.0); Apple SoundAnalysis; ACL 2023 Profile of Older Americans; products studied: Howz, Canary Care, havn, Assistiv, Apple Sound Recognition, Alexa Together, StackCare, Care Daily, Snug. AI tools: Claude Code, REA, Aside (see `docs/AI-USAGE-LOG.md`).
-
----
-
-## 2-minute video script
-See `docs/PRD.md` §18 (the source of truth); Lane B turns it into `docs/video/SHOTLIST.md`.
-
-## The sentence a judge repeats
-"Of the nine 'is Mum OK' products they checked, it's the only one that says how often it's wrong: missed activities and false alarms, per 10-second window and per activity session, on a public week-long recording of someone living alone, against Apple's own sound classifier."
+SINS / DCASE 2018 Task 5 dev (CC BY-NC 4.0, doi:10.5281/zenodo.1247102) and eval (CC BY-NC-ND 4.0, Zenodo 1291760 / 1964758), KU Leuven; DCASE 2018 Task 5 results (dcase.community); CED-tiny and CED-small (Xiaomi, Apache-2.0); AST (MIT, BSD-3); Apple SoundAnalysis; ESC-50 (CC BY-NC 3.0); ACL 2023 Profile of Older Americans; products studied: Howz, Canary Care, havn, Assistiv, Apple Sound Recognition, Alexa Together, StackCare, Care Daily, Snug. Libraries: PyTorch, transformers, scikit-learn, FastAPI, Playwright. AI tools: Claude Code (code and research), REA (product teardowns), Aside (research); see `docs/AI-USAGE-LOG.md`. Reproduce every number: `notebooks/kettle_reproduce.ipynb`.

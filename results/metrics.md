@@ -2,6 +2,32 @@
 
 Primary metric: macro F1 over the 9 SINS activities, 10-s windows. Dev numbers: **dev folds (also used for selection)**, N = 8920 clips from 257 sessions, prevalence-reweighted, 95% session-bootstrap CI.
 
+## Held-out test: official DCASE 2018 Task 5 eval sample, run once
+
+Run 2026-11-14 13:04:02 CST · commit 351e929292 · head fa5de76a7970 · N = 7791 clips, 1113 moments
+
+| Slice | Ours, 4-mic node average | Ours, single mic (ch 0) | DCASE baseline | Best entry |
+|---|---|---|---|---|
+| All 7 nodes | 85.3 [75.5, 88.1] | 84.1 [74.4, 86.7] | – | – |
+
+Published DCASE 2018 Task 5 (full eval set, all dev data): baseline 85.0 known mics / 83.1 unseen mics; best entry 90.4 / 88.4. Our 'all 7 nodes' mixes known and unseen microphones, so it sits between those columns by construction; not strictly comparable.
+
+**Kitchen activity (caregiver metric), held-out:** caught 89.3 [85.3, 94.1]% of 1183 windows (missed 144); false alarms on 0.5 [0.2, 1.1]% of 6608 other windows (41). Computed after the run from the same frozen predictions; not in the pre-registration.
+
+Mic mapping: NOT confirmed by the mic-fingerprint rule; per-node numbers only.
+
+| Eval node | 4-mic average | Single mic | N clips |
+|---|---|---|---|
+| EvalNode1 | 86.3 | 85.2 | 1113 |
+| EvalNode2 | 86.7 | 84.4 | 1113 |
+| EvalNode3 | 80.5 | 79.9 | 1113 |
+| EvalNode4 | 87.3 | 85.6 | 1113 |
+| EvalNode5 | 86.5 | 85.6 | 1113 |
+| EvalNode6 | 85.0 | 85.0 | 1113 |
+| EvalNode7 | 84.8 | 83.4 | 1113 |
+
+Baselines on the same held-out clips (single mic): majority 5.0 [1.6, 7.8]; ced tiny zeroshot 38.5 [30.9, 47.2]; ast zeroshot: not run (FileNotFoundError); apple zeroshot 31.8 [25.7, 37.9]. Share of windows shown as 'Not sure' at θ: 14.2%.
+
 ## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic
 
 Caught 95.3 [93.8, 96.5]% of 3000 kitchen-activity windows (missed 164); right 87.8 [75.2, 95.7]% of the time it said kitchen activity; false alarms on 1.8 [0.7, 3.7]% of 5920 other windows (106 windows). Reweighted to true prevalence; session-bootstrap 95% CI.
@@ -85,7 +111,7 @@ With 2-of-3 smoothing: 66.5% of 257 activity sessions caught, 3.23 false-alarm b
 - train ch0 only: 85.3
 - no class balancing: 85.1
 - mlp head: 84.7
-- leave one mic node out: held-out node mean 82.7 vs same nodes 85.2 ({np.str_('DevNode1'): 81.5, np.str_('DevNode2'): 82.7, np.str_('DevNode3'): 85.7, np.str_('DevNode4'): 81.0})
+- leave one mic node out: held-out node mean 82.7 vs same nodes 85.2 ({'DevNode1': 81.5, 'DevNode2': 82.7, 'DevNode3': 85.7, 'DevNode4': 81.0})
 - chip 5s window: 80.8
 
 ## Published DCASE 2018 Task 5 numbers
