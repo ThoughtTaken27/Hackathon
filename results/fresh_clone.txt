@@ -1,3 +1,10 @@
+Fresh-clone test on the final code (Sat Nov 14 2026, 17:08-17:10 CT, commit a8da413, macOS, Python 3.11, local pip cache warm)
+git clone <local repo> -> checkout kettle -> python3.11 -m venv .venv -> pip install -r requirements.txt : 68 s
+HF_HUB_OFFLINE=1 python smoke_test.py (empty environment: no API keys) : PASS, 29.0 s (first, cold run)
+python app.py (KETTLE_PORT=8799, offline) -> POST /api/demo/usual/instant : 12 blocks; checks "Met at 8:05 AM (cooking, how sure: medium)",
+  "TV for 1 h 7 min so far today"; GET / contains "Prototype, not medical advice": yes; tracebacks in the app log: 0
+Total wall time: 116 s. No API keys, no account, no network after pip install.
+
 Fresh-clone test, re-run on the final code (Sat Nov 14 2026, 16:35-16:38 CT, macOS, Python 3.11, local pip cache warm)
 git clone <local repo> -> checkout kettle (23b7905) -> python3.11 -m venv .venv -> pip install -r requirements.txt : 71 s
 HF_HUB_OFFLINE=1 python smoke_test.py (empty environment: no API keys) : PASS, 25.0 s (first, cold run)
