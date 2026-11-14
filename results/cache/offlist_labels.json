@@ -1,0 +1,1302 @@
+[
+{
+"file": "esc50_dog_1-100032-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-110389-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-30226-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-30344-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-32318-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-59513-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-85362-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_1-97392-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_2-114280-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_dog_2-114587-A-0",
+"source": "esc50",
+"category": "dog"
+},
+{
+"file": "esc50_rooster_1-26806-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-27724-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-34119-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-34119-B-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-39923-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-40730-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-43382-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_1-44831-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_2-100786-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rooster_2-65750-A-1",
+"source": "esc50",
+"category": "rooster"
+},
+{
+"file": "esc50_rain_1-17367-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-21189-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-26222-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-29561-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-50060-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-54958-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-56311-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_1-63871-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_2-101676-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_rain_2-117625-A-10",
+"source": "esc50",
+"category": "rain"
+},
+{
+"file": "esc50_sea_waves_1-28135-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-28135-B-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-39901-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-39901-B-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-43760-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-61252-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-91359-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_1-91359-B-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_2-102852-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_sea_waves_2-124662-A-11",
+"source": "esc50",
+"category": "sea_waves"
+},
+{
+"file": "esc50_crying_baby_1-187207-A-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-211527-A-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-211527-B-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-211527-C-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-22694-A-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-22694-B-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-60997-A-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_1-60997-B-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_2-107351-A-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_crying_baby_2-107351-B-20",
+"source": "esc50",
+"category": "crying_baby"
+},
+{
+"file": "esc50_clapping_1-104089-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-104089-B-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-105224-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-110537-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-115920-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-115920-B-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-115921-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_1-94036-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_2-25292-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clapping_2-25293-A-22",
+"source": "esc50",
+"category": "clapping"
+},
+{
+"file": "esc50_clock_alarm_1-13613-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-14262-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-34853-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-67033-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-72195-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-72195-B-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-74517-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_1-96890-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_2-102435-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_alarm_2-104475-A-37",
+"source": "esc50",
+"category": "clock_alarm"
+},
+{
+"file": "esc50_clock_tick_1-21934-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-21935-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-35687-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-42139-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-48413-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-57163-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-62849-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_1-62850-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_2-119748-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_clock_tick_2-127108-A-38",
+"source": "esc50",
+"category": "clock_tick"
+},
+{
+"file": "esc50_glass_breaking_1-20133-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-84536-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-84704-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-84705-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-85168-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-85184-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-88807-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_1-977-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_2-106881-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_glass_breaking_2-112213-A-39",
+"source": "esc50",
+"category": "glass_breaking"
+},
+{
+"file": "esc50_helicopter_1-172649-A-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-172649-B-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-172649-C-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-172649-D-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-172649-E-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-172649-F-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-181071-A-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_1-181071-B-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_2-188822-A-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_helicopter_2-188822-B-40",
+"source": "esc50",
+"category": "helicopter"
+},
+{
+"file": "esc50_chainsaw_1-116765-A-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-19898-A-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-19898-B-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-19898-C-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-47250-A-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-47250-B-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-64398-A-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_1-64398-B-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_2-50667-A-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_chainsaw_2-50667-B-41",
+"source": "esc50",
+"category": "chainsaw"
+},
+{
+"file": "esc50_siren_1-31482-A-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-31482-B-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-54084-A-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-76831-A-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-76831-B-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-76831-C-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-76831-D-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_1-76831-E-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_2-43802-A-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_siren_2-43806-A-42",
+"source": "esc50",
+"category": "siren"
+},
+{
+"file": "esc50_car_horn_1-17124-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-19026-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-24074-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-24076-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-254507-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-26176-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-26177-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_1-28808-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_2-100648-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_car_horn_2-125520-A-43",
+"source": "esc50",
+"category": "car_horn"
+},
+{
+"file": "esc50_church_bells_1-13571-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-13572-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-21421-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-22804-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-40154-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-48298-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-54747-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_1-56907-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_2-56926-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_church_bells_2-57191-A-46",
+"source": "esc50",
+"category": "church_bells"
+},
+{
+"file": "esc50_airplane_1-11687-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-24796-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-36929-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-43807-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-43807-B-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-43807-C-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-43807-D-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_1-53467-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_2-105270-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_airplane_2-106849-A-47",
+"source": "esc50",
+"category": "airplane"
+},
+{
+"file": "esc50_fireworks_1-115545-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-115545-B-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-115545-C-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-115546-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-160563-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-160563-B-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-25777-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_1-25781-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_2-117615-A-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_fireworks_2-117615-B-48",
+"source": "esc50",
+"category": "fireworks"
+},
+{
+"file": "esc50_cat_1-34094-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-34094-B-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-47819-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-47819-B-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-47819-C-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-56380-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-56380-B-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_1-79113-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_2-110010-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_cat_2-110011-A-5",
+"source": "esc50",
+"category": "cat"
+},
+{
+"file": "esc50_chirping_birds_1-100038-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-34495-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-34497-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-38559-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-38560-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-46040-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-54918-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_1-54918-B-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_2-108760-A-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_chirping_birds_2-108760-B-14",
+"source": "esc50",
+"category": "chirping_birds"
+},
+{
+"file": "esc50_thunderstorm_1-101296-A-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-101296-B-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-115521-A-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-23222-A-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-23222-B-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-24524-A-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-24524-B-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_1-24524-C-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_2-104105-A-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_thunderstorm_2-104105-B-19",
+"source": "esc50",
+"category": "thunderstorm"
+},
+{
+"file": "esc50_washing_machine_1-21896-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-23996-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-23996-B-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-27165-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-27166-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-32373-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-32373-B-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_1-49098-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_2-102567-A-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "esc50_washing_machine_2-102567-B-35",
+"source": "esc50",
+"category": "washing_machine"
+},
+{
+"file": "gen_white_00",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_00",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_00",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_01",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_01",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_01",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_02",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_02",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_02",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_03",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_03",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_03",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_04",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_04",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_04",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_05",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_05",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_05",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_06",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_06",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_06",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_07",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_07",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_07",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_08",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_08",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_08",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_09",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_09",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_09",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_10",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_10",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_10",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_11",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_11",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_11",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_12",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_12",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_12",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_13",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_13",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_13",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_14",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_14",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_14",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_15",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_15",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_15",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_16",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_16",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_16",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_17",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_17",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_17",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_18",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_18",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_18",
+"source": "generated",
+"category": "silence"
+},
+{
+"file": "gen_white_19",
+"source": "generated",
+"category": "white noise"
+},
+{
+"file": "gen_pink_19",
+"source": "generated",
+"category": "pink noise"
+},
+{
+"file": "gen_silence_19",
+"source": "generated",
+"category": "silence"
+}
+]

@@ -47,3 +47,5 @@ tools/apple_baseline/apple_classify
 data/timeline_privacy_check/
 results/baselines/apple_*.jsonl
 !results/baselines/apple_*_activity.csv
+!results/cache/
+!results/cache/**
