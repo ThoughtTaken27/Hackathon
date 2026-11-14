@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -95,23 +96,9 @@ def get(path: str):
     return json.loads(urllib.request.urlopen(f"http://127.0.0.1:{PORT}{path}", timeout=10).read())
 
 
-def main(seconds: int) -> int:
-    onsets = fake_mic(seconds + 20)
-    audit_log = Path(tempfile.gettempdir()) / f"kettle_audit_{os.getpid()}.jsonl"
-    env = {**os.environ, "KETTLE_PORT": str(PORT), "KETTLE_TIMELINE_DIR": str(LABELS_DIR), "HF_HUB_OFFLINE": "1",
-           "TRANSFORMERS_OFFLINE": "1"}
-    before = snapshot()
-    srv = subprocess.Popen([sys.executable, "-c", HOOK, str(audit_log)], cwd=ROOT, env=env,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-    for _ in range(60):
-        try:
-            get("/api/today")
-            break
-        except OSError:
-            time.sleep(0.5)
+def _listen(srv, seconds: int, lsof_writes: set, cpu: list, texts: list) -> None:
+    """Open the kitchen page in Chromium with the fake mic, consent, and listen for `seconds`, sampling lsof and CPU."""
     from playwright.sync_api import sync_playwright
-    lsof_writes, cpu = set(), []
-    texts = []
     with sync_playwright() as p:
         b = p.chromium.launch(args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream",
                                     f"--use-file-for-fake-audio-capture={FAKE_MIC}", "--autoplay-policy=no-user-gesture-required"])
@@ -132,6 +119,35 @@ def main(seconds: int) -> int:
                 cpu.append((float(ps[0]), int(ps[1]) / 1024))
             texts.append(pg.locator("#head").inner_text())
         b.close()
+
+
+def main(seconds: int) -> int:
+    shutil.rmtree(LABELS_DIR, ignore_errors=True)   # a run cut short leaves today's consent behind; start clean
+    onsets = fake_mic(seconds + 20)
+    audit_log = Path(tempfile.gettempdir()) / f"kettle_audit_{os.getpid()}.jsonl"
+    env = {**os.environ, "KETTLE_PORT": str(PORT), "KETTLE_TIMELINE_DIR": str(LABELS_DIR), "HF_HUB_OFFLINE": "1",
+           "TRANSFORMERS_OFFLINE": "1"}
+    try:                                             # another server on this port would be measured instead of ours
+        get("/api/today")
+        raise SystemExit(f"Port {PORT} is already in use; stop that server first.")
+    except OSError:
+        pass
+    before = snapshot()
+    srv = subprocess.Popen([sys.executable, "-c", HOOK, str(audit_log)], cwd=ROOT, env=env,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    for _ in range(60):
+        try:
+            get("/api/today")
+            break
+        except OSError:
+            time.sleep(0.5)
+    lsof_writes, cpu = set(), []
+    texts = []
+    try:
+        _listen(srv, seconds, lsof_writes, cpu, texts)
+    except BaseException:
+        srv.terminate()                              # never leave the audited server running on a failed run
+        raise
     # 5 MB upload to "Try your own sound": must be read in memory, never spooled to a temp file
     tb = snapshot()
     rng = np.random.default_rng(0)
@@ -214,7 +230,6 @@ def main(seconds: int) -> int:
              f"Outbound connections: {len(connects)}", f"5 MB upload: {upload_status}; files new afterwards: {len(upload_new)}",
              f"Fields in the labels file: {', '.join(sorted(label_kinds))}", "", rep["threat_model"]]
     (ROOT / "results" / "privacy_check.txt").write_text("\n".join(lines) + "\n")
-    import shutil
     shutil.rmtree(LABELS_DIR, ignore_errors=True)
     print("\n".join(lines))
     return 0 if rep["pass"] else 1

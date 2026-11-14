@@ -8827,6 +8827,652 @@
    "predictions_at": "2026-11-14 13:04:03 CST",
    "ended": "2026-11-14 13:15:09 CST"
   },
+  "node_activity_recall": {
+   "EvalNode1": {
+    "absence": {
+     "value": 96.1,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      93.2,
+      97.8
+     ]
+    },
+    "cooking": {
+     "value": 84.1,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      73.7,
+      90.9
+     ]
+    },
+    "dishwashing": {
+     "value": 70.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      56.2,
+      80.9
+     ]
+    },
+    "eating": {
+     "value": 84.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      71.5,
+      91.7
+     ]
+    },
+    "other": {
+     "value": 58.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      44.2,
+      70.6
+     ]
+    },
+    "social_activity": {
+     "value": 92.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      81.2,
+      96.8
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 90.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      78.6,
+      95.7
+     ]
+    },
+    "watching_tv": {
+     "value": 98.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      96.2,
+      99.3
+     ]
+    },
+    "working": {
+     "value": 87.6,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      82.4,
+      91.4
+     ]
+    }
+   },
+   "EvalNode2": {
+    "absence": {
+     "value": 89.1,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      84.9,
+      92.2
+     ]
+    },
+    "cooking": {
+     "value": 88.4,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      78.8,
+      94.0
+     ]
+    },
+    "dishwashing": {
+     "value": 74.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      60.4,
+      84.1
+     ]
+    },
+    "eating": {
+     "value": 84.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      71.5,
+      91.7
+     ]
+    },
+    "other": {
+     "value": 58.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      44.2,
+      70.6
+     ]
+    },
+    "social_activity": {
+     "value": 98.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      89.5,
+      99.6
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 92.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      81.2,
+      96.8
+     ]
+    },
+    "watching_tv": {
+     "value": 99.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      98.1,
+      99.9
+     ]
+    },
+    "working": {
+     "value": 84.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      79.2,
+      88.9
+     ]
+    }
+   },
+   "EvalNode3": {
+    "absence": {
+     "value": 94.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      91.5,
+      96.8
+     ]
+    },
+    "cooking": {
+     "value": 85.5,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      75.3,
+      91.9
+     ]
+    },
+    "dishwashing": {
+     "value": 72.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      58.3,
+      82.5
+     ]
+    },
+    "eating": {
+     "value": 82.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      69.2,
+      90.2
+     ]
+    },
+    "other": {
+     "value": 52.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      38.5,
+      65.2
+     ]
+    },
+    "social_activity": {
+     "value": 96.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      86.5,
+      98.9
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 94.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      83.8,
+      97.9
+     ]
+    },
+    "watching_tv": {
+     "value": 99.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      97.6,
+      99.8
+     ]
+    },
+    "working": {
+     "value": 62.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      55.9,
+      69.0
+     ]
+    }
+   },
+   "EvalNode4": {
+    "absence": {
+     "value": 97.9,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      95.5,
+      99.0
+     ]
+    },
+    "cooking": {
+     "value": 89.9,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      80.5,
+      95.0
+     ]
+    },
+    "dishwashing": {
+     "value": 80.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      67.0,
+      88.8
+     ]
+    },
+    "eating": {
+     "value": 92.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      81.2,
+      96.8
+     ]
+    },
+    "other": {
+     "value": 50.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      36.6,
+      63.4
+     ]
+    },
+    "social_activity": {
+     "value": 98.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      89.5,
+      99.6
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 94.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      83.8,
+      97.9
+     ]
+    },
+    "watching_tv": {
+     "value": 97.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      94.8,
+      98.6
+     ]
+    },
+    "working": {
+     "value": 82.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      76.6,
+      86.9
+     ]
+    }
+   },
+   "EvalNode5": {
+    "absence": {
+     "value": 94.7,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      91.5,
+      96.8
+     ]
+    },
+    "cooking": {
+     "value": 89.9,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      80.5,
+      95.0
+     ]
+    },
+    "dishwashing": {
+     "value": 68.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      54.2,
+      79.2
+     ]
+    },
+    "eating": {
+     "value": 90.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      78.6,
+      95.7
+     ]
+    },
+    "other": {
+     "value": 54.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      40.4,
+      67.0
+     ]
+    },
+    "social_activity": {
+     "value": 98.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      89.5,
+      99.6
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 94.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      83.8,
+      97.9
+     ]
+    },
+    "watching_tv": {
+     "value": 99.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      97.1,
+      99.7
+     ]
+    },
+    "working": {
+     "value": 85.2,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      79.7,
+      89.3
+     ]
+    }
+   },
+   "EvalNode6": {
+    "absence": {
+     "value": 95.8,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      92.8,
+      97.6
+     ]
+    },
+    "cooking": {
+     "value": 88.4,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      78.8,
+      94.0
+     ]
+    },
+    "dishwashing": {
+     "value": 68.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      54.2,
+      79.2
+     ]
+    },
+    "eating": {
+     "value": 82.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      69.2,
+      90.2
+     ]
+    },
+    "other": {
+     "value": 56.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      42.3,
+      68.8
+     ]
+    },
+    "social_activity": {
+     "value": 98.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      89.5,
+      99.6
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 94.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      83.8,
+      97.9
+     ]
+    },
+    "watching_tv": {
+     "value": 99.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      97.6,
+      99.8
+     ]
+    },
+    "working": {
+     "value": 84.2,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      78.7,
+      88.5
+     ]
+    }
+   },
+   "EvalNode7": {
+    "absence": {
+     "value": 97.5,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 284,
+     "n_sessions": 17,
+     "ci95": [
+      95.0,
+      98.8
+     ]
+    },
+    "cooking": {
+     "value": 76.8,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 69,
+     "n_sessions": 6,
+     "ci95": [
+      65.6,
+      85.2
+     ]
+    },
+    "dishwashing": {
+     "value": 76.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      62.6,
+      85.7
+     ]
+    },
+    "eating": {
+     "value": 80.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 5,
+     "ci95": [
+      67.0,
+      88.8
+     ]
+    },
+    "other": {
+     "value": 60.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 27,
+     "ci95": [
+      46.2,
+      72.4
+     ]
+    },
+    "social_activity": {
+     "value": 98.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 10,
+     "ci95": [
+      89.5,
+      99.6
+     ]
+    },
+    "vacuum_cleaner": {
+     "value": 94.0,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 50,
+     "n_sessions": 4,
+     "ci95": [
+      83.8,
+      97.9
+     ]
+    },
+    "watching_tv": {
+     "value": 97.3,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 301,
+     "n_sessions": 4,
+     "ci95": [
+      94.8,
+      98.6
+     ]
+    },
+    "working": {
+     "value": 77.5,
+     "split": "DCASE 2018 Task 5 eval sample (held-out test, run once); post-hoc slice from saved predictions, Wilson CI treats clips as independent",
+     "n_clips": 209,
+     "n_sessions": 13,
+     "ci95": [
+      71.4,
+      82.6
+     ]
+    }
+   }
+  },
   "meal_activity": {
    "what": "kitchen activity = cooking, washing up or eating (merged), per 10-s window, single mic",
    "caught": {

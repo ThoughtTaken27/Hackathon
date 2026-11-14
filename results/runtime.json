@@ -1,19 +1,54 @@
 {
  "split": "privacy-check live run, Chromium fake mic, held-out SINS clips",
- "seconds": 45,
- "per_hop_s_median": 0.0463,
- "per_hop_s_p90": 0.1113,
- "n_hops": 19,
- "server_cpu_percent_mean": 2.4,
- "server_rss_mb_max": 85.0,
+ "seconds": 180,
+ "per_hop_s_median": 0.0635,
+ "per_hop_s_p90": 0.0713,
+ "n_hops": 84,
+ "server_cpu_percent_mean": 4.2,
+ "server_rss_mb_max": 165.0,
  "activity_change_to_window_label_s": [
   {
    "onset_s": 20.0,
    "activity": "vacuum_cleaner",
-   "label_after_s": null
+   "label_after_s": 0.69
+  },
+  {
+   "onset_s": 40.0,
+   "activity": "dishwashing",
+   "label_after_s": 7.73
+  },
+  {
+   "onset_s": 60.0,
+   "activity": "social_activity",
+   "label_after_s": 6.45
+  },
+  {
+   "onset_s": 80.0,
+   "activity": "absence",
+   "label_after_s": 9.33
+  },
+  {
+   "onset_s": 100.0,
+   "activity": "vacuum_cleaner",
+   "label_after_s": 1.81
+  },
+  {
+   "onset_s": 120.0,
+   "activity": "dishwashing",
+   "label_after_s": 8.85
+  },
+  {
+   "onset_s": 140.0,
+   "activity": "social_activity",
+   "label_after_s": 5.5
+  },
+  {
+   "onset_s": 160.0,
+   "activity": "absence",
+   "label_after_s": 10.46
   }
  ],
- "median_change_to_label_s": null,
- "n_changes": 0,
+ "median_change_to_label_s": 7.09,
+ "n_changes": 8,
  "note": "per hop = one 5-s chip + one 10-s window through CED-tiny + head on CPU; latency counts only the 10-s timeline label"
 }

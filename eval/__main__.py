@@ -196,6 +196,18 @@ def markdown(m: dict) -> str:
         for nd, v in e["per_node"].items():
             L.append(f"| {nd} | {f(v['node_avg']) if isinstance(v['node_avg'], dict) else v['node_avg']} | "
                      f"{f(v['ch0']) if isinstance(v['ch0'], dict) else v['ch0']} | {v['n_clips']} |")
+        na = e.get("node_activity_recall")
+        if na:
+            nodes = list(na)
+            L += ["", "**Held-out recall (%) per microphone and activity, single mic** (post-hoc slice of the saved predictions; "
+                      "N clips per cell in brackets; Wilson CIs in metrics.json treat clips as independent, so they are too narrow):", "",
+                  "| Activity | " + " | ".join(n.replace("EvalNode", "Node ") for n in nodes) + " |", "|---|" + "---|" * len(nodes)]
+            for c in CLASSES:
+                L.append(f"| {DISPLAY[c]} | " + " | ".join(f"{na[n][c]['value']:.0f} ({na[n][c]['n_clips']})" for n in nodes) + " |")
+            cells = [(na[n][c]["value"], n, c, na[n][c]["n_clips"]) for n in nodes for c in CLASSES if na[n][c]["n_clips"] >= 20]
+            lo = min(cells)
+            L += ["", f"Worst cell with at least 20 clips: {DISPLAY[lo[2]]} on {lo[1]}, {lo[0]:.0f}% of {lo[3]} clips. "
+                      "One run on one home can't separate microphone, session mix and week as causes."]
         B = e.get("baselines", {})
         L += ["", "Baselines on the same held-out clips (single mic): " + "; ".join(
             f"{k.replace('_', ' ')} {f(v)}" if "value" in v else f"{k.replace('_', ' ')}: not run (no AST embeddings of the eval clips; AST is reported on dev)"
@@ -315,6 +327,12 @@ def rescore_eval(e: dict) -> dict:
     e["per_node"] = {nd: {"node_avg": dev.report(y[node == nd], pn[node == nd], s[node == nd], w, split)["macro_f1"],
                           "ch0": dev.report(y[node == nd], p0[node == nd], s[node == nd], w, split)["macro_f1"],
                           "n_clips": int((node == nd).sum())} for nd in sorted(set(node))}
+    # post-hoc slice (judge round 2): recall per eval microphone x activity, single mic, from the saved predictions
+    nsplit = split + "; post-hoc slice from saved predictions, Wilson CI treats clips as independent"
+    e["node_activity_recall"] = {nd: {c: num(int(((node == nd) & (y == k) & (p0 == k)).sum()) / max(1, int(((node == nd) & (y == k)).sum())),
+                                             nsplit, int(((node == nd) & (y == k)).sum()), len(set(s[(node == nd) & (y == k)])),
+                                             M.wilson(int(((node == nd) & (y == k) & (p0 == k)).sum()), int(((node == nd) & (y == k)).sum())))
+                                      for k, c in enumerate(CLASSES)} for nd in sorted(set(node))}
     head = model.load(ROOT / "models" / "head.json")
     if head["sha256"] != e["run"]["head_sha256"]:
         raise SystemExit("models/head.json is not the head the held-out run used; refusing to re-score with it.")

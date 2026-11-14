@@ -26,6 +26,22 @@ Mic mapping: NOT confirmed by the mic-fingerprint rule; per-node numbers only.
 | EvalNode6 | 85.0 [74.9, 88.8] | 85.0 [74.9, 88.1] | 1113 |
 | EvalNode7 | 84.8 [75.5, 87.5] | 83.4 [74.5, 86.6] | 1113 |
 
+**Held-out recall (%) per microphone and activity, single mic** (post-hoc slice of the saved predictions; N clips per cell in brackets; Wilson CIs in metrics.json treat clips as independent, so they are too narrow):
+
+| Activity | Node 1 | Node 2 | Node 3 | Node 4 | Node 5 | Node 6 | Node 7 |
+|---|---|---|---|---|---|---|---|
+| Quiet | 96 (284) | 89 (284) | 95 (284) | 98 (284) | 95 (284) | 96 (284) | 98 (284) |
+| Cooking | 84 (69) | 88 (69) | 86 (69) | 90 (69) | 90 (69) | 88 (69) | 77 (69) |
+| Washing up | 70 (50) | 74 (50) | 72 (50) | 80 (50) | 68 (50) | 68 (50) | 76 (50) |
+| Eating | 84 (50) | 84 (50) | 82 (50) | 92 (50) | 90 (50) | 82 (50) | 80 (50) |
+| Moving about | 58 (50) | 58 (50) | 52 (50) | 50 (50) | 54 (50) | 56 (50) | 60 (50) |
+| Conversation | 92 (50) | 98 (50) | 96 (50) | 98 (50) | 98 (50) | 98 (50) | 98 (50) |
+| Vacuuming | 90 (50) | 92 (50) | 94 (50) | 94 (50) | 94 (50) | 94 (50) | 94 (50) |
+| TV | 98 (301) | 100 (301) | 99 (301) | 97 (301) | 99 (301) | 99 (301) | 97 (301) |
+| Working (typing) | 88 (209) | 85 (209) | 63 (209) | 82 (209) | 85 (209) | 84 (209) | 78 (209) |
+
+Worst cell with at least 20 clips: Moving about on EvalNode4, 50% of 50 clips. One run on one home can't separate microphone, session mix and week as causes.
+
 Baselines on the same held-out clips (single mic): majority 5.0 [1.6, 7.8]; ced tiny zeroshot 38.5 [30.9, 47.2]; ast zeroshot: not run (no AST embeddings of the eval clips; AST is reported on dev); apple zeroshot 31.8 [25.7, 37.9]. Share of windows below θ ('Not sure'): 14.2 [13.5, 15.0]%.
 
 ## The caregiver's metric: kitchen activity (cooking, washing up or eating), dev folds, single mic

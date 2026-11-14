@@ -4,7 +4,7 @@
 *This project is a prototype and is not medical advice. Kettle is not an emergency device.*
 
 <!-- lead:start -->
-On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments × 7 microphones = 7,791 clips from 91 sessions), Kettle scores **84.1** macro F1 (95% CI 74.4–86.7) on one microphone and 85.3 on four: level with the official 2018 baseline (85.0 known / 83.1 unseen microphones, full set) and below the best entry (90.4 / 88.4). A Mac already hears a kettle, but Apple's built-in sound classifier scores 31.8 on the same clips. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms, and a "Not sure", consent and pause design built around them.
+On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments × 7 microphones = 7,791 clips from 91 sessions), Kettle scores **84.1** macro F1 (95% CI 74.4–86.7) on one microphone and 85.3 on four. That is close to the official 2018 baseline's published 85.0 (known microphones) / 83.1 (unseen), but not directly comparable: they scored the full test set and trained on all development data; we scored a pre-registered sample. The best entry scored 90.4 / 88.4. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms separately, a "Not sure" that gave a confident label to only 0.4% of 260 off-list sounds, and a consent and pause design built around them. These are recordings from one research home replayed through the app, not yet a real kitchen. (For context only: Apple's built-in sound classifier, zero-shot with a different label set, scores 31.8 on the same clips.)
 <!-- lead:end -->
 
 ## The problem
@@ -51,13 +51,15 @@ CIs resample the 91 test sessions (the lower end is pessimistic: some resamples 
 
 Recall fell from dev to held-out for moving about 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).
 
+Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): working (typing) ranged from 63% on node 3 to 88%, while moving about was 50–60% on every microphone, so its drop isn't a microphone effect.
+
 **Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41). Computed after the run from its saved predictions (not in the pre-registration).
 
 Development folds (optimistic; they chose the model): Kettle 85.1 [81.1, 87.4], log-mel statistics + logistic regression (no deep model) 79.7 [75.5, 82.4], AST (16× bigger) + the same head 83.0 [79.1, 85.7] on a 2,700-clip subset where Kettle scores 85.5; N = 8,920 clips / 257 sessions.
 <!-- results:end -->
 
 <!-- tradeoff:start -->
-"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). On dev, no kitchen session went unnoticed at any θ from 0.30 to 0.90; θ only moved false kitchen blocks (7.75 → 3.87 per 16-hour day). But "noticed" only means some kitchen block overlapped: with the right activity covering half the session, 15 of 33 kitchen sessions were caught; in the rest the right activity never formed one block that long. Its cost: 14% of held-out windows were "Not sure".
+"Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). Through the day bar on dev, 15 of 33 kitchen sessions (46%, 95% CI 30–62) were drawn as the right activity covering at least half the session; every one had some kitchen block on it, at any θ from 0.30 to 0.90, so a "kitchen activity" check would have noticed each one. θ only moved false kitchen blocks (7.75 → 3.87 per 16-hour day). Its cost: 14% of held-out windows were "Not sure".
 <!-- tradeoff:end -->
 
 **Where it fails** (real dev-fold mistakes, `results/failures.md`):

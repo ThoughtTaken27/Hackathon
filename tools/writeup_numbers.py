@@ -30,11 +30,14 @@ def blocks(m: dict) -> dict:
         lead.append(
             f"On the official DCASE 2018 test set (run once with a frozen model; {e['n_moments']:,} moments × 7 microphones = "
             f"{e['n_clips']:,} clips from {a['ch0']['n_sessions']} sessions), Kettle scores **{a['ch0']['value']:.1f}** macro F1 "
-            f"(95% CI {a['ch0']['ci95'][0]:.1f}–{a['ch0']['ci95'][1]:.1f}) on one microphone and {a['node_avg']['value']:.1f} on four: level with the "
-            f"official 2018 baseline ({bl['eval_known_mic']} known / {bl['eval_unknown_mic']} unseen microphones, full set) and below the best "
-            f"entry ({best['eval_known_mic']} / {best['eval_unknown_mic']}). A Mac already hears a kettle, but Apple's built-in sound classifier "
-            f"scores {apple.get('value', float('nan')):.1f} on the same clips. Our contribution isn't the leaderboard: it's publishing every "
-            f"activity's misses and false alarms, and a \"Not sure\", consent and pause design built around them.")
+            f"(95% CI {a['ch0']['ci95'][0]:.1f}–{a['ch0']['ci95'][1]:.1f}) on one microphone and {a['node_avg']['value']:.1f} on four. That is close to the official 2018 baseline's "
+            f"published {bl['eval_known_mic']} (known microphones) / {bl['eval_unknown_mic']} (unseen), but not directly comparable: they scored the full "
+            f"test set and trained on all development data; we scored a pre-registered sample. The best entry scored {best['eval_known_mic']} / "
+            f"{best['eval_unknown_mic']}. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms "
+            f"separately, a \"Not sure\" that gave a confident label to only {m['offlist']['confident_wrong']['value']:.1f}% of {m['offlist']['n']} off-list sounds, and a consent and pause "
+            f"design built around them. These are recordings from one research home replayed through the app, not yet a real kitchen. "
+            f"(For context only: Apple's built-in sound classifier, zero-shot with a different label set, scores "
+            f"{apple.get('value', float('nan')):.1f} on the same clips.)")
         held += ["**Held-out test (official DCASE 2018 eval sample, run once, all 7 microphones; macro F1, 95% session-bootstrap CI):**", "",
                  "| System | Macro F1 | N |", "|---|---|---|",
                  f"| **Kettle, one microphone** | **{f(a['ch0'])}** | {a['ch0']['n_clips']:,} clips / {e['n_moments']:,} moments / {a['ch0']['n_sessions']} sessions |",
@@ -59,6 +62,15 @@ def blocks(m: dict) -> dict:
         big = [f"{DISPLAY[c['class']].lower()} {dper[c['class']]['recall']['value']:.0f}% → {c['recall']['value']:.0f}%" for c, dd in sorted(drops, key=lambda x: -x[1]) if dd >= 5]
         if big:
             held += ["", f"Recall fell from dev to held-out for {', '.join(big)} (a different stretch of the week and other microphones; one run can't separate the causes)."]
+        na = e.get("node_activity_recall")
+        if na:
+            rng = lambda c: (min(na[n][c]["value"] for n in na), max(na[n][c]["value"] for n in na))
+            wk, mv = rng("working"), rng("other")
+            worst_node = min(na, key=lambda n: na[n]["working"]["value"])
+            held += ["", f"Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come "
+                         f"from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): {DISPLAY['working'].lower()} "
+                         f"ranged from {wk[0]:.0f}% on {worst_node.replace('EvalNode', 'node ')} to {wk[1]:.0f}%, while {DISPLAY['other'].lower()} was "
+                         f"{mv[0]:.0f}–{mv[1]:.0f}% on every microphone, so its drop isn't a microphone effect."]
         em = e.get("meal_activity")
         if em:
             held += ["", f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
@@ -81,12 +93,19 @@ def blocks(m: dict) -> dict:
         extra.append(f"On {o['n']} sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident "
                      f"label to {f(o['confident_wrong'])}% (vs {f(o['confident_wrong_without_novelty_gate'])}% without its "
                      f"'unlike anything it learned' check).")
+    rt_path = ROOT / "results" / "runtime.json"
+    if rt_path.exists():
+        rt = json.loads(rt_path.read_text())
+        if rt.get("median_change_to_label_s") is not None:
+            extra.append(f"Live, on a laptop CPU (privacy-check run, {rt['seconds']} s through the browser's microphone, {rt['n_changes']} activity changes): "
+                         f"a new activity reached the timeline after a median {rt['median_change_to_label_s']:.1f} s (a 10-s window must fill with "
+                         f"the new sound); each 2-s update took {rt['per_hop_s_median'] * 1000:.0f} ms (90th percentile "
+                         f"{rt['per_hop_s_p90'] * 1000:.0f} ms) and the server used {rt['server_cpu_percent_mean']:.0f}% CPU on average.")
     sl = d["session_level"]["smoothing_on"]
     extra.append(f"Through the day bar (dev, 2-of-3 smoothing, {sl['hours']} h of stitched audio): {f(sl['session_recall'])}% of "
                  f"{sum(sl['sessions'])} activity sessions were caught as one block covering at least half of them, with "
                  f"{sl['false_alarms_per_hour']} false-alarm blocks per hour across all activities "
                  f"({d['session_level']['smoothing_off']['false_alarms_per_hour']} without smoothing).")
-    split = ""
     fails = json.loads((ROOT / "results" / "failures.json").read_text())
     pick = [x for want in (("cooking", "dishwashing"), ("watching_tv", "social_activity"), ("other", "absence"))
             for x in fails if (x["true"], x["predicted"]) == want]
@@ -123,10 +142,11 @@ def blocks(m: dict) -> dict:
     fl_short = [f"{i}. **{DISPLAY[x['true']]} → {DISPLAY[x['predicted']].lower()}** ({x['how_many_like_this']} dev clips): {x['likely_cause']}"
                 for i, x in enumerate(pick, 1)]
     trade_short = (f"\"Not sure\" below θ = {d['not_sure']['theta']:.2f} (chosen on dev so shown labels are right "
-                   f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). On dev, no kitchen session went unnoticed at any θ "
-                   f"from 0.30 to 0.90; θ only moved false kitchen blocks ({lo['meal_false_alarms_per_day']} → {shipped['meal_false_alarms_per_day']} "
-                   f"per 16-hour day). But \"noticed\" only means some kitchen block overlapped: with the right activity covering half the session, "
-                   f"{ms['n_caught']} of {ms['n_sessions']} kitchen sessions were caught; in the rest the right activity never formed one block that long. "
+                   f"{d['not_sure']['shown_precision_metric']['value']:.0f}% of the time). Through the day bar on dev, {ms['n_caught']} of "
+                   f"{ms['n_sessions']} kitchen sessions ({ms['caught']['value']:.0f}%, 95% CI {ms['caught']['ci95'][0]:.0f}–{ms['caught']['ci95'][1]:.0f}) "
+                   f"were drawn as the right activity covering at least half the session; every one had some kitchen block on it, at any θ "
+                   f"from 0.30 to 0.90, so a \"kitchen activity\" check would have noticed each one. θ only moved false kitchen blocks "
+                   f"({lo['meal_false_alarms_per_day']} → {shipped['meal_false_alarms_per_day']} per 16-hour day). "
                    f"Its cost: {e['not_sure_share_at_theta']['value']:.0f}% of held-out windows were \"Not sure\"." if e and missed_all == {0} else trade)
     return {"lead": "\n".join(lead), "results": "\n".join(held + dev_rows + [""] + extra),
             "results_short": "\n".join(short), "failures": "\n".join(fl), "tradeoff": trade,

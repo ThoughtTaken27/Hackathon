@@ -1,11 +1,11 @@
-Kettle privacy check (2026-11-14 10:50 CST): PASS
-Listened 45 s through Chromium's fake mic; 17 windows labelled.
+Kettle privacy check (2026-11-14 16:34 CST): PASS
+Listened 180 s through Chromium's fake mic; 82 windows labelled.
 Python write-opens outside the labels file: 0
 lsof write handles outside it: 0
 New/changed audio-extension files: 0
 New/changed files with audio magic bytes: 0
 Outbound connections: 0
-5 MB upload: ok; files new afterwards: 4
+5 MB upload: ok; files new afterwards: 3
 Fields in the labels file: conf, end, kind, label, novel, probs, sounds, start, state, t, type
 
 Proves Kettle's own code doesn't write audio to disk or send it off the machine. Not a defence against a compromised OS, browser extensions, crash dumps or someone at the unlocked laptop. Not a kernel trace; OS swap is encrypted and outside our control.
