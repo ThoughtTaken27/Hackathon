@@ -388,3 +388,20 @@ smoke PASS, check_metrics 0 problems, e2e no errors). Web only (the Python twins
   Sample days now use clips the frozen model labels as their recorded activity (DECISIONS row; `demo_cache/scenarios.json _about`),
   so the "Typing on Silence" hero bug (F4) is gone; "A usual morning" opens with one quiet clip.
 - Details and judge Q&A: `docs/EXPLAIN.md` → "Usability round" and "Second pass after a hands-on test".
+
+## 11. Handover v3.2 worked through (same branch, Sun 15 Nov ~1:05–3:15 PM CT)
+
+| Item | Outcome | Evidence |
+|---|---|---|
+| 3.5 voice tags | **Done.** Off the allow-list; tests on both sides | `kettle/evidence_labels.json`, `web/test/fixes.test.mjs`, `tests/test_privacy_grep.py` |
+| 3.1 named sounds | **Done.** Context rules (kettle, tap, microwave, timer split); pre-registered bar; only "TV or radio" passes, 14 names hidden (device-only); checks on hidden sounds say Can't tell; kettle check needs 2 windows | `eval/PREREGISTER-SOUNDS.md`, `eval/sounds.py` → `results/sounds.json` (kettle precision 16 → 44%, tap 48 → 67%, microwave 12 → 55% on test halves) |
+| 3.3 confetti / TV | **Measured, not shipped** (no dev gain). Real cause: Kitchen20 is 80.9% Not sure because whole sessions are novel | `eval/confetti.py` → `results/confetti.json` |
+| 3.2 trained judge | **Measured, not shipped**: fails the gate written before the run (0.9: wrong 4 → 0, false meal 41 → 30, right 218 → 212). `models/judge.json` not written; K20 TEST untouched | `eval/judge.py` → `results/judge.json` |
+| 3.4 real kitchen | **Scorer ready** (`python -m eval.own_kitchen --timeline --session <name>`, old vs new rule); **recording still needed from a person** | `eval/OWN_KITCHEN_GUIDE.md` |
+| 3.6 safety | **Wired, minimal**: smoke alarm, crash then cry/stillness, screaming, "I need help"; "Are you OK?" on the kitchen; red banner on the family view; no push | browser run: synthetic smoke alarm → banner in 12 s; 17 ordinary sounds → no alert |
+| §6 keep | How sure section from `results/*.json` (`tools/export_accuracy.py`); FAQ/README alert wording; F4 gone with the new sample days. F5 (a failure-and-fix sample day) not done | `web/public/js/beyond.js` |
+
+Kitchen20 was cloned and embedded on this machine (`data/raw/kitchen20`, `data/emb/ced-tiny/kitchen20/all.npz`, both git-ignored).
+DESED is not here, so `eval/kitchen_naming.py` can't be re-run on this machine (its committed results are unchanged).
+Checks at the last commit: npm 137 pass / 0 fail; pytest 79; smoke PASS; check_metrics 0 problems; e2e no errors.
+Not deployed (needs Parth's OK and his Cloudflare login).
