@@ -32,8 +32,8 @@ def test_pause_is_attributed_to_the_parent_and_drawn():
     live.consent(s, NOW - 600)
     live.pause(s, NOW - 60, 60)
     t = payload(s)
-    assert t["heartbeat"]["text"].startswith("Paused by Dad at") and "resumes at" in t["heartbeat"]["text"]
-    assert any(b["state"] == "paused" and b["label"] == "Paused by Dad" for b in t["blocks"])
+    assert t["heartbeat"]["text"].startswith("Paused by your parent at") and "resumes at" in t["heartbeat"]["text"]
+    assert any(b["state"] == "paused" and b["label"] == "Paused by your parent" for b in t["blocks"])
 
 
 def test_no_reassurance_or_diagnosis_words():

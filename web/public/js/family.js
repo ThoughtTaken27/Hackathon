@@ -1,4 +1,4 @@
-// Meera's view (Kettle web): reads the household's labels and draws the same day the kitchen screen shows.
+// The family view (Kettle web): reads the household's labels and draws the same day the room screen shows.
 import { today as computeToday, ruleTitle, week, clock, DISPLAY, KIND_NAMES, KINDS_SHOWN } from "./core.js";
 import { TEXT as SAFETY_TEXT } from "./safety.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, rulesList, qr, linkFor, copy, toast } from "./ui.js";
@@ -11,7 +11,7 @@ if (!link) {
   $("#app").innerHTML = "";
   $("#app").append(el("div", { class: "narrow", style: "padding-top:24px" },
     el("h1", { class: "h1", text: "Open your family view" }),
-    el("p", { class: "lead", text: "Use the link Kettle gave you when you set it up, or type a six-letter code from the kitchen device." }),
+    el("p", { class: "lead", text: "Use the link Kettle gave you when you set it up, or type a six-letter code from the listening device." }),
     el("div", { class: "actions" }, el("a", { class: "btn primary lg", href: "/pair", text: "I have a code" }), el("a", { class: "btn lg", href: "/start", text: "Set up Kettle" }))));
 } else boot();
 
@@ -53,9 +53,9 @@ function gone(msg) {
 function draw() {
   t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
   const n = t.names;
-  document.title = `${n.parent}'s kitchen today · Kettle`;
-  $("#eyebrow").textContent = `What ${n.caregiver} sees`;
-  const ttl = $("#title"), ttlText = `${n.parent}'s kitchen, `;
+  document.title = `${n.place} today · Kettle`;
+  $("#eyebrow").textContent = n.caregiverSet ? `What ${n.caregiver} sees` : "What you see";
+  const ttl = $("#title"), ttlText = `${n.place}, `;
   if (ttl.dataset.t !== ttlText) { ttl.dataset.t = ttlText; ttl.textContent = ttlText; ttl.append(el("em", { text: "today" })); }
   const hm = /^(\d+):\d+ (AM|PM)$/.exec(t.now_text || "");
   if (hm && window.kettleSky) window.kettleSky((+hm[1] % 12) + (hm[2] === "PM" ? 12 : 0));
@@ -72,7 +72,7 @@ function draw() {
   $("#heard-sec").hidden = !t.heard.length;
   drawUrgent(n);
   drawWeek();
-  $("#foot-who").textContent = `${n.parent} sees the same day on the kitchen screen and can pause Kettle any time.`;
+  $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);
   rulesList($("#rules"), t.rules);
   drawInvite();
@@ -86,10 +86,10 @@ function drawUrgent(n) {
   if (box.dataset.k === key) return;
   box.dataset.k = key; box.textContent = "";
   for (const a of list) {
-    const why = a.checkin === "no_answer" ? ` Nobody answered "Are you OK?" on the kitchen screen.` : a.checkin === "help" ? ` ${n.parent} pressed "I need help".` : "";
+    const why = a.checkin === "no_answer" ? ` Nobody answered "Are you OK?" on the ${n.room} screen.` : a.checkin === "help" ? ` ${n.parent} pressed "I need help".` : "";
     box.append(el("div", { class: "urgent", role: "alert" },
       el("p", { class: "u-h", text: `Urgent: Kettle heard ${SAFETY_TEXT[a.kind] || "something urgent"} at ${clock(a.at, t.tz_offset)}.` }),
-      el("p", { class: "u-b", text: `${why} Call ${n.parent} now. Kettle can't call for help itself.`.trim() }),
+      el("p", { class: "u-b", text: `${why} Call ${n.parentMid} now. Kettle can't call for help itself.`.trim() }),
       el("button", { class: "btn", type: "button", text: "I've seen this", onclick: async () => {
         try { const r = await api(`/api/h/${link.id}/seen`, { method: "POST", key: link.key, body: { id: a.id } }); srv = r.state; draw(); }
         catch (e) { toast(e.message || "Couldn't reach Kettle."); }
@@ -109,7 +109,7 @@ function drawWeek() {
     el("span", { class: "k", text: r.kettle ? `Kettle ${r.kettle}` : "" })));
 }
 
-// before Dad's laptop has said yes: show how to connect it (only on the device that holds the kitchen key)
+// before the parent's device has said yes: show how to connect it (only on the device that holds the kitchen key)
 let inviteShown = "";
 async function drawInvite() {
   const box = $("#invite");
@@ -118,8 +118,8 @@ async function drawInvite() {
   const key = need ? (home.kitchenKey ? "k" : "nok") : "";
   if (key === inviteShown) return; inviteShown = key; box.textContent = "";
   if (!need) return;
-  const P = t.names.parent;
-  if (!home.kitchenKey) { box.append(el("div", { class: "banner" }, el("p", {}, el("strong", { text: `Waiting for ${P}'s kitchen device.` }), ` Kettle starts when ${P} says yes on the kitchen screen.`))); return; }
+  const n = t.names, P = n.parentMid, R = n.room;
+  if (!home.kitchenKey) { box.append(el("div", { class: "banner" }, el("p", {}, el("strong", { text: `Waiting for ${n.possMid} ${R} device.` }), ` Kettle starts when ${P} says yes on the ${R} screen.`))); return; }
   let code = home.kitchenCode;
   if (!code || (home.kitchenCodeExp || 0) < now() + 600) {
     try { const r = await api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "kitchen", key: home.kitchenKey } });
@@ -127,10 +127,10 @@ async function drawInvite() {
   }
   const url = linkFor("kitchen", link.id, home.kitchenKey);
   box.append(el("div", { class: "pair-card", style: "margin-top:20px" },
-    el("p", { class: "step-k", text: "Next: connect the kitchen device" }),
-    el("h2", { class: "section-title", text: `On ${P}'s kitchen device, go to ${location.host}/kitchen and type` }),
+    el("p", { class: "step-k", text: `Next: connect the ${R} device` }),
+    el("h2", { class: "section-title", text: `On ${n.possMid} ${R} device, go to ${location.host}/listen and type` }),
     code ? el("p", { class: "code-big num", html: `${code.slice(0, 3)}<span> </span>${code.slice(3)}` }) : null,
-    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the kitchen.` }),
+    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the ${R}.` }),
     el("div", { class: "linkbox" }, el("code", { text: url }), el("button", { class: "btn", type: "button", text: "Copy link", onclick: () => copy(url) }))));
 }
 
@@ -144,7 +144,7 @@ addEventListener("keydown", (e) => e.key === "Escape" && closeSheets());
 $("#print")?.addEventListener("click", () => window.print());
 $("#edit-rules")?.addEventListener("click", () => { draft = srv.rules.map((r) => ({ ...r })); fields(); openSheet(sheet); });
 $("#cancel-rules")?.addEventListener("click", closeSheets);
-$("#add-rule")?.addEventListener("click", () => { if (draft.length < 3) { draft.push({ type: "kitchen_by", time: "10:00" }); fields(); } });
+$("#add-rule")?.addEventListener("click", () => { if (draft.length < 3) { draft.push(t && !["kitchen", "home", "other"].includes(t.names.roomType) ? { type: "any_by", time: "10:00" } : { type: "kitchen_by", time: "10:00" }); fields(); } });
 $("#save-rules")?.addEventListener("click", async () => {
   try { const r = await api(`/api/h/${link.id}/rules`, { method: "POST", key: link.key, body: { rules: draft } }); srv = r.state; closeSheets(); draw(); toast("Checks saved"); }
   catch (e) { $("#sheet-msg").textContent = e.message; }
@@ -163,8 +163,11 @@ function fields() {
     box.append(el("div", { class: "field" }, type, kind, val, el("button", { class: "btn quiet", type: "button", text: "Remove", onclick: () => { draft.splice(i, 1); fields(); } })));
   });
   $("#add-rule").disabled = draft.length >= 3;
-  const presets = [["Breakfast by 10", { type: "kitchen_by", time: "10:00" }], ["Lunch by 2", { type: "kitchen_by", time: "14:00" }],
-    ["Evening meal by 8", { type: "kitchen_by", time: "20:00" }], ...(KINDS_SHOWN.has("kettle") ? [["Morning drink by 9", { type: "kind_by", kind: "kettle", time: "09:00" }]] : [])];
+  const kitchenish = !t || ["kitchen", "home", "other"].includes(t.names.roomType);
+  const presets = kitchenish ? [["Breakfast by 10", { type: "kitchen_by", time: "10:00" }], ["Lunch by 2", { type: "kitchen_by", time: "14:00" }],
+    ["Evening meal by 8", { type: "kitchen_by", time: "20:00" }], ...(KINDS_SHOWN.has("kettle") ? [["Morning drink by 9", { type: "kind_by", kind: "kettle", time: "09:00" }]] : [])]
+    : [["Up and about by 10", { type: "any_by", time: "10:00" }], ["Some activity by 2", { type: "any_by", time: "14:00" }], ["Some activity by 8 PM", { type: "any_by", time: "20:00" }],
+      ...(KINDS_SHOWN.has("footsteps") ? [["Footsteps by 11", { type: "kind_by", kind: "footsteps", time: "11:00" }]] : [])];
   box.append(el("div", { class: "row presets", style: "margin-top:10px;flex-wrap:wrap;gap:8px" }, el("span", { class: "meta muted", text: "Quick add:" }),
     ...presets.map(([label, r]) => el("button", { class: "btn quiet", type: "button", text: label, disabled: draft.length >= 3 || null, onclick: () => { if (draft.length < 3) { draft.push({ ...r }); fields(); } } }))));
 }
@@ -174,11 +177,11 @@ $("#menu-btn")?.addEventListener("click", async () => {
   if (!srv) return;
   const body = $("#settings-body"); body.textContent = "";
   const n = srv.names;
-  const pIn = el("input", { class: "input", value: n.parent, maxlength: 24, "aria-label": "What you call your parent" });
-  const cIn = el("input", { class: "input", value: n.caregiver, maxlength: 24, "aria-label": "Your name" });
+  const pIn = el("input", { class: "input", value: n.parent || "", maxlength: 24, placeholder: "For example Mom, Dad, Nani, or a first name", "aria-label": "What you call your parent" });
+  const cIn = el("input", { class: "input", value: n.caregiver || "", maxlength: 24, "aria-label": "Your name" });
   body.append(
     el("div", { class: "field2" }, el("label", { text: "What you call your parent" }), pIn),
-    el("div", { class: "field2" }, el("label", { text: "Your name, as the kitchen screen shows it" }), cIn),
+    el("div", { class: "field2" }, el("label", { text: "Your name, as the room screen shows it" }), cIn),
     el("div", { class: "actions", style: "margin-top:16px" }, el("button", { class: "btn primary", type: "button", text: "Save names", onclick: async () => {
       try { const r = await api(`/api/h/${link.id}/names`, { method: "POST", key: link.key, body: { parent: pIn.value, caregiver: cIn.value } }); srv = r.state; draw(); toast("Saved"); } catch (e) { toast(e.message); }
     } })),
@@ -190,7 +193,7 @@ $("#menu-btn")?.addEventListener("click", async () => {
   qr(famUrl, 152).then((q) => { q.style.marginTop = "14px"; q.style.justifySelf = "start"; body.insertBefore(q, del); });
   const del = el("div", {}, el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
     el("p", { class: "panel-h", text: "Delete this home" }),
-    el("p", { class: "meta muted", text: "Removes every label and setting from Kettle's server for good. The kitchen device stops sending." }),
+    el("p", { class: "meta muted", text: "Removes every label and setting from Kettle's server for good. The listening device stops sending." }),
     el("div", { class: "actions", style: "margin-top:12px" },
       el("button", { class: "btn danger-link", type: "button", text: "Delete everything", onclick: async (e) => {
         if (e.currentTarget.dataset.sure !== "1") { e.currentTarget.dataset.sure = "1"; e.currentTarget.textContent = "Press again to delete for good"; return; }

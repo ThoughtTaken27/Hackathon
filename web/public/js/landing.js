@@ -78,13 +78,13 @@ const STEP_MS = 6500;
 let cur = 0, timer = null, flowBar = null;
 const meter = () => el("span", { class: "su-meter", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("i"), el("i"));
 const views = [
-  () => [el("p", { class: "su-k", text: "Your phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect the kitchen device" }),
-    el("p", { class: "su-p", text: "On the kitchen device, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
+  () => [el("p", { class: "su-k", text: "Your phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect the room device" }),
+    el("p", { class: "su-p", text: "On the room device, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
     el("p", { class: "su-p", text: "The code works for 48 hours." })],
-  () => [el("p", { class: "su-k", text: "The kitchen device" }), el("p", { class: "su-h", text: "This device listens for the sounds of the room." }),
+  () => [el("p", { class: "su-k", text: "The room device" }), el("p", { class: "su-h", text: "This device listens for the sounds of the room." }),
     el("p", { class: "su-p", text: "It only notes the kind of sound, like dishes or TV. It keeps no recordings and no words. You can pause it or turn it off any time." }),
     el("div", {}, el("span", { class: "su-btn", text: "Yes, my family can see this" }), el("span", { class: "su-btn ghost", text: "Not now" }))],
-  () => [el("p", { class: "su-k" }, el("i"), "The kitchen device, listening"), el("p", { class: "su-h", text: "Listening for the sounds of the room" }),
+  () => [el("p", { class: "su-k" }, el("i"), "The room device, listening"), el("p", { class: "su-h", text: "Listening for the sounds of the room" }),
     el("span", { class: "su-chip" }, "Sounds like cooking", meter()),
     el("div", { class: "su-list" }, el("p", {}, el("span", { text: "Sound, 10 seconds" }), el("b", { text: "dropped" })), el("p", {}, el("span", { text: "Label sent to the family" }), el("b", { text: "Cooking, 8:05 AM" })))],
   () => { const box = el("div"); const holder = [el("p", { class: "su-k", text: "Your phone" }), el("p", { class: "su-h", text: "The kitchen today" }),

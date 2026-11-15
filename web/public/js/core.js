@@ -2,6 +2,8 @@
 // Used by both screens in the browser and by the sync worker. No DOM, no network. web/test/core.test.mjs checks every
 // output against Python's own answers (web/test/fixtures.json, made by tools/export_web_fixtures.py).
 
+import { who } from "./people.js";
+
 // ---------------------------------------------------------------- labels
 export const CLASSES = ["absence", "cooking", "dishwashing", "eating", "other", "social_activity", "vacuum_cleaner", "watching_tv", "working"];
 export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
@@ -681,12 +683,12 @@ function ago(sec) {
 /** How the kitchen device reads in a sentence. dev = { kind: "phone" | "tablet" | "laptop", charging, level } or null (older homes: a laptop). */
 export function deviceWord(dev) { return dev && ["phone", "tablet", "laptop"].includes(dev.kind) ? dev.kind : "laptop"; }
 /** A calm warning before the kitchen device runs out: "The kitchen phone is on battery (41%). Plug it in to keep Kettle listening." */
-export function batteryLine(dev) {
+export function batteryLine(dev, room = "kitchen") {
   if (!dev || dev.charging !== false || !(dev.level >= 0)) return "";
-  return `The kitchen ${deviceWord(dev)} is on battery (${Math.round(dev.level * 100)}%). Plug it in to keep Kettle listening.`;
+  return `The ${room} ${deviceWord(dev)} is on battery (${Math.round(dev.level * 100)}%). Plug it in to keep Kettle listening.`;
 }
 export function heartbeatLine(hb, now, off, names, dev = null) {
-  const P = names.parent, c = (t) => (t ? clock(t, off) : ""), D = deviceWord(dev);
+  const P = names.parentMid || names.parent, R = names.room || "kitchen", c = (t) => (t ? clock(t, off) : ""), D = deviceWord(dev);
   const asleep = D === "laptop" ? "laptop asleep, closed or off" : `${D} asleep, off, or Kettle isn't on its screen`;
   const { state: st, since, until } = hb;
   let text = "";
@@ -700,9 +702,9 @@ export function heartbeatLine(hb, now, off, names, dev = null) {
     let tail = tomorrow ? `until tomorrow at ${c(until)} at the latest` : `resumes at ${c(until)}`;
     if (until - now > 300 * 86400) tail = `until ${P} answers the weekly question`;
     text = `Paused by ${P} at ${c(since)} · ${tail}`;
-  } else if (st === "mic_blocked") text = `Not listening: the microphone is blocked or silent on the kitchen ${D}.`.replace(" or silent on the kitchen laptop", " on the kitchen laptop");
-  else if (st === "no_mic") text = `Not listening: no microphone was found on the kitchen ${D}.`;
-  const battery = st === "listening" || st === "starting" ? batteryLine(dev) : "";
+  } else if (st === "mic_blocked") text = `Not listening: the microphone is blocked or silent on the ${R} ${D}.`.replace(` or silent on the ${R} laptop`, ` on the ${R} laptop`);
+  else if (st === "no_mic") text = `Not listening: no microphone was found on the ${R} ${D}.`;
+  const battery = st === "listening" || st === "starting" ? batteryLine(dev, R) : "";
   return { state: st, text, since, until, last_heard: hb.last_heard, since_text: c(since), until_text: c(until), battery };
 }
 export function blockView(b, off, names) {
@@ -724,7 +726,7 @@ export function blockView(b, off, names) {
   else if (b.state === "not_listening") out.card = `Not listening · ${rng} · Kettle can't say what happened here.`;
   else if (b.state === "private") out.card = `Private · ${rng} · ${names.parent} chose not to share this kind of sound.`;
   else if (b.state === "paused") {
-    out.label = b.kind === "off" ? `Turned off by ${names.parent}` : b.kind === "guest" ? "Paused for a guest" : `Paused by ${names.parent}`;
+    out.label = b.kind === "off" ? `Turned off by ${names.parentMid || names.parent}` : b.kind === "guest" ? "Paused for a guest" : `Paused by ${names.parentMid || names.parent}`;
     out.card = `${out.label} · ${rng}`;
   }
   out.heard = Object.keys(KIND_NAMES).filter((k) => KINDS_SHOWN.has(k) && b.kinds && b.kinds[k]).map((k) => KIND_NAMES[k]);
@@ -790,7 +792,8 @@ export function heardToday(evs, off) {
  * The full picture both screens draw, from the household's raw state and its window events.
  * opts: { theta, tz (IANA zone of the kitchen) or off (seconds), hop (seconds between windows), names: {parent, caregiver} }
  */
-export function today(s, events, now, { theta, tz = null, off = null, day0 = null, hop = 2, names = { parent: "Dad", caregiver: "Meera" } } = {}) {
+export function today(s, events, now, { theta, tz = null, off = null, day0 = null, hop = 2, names = null, viewer = "family" } = {}) {
+  names = who(names || s.names || {}, viewer);           // neutral until setup names someone: "Your parent", never "Mom" or "Dad"
   off = off ?? tzOffset(tz || "UTC", now);
   day0 = day0 ?? localMidnight(now, off);
   const hb = heartbeat(s, now, hop);

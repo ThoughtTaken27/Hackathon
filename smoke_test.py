@@ -2,7 +2,7 @@
 
 Runs the real app in-process (FastAPI TestClient, no network, no microphone, no keys):
 pages load; consent gate; a sample day plays through the real model; the caregiver view shows the
-heartbeat, blocks and checks; pause shows "Paused by Dad"; "Try your own sound" handles a real clip,
+heartbeat, blocks and checks; pause shows "Paused by your parent"; "Try your own sound" handles a real clip,
 an unclear clip, silence, white noise and a non-audio file; live audio over the WebSocket is refused
 before consent and labelled after it.
 Usage: python smoke_test.py   (exit code 0 = pass)
@@ -65,7 +65,7 @@ def main() -> None:
 
         # the parent's pause, seen by the caregiver
         t = c.post("/api/pause", json={"minutes": 60}).json()
-        check(t["heartbeat"]["state"] == "paused" and "Paused by Dad" in t["heartbeat"]["text"], f"pause: {t['heartbeat']['text']}")
+        check(t["heartbeat"]["state"] == "paused" and "Paused by your parent" in t["heartbeat"]["text"], f"pause: {t['heartbeat']['text']}")
         t = c.post("/api/resume").json()
         check(t["heartbeat"]["state"] != "paused", "resume")
 

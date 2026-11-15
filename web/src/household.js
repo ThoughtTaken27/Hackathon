@@ -19,10 +19,21 @@ export function randomId(n, alphabet = "abcdefghjkmnpqrstuvwxyz23456789") {
 const cleanName = (s, fallback) => (typeof s === "string" && s.trim() ? s.trim().slice(0, MAX_NAME) : fallback);
 const validTz = (tz) => { try { new Intl.DateTimeFormat("en-US", { timeZone: tz }); return true; } catch { return false; } };
 
-/** A new household's stored record, and its two keys (returned once, stored only as hashes). */
-export async function create({ parent, caregiver, tz } = {}, now) {
+const RELATION_IDS = ["parent", "grandparent", "partner", "relative", "friend", "self"];
+const ROOM_IDS = ["kitchen", "living", "bedroom", "hallway", "bathroom", "home", "other"];
+const cleanRelation = (r, fallback = "parent") => (RELATION_IDS.includes(r) ? r : fallback);
+/** {type, name} for the room the device listens in (people.js ROOMS); a free name only for "other". */
+function cleanRoom(room, fallback = { type: "kitchen", name: "" }) {
+  if (!room || typeof room !== "object" || !ROOM_IDS.includes(room.type)) return fallback;
+  return { type: room.type, name: room.type === "other" ? cleanName(room.name, "room").toLowerCase() : "" };
+}
+
+/** A new household's stored record, and its two keys (returned once, stored only as hashes).
+ *  No name given = no name stored: screens say "Your parent" and "you" (people.js who()), never a made-up Mom or Dad. */
+export async function create({ parent, caregiver, relation, room, tz } = {}, now) {
   const kitchenKey = randomId(24), familyKey = randomId(24);
-  const state = { ...newState(), names: { parent: cleanName(parent, "Dad"), caregiver: cleanName(caregiver, "Meera") },
+  const state = { ...newState(), names: { parent: cleanName(parent, null), caregiver: cleanName(caregiver, null),
+      relation: cleanRelation(relation), room: cleanRoom(room) },
     tz: validTz(tz) ? tz : "UTC", created: now, hop: 10,
     keys: { kitchen: await sha256(kitchenKey), family: await sha256(familyKey) } };
   return { state, kitchenKey, familyKey };
@@ -172,7 +183,8 @@ export async function handle(store, { method, route, key, body, now }) {
     return done(200);
   }
   if (method === "POST" && route === "names") {
-    s.names = { parent: cleanName(body?.parent, s.names.parent), caregiver: cleanName(body?.caregiver, s.names.caregiver) };
+    s.names = { parent: cleanName(body?.parent, s.names.parent), caregiver: cleanName(body?.caregiver, s.names.caregiver),
+      relation: cleanRelation(body?.relation, s.names.relation || "parent"), room: cleanRoom(body?.room, s.names.room || { type: "kitchen", name: "" }) };
     changed = true;
     return done(200);
   }

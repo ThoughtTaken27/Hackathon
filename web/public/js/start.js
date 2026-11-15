@@ -96,7 +96,7 @@ async function step3(r) {
   const card = el("div", { class: "pair-card" });
   if (r.codeFor === "kitchen") {
     card.append(el("p", { class: "step-k", text: `On the device that stays in ${spot}` }),
-      el("ol", { class: "steps-mini" }, el("li", { text: `Open ${location.host}/kitchen in Chrome or Safari on a spare phone, tablet or laptop.` }), el("li", { text: "Type this code:" })), code,
+      el("ol", { class: "steps-mini" }, el("li", { text: `Open ${location.host}/listen in Chrome or Safari on a spare phone, tablet or laptop.` }), el("li", { text: "Type this code:" })), code,
       el("p", { class: "meta muted", text: "The code works for 48 hours. Or send this link to that device:" }),
       el("div", { class: "linkbox" }, el("code", { text: otherUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(otherUrl) })),
       el("ol", { class: "steps-mini", style: "counter-reset: s 2" }, el("li", { text: self ? "Read one screen and press Yes. Nothing starts without that." : `${who} reads one screen and presses Yes. Nothing starts without that.` }), el("li", { text: `Kettle then shows ${self ? "you" : whoMid} where to put it and checks that it can hear the room. About two minutes.` })));

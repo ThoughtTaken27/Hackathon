@@ -97,7 +97,7 @@ function makeDayBar(root, { big = false, onSelect = null } = {}) {
   function render(today) {
     lastBlocks = today.blocks;
     empty.hidden = today.blocks.length > 0;
-    empty.textContent = today.heartbeat.state === "never" ? `The day appears here once ${today.names.parent} turns Kettle on.` : "Nothing heard yet today.";
+    empty.textContent = today.heartbeat.state === "never" ? `The day appears here once ${today.names.parentMid || today.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(today);
     const span = z - a;
     const pct = (t) => `${(100 * (Math.max(a, Math.min(z, t)) - a) / span).toFixed(3)}%`;

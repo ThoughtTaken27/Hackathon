@@ -80,3 +80,9 @@ test("room profiles are complete", () => {
   assert.deepEqual(ROOMS.bathroom.sounds, []);
   assert.equal(ROOMS.bedroom.showsActivities, false);
 });
+
+test("/listen is the same page as /kitchen (a room-neutral address for any room)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const a = readFileSync(new URL("../public/kitchen.html", import.meta.url), "utf8"), b = readFileSync(new URL("../public/listen.html", import.meta.url), "utf8");
+  assert.equal(a, b);
+});

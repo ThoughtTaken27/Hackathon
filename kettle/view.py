@@ -10,8 +10,8 @@ import time
 from kettle import witness, heartbeat, live, rules, timeline
 from kettle.labels import DISPLAY, PHRASE
 
-PARENT = "Dad"          # how the caregiver refers to the parent (invented persona: Ravi, 79)
-CAREGIVER = "Meera"     # the adult child who sees the page (invented persona)
+PARENT = "your parent"  # mid-sentence, until setup names someone (web: people.js who()); never "Mom" or "Dad" by default
+CAREGIVER = "you"       # the family member who sees the page, until they give a name
 
 
 def tz_offset(now: float) -> int:

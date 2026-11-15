@@ -1,5 +1,6 @@
-// Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this device, sends only labels.
+// The room screen (Kettle web; route /kitchen). Pairs with a code, asks the person first, labels sound on this device, sends only labels.
 import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
+import { ROOMS, who } from "./people.js";
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
@@ -35,6 +36,20 @@ const TEACH = [
   { c: "dishwashing", head: "Step 2 of 3: wash up or run the tap", body: "Rinse a few dishes for about a minute, the way you usually do.", s: 60 },
   { c: "cooking", head: "Step 3 of 3: cook, or pretend to", body: "Stir a pan, chop something or fry for about a minute. Real kitchen sounds work best.", s: 60 },
 ];
+// Teaching steps for the room the device is in (people.js ROOMS[type].teach), mapped to the head's classes.
+// The kitchen keeps its measured three steps above; other rooms are a prototype (not measured), and the screens say so.
+const TEACH_CLASS = { quiet: "absence", wash: "dishwashing", cook: "cooking", tv: "watching_tv", move: "other", walk: "other", drawer: "other", door: "other", tap: "dishwashing" };
+function roomType() { const r = srv && srv.names && srv.names.room; return r && ROOMS[r.type] ? r.type : "kitchen"; }
+const isKitchen = () => roomType() === "kitchen";
+function roomWord() { return who(srv ? srv.names : null, "person").room; }
+function roomSounds() { return isKitchen() ? "kitchen sounds" : `the sounds of the ${roomWord()}`; }
+function teachSteps() {
+  if (isKitchen()) return TEACH;
+  const steps = ROOMS[roomType()].teach;
+  return steps.map((x, i) => ({ c: TEACH_CLASS[x.c] || "other", label: x.head, s: x.c === "quiet" ? 40 : 60,
+    head: `Step ${i + 1} of ${steps.length}: ${x.head.charAt(0).toLowerCase()}${x.head.slice(1)}`,
+    body: x.c === "quiet" ? "Stay still for about 40 seconds. Kettle is learning what quiet sounds like here." : `${x.body} Keep going for about a minute.` }));
+}
 const teach = { step: -1, ready: false, t0: 0, samples: [], quietDbs: [], activeDbs: [], stepDbs: [], lastSent: 0, failed: false, level: 0 };
 const WARM_S = 10;                                // the 10-s window must be filled with this step's sound first
 function startTeach() {
@@ -45,7 +60,7 @@ function startTeach() {
 }
 function teachTick() {
   if (teach.step < 0 || !teach.ready) return;          // each step waits until the parent says they're ready
-  const st = TEACH[teach.step];
+  const st = teachSteps()[teach.step];
   if (now() - teach.t0 < st.s + WARM_S) { draw(); return; }
   if (st.c !== "absence") {                       // microphone check: the activity must be clearly louder than quiet
     const q = median(teach.quietDbs), a = median(teach.stepDbs);
@@ -53,14 +68,14 @@ function teachTick() {
     teach.activeDbs.push(...teach.stepDbs);
   }
   teach.stepDbs = [];
-  if (teach.step + 1 < TEACH.length) { teach.step++; teach.ready = false; draw(); return; }
+  if (teach.step + 1 < teachSteps().length) { teach.step++; teach.ready = false; draw(); return; }
   enrolment = buildEnrolment(modelHead(), teach.samples, teach.quietDbs, teach.activeDbs);
   try { localStorage.setItem(EKEY, JSON.stringify(enrolment)); } catch {}
   teach.step = -1; mic && mic.setHop(HOP_S);
   ui.taughtAt = Date.now(); draw();
 }
 function stopTeach() { teach.step = -1; teach.failed = false; mic && mic.setHop(HOP_S); draw(); }
-function forgetTeach() { enrolment = null; try { localStorage.removeItem(EKEY); } catch {} ; toast("Kettle forgot what it learned in this kitchen."); draw(); }
+function forgetTeach() { enrolment = null; try { localStorage.removeItem(EKEY); } catch {} ; toast(`Kettle forgot what it learned in this ${roomWord()}.`); draw(); }
 function median(xs) { const v = xs.filter(Number.isFinite).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : -Infinity; }
 
 // ---------------------------------------------------------------- larger text and dim screen (plan F5, E9)
@@ -160,7 +175,7 @@ function popOutButton() { return window.opener || ui.elsewhere ? null : button("
 function tabTitle(s) {
   const t = ui.elsewhere ? "Kettle (in another window)" : s.state === "paused" ? "Paused · Kettle"
     : mic && ui.mic === "on" && !s.state.startsWith("error") ? "● Listening · Kettle"
-    : s.state === "off" ? "Off · Kettle" : s.state.startsWith("error") ? "Needs attention · Kettle" : "Kettle · kitchen";
+    : s.state === "off" ? "Off · Kettle" : s.state.startsWith("error") ? "Needs attention · Kettle" : `Kettle · ${roomWord()}`;
   if (document.title !== t) document.title = t;
 }
 
@@ -242,7 +257,7 @@ async function startListening() {
         if (silentRun > 0) return;
         if (silentRun === 0 && srv && srv.mic === "blocked") act("mic", { state: "ok" });
         if (teach.step >= 0) {                           // teaching: keep this kitchen's windows on the device
-          const st = TEACH[teach.step];
+          const st = teachSteps()[teach.step];
           if (teach.ready && w.end - teach.t0 >= WARM_S && w.end - teach.t0 <= st.s + WARM_S) {
             if (w.emb) teach.samples.push({ c: st.c, emb: Float32Array.from(w.emb) });
             (st.c === "absence" ? teach.quietDbs : teach.stepDbs).push(w.db);
@@ -320,26 +335,28 @@ function screen(t) {
       controls: [button("I'm OK", () => reply("ok"), "primary"), button("I need help", () => reply("help"), "danger")] };
   }
   if (ui.alerted && Date.now() - ui.alerted.at < 60000) return { state: "error", head: `Kettle told ${n.caregiver}.`,
-    body: [`It heard ${ui.alerted.text}. ${n.caregiver} sees an urgent note on their phone. If you need help now, call for it.`],
+    body: [`It heard ${ui.alerted.text}. ${n.Caregiver} sees an urgent note on their phone. If you need help now, call for it.`],
     controls: [button("OK", () => { ui.alerted = null; draw(); }, "primary")] };
   if (ui.gone) return { state: "error", head: `This ${DEVICE} isn't connected any more.`, body: [ui.gone, "Ask your family member for a new code."],
     controls: [el("a", { class: "btn kbtn primary", href: "/kitchen", text: "Enter a new code", onclick: () => { forgetHome(link.id); } })] };
   if (ui.down) return { state: "error", head: "Kettle can't reach the internet.", body: ["It keeps listening and will send what it heard when the connection is back."],
     controls: [button("Try again", () => poll(), "primary")], bar: true, chip: true };
   if (!k.consent) {
-    if (ui.step === "teachback") return { state: "never", stepK: 1, head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`],
+    if (ui.step === "teachback") return { state: "never", stepK: 1, head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.Caregiver} will see the kinds of sound and when they happened. Nothing else.`],
       controls: [button(`Yes, ${n.caregiver} can see this`, () => act("consent"), "primary"), button("No, not now", () => { ui.step = "declined"; draw(); }),
-        button("Read this to me", () => speak([`Is it OK for ${n.caregiver} to see this?`, `${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`]), "quiet-k")] };
+        button("Read this to me", () => speak([`Is it OK for ${n.caregiver} to see this?`, `${n.Caregiver} will see the kinds of sound and when they happened. Nothing else.`]), "quiet-k")] };
     if (ui.step === "declined") return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`],
       controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
-    const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
-      `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`,
-      `${n.caregiver} will also see when people were talking (that shows a visit, never what was said) and when the TV or radio was on. You can hide any of these.`,
+    const examples = isKitchen() ? "'dishes', 'TV' or 'people talking'" : roomType() === "living" ? "'TV', 'people talking' or footsteps" : "footsteps, a door, 'TV' or 'people talking'";
+    const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like ${examples}.`,
+      ...(isKitchen() ? [] : [`Kettle was measured on kitchen sounds. In a ${roomWord()} it is a prototype and may say "Not sure" more often.`]),
+      `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.Caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`,
+      `${n.Caregiver} will also see when people were talking (that shows a visit, never what was said) and when the TV or radio was on. You can hide any of these.`,
       "Kettle never names voices, coughs, crying or bathroom sounds. If a guest or carer comes, you can pause it for them.",
       `If it hears a smoke alarm, screaming, or a crash and then a cry, it asks "Are you OK?" here and tells ${n.caregiver} if nobody answers. It can't call for help itself.`];
-    return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
+    return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for ${roomSounds()}.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
-        button("Read this to me", () => speak([`This ${DEVICE} listens for kitchen sounds.`, ...lines]), "quiet-k")] };
+        button("Read this to me", () => speak([`This ${DEVICE} listens for ${roomSounds()}.`, ...lines]), "quiet-k")] };
   }
   if (ui.elsewhere && !k.paused && !k.off) return { state: "starting", head: "Kettle is listening in another window.",
     body: ["You can close this tab. Keep the other Kettle window open; it can be small or minimised."],
@@ -349,11 +366,11 @@ function screen(t) {
   if (k.paused) {
     const weekly = k.pause_reason === "weekly";
     const until = weekly ? "Kettle waits for your answer before listening again." : hb.until_text ? `Starts listening again at ${hb.until_text}${hb.text.includes("tomorrow") ? " tomorrow" : ""}.` : "";
-    return { state: "paused", head: weekly ? "Kettle has paused. Keep it on?" : "Paused. Kettle isn't listening.", body: [`${n.caregiver} sees: Paused by you at ${hb.since_text}.`, until], bar: true,
+    return { state: "paused", head: weekly ? "Kettle has paused. Keep it on?" : "Paused. Kettle isn't listening.", body: [`${n.Caregiver} sees: Paused by you at ${hb.since_text}.`, until], bar: true,
       controls: weekly ? [button("Keep it on", () => act("keep_on"), "primary"), button("Turn it off", () => act("off"))]
         : [button("Resume listening", () => act("resume"), "primary pause"), button("Turn it off", () => act("off"))] };
   }
-  if (k.weekly_due) return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.caregiver} sees the kinds of sounds, not recordings or words.`, "If nobody answers, Kettle pauses tomorrow until you choose."],
+  if (k.weekly_due) return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.Caregiver} sees the kinds of sounds, not recordings or words.`, "If nobody answers, Kettle pauses tomorrow until you choose."],
     controls: [button("Keep it on", () => act("keep_on"), "primary"), button("Turn it off", () => act("off"))] };
   if (ui.mic === "loading") return { state: "starting", head: "Getting Kettle ready…", body: [`Kettle's sound model is loading onto this ${DEVICE}. This happens once.`], progress: true, controls: [] };
   if (ui.mic === "model_failed") return { state: "error", head: "Kettle couldn't load.", body: ["Check the internet connection, then try again."], controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
@@ -361,20 +378,20 @@ function screen(t) {
     controls: [el("button", { class: "btn quiet", type: "button", text: "No box appeared? Try again", style: "font-size:var(--fs-lead)", onclick: () => { stopListening(); ui.mic = "idle"; sync(); } })] };
   if (ui.mic === "denied" || ui.mic === "none") {
     const none = ui.mic === "none";
-    return { state: "error-soft", head: none ? "No microphone found." : "Kettle can't hear the kitchen.",
-      body: [none ? "Plug one in, or use a phone, tablet or laptop with a built-in microphone." : `The microphone is switched off for Kettle. This isn't something you did wrong. ${n.caregiver} or a helper can turn it on.`],
+    return { state: "error-soft", head: none ? "No microphone found." : `Kettle can't hear the ${roomWord()}.`,
+      body: [none ? "Plug one in, or use a phone, tablet or laptop with a built-in microphone." : `The microphone is switched off for Kettle. This isn't something you did wrong. ${n.Caregiver} or a helper can turn it on.`],
       helper: none ? null : ["Steps for a helper", "Chrome: click the icon left of the address, then Microphone, then Allow, then Try again. Safari: Settings for this website, then Microphone, then Allow."],
       controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
   }
   if (ui.setup === "check" && ui.mic === "on") return checkScreen(n);
   if (ui.setup === "teach" && ui.mic === "on" && teach.step < 0) return teachOfferScreen(n);
   if (teach.step >= 0) {
-    const st = TEACH[teach.step];
-    if (teach.failed) return { state: "error-soft", head: "Kettle could hardly hear that.", body: ["Move the laptop closer to the sink and the stove, with nothing covering it, then try this step again."],
+    const st = teachSteps()[teach.step];
+    if (teach.failed) return { state: "error-soft", head: "Kettle could hardly hear that.", body: [isKitchen() ? "Move the laptop closer to the sink and the stove, with nothing covering it, then try this step again." : `Move the ${DEVICE} closer to where things happen in the ${roomWord()}, with nothing covering it, then try this step again.`],
       controls: [button("Try this step again", () => { teach.failed = false; teach.stepDbs = []; teach.t0 = now(); draw(); }, "primary"), button("Stop teaching", stopTeach, "quiet-k")] };
     if (!teach.ready) {
       const prev = teach.step > 0 ? `Step ${teach.step} done. ` : "";
-      return { state: "listening", head: `${prev}Ready for step ${teach.step + 1} of 3?`, body: [st.head.replace(/^Step \d of 3: /, "Next: "), st.body],
+      return { state: "listening", head: `${prev}Ready for step ${teach.step + 1} of ${teachSteps().length}?`, body: [st.head.replace(/^Step \d of \d: /, "Next: "), st.body],
         controls: [button(`I'm ready. Start step ${teach.step + 1}`, () => { teach.ready = true; teach.t0 = now(); teach.stepDbs = []; draw(); }, "primary"),
           button("Stop teaching", stopTeach, "quiet-k")] };
     }
@@ -388,12 +405,12 @@ function screen(t) {
     controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off")), popOutButton()].filter(Boolean) };
   if (silentRun >= 3) return { ...base, chip: false, state: "error-soft", head: "Kettle hears nothing at all.",
     body: [`The microphone is sending silence, so ${n.caregiver} sees "Not listening". Check it isn't muted (a mute key, or a switch on a headset).`] };
-  if (Date.now() - (ui.taughtAt || 0) < 15000) return { ...base, state: "listening", head: "Thank you. Kettle learned this kitchen.",
+  if (Date.now() - (ui.taughtAt || 0) < 15000) return { ...base, state: "listening", head: `Thank you. Kettle learned this ${roomWord()}.`,
     body: [`What it learned stays on this ${DEVICE}. It helps Kettle with sounds it wasn't sure about; it never overrules a sound it already knows.`] };
   if (Date.now() - ui.resumedAt < 10000 && ui.resumedText) return { ...base, state: "listening", head: "Kettle is listening again.", body: [ui.resumedText] };
   if (hb.state === "starting") return { ...base, state: "starting", head: "Listening…", body: ["The first sound label appears in about 10 seconds."] };
-  return { ...base, state: hb.state === "listening" ? "listening" : "starting", head: "Listening for kitchen sounds",
-    teachCta: !enrolment, body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines()] };
+  return { ...base, state: hb.state === "listening" ? "listening" : "starting", head: `Listening for ${roomSounds()}`,
+    teachCta: !enrolment, body: [`${since} ${n.Caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines()] };
 }
 
 // ---------------------------------------------------------------- first-time setup: placement, then a live sound check
@@ -410,7 +427,8 @@ function placeScreen(n) {
   const awake = "wakeLock" in navigator ? ["yes", "Kettle keeps the screen on while this page is open."]
     : ["no", `Set Auto-Lock or Screen timeout to Never in this ${DEVICE}'s settings.`];
   const guide = el("ol", { class: "k-guide" },
-    guideRow(1, "Near the stove and sink", "Within a couple of steps. Kettle hears less from across the room."),
+    isKitchen() ? guideRow(1, "Near the stove and sink", "Within a couple of steps. Kettle hears less from across the room.")
+      : guideRow(1, `Where things happen in the ${roomWord()}`, ROOMS[roomType()].placement[0]),
     guideRow(2, "Away from the TV", `In our tests, a TV as loud as the cooking cut what Kettle caught from ${STRESS.tvOff}% to ${STRESS.tvSame}%.`),
     guideRow(3, "Plugged in", "Kettle listens all day.", power),
     guideRow(4, "Screen on, this page open", "Phones and tablets stop the microphone when the screen locks.", awake));
@@ -424,22 +442,31 @@ function checkScreen(n) {
   if (!c && silentRun >= 2) return { state: "error-soft", stepK: 3, head: "Kettle hears nothing at all.",
     body: [`The microphone is sending silence. Check it isn't muted (a mute key, or a switch on a headset), or try another microphone.`],
     controls: [button("Skip the sound check", toTeachOffer, "quiet-k")] };
-  if (!c) return { state: "listening", stepK: 3, head: "Quick sound check", body: ["Run the tap, or clink two plates together, for about 10 seconds.", "Kettle will say what it heard."],
+  if (!c) return { state: "listening", stepK: 3, head: "Quick sound check", body: [isKitchen() ? "Run the tap, or clink two plates together, for about 10 seconds."
+      : "Walk about, open a drawer, or talk for about 10 seconds.", "Kettle will say what it heard."],
     guide: el("div", { class: "k-check" }, meterEl, el("p", { class: "g-s", text: "Listening. The answer appears within 10 seconds." })),
     controls: [button("Skip the sound check", toTeachOffer, "quiet-k")] };
   const name = c.label === "not_sure" ? "something it couldn't name" : c.label === "talk_or_tv" ? "talking / TV" : (DISPLAY[c.label] || c.label).toLowerCase();
-  if (MEAL.has(c.label)) return { state: "listening", stepK: 3, done: true, head: `Kettle heard ${name}.`,
-    body: [`This spot works. ${n.caregiver} will see moments like this on the timeline, never the sound itself.`],
+  const fits = isKitchen() ? MEAL.has(c.label) : !["absence", "not_sure", "private"].includes(c.label);
+  if (fits) return { state: "listening", stepK: 3, done: true, head: `Kettle heard ${name}.`,
+    body: [`This spot works. ${n.Caregiver} will see moments like this on the timeline, never the sound itself.`],
     controls: [button("Next", toTeachOffer, "primary")] };
   return { state: "starting", stepK: 3, retry: true, head: `Kettle heard ${name}.`,
-    body: ["That isn't a kitchen sound yet. Move a little closer to the sink, or make the sound a bit louder, then try again."],
+    body: [isKitchen() ? "That isn't a kitchen sound yet. Move a little closer to the sink, or make the sound a bit louder, then try again."
+      : "Kettle couldn't name that yet. Move a little closer, or make the sound a bit louder, then try again."],
     controls: [button("Try again", () => { ui.check = null; draw(); }, "primary"), button("Next anyway", toTeachOffer, "quiet-k")] };
 }
 
 function teachOfferScreen(n) {
+  const steps = teachSteps(), R = roomWord();
+  if (!isKitchen()) return { state: "listening", stepK: 4, head: `Teach Kettle this ${R}`, body: [
+    `Every ${R} sounds different. In about ${steps.length + 1} minutes Kettle learns how this one sounds.`,
+    `What it learns stays on this ${DEVICE}. ${n.Caregiver} gets a more accurate timeline. Kettle was measured on kitchen sounds; in a ${R} it's a prototype.`],
+    guide: el("ol", { class: "k-guide" }, ...steps.map((x, i) => guideRow(i + 1, x.label, x.c === "absence" ? "About 40 seconds of stillness." : "About a minute."))),
+    controls: [button(`Start teaching (${steps.length + 1} minutes)`, startTeach, "primary"), button("Do it later", finishSetup, "quiet-k")] };
   return { state: "listening", stepK: 4, head: "Teach Kettle this kitchen", body: [
     `Every kitchen sounds different. In 3 minutes Kettle learns how this one sounds: quiet, washing up, then cooking.`,
-    `What it learns stays on this ${DEVICE}. ${n.caregiver} gets a more accurate timeline.`],
+    `What it learns stays on this ${DEVICE}. ${n.Caregiver} gets a more accurate timeline.`],
     guide: el("ol", { class: "k-guide" }, guideRow(1, "Quiet", "About 40 seconds of stillness."), guideRow(2, "Washing up", "About a minute of rinsing dishes or running the tap."),
       guideRow(3, "Cooking", "About a minute of stirring, chopping or frying.")),
     controls: [button("Start teaching (3 minutes)", startTeach, "primary"), button("Do it later", finishSetup, "quiet-k")] };
@@ -450,8 +477,9 @@ function exampleBar() {
   if (exampleNode) return exampleNode;
   const fake = { day0: 0, now: 11 * 3600, names: t.names, heartbeat: { state: "listening" }, blocks: [
     { start: 6 * 3600, end: 7.6 * 3600, state: "empty", activity: "absence", label: "Quiet", range: "" },
-    { start: 8 * 3600, end: 8.4 * 3600, state: "activity", activity: "cooking", label: "Cooking", range: "", how_sure: "high" },
-    { start: 8.45 * 3600, end: 8.75 * 3600, state: "activity", activity: "dishwashing", label: "Washing up", range: "", how_sure: "high" },
+    ...(isKitchen() ? [{ start: 8 * 3600, end: 8.4 * 3600, state: "activity", activity: "cooking", label: "Cooking", range: "", how_sure: "high" },
+      { start: 8.45 * 3600, end: 8.75 * 3600, state: "activity", activity: "dishwashing", label: "Washing up", range: "", how_sure: "high" }]
+      : [{ start: 8 * 3600, end: 8.6 * 3600, state: "activity", activity: "other", label: "Some activity", range: "", how_sure: "high" }]),
     { start: 9.2 * 3600, end: 10.6 * 3600, state: "activity", activity: "watching_tv", label: "Talking / TV", range: "", how_sure: "high" }] };
   const box = el("div", { class: "example", "aria-label": "Example of the day timeline (not real)" }, el("span", { class: "tag", text: "Example, not real" }), el("div"));
   setTimeout(() => dayBar(box.lastChild).render(fake), 0);
@@ -461,7 +489,7 @@ function exampleBar() {
 function tools() {
   const big = document.documentElement.classList.contains("big-text");
   return el("div", { class: "k-tools" },
-    enrolment ? button("Teach Kettle this kitchen again", startTeach, "quiet-k") : null,
+    enrolment ? button(`Teach Kettle this ${roomWord()} again`, startTeach, "quiet-k") : null,
     enrolment ? button("Forget what it learned", forgetTeach, "quiet-k") : null,
     button(big ? "Smaller text" : "Larger text", toggleText, "quiet-k"),
     button("Dim the screen", dimScreen, "quiet-k"));
@@ -484,7 +512,7 @@ let prevChip = null;
 function sync() {
   if (!srv) return;
   const was = sync.paused; sync.paused = !!(srv.paused_until && now() < srv.paused_until);
-  t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
+  t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names, viewer: "person" });
   if (was && !sync.paused) {
     ui.resumedAt = Date.now();
     const last = t.blocks.filter((b) => b.state === "paused").pop();
@@ -499,10 +527,10 @@ function sync() {
 
 function draw(fresh = false) {
   if (!srv) return;
-  t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
+  t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names, viewer: "person" });
   const s = screen(t);
   tabTitle(s);
-  $("#who-tag").textContent = `${t.names.parent}'s kitchen`;
+  $("#who-tag").textContent = t.names.place;
   $("#status").dataset.state = s.state;
   $("#status").classList.toggle("done", !!s.done);
   $("#status").classList.toggle("retry", !!s.retry);
@@ -527,7 +555,7 @@ function draw(fresh = false) {
   }
   if (s.example) body.append(exampleBar());
   if (s.teachCta && !ui.pauseMenu) $("#body").prepend(el("div", { class: "k-teach-cta" },
-    el("div", {}, el("p", { class: "t", text: "First, teach Kettle this kitchen" }),
+    el("div", {}, el("p", { class: "t", text: `First, teach Kettle this ${roomWord()}` }),
       el("p", { class: "s", text: "3 minutes: quiet, washing up, cooking. Kettle gets more accurate here, and what it learns stays on this " + DEVICE + "." })),
     button("Start (3 minutes)", startTeach, "primary")));
   if (s.teachMeter) {

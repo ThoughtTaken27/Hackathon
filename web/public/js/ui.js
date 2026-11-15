@@ -118,7 +118,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   function render(t) {
     last = t.blocks; lastT = t;
     empty.hidden = t.blocks.length > 0;
-    empty.textContent = t.heartbeat.state === "never" ? `The day appears here once ${t.names.parent} turns Kettle on.` : "Nothing heard yet today.";
+    empty.textContent = t.heartbeat.state === "never" ? `The day appears here once ${t.names.parentMid || t.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(t), span = z - a;
     span0 = [a, z];
     const pct = (x) => `${((100 * (Math.max(a, Math.min(z, x)) - a)) / span).toFixed(3)}%`;

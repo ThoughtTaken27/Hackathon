@@ -9,7 +9,7 @@ export async function sampleDays() { return cache || (cache = await fetch("/data
  * Play a sample day. onFrame(t) gets the same payload both screens draw, after every label.
  * Returns { stop() }. seconds = how long the whole morning takes to play.
  */
-export async function play(sid, onFrame, { seconds = 16, names = { parent: "Dad", caregiver: "Meera" }, loop = false } = {}) {
+export async function play(sid, onFrame, { seconds = 16, names = { parent: null, caregiver: null }, loop = false } = {}) {
   const days = await sampleDays(), d = days[sid];
   const off = -new Date().getTimezoneOffset() * 60;
   const day0 = Math.floor((Date.now() / 1000 + off) / 86400) * 86400 - off;
@@ -24,7 +24,7 @@ export async function play(sid, onFrame, { seconds = 16, names = { parent: "Dad"
       const e = d.events[i];
       evs.push({ ...e, start: day0 + e.start, end: day0 + e.end });
       s.last_window_t = day0 + e.end;
-      s.pauses = (d.pauses || []).filter((p) => p[1] <= e.end).map((p) => [day0 + p[0], day0 + p[1]]);   // "Dad paused it"
+      s.pauses = (d.pauses || []).filter((p) => p[1] <= e.end).map((p) => [day0 + p[0], day0 + p[1]]);   // "your parent paused it"
       const t = computeToday(s, evs, day0 + e.end + 1, { theta: 0.66, off, day0, hop: 2, names });
       t.sample = { id: sid, title: d.title, i: i + 1, n: d.events.length };
       onFrame(t);

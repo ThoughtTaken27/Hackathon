@@ -87,3 +87,19 @@ export function place(names, room, viewer = "family", { mid = false } = {}) {
 export function caregiverName(names, viewer) {
   return clean(names && names.caregiver) || (viewer === "family" ? "you" : "your family");
 }
+
+/**
+ * Everything a screen needs to name the person and the room, from the stored names ({parent, caregiver, relation, room}).
+ * Before setup (or with no name) this is neutral: "Your parent", "your parent's room", never "Mom" or "Dad".
+ * room is { type: "kitchen" | "living" | "bedroom" | ..., name } (people.js ROOMS); no room = kitchen (older homes).
+ */
+export function who(names, viewer = "family") {
+  const x = normaliseNames(names), room = names && names.room;
+  const name = personName(x), mid = personName(x, { mid: true });
+  const type = room && ROOMS[room.type] ? room.type : "kitchen";
+  return { parent: name, parentMid: mid, poss: possessive(name), possMid: possessive(mid), room: roomName(room), roomType: type,
+    roomLabel: type === "other" ? roomName(room).replace(/^./, (c) => c.toUpperCase()) : ROOMS[type].label,
+    place: place(x, room, viewer === "person" ? "person" : "family"), placeMid: place(x, room, viewer === "person" ? "person" : "family", { mid: true }),
+    caregiver: caregiverName(names, viewer), Caregiver: caregiverName(names, viewer).replace(/^./, (c) => c.toUpperCase()), caregiverSet: !!clean(names && names.caregiver), self: x.relation === "self",
+    relation: x.relation, roomObj: { type, name: type === "other" ? roomName(room) : "" } };
+}

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dad's kitchen today · Kettle</title>
+<title>Your parent's kitchen today · Kettle</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Crect x='1' y='8' width='7.5' height='6' rx='3' fill='%23eb6834'/%3E%3Crect x='10' y='8' width='4' height='6' rx='2' fill='%231baf7a'/%3E%3Crect x='15.5' y='8' width='5.5' height='6' rx='2.75' fill='%232a78d6'/%3E%3C/svg%3E">
 <link rel="preload" href="/static/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <script>if(new URLSearchParams(location.search).has("embed"))document.documentElement.classList.add("embed")</script>
@@ -13,14 +13,14 @@
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
   <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
   <span class="nav-sp"></span>
-  <div class="seg" role="group" aria-label="Whose screen"><a href="/today" aria-current="page">Meera's phone<span class="who"> (daughter)</span></a><a href="/kitchen">Dad's kitchen<span class="who"> (Ravi, 79)</span></a></div>
+  <div class="seg" role="group" aria-label="Whose screen"><a href="/today" aria-current="page">Family phone<span class="who"> (you)</span></a><a href="/kitchen">Parent's kitchen<span class="who"> (their laptop)</span></a></div>
   <a class="nav-link hide-sm" href="/how-sure">How sure</a>
 </div></nav>
 <main class="page enter" id="app">
   <header class="top">
     <div>
-      <p class="eyebrow">What Meera sees on her phone, 300 miles away</p>
-      <h1 id="title">Dad's kitchen today</h1>
+      <p class="eyebrow">What the family sees on their phone, wherever they are</p>
+      <h1 id="title">Your parent's kitchen today</h1>
       <p class="date" id="date"></p>
     </div>
     <a class="link" href="/how-sure"><span class="long">How sure is Kettle?</span><span class="short">How sure?</span></a>
@@ -32,7 +32,7 @@
   </div>
   <section class="card intro" id="intro" hidden>
     <p class="intro-head">Kettle isn't listening in this kitchen yet.</p>
-    <p class="meta muted">See what Meera would see: a sample day of real sounds from a public research home, through the same model, played in about 15 seconds.</p>
+    <p class="meta muted">See what the family would see: a sample day of real sounds from a public research home, through the same model, played in about 15 seconds.</p>
     <div class="row" id="intro-buttons" style="margin-top:12px"></div>
   </section>
   <p class="summary" id="summary"></p>
@@ -48,7 +48,7 @@
     <section aria-labelledby="checks-h">
       <h2 class="section-title" id="checks-h">Your checks</h2>
       <div class="rules" id="rules"></div>
-      <p class="rules-foot">Rules you set. Kettle doesn't learn Dad's routine and doesn't send alerts.</p>
+      <p class="rules-foot">Rules you set. Kettle doesn't learn your parent's routine and doesn't send alerts.</p>
       <div class="row" style="margin-top:12px"><button class="btn" id="edit-rules" type="button">Change checks</button></div>
     </section>
 
@@ -61,7 +61,7 @@
           <div class="row" style="margin-top:10px" id="demo-buttons"></div>
           <div class="row" style="margin-top:8px" id="demo-extra" hidden>
             <button class="btn" type="button" id="demo-sleep">Close the laptop lid</button>
-            <button class="btn quiet" type="button" id="demo-stop">Back to Dad's kitchen</button>
+            <button class="btn quiet" type="button" id="demo-stop">Back to the kitchen</button>
           </div>
         </div>
         <div>
@@ -78,9 +78,9 @@
   </div>
 
   <footer class="foot">
-    <p>Dad sees the same day on his kitchen screen and can pause Kettle any time.</p>
+    <p>Your parent sees the same day on the kitchen screen and can pause Kettle any time.</p>
     <p>Kettle is not an emergency device. It can't detect falls or call for help.</p>
-    <p>Times are Dad's local time. <span id="head-line"></span></p>
+    <p>Times are your parent's local time. <span id="head-line"></span></p>
     <p><strong>Prototype, not medical advice.</strong></p>
   </footer>
 </main>
