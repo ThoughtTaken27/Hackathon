@@ -69,6 +69,11 @@ export async function api(path, { method = "GET", body, key, retries = 3 } = {})
 export const online = () => navigator.onLine !== false;
 
 // ---------------------------------------------------------------- day bar
+/** Seconds since midnight -> "9:42 AM". */
+function hourMin(sec) {
+  const m = Math.max(0, Math.min(1439, Math.floor(sec / 60))), h = Math.floor(m / 60), mm = String(m % 60).padStart(2, "0");
+  return `${h % 12 || 12}:${mm} ${h < 12 ? "AM" : "PM"}`;
+}
 function hourLabel(h) { return h === 0 || h === 24 ? "12 AM" : h === 12 ? "12 PM" : h < 12 ? `${h} AM` : `${h - 12} PM`; }
 const blockKey = (b) => String(Math.round(b.start));
 const blockClass = (b) => ["blk", b.state, b.state === "activity" && b.how_sure === "medium" ? "medium" : ""].join(" ").trim();
@@ -82,10 +87,19 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   const ticks = el("div", { class: "ticks", "aria-hidden": "true" });
   const list = el("ol", { class: "sr" });
   const empty = el("div", { class: "empty-day", hidden: true });
-  hit.append(bar, nowTick, empty);
+  // Drag to read the day: on a phone the stretches are too thin to tap, so a finger slides along the bar and the stretch
+  // under it is selected, with a line and a small label showing what and when. Tapping still works; arrow keys too.
+  const scrub = el("div", { class: "scrub", hidden: true, "aria-hidden": "true" }, el("span", { class: "scrub-tip" }));
+  hit.append(bar, nowTick, scrub, empty);
+  hit.tabIndex = 0;
+  hit.setAttribute("role", "slider");
+  hit.setAttribute("aria-label", "Drag along the day to see what was happening");
   root.append(labels, hit, ticks, list);
+  if (onSelect) root.append(el("p", { class: "drag-hint" },
+    el("span", { class: "touch", text: "Slide a finger along the day to see what was happening and when." }),
+    el("span", { class: "mouse", text: "Click or drag along the day to see what was happening and when." })));
   const nodes = new Map();
-  let first = true, selected = null, last = [], lastT = null;
+  let first = true, selected = null, last = [], lastT = null, span0 = null, drag = null, swallowClick = false;
   // Real text widths (the old guess of 7.4 px a letter overlapped labels on phones, where the kitchen text is larger).
   const cv = document.createElement("canvas").getContext("2d");
   const textW = (node, text) => { const cs = getComputedStyle(node); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; return cv.measureText(text).width; };
@@ -106,6 +120,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     empty.hidden = t.blocks.length > 0;
     empty.textContent = t.heartbeat.state === "never" ? `The day appears here once ${t.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(t), span = z - a;
+    span0 = [a, z];
     const pct = (x) => `${((100 * (Math.max(a, Math.min(z, x)) - a)) / span).toFixed(3)}%`;
     const w = (b) => `${Math.max(0.25, (100 * (Math.min(z, b.end) - Math.max(a, b.start))) / span).toFixed(3)}%`;
     const seen = new Set();
@@ -114,7 +129,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
       let n = nodes.get(k);
       if (!n) {
         n = el("button", { type: "button" });
-        n.addEventListener("click", () => select(k));
+        n.addEventListener("click", (e) => { if (swallowClick) { swallowClick = false; e.preventDefault(); return; } select(k); });
         if (!first) n.classList.add("settle");
         bar.append(n); nodes.set(k, n);
       }
@@ -157,11 +172,81 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     if (selected && !nodes.has(selected)) select(null);
     else if (selected && onSelect) onSelect(last.find((b) => blockKey(b) === selected) || null);
   }
-  function select(k) {
-    selected = selected === k ? null : k;
+  function select(k) { setSelected(selected === k ? null : k); if (!selected) scrub.hidden = true; }
+  function setSelected(k) {
+    if (k === selected) return;
+    selected = k;
     for (const [kk, n] of nodes) n.classList.toggle("selected", kk === selected);
     if (onSelect) onSelect(last.find((b) => blockKey(b) === selected) || null);
   }
+  // The stretch at time x (seconds): the one containing it, else the nearest within 3% of the bar (a thin stretch is easy to hit).
+  function blockAt(x) {
+    const [a, z] = span0, tol = 0.03 * (z - a);
+    let best = null, bd = Infinity;
+    for (const b of last) {
+      if (b.state === "empty" && b.end - b.start < 60) continue;
+      const d = x < b.start ? b.start - x : x > b.end ? x - b.end : 0;
+      if (d < bd || (d === bd && d === 0 && b.state !== "empty")) { best = b; bd = d; }
+    }
+    return best && bd <= tol ? best : null;
+  }
+  function scrubTo(clientX) {
+    if (!span0 || !last.length) return;
+    const r = bar.getBoundingClientRect();
+    const f = Math.max(0, Math.min(1, (clientX - r.left) / Math.max(1, r.width)));
+    const [a, z] = span0, x = a + f * (z - a);
+    const b = blockAt(x);
+    scrub.hidden = false;
+    scrub.style.left = `${(100 * f).toFixed(3)}%`;
+    const tip = scrub.firstChild;
+    tip.textContent = b ? `${hourMin(x - lastT.day0)} · ${b.label}` : hourMin(x - lastT.day0);
+    // keep the label inside the bar
+    const tw = tip.offsetWidth, px = f * r.width;
+    tip.style.transform = `translateX(${Math.round(Math.max(-px, Math.min(r.width - px - tw, -tw / 2)))}px)`;
+    hit.setAttribute("aria-valuetext", tip.textContent);
+    setSelected(b ? blockKey(b) : null);
+  }
+  hit.addEventListener("pointerdown", (e) => {
+    if (e.button > 0 || !last.length) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, horiz: e.pointerType !== "touch", before: selected };
+    if (drag.horiz) { hit.setPointerCapture(e.pointerId); scrubTo(e.clientX); }
+  });
+  hit.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.horiz) {                                         // a finger: decide once whether this is a drag along the bar or a page scroll
+      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+      if (Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+      drag.horiz = true;
+      try { hit.setPointerCapture(e.pointerId); } catch { /* the pointer may already be gone */ }
+    }
+    drag.moved = true;
+    hit.classList.add("scrubbing");
+    scrubTo(e.clientX);
+  });
+  const end = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    if (!drag.moved && e.type === "pointerup") {
+      if (e.pointerType === "touch") scrubTo(e.clientX);                 // a plain tap anywhere near a stretch
+      if (selected && selected === drag.before) { setSelected(null); scrub.hidden = true; }   // tapping the open stretch again closes it
+    }
+    swallowClick = true;                                                 // the stretch's own click would toggle it a second time
+    setTimeout(() => { swallowClick = false; }, 400);
+    hit.classList.remove("scrubbing");
+    drag = null;
+  };
+  hit.addEventListener("pointerup", end);
+  hit.addEventListener("pointercancel", end);
+  hit.addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key) || !last.length) return;
+    e.preventDefault();
+    const seq = last.filter((b) => !(b.state === "empty" && b.end - b.start < 60));
+    let i = seq.findIndex((b) => blockKey(b) === selected);
+    i = e.key === "Home" ? 0 : e.key === "End" ? seq.length - 1 : i < 0 ? (e.key === "ArrowLeft" ? seq.length - 1 : 0) : i + (e.key === "ArrowLeft" ? -1 : 1);
+    const b = seq[Math.max(0, Math.min(seq.length - 1, i))];
+    const r = bar.getBoundingClientRect(), [a, z] = span0;
+    scrubTo(r.left + (r.width * ((Math.max(a, b.start) + Math.min(z, b.end)) / 2 - a)) / (z - a));
+  });
   return { render, select };
 }
 

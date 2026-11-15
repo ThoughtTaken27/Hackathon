@@ -148,6 +148,17 @@ html.embed .nav, html.embed .foot, html.embed .k-foot { display: none !important
 .blk.selected { clip-path: none; box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--ink); z-index: 2; }
 .blk.settle { animation: settle 460ms var(--ease-out) both; }
 @keyframes settle { from { transform: scaleX(.04); opacity: .3; } to { transform: scaleX(1); opacity: 1; } }
+/* drag to read the day (phones: the stretches are too thin to tap) */
+.bar-hit { touch-action: pan-y; cursor: col-resize; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; outline: none; }
+.bar-hit:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 25%, transparent); border-radius: 14px; }
+.scrub { position: absolute; top: 2px; bottom: 2px; width: 2px; margin-left: -1px; background: var(--ink); border-radius: 999px; z-index: 3; pointer-events: none; }
+.scrub::after { content: ""; position: absolute; left: -7px; bottom: -6px; width: 16px; height: 16px; border-radius: 999px; background: var(--card); box-shadow: 0 0 0 2px var(--ink), 0 2px 6px rgba(0,0,0,.18); }
+.scrub-tip { position: absolute; bottom: calc(100% + 6px); left: 0; white-space: nowrap; padding: 4px 10px; border-radius: 999px; background: var(--ink); color: var(--card);
+  font-size: var(--fs-meta); line-height: var(--lh-meta); font-weight: 600; font-variant-numeric: tabular-nums; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.bar-hit.scrubbing .blk { transition: none; }
+.drag-hint { margin: 6px 0 0; font-size: var(--fs-micro); line-height: var(--lh-micro); color: var(--muted); }
+@media (hover: hover) and (pointer: fine) { .drag-hint .touch { display: none; } }
+@media not ((hover: hover) and (pointer: fine)) { .drag-hint .mouse { display: none; } }
 .now-tick { position: absolute; top: 4px; height: 56px; width: 2px; background: var(--ink); border-radius: 999px; opacity: .7; }
 .now-tick::before { content: ""; position: absolute; top: -3px; left: -3px; width: 8px; height: 8px; border-radius: 999px; background: var(--ink); }
 .ticks { position: relative; height: 18px; font-size: var(--fs-micro); line-height: var(--lh-micro); color: var(--muted); font-variant-numeric: tabular-nums; }
