@@ -15,16 +15,16 @@ Rules, in order (all transparent, all unit-tested in tests/test_timeline.py):
 """
 from __future__ import annotations
 
-from kettle import evidence
-from kettle.labels import DISPLAY, PHRASE, TALK_OR_TV_MARGIN
+from kettle import evidence, witness
+from kettle.labels import DISPLAY, MEAL, PHRASE, TALK_OR_TV_MARGIN
 
 HOP_S = 2.0
 STALE_S = 2 * HOP_S + 30          # no window for longer than this = not listening
 BRIDGE_S = 30.0                    # a "Not sure" gap up to this long inside one activity doesn't split its block
 
 
-def raw_label(ev: dict, theta: float) -> str:
-    """One window's label before smoothing: an activity, 'talk_or_tv' or 'not_sure'.
+def head_label(ev: dict, theta: float) -> str:
+    """What Kettle's own head says about one window: an activity, 'talk_or_tv' or 'not_sure'.
 
     'not_sure' when the top probability is below theta, or when the sound is unlike all 9 activities (ev['novel']).
     """
@@ -36,6 +36,25 @@ def raw_label(ev: dict, theta: float) -> str:
             and probs[top[0]] + probs[top[1]] >= theta:
         return "talk_or_tv"
     return top[0] if probs[top[0]] >= theta else "not_sure"
+
+
+def raw_label(ev: dict, theta: float) -> str:
+    """One window's label before smoothing: the head's answer, checked by the second opinion (kettle/witness.py).
+
+    Windows without a second opinion (ev['w'] missing: older data) keep the head's answer unchanged.
+    """
+    lab = head_label(ev, theta)
+    w = ev.get("w")
+    if witness.vetoes(lab, w, MEAL):
+        return "not_sure"                      # the head said kitchen; the tags heard a motor or the bathroom
+    if witness.rescues(lab, w):
+        return w["family"]                     # the head had no answer; the tags clearly heard kitchen sounds
+    return lab
+
+
+def by_sounds(ev: dict, theta: float) -> bool:
+    """True when this window's label came from the second opinion, not from the head."""
+    return witness.rescues(head_label(ev, theta), ev.get("w"))
 
 
 def smooth(labels: list[str]) -> list[str]:

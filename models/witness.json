@@ -1,0 +1,13 @@
+{
+  "_what": "Kettle's second opinion. CED-tiny was pretrained on AudioSet (about 2 million clips from many places) and still outputs 527 general sound tags. Kettle's own head was trained in one research home (SINS). When the head can't answer (the sound is unlike that home, or it isn't confident), these tags may name a kitchen activity; when the head says a kitchen activity but the tags say a motor or bathroom sound, the label is withdrawn.",
+  "_chosen_on": "Sat Nov 14 2026, ~9:45 PM CT, on the TUNE halves only of DESED public eval, Kitchen20 and ESC-50 household clips, plus SINS dev out-of-fold predictions (eval/PREREGISTER-V2.md). The TEST halves had not been scored when this file was committed.",
+  "_not_included": "'Blender' and 'Microwave oven' are deliberately not kitchen evidence: on the tune halves the tags could not tell a blender from a vacuum cleaner or electric shaver, or a microwave from a fan. Kettle misses blenders rather than call vacuuming 'cooking'.",
+  "kitchen": {
+    "cooking": ["Frying (food)", "Sizzle", "Boiling", "Chopping (food)", "Stir"],
+    "dishwashing": ["Dishes, pots, and pans", "Sink (filling or washing)", "Water tap, faucet"],
+    "eating": ["Cutlery, silverware", "Chewing, mastication", "Biting", "Crunch"]
+  },
+  "veto": ["Vacuum cleaner", "Mechanical fan", "Air conditioning", "Hair dryer", "Electric shaver, electric razor", "Electric toothbrush", "Toothbrush", "Toilet flush", "Bathtub (filling or washing)", "Power tool", "Drill"],
+  "tau_k": 0.15,
+  "tau_v": 0.3
+}
