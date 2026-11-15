@@ -74,6 +74,7 @@ async function accuracy(box) {
   const J = A.judge.dev, best = J["0.9"];
   sec.append(h("h3", { text: "Tried and not shipped" }),
     h("p", { class: "gap", text: `A trained judge on the 527 sound tags, across many homes: at its strictest it removed every wrong-activity call (${best.wrong_activity[0]} → ${best.wrong_activity[1]}) but named fewer real meals (${best.right[0]} → ${best.right[1]}), so it failed the gate we wrote before running it. Bridging "unlike anything it learned" gaps and naming TV from its tag didn't move the development numbers. All in results/judge.json and results/confetti.json.` }));
+  if (A.sound_fill) sec.append(h("p", { class: "gap", text: `Filling "Not sure" from the trained sound head (a kettle, chopping or the tap heard in a window it can't name): "Not sure" on the Kitchen20 tune clips went ${A.sound_fill.k20[0]}% → ${A.sound_fill.k20[1]}%, with no fewer activities caught, but the gate we wrote first asked for a 10-point drop, so it isn't shipped (results/sound_fill.json).` }));
   box.append(sec);
 }
 main();

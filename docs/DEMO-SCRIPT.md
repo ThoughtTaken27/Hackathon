@@ -77,7 +77,7 @@ Start recording with the left window showing **"Listening for kitchen sounds"** 
 | 5 | Click **Pause for 15 minutes** | Left: **"Paused. Kettle isn't listening."** Right (within ~5 s): **"Paused by Mom at … · resumes at …"** | *"…and Asha sees that honestly."* |
 | 6 | Left: click **Resume listening** | Left: **"Kettle is listening again."** | — |
 | 7 | Left: open a new tab (Ctrl+T), show it for 3 s, then click back to the Kettle tab | The Kettle tab's title reads **"● Listening · Kettle"** | *"It keeps listening while the laptop is used for other things."* |
-| 8 | Left: scroll down and click **What Asha can see**. Untick **TV** | Right (within ~5 s): **"Mom chose not to share: TV."** under the summary | *"And Mom decides what's shared. If she'd rather keep the TV private, she unticks it, and Asha sees that she chose not to share it."* |
+| 8 | Left: scroll down and click **What Asha can see**. Untick **Talking / TV** | Right (within ~5 s): **"Mom chose not to share: Talking / TV."** under the summary | *"And Mom decides what's shared. If she'd rather keep the TV private, she unticks it, and Asha sees that she chose not to share it."* |
 | 9 | Left: tick **TV** again (so the rest of the recording isn't affected) | Note disappears | — |
 
 Stop recording Take 2.
@@ -107,10 +107,10 @@ recordings played through the same model"*.
    clips. Washing up is our weakest kitchen activity: 73 percent caught. And we can't test across age or sex: the training home
    had one person."*
 6. Scroll to **"Kitchen naming after a live test in a real kitchen"**, then to the named-sounds table, where **hidden** sits
-   next to kettle and tap.
+   next to frying and dishes and **yes** next to kettle and running water.
    🎙 *"In a teammate's kitchen, cooking with metal pots showed as 'eating'. Each ten seconds was named from one loud tag. Now
-   a whole stretch is named from its evidence, and every sound name had to pass a bar we wrote first. Only TV passed, so the
-   rest are hidden, not shown wrong."*
+   a whole stretch is named from its evidence, and every sound name had to pass a bar we wrote first. Hand-written rules passed one sound; a small
+   trained classifier passes eight, and the rest stay hidden, not shown wrong."*
 7. Go back to the right window's family view (or the front page) for the last 3 s.
    🎙 *"Kettle: know the day went okay, without a camera. A prototype, not medical advice."*
 

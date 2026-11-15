@@ -20,6 +20,8 @@ def main() -> None:
                           "hidden_on_tune": [k for k, v in sh["choices"].items() if not v["passes_tune"]]},
            "judge": {"decision": ju["decision"], "dev": {t: v["_gate"] for t, v in ju["dev"].items()}},
            "confetti": {"decision": co["decision"], "variants": co["variants"]},
+           "sound_fill": (lambda f: {"decision": f["decision"], "gate": f["dev_gate"],
+                                     "k20": [f["dev"][v]["kitchen20_tune"]["not_sure_share_pct"] for v in ("shipped", "+2g sound fill")]})(R("sound_fill.json")),
            "source": "tools/export_accuracy.py"}
     (ROOT / "web" / "public" / "data" / "accuracy.json").write_text(json.dumps(out))
     print("wrote web/public/data/accuracy.json")

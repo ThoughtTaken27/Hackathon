@@ -1,5 +1,22 @@
 # Changelog
 
+## Sun Nov 15, ~2:45–4:00 PM CT: trained sound head (v2), "Talking / TV", drag to read the day on phones
+- Why: only 1 of 15 everyday sound names passed the pre-registered bar with hand-written rules (most were caught, but too
+  often named on look-alikes); on a phone the day bar's thin stretches were too small to tap; "TV" was shown when people talked.
+- Sound head: `eval/sound_head.py` (pre-registered in `eval/PREREGISTER-SOUNDS-V2.md` and committed before its one test run):
+  one logistic regression per sound on the CED-tiny embedding (+ AudioSet log-odds where tune CV chose it), every choice from
+  grouped 5-fold CV on the tune halves. **8 of 15 names now pass** (kettle, chopping, running water, cupboards/drawers, timer
+  beep, talking/TV, typing, footsteps); frying, dishes, microwave, glass, vacuum and door stay hidden; blender failed on tune.
+  `results/sound_head.json`; device file `web/public/model/sound_head.json`; `sense.js kindsOf()` / `kettle/kinds.py named()`
+  use it when the embedding is there (same privacy veto). JS/Python parity: `web/test/sound_head.test.mjs`.
+- "Talking / TV": the TV activity, the talk-or-TV state and the TV sound name all read "Talking / TV" (JS and Python twins).
+- Family view: drag a finger (or the mouse) along the day bar; a line and a time + label bubble select the stretch under it and
+  open its card. Taps, clicks and arrow keys still work; vertical swipes still scroll (`web/public/js/ui.js dayBar`).
+- Not shipped: rule 2g (fill "Not sure" from the sound head) cut "Not sure" on Kitchen20 tune 80.9% → 75.0% but the gate
+  written first asked for 10 points (`eval/sound_fill.py`, `results/sound_fill.json`).
+- How sure, write-up, video and demo scripts updated from the results files. Checked: 140 web tests, 79 Python tests, smoke
+  test, `eval.check_metrics` 0 problems, browser e2e errors [], phone drag test (iPhone 13 emulation).
+
 ## Sun Nov 15, ~12:10 PM CT: kitchen naming from evidence (rules 2c, 2d)
 - Why: Parth ran Kettle in his own kitchen. Pots and cutlery while cooking showed as "washing up" and "eating".
 - Changed: `kettle/witness.py` (evidence numbers cook/water/mouth, `name_kitchen`, `votes`), `kettle/timeline.py`
