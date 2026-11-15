@@ -1,5 +1,6 @@
 // "Beyond the research home": every number here is read from data/beyond.json (eval/beyond.py) and
 // data/stress_teach.json (eval/stress_teach.py). None is typed by hand. Shown above the benchmark on How sure (plan G1, G4, G8).
+import { KIND_NAMES } from "./core.js";
 const h = (tag, attrs = {}, ...kids) => {
   const n = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) if (v != null) (k === "text" ? (n.textContent = v) : n.setAttribute(k, v));
@@ -62,13 +63,14 @@ async function accuracy(box) {
     table(["Set", "Meal stretches named right", "Wrong activity", "False kitchen on non-meal sounds"],
       Object.entries(K).map(([k, v]) => [`${set[k] || k} (N=${v.n})`, `${v.before.right} → ${v.after.right} of ${v.before.meal}`, `${v.before.wrong_activity} → ${v.after.wrong_activity}`, `${v.before.false_kitchen} → ${v.after.false_kitchen} of ${v.before.not_meal}`])),
     h("p", { class: "gap", text: "Honesty note: the public test halves were scored more than once while this rule was built (details in results/kitchen_naming.json). The clean measurement is a recording of a real kitchen, which we have not made yet." }));
-  const S = A.sounds;
-  sec.append(h("h3", { text: "Named sounds: context rules, then a pre-registered bar" }),
-    h("p", { class: "meta", text: `A kettle must now be louder than frying, the tap, dishes and appliance hum; running water louder than frying; a microwave above appliance hum. A name is shown only if, on held-out halves, precision ≥ ${S.bar.precision}% and recall ≥ ${S.bar.recall}% (eval/PREREGISTER-SOUNDS.md).` }),
-    table(["Sound", "Precision before → after", "Recall before → after", "False names per 1,000 windows", "Shown"],
-      Object.keys(S.after).map((k) => [k, `${p(S.before[k].precision)} → ${p(S.after[k].precision)}`, `${p(S.before[k].recall)} → ${p(S.after[k].recall)} (N=${S.after[k].recall.n})`,
-        `${S.before[k].false_per_1000} → ${S.after[k].false_per_1000}`, S.after[k].shown ? "yes" : "hidden"])),
-    h("p", { class: "gap", text: "Only \"TV or radio\" passes. The rules cut false names a lot, but single 10-second tags can't reach 90% precision against thousands of ordinary windows, so the other names are hidden rather than shown wrong." }));
+  const S = A.sound_head;
+  const shownN = Object.values(S.head).filter((v) => v.shown).length;
+  sec.append(h("h3", { text: "Named sounds: a trained sound head, held to a pre-registered bar" }),
+    h("p", { class: "meta", text: `Each everyday sound has its own small classifier on the model's embedding, trained only on the tune halves of five public sets. A name is shown to families only if, on the held-out halves, precision ≥ ${S.bar.precision}% and recall ≥ ${S.bar.recall}% (eval/PREREGISTER-SOUNDS-V2.md). Before it, hand-written rules on single tags passed for 1 sound; the head passes for ${shownN}.` }),
+    table(["Sound", "Precision: rules → head", "Recall: rules → head", "False names per 1,000 other windows", "Shown"],
+      Object.keys(S.head).map((k) => [KIND_NAMES[k] || k, `${p(S.rules[k].precision)} → ${p(S.head[k].precision)}`, `${p(S.rules[k].recall)} → ${p(S.head[k].recall)} (N=${S.head[k].recall.n})`,
+        `${S.rules[k].false_per_1000} → ${S.head[k].false_per_1000}`, S.head[k].shown ? "yes" : S.hidden_on_tune.includes(k) ? "hidden (failed on tune, never tested)" : "hidden"])),
+    h("p", { class: "gap", text: `Hidden sounds are still computed on the device (for the privacy veto and safety notes) but never sent. Frying, dishes and the microwave came close and stay hidden: we don't move the bar after seeing the result. Honesty note: these held-out halves were scored once before, with the rules (results/sounds.json); every choice in the head came from the tune halves. Ten-second public clips are not a real kitchen.` }));
   const J = A.judge.dev, best = J["0.9"];
   sec.append(h("h3", { text: "Tried and not shipped" }),
     h("p", { class: "gap", text: `A trained judge on the 527 sound tags, across many homes: at its strictest it removed every wrong-activity call (${best.wrong_activity[0]} → ${best.wrong_activity[1]}) but named fewer real meals (${best.right[0]} → ${best.right[1]}), so it failed the gate we wrote before running it. Bridging "unlike anything it learned" gaps and naming TV from its tag didn't move the development numbers. All in results/judge.json and results/confetti.json.` }));

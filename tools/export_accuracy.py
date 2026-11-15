@@ -1,7 +1,8 @@
 """The detection-accuracy results the How sure page shows, copied from results/*.json (never typed by hand).
 
     python tools/export_accuracy.py      writes web/public/data/accuracy.json from
-    results/kitchen_naming.json (rules 2c/2d), results/sounds.json (named sounds), results/judge.json and results/confetti.json
+    results/kitchen_naming.json (rules 2c/2d), results/sounds.json (named sounds, v1 rules), results/sound_head.json (named sounds,
+    v2 trained head: what ships), results/judge.json and results/confetti.json
 """
 import json
 from pathlib import Path
@@ -11,10 +12,12 @@ R = lambda n: json.loads((ROOT / "results" / n).read_text())
 
 
 def main() -> None:
-    kn, so, ju, co = R("kitchen_naming.json"), R("sounds.json"), R("judge.json"), R("confetti.json")
+    kn, so, ju, co, sh = R("kitchen_naming.json"), R("sounds.json"), R("judge.json"), R("confetti.json"), R("sound_head.json")
     out = {"kitchen_naming": {k: {"n": v["n"], "before": v["before"], "after": v["after"]} for k, v in kn["sets"].items()},
            "kitchen_naming_process": kn["process"],
            "sounds": {"bar": so["bar"], "before": so["before"], "after": so["after"]},
+           "sound_head": {"bar": sh["bar"], "rules": sh["v1_rules"], "head": sh["v2_head"], "process": sh["process"],
+                          "hidden_on_tune": [k for k, v in sh["choices"].items() if not v["passes_tune"]]},
            "judge": {"decision": ju["decision"], "dev": {t: v["_gate"] for t, v in ju["dev"].items()}},
            "confetti": {"decision": co["decision"], "variants": co["variants"]},
            "source": "tools/export_accuracy.py"}
@@ -26,11 +29,11 @@ def main() -> None:
 def fill_writeup(A: dict) -> None:
     """docs/WRITEUP.md blocks from results files: accuracy (naming + sound names), crosshome, calibration, privacy."""
     import re
-    K, S = A["kitchen_naming"], A["sounds"]
+    K, S = A["kitchen_naming"], A["sound_head"]
     names = {k["id"]: k["name"] for k in json.loads((ROOT / "web" / "public" / "model" / "kinds.json").read_text())["kinds"]}
     sd, kt, dt = K["sins_dev_sessions"], K["kitchen20_test"], K["desed_test"]
     pc = lambda r: "–" if r["pct"] is None else f"{r['pct']:.1f}%"
-    b, a = S["before"], S["after"]
+    b, a = S["rules"], S["head"]
     shown = [k for k, v in a.items() if v["shown"]]
     naming = "\n".join([
         "**Naming a kitchen stretch from evidence across its windows (rules 2c, 2d), same events before → after:**", "",
@@ -44,14 +47,16 @@ def fill_writeup(A: dict) -> None:
         f"{dt['after']['dishes_called_washing_or_eating']} | {dt['before']['dishes']} dish-clatter clips (of {dt['n']}) |",
     ])
     sounds = "\n".join([
-        f"**Everyday sound names, held-out halves (pre-registered bar: precision ≥ {S['bar']['precision']:.0f}% and recall ≥ {S['bar']['recall']:.0f}%):**", "",
-        "| Sound | Precision before → after | False names per 1,000 other windows, before → after | Recall after | Positives / other windows | Shown |",
+        f"**Everyday sound names, held-out halves: hand-written rules → a trained sound head (pre-registered bar: precision ≥ "
+        f"{S['bar']['precision']:.0f}% and recall ≥ {S['bar']['recall']:.0f}%; `eval/PREREGISTER-SOUNDS-V2.md`):**", "",
+        "| Sound | Precision, rules → head | Recall, rules → head | False names per 1,000 other windows | Positives / other windows | Shown |",
         "|---|---|---|---|---|---|",
-        *[f"| {names[k]} | {pc(b[k]['precision'])} → {pc(a[k]['precision'])} | {b[k]['false_per_1000']} → {a[k]['false_per_1000']} | "
-          f"{pc(a[k]['recall'])} | {a[k]['recall']['n']} / {a[k]['neg_n']:,} | {'yes' if a[k]['shown'] else 'hidden'} |"
-          for k in ("kettle", "tap", "microwave", "tv")],
-        "", f"{len(shown)} of {len(a)} names passed ({', '.join(names[k] for k in shown)}); the other {len(a) - len(shown)} are hidden from families "
-        "(all 15 rows: `results/sounds.json`).",
+        *[f"| {names[k]} | {pc(b[k]['precision'])} → {pc(a[k]['precision'])} | {pc(b[k]['recall'])} → {pc(a[k]['recall'])} | "
+          f"{b[k]['false_per_1000']} → {a[k]['false_per_1000']} | {a[k]['recall']['n']} / {a[k]['neg_n']:,} | {'yes' if a[k]['shown'] else 'hidden (failed on tune, head not used)' if k in S['hidden_on_tune'] else 'hidden'} |"
+          for k in a],
+        "", f"{len(shown)} of {len(a)} names passed ({', '.join(names[k] for k in shown)}), up from 1 with the rules; the other "
+        f"{len(a) - len(shown)} stay hidden from families (`results/sound_head.json`). The test halves were scored once before, with the rules; "
+        "every choice in the head came from the tune halves.",
     ])
     o = json.loads((ROOT / "results" / "other_homes.json").read_text())
     t1, t2, u2 = o["test"]["v1"], o["test"]["v2"], o["tune"]["v2"]

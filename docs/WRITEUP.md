@@ -89,16 +89,27 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 | Kitchen20, test half (one clip each) | wrong activity | 9 | 7 | 222 kitchen-activity clips (of 465; 243 others) |
 | DESED real homes, test half (one 10-s clip each) | dish clatter called washing up or eating | 6 | 1 | 15 dish-clatter clips (of 231) |
 
-**Everyday sound names, held-out halves (pre-registered bar: precision ≥ 90% and recall ≥ 40%):**
+**Everyday sound names, held-out halves: hand-written rules → a trained sound head (pre-registered bar: precision ≥ 90% and recall ≥ 40%; `eval/PREREGISTER-SOUNDS-V2.md`):**
 
-| Sound | Precision before → after | False names per 1,000 other windows, before → after | Recall after | Positives / other windows | Shown |
+| Sound | Precision, rules → head | Recall, rules → head | False names per 1,000 other windows | Positives / other windows | Shown |
 |---|---|---|---|---|---|
-| Kettle or a hot drink | 16.0% → 44.0% | 17.06 → 3.02 | 50.0% | 22 / 4,631 | hidden |
-| Running water | 47.8% → 67.1% | 15.69 → 5.97 | 77.5% | 71 / 4,525 | hidden |
-| Microwave | 11.9% → 54.5% | 18.55 → 0.74 | 28.6% | 21 / 6,794 | hidden |
-| TV or radio | 97.8% → 97.8% | 1.51 → 1.51 | 79.2% | 500 / 5,945 | yes |
+| Kettle or a hot drink | 44.0% → 100.0% | 50.0% → 40.9% | 3.02 → 0.0 | 22 / 4,631 | yes |
+| Frying or sizzling | 73.2% → 87.2% | 93.2% → 93.2% | 3.28 → 1.31 | 44 / 4,579 | hidden |
+| Chopping | 56.7% → 100.0% | 77.3% → 54.5% | 2.82 → 0.0 | 22 / 4,613 | yes |
+| Blender | 55.2% → – | 76.2% → 0.0% | 1.92 → 0.0 | 21 / 6,768 | hidden (failed on tune, head not used) |
+| Microwave | 54.5% → 82.6% | 28.6% → 90.5% | 0.74 → 0.59 | 21 / 6,794 | hidden |
+| Dishes and cutlery | 57.0% → 87.9% | 60.7% → 87.9% | 11.06 → 2.93 | 107 / 4,432 | hidden |
+| Running water | 67.1% → 95.7% | 77.5% → 62.0% | 5.97 → 0.44 | 71 / 4,525 | yes |
+| Cupboards and drawers | 0.0% → 97.9% | 0.0% → 82.1% | 10.03 → 0.22 | 56 / 4,586 | yes |
+| A door | 3.7% → 100.0% | 7.7% → 7.7% | 11.45 → 0.0 | 26 / 4,541 | hidden |
+| Timer or appliance beep | 34.0% → 93.3% | 85.3% → 92.6% | 33.92 → 1.36 | 136 / 6,634 | yes |
+| Talking / TV | 97.8% → 95.0% | 79.2% → 91.6% | 1.51 → 4.04 | 500 / 5,945 | yes |
+| Vacuum cleaner | 86.5% → 88.9% | 98.9% → 100.0% | 10.66 → 8.63 | 439 / 6,376 | hidden |
+| Typing | 74.1% → 95.1% | 28.4% → 43.9% | 8.46 → 1.92 | 535 / 6,262 | yes |
+| Footsteps | 50.0% → 94.1% | 59.1% → 72.7% | 2.07 → 0.16 | 22 / 6,287 | yes |
+| Glass breaking | 58.3% → 78.9% | 93.3% → 100.0% | 1.48 → 0.59 | 15 / 6,779 | hidden |
 
-1 of 15 names passed (TV or radio); the other 14 are hidden from families (all 15 rows: `results/sounds.json`).
+8 of 15 names passed (Kettle or a hot drink, Chopping, Running water, Cupboards and drawers, Timer or appliance beep, Talking / TV, Typing, Footsteps), up from 1 with the rules; the other 7 stay hidden from families (`results/sound_head.json`). The test halves were scored once before, with the rules; every choice in the head came from the tune halves.
 <!-- accuracy:end -->
 
 <!-- tradeoff:start -->
