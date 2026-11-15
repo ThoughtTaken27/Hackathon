@@ -46,7 +46,7 @@ Spoken numbers to double-check against the files right before recording: 28% · 
    Open `http://localhost:8787`. Hard-refresh every page (Ctrl+Shift+R) so the newest version loads.
 2. **Fresh home:** follow `docs/DEMO-SCRIPT.md` Take 1 (exact buttons: **On my own phone or computer** → **My parent** → **Mom** →
    **Kitchen** → first name "Asha" → **Create our Kettle** → **Copy** the kitchen link into the left window).
-3. **Checks:** in the family view, **Change checks** → **Remove** the defaults → add a preset whose time is still ahead
+3. **Checks:** in the family view, **Edit** (next to Your checks) → **Remove** the defaults → add a preset whose time is still ahead
    (afternoon: **Evening meal by 8**; morning: **Lunch by 2**) → **Save**. A check whose time has passed says "Can't tell".
 4. **Rehearse the kitchen sounds** 1–2 m from the laptop: a pan stirred with a metal spoon, the tap running into a bowl.
    **Use real sounds, not a phone playing a video**: sound from a speaker reads as TV to the model.

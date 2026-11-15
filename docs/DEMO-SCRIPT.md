@@ -57,7 +57,7 @@ app on Sun Nov 15 (Playwright walkthrough on the merged branch). **Bold** = the 
 
 **Right window (family):**
 17. Click **Open my family view**.
-18. Set a check that will say **Met** at the time you record. Click **Change checks**, click **Remove** on each existing
+18. Set a check that will say **Met** at the time you record. Click **Edit** next to Your checks, click **Remove** on each existing
     check, then click a preset whose time is **later than now** (afternoon → **Evening meal by 8**; morning → **Lunch by 2**).
     Click **Save**.
     (A check whose time has already passed honestly says "Can't tell", because Kettle wasn't listening then.)

@@ -84,3 +84,16 @@
   .lp-fam .lp-day { padding: 0 10px 4px; }
   .lp-card-h .lp-dot-line { display: none; }
 }
+
+/* sample days: one row everywhere. On narrow screens it's a strip you swipe sideways (snaps to each day, faded edges),
+   instead of seven pills wrapping inside one rounded box. */
+.lx-seg { flex-wrap: nowrap; }
+@media (max-width: 900px) {
+  .lx-seg { display: flex; width: 100%; max-width: 100%; justify-content: flex-start; overflow-x: auto; overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity; scroll-padding-inline: 16px; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 999px;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 28px), transparent 100%); padding: 3px 14px; }
+  .lx-seg::-webkit-scrollbar { display: none; }
+  .lx-seg button { flex: none; scroll-snap-align: center; white-space: nowrap; }
+}
+.f-mini.fam .fam-date { color: rgba(255,255,255,.72); }

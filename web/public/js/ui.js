@@ -167,6 +167,8 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     for (let h = h0; h <= hEnd; h++) {
       if ((h - h0) % every !== 0) continue;
       if (h !== hEnd && hEnd - h < every && (hEnd - h0) % every === 0) continue;     // never crowd the last label
+      // the last label is right-aligned, so the one before it needs a full label's width plus a gap clear of the end
+      if (h !== hEnd && (hEnd - h) * 3600 / span * width < room * 1.5) continue;
       ticks.append(el("span", { text: hourLabel(h), style: `left:${pct(t.day0 + h * 3600)}` }));
     }
     list.textContent = "";

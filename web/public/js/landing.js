@@ -148,7 +148,7 @@ async function startStage(sid) {
   moveInd();
   stage = await play(sid, stageFrame, { seconds: RM ? 0.5 : 18, loop: true, names: NAMES });
 }
-document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.addEventListener("click", () => startStage(b.dataset.sid)));
+document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.addEventListener("click", () => { startStage(b.dataset.sid); requestAnimationFrame(centerSeg); }));
 new IntersectionObserver((es) => es.forEach((x) => {
   if (x.isIntersecting && !stageOn) { stageOn = true; startStage("nobreakfast"); }
   if (!x.isIntersecting && stageOn) { stageOn = false; stage && stage.stop(); }
@@ -241,6 +241,10 @@ function moveInd() {   // size and place the pill from the chosen button itself,
   const b = seg.querySelector('[aria-pressed="true"]'); if (!b) return;
   ind.style.width = b.offsetWidth + "px"; ind.style.height = b.offsetHeight + "px";
   ind.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`;
+}
+function centerSeg() {                                   // swipe strip on phones: bring the chosen day to the middle
+  const b = seg.querySelector('[aria-pressed="true"]');
+  if (b && seg.scrollWidth > seg.clientWidth + 2) seg.scrollTo({ left: b.offsetLeft - (seg.clientWidth - b.offsetWidth) / 2, behavior: RM ? "auto" : "smooth" });
 }
 const segRo = new ResizeObserver(moveInd); segRo.observe(seg); seg.querySelectorAll("button").forEach((b) => segRo.observe(b));
 addEventListener("resize", () => requestAnimationFrame(moveInd)); moveInd();
