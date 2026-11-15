@@ -48,7 +48,9 @@ export class Household extends DurableObject {
   store() {
     const sql = this.sql, ctx = this.ctx;
     return {
-      async getState() { const r = sql.exec("SELECT v FROM kv WHERE k = 'state'").toArray(); return r.length ? JSON.parse(r[0].v) : null; },
+      async getState() {        // a deleted home has no tables left: that's "not found", not an error
+        try { const r = sql.exec("SELECT v FROM kv WHERE k = 'state'").toArray(); return r.length ? JSON.parse(r[0].v) : null; } catch { return null; }
+      },
       async putState(s) { sql.exec("INSERT OR REPLACE INTO kv (k, v) VALUES ('state', ?)", JSON.stringify(s)); },
       async addEvents(evs) { for (const e of evs) sql.exec("INSERT OR REPLACE INTO ev (end, j) VALUES (?, ?)", e.end, JSON.stringify(e)); },
       async eventsSince(t) { return sql.exec("SELECT j FROM ev WHERE end > ? ORDER BY end LIMIT 20000", t).toArray().map((r) => JSON.parse(r.j)); },

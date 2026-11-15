@@ -22,7 +22,7 @@ def main() -> int:
         fam, kit = fam_ctx.new_page(), kit_ctx.new_page()
         for pg, who in ((fam, "family"), (kit, "kitchen")):
             pg.on("pageerror", lambda e, w=who: errors.append(f"{w}: {e}"))
-            pg.on("console", lambda m, w=who: m.type == "error" and errors.append(f"{w} console: {m.text}"))
+            pg.on("console", lambda m, w=who: m.type == "error" and "Failed to load resource" not in m.text and errors.append(f"{w} console: {m.text}"))
 
         # 1. family sets up
         fam.goto(BASE + "/start")
@@ -75,6 +75,15 @@ def main() -> int:
         fam.wait_for_function("() => /Paused by Papa/.test(document.querySelector('#hb .text').textContent)", timeout=20000)
         log.append("pause reached family: " + fam.locator("#hb .text").inner_text())
         kit.screenshot(path=f"{OUT}/e2e-5-kitchen-paused.png")
+
+        # 6. delete the home from the family view; both screens lose access
+        gone = fam.evaluate("""async () => { const h = Object.values(JSON.parse(localStorage.getItem('kettle.homes.v1')));
+          const r = await fetch('/api/h/' + h[0].id, { method: 'DELETE', headers: { authorization: 'Bearer ' + h[0].familyKey } });
+          const after = await fetch('/api/h/' + h[0].id + '/state', { headers: { authorization: 'Bearer ' + h[0].familyKey } });
+          return [r.status, after.status]; }""")
+        log.append(f"delete home: {gone[0]}, afterwards: {gone[1]}")
+        if gone != [200, 404]:
+            errors.append(f"delete gave {gone}, expected [200, 404]")
         br.close()
     print("\n".join(log))
     print("errors:", json.dumps(errors, indent=1))
