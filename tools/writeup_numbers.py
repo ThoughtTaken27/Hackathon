@@ -164,5 +164,8 @@ if __name__ == "__main__":
     fill(ROOT / "docs" / "SUBMISSION-DRAFT.md", {"lead": parts["lead"]})
     wp = dict(parts)
     wp["results"], wp["failures"], wp["tradeoff"] = parts["results_short"], parts["failures_short"], parts["tradeoff_short"]
+    # the one-page write-up keeps the tables, Meera's check and the dev line; the long explanations stay in the README
+    keep = [ln for ln in wp["results"].split("\n") if not ln.startswith(("CIs resample", "Recall fell", "Every held-out moment"))]
+    wp["results"] = re.sub(r"\n{3,}", "\n\n", "\n".join(keep))
     fill(ROOT / "docs" / "WRITEUP.md", wp)
     print(parts["lead"])

@@ -57,15 +57,15 @@ CIs resample the 91 test sessions (the lower end is pessimistic: some resamples 
 | Cooking | 86.1 [71.4, 93.0] | 67 | 36 | 483 |
 | Washing up | 72.6 [49.5, 84.9] | 96 | 35 | 350 |
 | Eating | 84.9 [75.0, 91.8] | 53 | 42 | 350 |
-| Moving about | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
+| Some activity | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
 | Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
 | Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
 | TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
-| Working (typing) | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
+| Typing | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
 
-Recall fell from dev to held-out for moving about 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).
+Recall fell from dev to held-out for some activity 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).
 
-Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): working (typing) ranged from 63% on node 3 to 88%, while moving about was 50–60% on every microphone, so its drop isn't a microphone effect.
+Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): typing ranged from 63% on node 3 to 88%, while some activity was 50–60% on every microphone, so its drop isn't a microphone effect.
 
 **Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41). Computed after the run from its saved predictions (not in the pre-registration).
 
@@ -84,7 +84,7 @@ Every held-out moment was heard by all 7 microphones, so differences between mic
 Dev, Meera's check: caught 95.3 [93.8, 96.5]% of 3,000 kitchen windows (missed 164); false alarms on 1.8 [0.7, 3.7]% of 5,920 others (106).
 
 On 260 sounds that aren't household activities (dogs, sirens, alarms, noise, silence), Kettle gave a confident label to 0.4 [0.1, 2.1]% (vs 56.2 [50.1, 62.1]% without its 'unlike anything it learned' check).
-Live, on a laptop CPU (privacy-check run, 180 s through the browser's microphone, 8 activity changes): a new activity reached the timeline after a median 7.1 s (a 10-s window must fill with the new sound); each 2-s update took 64 ms (90th percentile 71 ms) and the server used 4% CPU on average.
+Live, on a laptop CPU (privacy-check run, 60 s through the browser's microphone, 2 activity changes): a new activity reached the timeline after a median 4.2 s (a 10-s window must fill with the new sound); each 2-s update took 204 ms (90th percentile 1344 ms) and the server used 9% CPU on average.
 Through the day bar (dev, 2-of-3 smoothing and the 30-s bridging rule, 24.78 h of stitched audio): 80.2 [74.9, 84.6]% of 257 activity sessions were caught as one block covering at least half of them, with 2.99 false-alarm blocks per hour across all activities (11.1 without smoothing).
 <!-- results:end -->
 
