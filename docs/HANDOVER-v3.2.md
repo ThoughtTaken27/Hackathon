@@ -1,5 +1,7 @@
 # Kettle v3.2 handover: detection accuracy comes first
 
+> **Superseded for current status by `docs/HANDOVER-v3.3.md`** (Sun 15 Nov ~1:25 PM CT). §0–9 here still hold for ground rules and Parth's Mac setup.
+
 Written Sun 15 Nov 2026, about 12:15 PM CT, by Parth's Aside session (Claude) when his usage ran low.
 It picks up from `docs/HANDOVER-v3.1.md` (Shaurya's handover, commit `b4e1f93`). **Read both.** v3.1 has the ground rules,
 data contracts, file map and the full feature backlog. This file says what changed since then and what matters most now.
