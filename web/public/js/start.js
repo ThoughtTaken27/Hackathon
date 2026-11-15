@@ -14,12 +14,13 @@ function show(node) {
   const f = node.querySelector("input, button"); if (f && f.tagName === "INPUT") f.focus();
 }
 const dots = (k) => el("span", { class: "dots", "aria-hidden": "true" }, [1, 2, 3].map((i) => el("i", { class: i <= k ? "on" : "" })));
-const head = (k, title, lead) => [el("p", { class: "step-k" }, dots(k), `Step ${k} of 3`), el("h1", { class: "h1", text: title }), lead ? el("p", { class: "lead", text: lead }) : null];
+const head = (k, title, lead) => [el("p", { class: "step-k" }, dots(k), `Step ${k} of 3`),
+  el("h1", { class: "h1" }, ...(Array.isArray(title) ? [title[0], el("em", { text: title[1] })] : [title])), lead ? el("p", { class: "lead", text: lead }) : null];
 
 function step1() {
   const choice = (as, icon, t1, t2) => el("button", { class: "choice", type: "button", onclick: () => { st.as = as; step2(); } },
     el("span", { class: "ico", html: ICON[icon] }), el("span", {}, el("span", { class: "t1", text: t1 }), el("span", { class: "t2", style: "display:block", text: t2 })), el("span", { class: "chev", html: ICON.chev }));
-  show(el("div", {}, ...head(1, "Where are you right now?", "Kettle needs two screens: a spare phone, tablet or laptop that stays in your parent's kitchen, and your own phone."),
+  show(el("div", {}, ...head(1, ["Where are you ", "right now?"], "Kettle needs two screens: a spare phone, tablet or laptop that stays in your parent's kitchen, and your own phone."),
     el("div", { class: "choices" },
       choice("family", "phone", "On my own phone or computer", "You'll get a code to type on the kitchen device."),
       choice("kitchen", "laptop", "At the kitchen device", "The spare phone, tablet or laptop that will stay in the kitchen. You'll scan a code with your phone.")),
@@ -42,7 +43,7 @@ function step2() {
       step3(r);
     } catch (e) { err.textContent = e.message || "Couldn't reach Kettle. Check the connection and try again."; go.disabled = false; go.textContent = "Create our Kettle"; }
   } });
-  show(el("div", {}, ...head(2, "Who is this for?", "These names appear on both screens, so the words feel like yours."),
+  show(el("div", {}, ...head(2, ["Who is this ", "for?"], "These names appear on both screens, so the words feel like yours."),
     el("div", { class: "field2" }, el("label", { for: "p", text: "What do you call your parent?" }), pIn, chips),
     el("div", { class: "field2" }, el("label", { for: "c", text: "Your first name" }), cIn, el("p", { class: "hint", text: "Your parent sees your name on the kitchen screen, so they know exactly who can see the timeline." })),
     err, el("div", { class: "actions" }, go, el("button", { class: "btn quiet", type: "button", text: "Back", onclick: step1 }))));
@@ -67,7 +68,7 @@ async function step3(r) {
       el("div", { class: "pair" }, el("div", {}, el("p", { class: "panel-h", text: "Scan with your phone's camera" }), el("p", { class: "meta muted", text: `Or open ${location.host}/pair on it and type:` }), code), q),
       el("div", { class: "linkbox" }, el("code", { text: otherUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(otherUrl) })));
   }
-  show(el("div", {}, ...head(3, r.codeFor === "kitchen" ? `Now connect ${P}'s kitchen device` : "Now connect your phone",
+  show(el("div", {}, ...head(3, r.codeFor === "kitchen" ? [`Now connect ${P}'s `, "kitchen device"] : ["Now connect ", "your phone"],
     r.codeFor === "kitchen" ? "You can do this now, or the next time you're there. Your view shows the code until it's connected." : `This device is now ${P}'s kitchen screen. Connect your phone, then hand over to ${P}.`),
     card,
     el("div", { class: "actions" },

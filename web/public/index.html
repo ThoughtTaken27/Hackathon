@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kettle · know the day went okay, without a camera</title>
-<meta name="description" content="Kettle turns the laptop already in your parent's kitchen into a calm timeline of their day, from the kinds of sound alone. No recordings, no words, and it tells you how often it's wrong.">
+<meta name="description" content="Kettle turns a spare phone or laptop in your parent's kitchen into a calm timeline of their day, from sound alone. No recordings, no words. and it tells you how often it's wrong.">
 <meta property="og:title" content="Kettle">
 <meta property="og:description" content="A calm day timeline from kitchen sounds. No camera, no recordings, no words.">
 <meta property="og:image" content="/img/og.png">
@@ -13,8 +13,10 @@
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/img/scene-hero.svg" as="image">
-<link rel="stylesheet" href="/css/app.css?v=w3">
-<link rel="stylesheet" href="/css/landing.css?v=w3">
+<link rel="stylesheet" href="/css/app.css?v=w4">
+<link rel="stylesheet" href="/css/theme.css?v=w4">
+<link rel="stylesheet" href="/css/landing.css?v=w4">
+<link rel="stylesheet" href="/css/landing2.css?v=w4">
 </head>
 <body class="lx">
 <header class="lx-nav" id="nav"><div class="lx-nav-in">
@@ -33,7 +35,7 @@
     <div class="lx-hero-in">
       <a class="lx-chip rise" style="--d:0" href="#how">A calmer way to check in <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay. <em>Without a camera.</em></h1>
-      <p class="lx-lede rise" style="--d:2">Kettle turns the laptop already in your parent's kitchen into a calm timeline of their day, from the kinds of sound alone. No recordings, no words.</p>
+      <p class="lx-lede rise" style="--d:2">Kettle turns a spare phone or laptop in your parent's kitchen into a calm timeline of their day, from sound alone. No recordings, no words.</p>
       <div class="lx-cta rise" style="--d:3">
         <a class="lx-pill lg" href="/start">Set it up, free <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a class="lx-ghost lg" href="#screens">Watch both screens</a>
@@ -75,9 +77,11 @@
       <div class="lx-why-text">
         <p class="lx-label">Why Kettle</p>
         <h2 class="sr" id="why-h">Why Kettle</h2>
+        <div class="lx-scrub">
         <p class="lx-statement">About 28% of Americans over 65 live alone. The people who love them mostly check in by worrying: an unanswered call, a text with no reply.</p>
         <p class="lx-statement">Cameras feel like being watched. Pendants end up in drawers. So Kettle asks nothing of your parent, and keeps nothing it hears.</p>
-        <p class="lx-statement">It notes the shape of a day, cooking, eating, the TV, <span class="fade">so a normal morning needs no anxious call, and a different one gets noticed sooner.</span></p>
+        <p class="lx-statement">It notes the shape of a day, cooking, eating, the TV, so a normal morning needs no anxious call, and a different one gets noticed sooner.</p>
+        </div>
         <a class="lx-pill" href="#how">See how it works <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <dl class="lx-stats">
@@ -92,6 +96,10 @@
         <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 15l4-9 3 6 2-3 5 6z"/></svg>DCASE 2018</li>
         <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2"/></svg>SINS dataset</li>
         <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h2l2-5 3 10 3-8 2 3h2"/></svg>CED-tiny</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="6" cy="10" r="3"/><circle cx="14" cy="10" r="3"/></svg>AudioSet</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 5h12v10H4z"/><path d="M4 9h12"/></svg>DESED</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8h10l-1 8H6z"/><path d="M8 8V5h4v3"/></svg>Kitchen20</li>
+        <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16V9M8 16V5M12 16v-6M16 16V7"/></svg>ESC-50</li>
         <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h5v5H4zM11 11h5v5h-5zM11 4h5v5h-5z"/></svg>ONNX Runtime</li>
         <li><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 14h10a3 3 0 0 0 0-6 4.5 4.5 0 0 0-8.6-1A3.5 3.5 0 0 0 5 14z"/></svg>Cloudflare</li>
       </ul>
@@ -106,14 +114,14 @@
     <div class="lx-flow">
       <figure class="lx-scene scene-morning" aria-hidden="true"><div class="lx-scene-ui theme-dark" id="flow-ui"></div></figure>
       <div class="lx-acc" role="tablist" aria-label="Steps">
-        <button class="acc" type="button" role="tab" aria-selected="true" data-i="0"><span class="acc-h">You set it up</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b">On your phone, choose what you call your parent and add your name. Kettle gives you a six-letter code for their laptop.</span><span class="acc-p"><i></i></span></button>
-        <button class="acc" type="button" role="tab" aria-selected="false" data-i="1"><span class="acc-h">Your parent says yes</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b">They type the code, read one screen in big type, and choose. Nothing listens until they do, and one button pauses it any time.</span><span class="acc-p"><i></i></span></button>
-        <button class="acc" type="button" role="tab" aria-selected="false" data-i="2"><span class="acc-h">Kettle listens, on their laptop</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b">Every 10 seconds a small sound model in their browser names what it hears, then forgets the sound. Only the label leaves the laptop.</span><span class="acc-p"><i></i></span></button>
-        <button class="acc" type="button" role="tab" aria-selected="false" data-i="3"><span class="acc-h">You check in, calmly</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b">A day bar, one plain sentence, and the checks you set, like "kitchen activity by 10 AM". No alerts, no nagging.</span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="true" data-i="0"><span class="acc-h"><span class="acc-n num">1</span>You set it up</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>On your phone, choose what you call your parent and add your name. Kettle gives you a six-letter code for their kitchen device.</span></span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="false" data-i="1"><span class="acc-h"><span class="acc-n num">2</span>Your parent says yes</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>They type the code, read one screen in big type, and choose. Nothing listens until they do, and one button pauses it any time.</span></span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="false" data-i="2"><span class="acc-h"><span class="acc-n num">3</span>Kettle listens, in their kitchen</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>Every 10 seconds a small sound model in their browser names what it hears, then forgets the sound. Only the label leaves the kitchen.</span></span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="false" data-i="3"><span class="acc-h"><span class="acc-n num">4</span>You check in, calmly</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>A day bar, one plain sentence, and the checks you set, like "kitchen activity by 10 AM". No alerts, no nagging.</span></span><span class="acc-p"><i></i></span></button>
       </div>
     </div>
   </section>
@@ -202,10 +210,10 @@
     <div class="lx-faq-grid">
       <div><p class="lx-label">Questions</p><h2 class="lx-h2" id="faq-h">Asked <em>plainly</em></h2><p class="lx-sub">Still unsure? Watch the sample day, or set it up on two of your own devices first.</p></div>
       <div class="lx-faq">
-        <details><summary>Does Kettle record my parent?</summary><p>No. The laptop holds the last ten seconds of sound in memory, names the activity, and overwrites it. No audio is saved or sent, and no words are kept. Only labels like "Cooking, 8:05 AM" reach your phone.</p></details>
-        <details><summary>What do we need?</summary><p>A laptop with a microphone that can stay in the kitchen, plugged in, with Chrome, Edge or Safari open on Kettle. And your own phone or computer. No app to install, no account to create.</p></details>
+        <details><summary>Does Kettle record my parent?</summary><p>No. The kitchen device holds the last ten seconds of sound in memory, names the activity, and overwrites it. No audio is saved or sent, and no words are kept. Only labels like "Cooking, 8:05 AM" reach your phone.</p></details>
+        <details><summary>What do we need?</summary><p>A spare phone, tablet or laptop that can stay in the kitchen, plugged in, with the screen on and Kettle open in Chrome, Edge or Safari. And your own phone or computer. No app to install, no account to create.</p></details>
         <details><summary>Does it send alerts if something is wrong?</summary><p>No. Kettle is not an emergency device and can't detect falls. It shows a calm timeline and answers the checks you set. You look when you wonder.</p></details>
-        <details><summary>What if the laptop sleeps or the Wi-Fi drops?</summary><p>Kettle keeps the screen awake while it listens. If the internet drops, it keeps labelling and sends everything when the connection is back. If the laptop is closed, your view says "Not listening", never a quiet day.</p></details>
+        <details><summary>What if the screen locks or the Wi-Fi drops?</summary><p>Kettle keeps the screen awake while it listens; phones stop the microphone if the screen locks, so it shows how to set that up. If the internet drops, it keeps labelling and sends everything when the connection is back. If the device is closed or asleep, your view says "Not listening", never a quiet day.</p></details>
         <details><summary>How accurate is it?</summary><p>84.1 macro F1 on public benchmark clips it had never heard, scored once. It hasn't been measured in a real kitchen yet, and it most often mixes up moving about with typing. The "How sure" page lists every miss rate.</p></details>
         <details><summary>Can we delete everything?</summary><p>Yes. Settings, then Delete this home, removes every label and setting from Kettle's server for good. Labels older than eight days are deleted on their own.</p></details>
       </div>
@@ -226,6 +234,6 @@
   <nav aria-label="Footer"><a href="/start">Set up</a><a href="/pair">Enter a code</a><a href="/how-sure">How sure</a><a href="#faq">FAQ</a></nav>
   <p>Prototype, not medical advice. Not an emergency device. Meera and Ravi are invented people. Landscapes are generated, not photographs.</p>
 </div></footer>
-<script type="module" src="/js/landing.js?v=w3"></script>
+<script type="module" src="/js/landing.js?v=w4"></script>
 </body>
 </html>

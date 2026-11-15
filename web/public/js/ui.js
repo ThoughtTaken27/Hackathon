@@ -245,7 +245,8 @@ export function codeInput({ onComplete, label = "Six-letter code" } = {}) {
   const submit = () => { if (busy || clean().length !== 6 || !onComplete) return; busy = true; onComplete(clean()); };
   const paint = () => {
     const v = clean(), focused = document.activeElement === inp;
-    boxes.forEach((b, i) => { b.textContent = v[i] || ""; b.classList.toggle("cur", focused && i === Math.min(v.length, 5)); b.classList.toggle("on", !!v[i]); });
+    boxes.forEach((b, i) => { if (v[i] && b.textContent !== v[i] && i === v.length - 1) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
+      b.textContent = v[i] || ""; b.classList.toggle("cur", focused && i === Math.min(v.length, 5)); b.classList.toggle("on", !!v[i]); });
     row.classList.remove("bad");
   };
   inp.addEventListener("input", () => { inp.value = clean(); paint(); if (inp.value.length === 6) submit(); });

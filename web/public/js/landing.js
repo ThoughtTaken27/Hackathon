@@ -2,6 +2,7 @@
 import { DISPLAY, COLOUR, clock, rawLabel } from "./core.js";
 import { $, el, setText, dayBar, legend, rulesList, homes, reduceMotion } from "./ui.js";
 import { play } from "./sample.js";
+import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
 
 const RM = reduceMotion();
 
@@ -88,7 +89,6 @@ new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting && !fl
 
 // ---------- two screens: the real kitchen screen and family view in device frames
 const K = $("#kitchen-canvas"), F = $("#family-canvas");
-K.classList.add("light-scope"); F.classList.add("light-scope");
 K.append(el("div", { class: "kitchen k-mini" },
   el("div", { class: "k-status", "data-state": "listening" }, el("span", { class: "dot" }), el("div", {},
     el("h1", { class: "k-head", text: "Listening for kitchen sounds" }), el("p", { class: "k-body", text: "Meera sees the kinds of sounds, not recordings or words." }))),
@@ -97,7 +97,7 @@ K.append(el("div", { class: "kitchen k-mini" },
   el("div", { id: "k-bar" })));
 F.append(el("div", { class: "f-mini" },
   el("div", { class: "notch" }), el("div", { class: "sbar" }, el("span", { class: "num", id: "f-clock", text: "9:41" }), el("span", { text: "●●●" })),
-  el("p", { class: "eyebrow", text: "What Meera sees" }), el("h1", { text: "Dad's kitchen today" }),
+  el("p", { class: "eyebrow", text: "What Meera sees" }), el("h1", {}, "Dad's kitchen, ", el("em", { text: "today" })),
   el("p", { class: "hb", "data-state": "listening" }, el("span", { class: "dot" }), el("span", { class: "text", text: "Listening · last heard just now" })),
   el("p", { class: "summary", id: "f-sum" }), el("div", { class: "card" }, el("div", { id: "f-bar" })), el("div", { class: "rules", id: "f-rules" })));
 const kBar = dayBar($("#k-bar"), { big: true }), fBar = dayBar($("#f-bar")), fLegend = legend($("#f-bar"));
@@ -111,6 +111,7 @@ function stageFrame(t) {
 async function startStage(sid) {
   if (stage) stage.stop();
   document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sid === sid)));
+  moveInd();
   stage = await play(sid, stageFrame, { seconds: RM ? 0.5 : 18, loop: true });
 }
 document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.addEventListener("click", () => startStage(b.dataset.sid)));
@@ -127,12 +128,16 @@ function fit() {
 new ResizeObserver(fit).observe(document.body); fit();
 
 // ---------- numbers from results.json (never typed by hand)
+const tickSeen = new WeakSet();
+const runTick = (n) => { if (n.dataset.to && tickSeen.has(n) && !n.dataset.ran) { n.dataset.ran = "1"; ticker(n, n.dataset.to); } };
+const tickIO = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { tickSeen.add(x.target); runTick(x.target); tickIO.unobserve(x.target); } }), { rootMargin: "0px 0px -12% 0px" });
+document.querySelectorAll("[data-k]").forEach((n) => tickIO.observe(n));
 fetch("/data/results.json").then((r) => r.json()).then((r) => {
-  const set = (k, v) => document.querySelectorAll(`[data-k="${k}"]`).forEach((n) => { if (v != null) n.textContent = v; });
+  const set = (k, v) => document.querySelectorAll(`[data-k="${k}"]`).forEach((n) => { if (v != null) { n.textContent = v; n.dataset.to = v; runTick(n); } });
   const ev = r.dcase_eval, ma = ev && ev.meal_activity;
   if (ev) set("f1", ev.ours_ch0.macro_f1.value.toFixed(1));
   if (ma) { set("caught", String(Math.round(ma.caught.value))); set("fa", ma.false_alarm_rate.value.toFixed(1)); }
-  if (r.offlist && r.offlist.confident_wrong != null) set("ns", Number(r.offlist.confident_wrong).toFixed(1));
+  if (r.offlist && r.offlist.confident_wrong != null) set("ns", Number(r.offlist.confident_wrong.value ?? r.offlist.confident_wrong).toFixed(1));
   const c = r.privacy_check && r.privacy_check.checks;
   if (c) set("audio", String((c.new_or_changed_audio_extension_files || []).length + (c.new_or_changed_files_with_audio_magic_bytes || []).length));
 }).catch(() => {});
@@ -140,3 +145,63 @@ fetch("/data/results.json").then((r) => r.json()).then((r) => {
 // ---------- sections unfold once
 const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.add("seen"); io.unobserve(x.target); } }), { rootMargin: "0px 0px -8% 0px" });
 document.querySelectorAll(".lx-sec, .lx-why").forEach((s) => io.observe(s));
+
+
+// =================================================================== level 2: scroll-driven motion (js/fx.js)
+// hero headline: words blur in one after another, the page's one orchestrated moment
+const h1 = $("#hero-h"); h1.classList.remove("rise"); h1.classList.add("words-in"); words(h1);
+const fin = $("#fin-h"); words(fin);
+new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { fin.classList.add("words-in"); o.disconnect(); } }), { threshold: 0.6 }).observe(fin);
+
+// hero: the sky drifts slower than the page, the copy lifts away, the live panel tilts up to meet you
+const heroBg = $(".lx-hero-bg"), heroIn = $(".lx-hero-in"), panelWrap = $(".lx-panel-wrap");
+const stageIn = $(".stage-in"), finalSec = $(".lx-final");
+const why = scrub($(".lx-why-text .lx-scrub"));
+onScrollFrame(() => {
+  if (RM) return;
+  const y = scrollY;
+  if (y < 1400) {
+    heroBg.style.transform = `translate3d(0, ${(y * 0.38).toFixed(1)}px, 0) scale(${(1 + y * 0.00012).toFixed(4)})`;
+    const f = Math.min(1, y / 520);
+    heroIn.style.opacity = (1 - f).toFixed(3);
+    heroIn.style.transform = `translate3d(0, ${(-y * 0.12).toFixed(1)}px, 0)`;
+    heroIn.style.filter = f > 0.02 ? `blur(${(f * 4).toFixed(2)}px)` : "";
+    const p = progress(panelWrap, 1.0, 0.25);
+    panelWrap.style.transform = `perspective(1800px) rotateX(${((1 - p) * 14).toFixed(2)}deg) scale(${(0.94 + p * 0.06).toFixed(4)})`;
+  }
+  why();
+  const ps = progress(stageIn, 1.05, 0.35);
+  stageIn.style.transform = `perspective(2000px) rotateX(${((1 - ps) * 9).toFixed(2)}deg) translate3d(0, ${((1 - ps) * 40).toFixed(1)}px, 0)`;
+  const pf = progress(finalSec, 1.2, -0.2);
+  finalSec.style.setProperty("--fy", `${((pf - 0.5) * -60).toFixed(1)}px`);
+});
+
+// nav: the section you're reading lights up
+const spyLinks = [...document.querySelectorAll('.lx-links a[href^="#"]')];
+const spy = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) spyLinks.forEach((a) => a.classList.toggle("on", a.getAttribute("href") === "#" + x.target.id)); }), { rootMargin: "-45% 0px -50% 0px" });
+spyLinks.forEach((a) => { const t = document.querySelector(a.getAttribute("href")); if (t) spy.observe(t); });
+
+// built-on row: an endless, slow marquee (Magic UI "marquee": 40 s per loop, pauses on hover, masked edges)
+const mq = $(".lx-built ul");
+if (mq && !RM) { const track = el("div", { class: "mq-track" }); const a = mq.cloneNode(true), b = mq.cloneNode(true); b.setAttribute("aria-hidden", "true"); track.append(a, b); mq.replaceWith(track); }
+
+// privacy cards: a soft light follows the pointer along the hairline (fine pointers only)
+if (matchMedia("(hover: hover) and (pointer: fine)").matches) document.querySelectorAll(".lx-card").forEach((c) => c.addEventListener("pointermove", (e) => {
+  const r = c.getBoundingClientRect(); c.style.setProperty("--mx", `${e.clientX - r.left}px`); c.style.setProperty("--my", `${e.clientY - r.top}px`);
+}));
+
+// FAQ: answers unfold (height via grid rows) instead of snapping open
+document.querySelectorAll(".lx-faq details").forEach((d) => {
+  const sum = d.querySelector("summary"), body = d.querySelector("p");
+  const wrap = el("div", { class: "faq-b" }); body.replaceWith(wrap); const inner = el("div"); inner.append(body); wrap.append(inner);
+  sum.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (d.open) { d.classList.remove("shown"); setTimeout(() => { if (!d.classList.contains("shown")) d.open = false; }, RM ? 0 : 260); }
+    else { d.open = true; requestAnimationFrame(() => requestAnimationFrame(() => d.classList.add("shown"))); }
+  });
+});
+
+// sample-day switch: the sliding pill
+const seg = $(".lx-seg"), ind = el("i", { class: "ind", "aria-hidden": "true" }); seg.prepend(ind); seg.classList.add("has-ind");
+function moveInd() { const b = seg.querySelector('[aria-pressed="true"]'); if (!b) return; ind.style.width = b.offsetWidth + "px"; ind.style.transform = `translateX(${b.offsetLeft}px)`; }
+new ResizeObserver(moveInd).observe(seg); moveInd();

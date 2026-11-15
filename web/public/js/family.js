@@ -54,7 +54,10 @@ function draw() {
   const n = t.names;
   document.title = `${n.parent}'s kitchen today · Kettle`;
   $("#eyebrow").textContent = `What ${n.caregiver} sees`;
-  $("#title").textContent = `${n.parent}'s kitchen today`;
+  const ttl = $("#title"), ttlText = `${n.parent}'s kitchen, `;
+  if (ttl.dataset.t !== ttlText) { ttl.dataset.t = ttlText; ttl.textContent = ttlText; ttl.append(el("em", { text: "today" })); }
+  const hm = /^(\d+):\d+ (AM|PM)$/.exec(t.now_text || "");
+  if (hm && window.kettleSky) window.kettleSky((+hm[1] % 12) + (hm[2] === "PM" ? 12 : 0));
   $("#date").textContent = `${t.date_text} · ${n.parent}'s time`;
   $("#hb").dataset.state = t.heartbeat.state;
   setText($("#hb .text"), t.heartbeat.battery ? `${t.heartbeat.text} · ${t.heartbeat.battery}` : t.heartbeat.text);
