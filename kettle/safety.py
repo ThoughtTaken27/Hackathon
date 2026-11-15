@@ -15,9 +15,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CFG: dict = json.loads((ROOT / "web" / "public" / "model" / "safety.json").read_text())
 
-CHECKIN_S = {"fall": 60, "scream": 30, "distress": 60, "stillness": 60}
-FALL_DISTRESS_S, FALL_STILL_S, FALL_CANCEL_S, ACTIVE_BEFORE_S = 60, 600, 120, 1800
+CHECKIN_S = {"fall": 60, "scream": 30, "shout": 30, "distress": 60, "stillness": 60}
+FALL_DISTRESS_S, FALL_STILL_S, FALL_CANCEL_S, ACTIVE_BEFORE_S = 60, 120, 120, 1800   # v3.5: 2-minute stillness (was 10)
 SCREAM_S, DISTRESS_S, SEPARATE_S, MEDIA_WINDOWS = 120, 300, 10, 3
+SHOUT_S, SHOUTS = 60, 3
 COOLDOWN_S, SMOKE_CLEAR_S = 600, 300
 STOVE_S, STOVE_GAP_S, BEEP_S, BEEP_GAP_S, WATER_S, WATER_SHARE = 2400, 180, 300, 120, 1200, 0.8
 KEEP_S, STRAY = 2 * 3600, 2
@@ -25,10 +26,12 @@ COOKING_KINDS = ["frying", "kettle", "boiling"]
 OTHER_KITCHEN = ["dishes", "cutlery", "tap", "chopping", "cupboard", "drawer", "microwave", "blender", "pouring", "stirring"]
 TEXT = {
     "smoke": "a smoke alarm", "co": "what sounds like a carbon monoxide alarm", "fall": "a crash, then a groan or cry",
-    "fall_still": "a crash, then no movement for 10 minutes", "scream": "screaming", "distress": "repeated groaning or crying",
+    "fall_still": "a crash, then no movement for 2 minutes", "scream": "screaming", "shout": "shouting, again and again",
+    "gunshot": "what sounded like a gunshot", "distress": "repeated groaning or crying",
     "help": "the I need help button", "stillness": "no activity for hours",
     "stove": "frying or boiling for 40 minutes with nothing else heard", "beep": "a timer or appliance beeping for 5 minutes",
-    "water": "running water for 20 minutes", "scream_tv": "screaming while the TV or music was on", "test": "a test alert",
+    "water": "running water for 20 minutes", "scream_tv": "screaming while the TV or music was on",
+    "gunshot_tv": "a bang like a gunshot while the TV or music was on", "test": "a test alert",
 }
 
 
@@ -220,6 +223,14 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
                 out.append(_alert(st, t, "concern", "scream_tv", evidence=_ev(w, ["scream"])))
         elif urgent and _cool(st, "scream", t):
             out.append(_start_checkin(st, t, "scream", "scream", _ev(w, ["scream", "distress"])))
+    if _has(me, "gunshot"):                                   # U8: straight to the family; with media on, only a note
+        if media:
+            if concern and _cool(st, "gunshot_tv", t):
+                out.append(_alert(st, t, "concern", "gunshot_tv", evidence=_ev(w, ["gunshot"])))
+        elif urgent and _cool(st, "gunshot", t):
+            out.append(_alert(st, t, "urgent", "gunshot", since=t, evidence=_ev(w, ["gunshot"])))
+    if urgent and not st["checkin"] and not media and _cool(st, "shout", t) and _separate(h, "shout", t - SHOUT_S) >= SHOUTS:   # U9
+        out.append(_start_checkin(st, t, "shout", "shout", _ev(w, ["shout"])))
     if (urgent and not st["checkin"] and not media and _cool(st, "distress", t) and _separate(h, "distress", t - DISTRESS_S) >= 3
             and not any(x["t"] > t - DISTRESS_S and x["cooks"] for x in h)):
         out.append(_start_checkin(st, t, "distress", "distress", _ev(w, ["distress"])))
