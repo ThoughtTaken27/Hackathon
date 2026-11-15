@@ -3,9 +3,17 @@ import { today as computeToday, ruleTitle, week, clock, DISPLAY, KIND_NAMES, KIN
 import { TEXT as SAFETY_TEXT } from "./safety.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, readout, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
+import { pushSupport, subscribe, currentSubscription, unsubscribe, registerSW } from "./pushclient.js";
 
-const link = linkFromHash("family");
-let srv = null, events = [], t = null, failures = 0, lastSig = "", lastDraw = 0;
+// a notification opens /family?h=<home>[&ack=<alert>]: pick that home (the key stays in this browser), then clean the address
+const qs = new URLSearchParams(location.search);
+const link = (() => {
+  const l = linkFromHash("family"), h = qs.get("h"), saved = h && homes()[h];
+  return saved && saved.familyKey && (!l || l.id !== h) ? { id: h, key: saved.familyKey, role: "family" } : l;
+})();
+const ackId = qs.get("ack");
+if (qs.has("h") || qs.has("ack")) history.replaceState(null, "", location.pathname + location.hash);
+let srv = null, events = [], t = null, failures = 0, lastSig = "", lastDraw = 0, pushDrawn = false;
 
 if (!link) {
   $("#app").innerHTML = "";
@@ -31,6 +39,8 @@ if (ro) ro.bind(bar);
 const drawLegend = link ? legend($("#bar")) : null;
 
 async function boot() {
+  registerSW();
+  if (ackId) { try { await api(`/api/h/${link.id}/seen`, { method: "POST", key: link.key, body: { id: ackId } }); } catch {} }
   await poll();
   setInterval(() => { if (!document.hidden) poll(); }, 5000);
   setInterval(() => { if (srv && !document.hidden) draw(); }, 15000);   // the clock moves by minutes; new labels redraw from poll()
@@ -83,6 +93,7 @@ function draw() {
   for (const h of t.heard) heard.append(el("li", { text: `${h.name}: ${h.text}${h.n > 1 ? ` (${h.n}×)` : ""}` }));
   $("#heard-sec").hidden = !t.heard.length;
   drawUrgent(n);
+  if (!pushDrawn) { pushDrawn = true; drawPush(); }
   drawWeek();
   $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);
@@ -91,23 +102,95 @@ function draw() {
   drawInvite();
 }
 
-/** Handover 3.6: a red banner for each Urgent alert from the kitchen device that nobody here has marked as seen (last 12 hours). */
+/**
+ * Handover v3.5, 3.2/3.6: a banner for each Urgent alert from the room device that nobody here has marked as seen (last 12 hours).
+ * Red while it may need someone (asking, no answer, I need help, smoke/CO/gunshot); amber once they pressed "I'm OK".
+ */
+let alertsKnown = null;
 function drawUrgent(n) {
   const box = $("#urgent");
   const list = (srv.alerts || []).filter((a) => !a.seen && a.at > now() - 12 * 3600);
-  const key = list.map((a) => a.id).join(",");
+  const key = list.map((a) => `${a.id}:${a.checkin}`).join(",");
+  // a new or worse alert while this page is open: buzz, retitle the tab, and show a system notification if allowed
+  const red = list.filter((a) => a.checkin !== "ok").map((a) => `${a.id}:${a.checkin}`);
+  if (alertsKnown && red.some((k) => !alertsKnown.has(k))) {
+    try { navigator.vibrate && navigator.vibrate([300, 100, 300]); } catch {}
+    const a = list.find((x) => x.checkin !== "ok" && !alertsKnown.has(`${x.id}:${x.checkin}`));
+    try { if ("Notification" in window && Notification.permission === "granted" && document.hidden) new Notification("Kettle: urgent", { body: `Heard ${SAFETY_TEXT[a.kind] || "something urgent"} at ${clock(a.at, t.tz_offset)}.`, tag: `kettle-${a.id}`, icon: "/img/icon-192.png" }); } catch {}
+  }
+  alertsKnown = new Set(list.map((a) => `${a.id}:${a.checkin}`));
+  if (red.length) document.title = "● Urgent · Kettle";
+  drawAlertLog(n);
   if (box.dataset.k === key) return;
   box.dataset.k = key; box.textContent = "";
   for (const a of list) {
-    const why = a.checkin === "no_answer" ? ` Nobody answered "Are you OK?" on the ${n.room} screen.` : a.checkin === "help" ? ` ${n.parent} pressed "I need help".` : "";
-    box.append(el("div", { class: "urgent", role: "alert" },
-      el("p", { class: "u-h", text: `Urgent: Kettle heard ${SAFETY_TEXT[a.kind] || "something urgent"} at ${clock(a.at, t.tz_offset)}.` }),
-      el("p", { class: "u-b", text: `${why} Call ${n.parentMid} now. Kettle can't call for help itself.`.trim() }),
-      el("button", { class: "btn", type: "button", text: "I've seen this", onclick: async () => {
+    const ok = a.checkin === "ok", at = clock(a.at, t.tz_offset), what = SAFETY_TEXT[a.kind] || "something urgent";
+    const head = a.kind === "help" ? `${n.parent} pressed "I need help" at ${at}.` : `Kettle heard ${what} at ${at}.`;
+    const state = ok ? `${n.parent} pressed "I'm OK"${a.answered ? ` at ${clock(a.answered, t.tz_offset)}` : ""}. Worth a call when you can.`
+      : a.checkin === "asking" ? `Asking "Are you OK?" on the ${n.room} screen now. Call ${n.parentMid} if you can.`
+      : a.checkin === "no_answer" ? `Nobody answered "Are you OK?" on the ${n.room} screen. Call ${n.parentMid} now.`
+      : a.checkin === "help" ? `${n.parent} pressed "I need help". Call ${n.parentMid} now.`
+      : `Call ${n.parentMid} now. Kettle can't call for help itself.`;
+    box.append(el("div", { class: `urgent ${ok ? "u-ok" : "u-red"}`, role: "alert", "data-checkin": a.checkin },
+      el("p", { class: "u-k", text: ok ? `Update · ${at}` : `Urgent · ${at}` }),
+      el("p", { class: "u-h", text: head }),
+      el("p", { class: "u-b", text: state }),
+      el("div", { class: "u-act" }, el("button", { class: "btn u-seen", type: "button", text: "I've seen this", onclick: async () => {
         try { const r = await api(`/api/h/${link.id}/seen`, { method: "POST", key: link.key, body: { id: a.id } }); srv = r.state; draw(); }
         catch (e) { toast(e.message || "Couldn't reach Kettle."); }
-      } })));
+      } })),
+      el("p", { class: "u-note", text: "Kettle is a prototype. It doesn't replace a smoke or CO detector, or 911." })));
   }
+}
+/** Today's urgent alerts stay listed after they're seen, so the day can be read back later. */
+function drawAlertLog(n) {
+  const box = $("#alert-log"); if (!box) return;
+  const day = (srv.alerts || []).filter((a) => a.at > now() - 24 * 3600);
+  const k = day.map((a) => `${a.id}:${a.checkin}:${a.seen ? 1 : 0}`).join(",");
+  if (box.dataset.k === k) return; box.dataset.k = k; box.textContent = "";
+  box.hidden = !day.length;
+  if (!day.length) return;
+  box.append(el("p", { class: "al-h", text: "Urgent alerts in the last 24 hours" }),
+    el("ul", {}, ...day.slice().reverse().map((a) => el("li", { "data-ok": a.checkin === "ok" ? "1" : "" },
+      el("span", { class: "al-t num", text: clock(a.at, t.tz_offset) }),
+      el("span", { text: `${a.kind === "help" ? `"I need help" pressed` : SAFETY_TEXT[a.kind] || "urgent"}${a.checkin === "ok" ? `, then "I'm OK"` : a.checkin === "no_answer" ? ", no answer" : a.checkin === "help" && a.kind !== "help" ? `, then "I need help"` : ""}${a.seen ? " · seen" : ""}` })))));
+}
+
+// ---------------------------------------------------------------- alerts on this phone (Web Push, handover v3.5 3.3)
+let pushKey = null, pushOn = null;
+async function drawPush() {
+  const box = $("#push"); if (!box) return;
+  const sup = pushSupport();
+  if (pushOn === null) pushOn = !!(await currentSubscription());
+  box.textContent = "";
+  const why = { "ios-needs-home-screen": "On iPhone: tap Share, then Add to Home Screen, open Kettle from there, then turn alerts on.",
+    denied: "Notifications are blocked for this site. Allow them in your browser's site settings, then reload.",
+    "no-push": "This browser can't get alerts. Try Chrome, Edge or Firefox, or Safari from the Home Screen.", "no-sw": "This browser can't get alerts. Try Chrome, Edge or Firefox." }[sup.why];
+  const status = el("p", { class: "push-s", "data-on": pushOn ? "1" : "", text: pushOn ? "Alerts are on for this phone. Urgent sounds notify you even when Kettle is closed."
+    : why || "Get a notification the moment Kettle hears a smoke alarm, a crash then a cry, screaming or a gunshot." });
+  const msg = el("p", { class: "push-m", "aria-live": "polite" });
+  const on = el("button", { class: "btn primary", type: "button", text: "Turn on alerts", disabled: !sup.ok || null, onclick: async () => {
+    msg.textContent = "Turning on…";
+    try {
+      if (!pushKey) pushKey = (await api("/api/push/key")).publicKey;
+      const sub = await subscribe(pushKey);
+      await api(`/api/h/${link.id}/push`, { method: "POST", key: link.key, body: { subscription: sub } });
+      pushOn = true; drawPush(); toast("Alerts are on");
+    } catch (e) { msg.textContent = e.message || "Couldn't turn alerts on."; }
+  } });
+  const test = el("button", { class: "btn", type: "button", text: "Send a test alert", onclick: async () => {
+    msg.textContent = "Sending…";
+    try { const r = await api(`/api/h/${link.id}/pushtest`, { method: "POST", key: link.key, body: {} }); msg.textContent = `Sent to ${r.subscribed} phone${r.subscribed === 1 ? "" : "s"}. It should arrive in a few seconds.`; }
+    catch (e) { msg.textContent = e.message || "Couldn't send a test."; }
+  } });
+  const off = el("button", { class: "btn quiet", type: "button", text: "Turn off", onclick: async () => {
+    const sub = await currentSubscription();
+    try { if (sub) await api(`/api/h/${link.id}/push`, { method: "DELETE", key: link.key, body: { endpoint: sub.endpoint } }); } catch {}
+    await unsubscribe(); pushOn = false; drawPush();
+  } });
+  box.append(el("div", { class: "sec-head" }, el("h2", { class: "sec-title", text: "Urgent alerts" })), status,
+    el("div", { class: "actions push-a" }, ...(pushOn ? [test, off] : [on])), msg,
+    el("p", { class: "sec-foot", text: "Kettle is a prototype, not an emergency service. It doesn't replace a smoke or CO detector, or 911." }));
 }
 function drawWeek() {
   const w = week(srv, now(), { tz: srv.tz, hop: HOP_S });
