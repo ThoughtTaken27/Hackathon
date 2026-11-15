@@ -113,3 +113,23 @@ test("guest pause and privacy choices are the parent's, and show on the family v
   const r = await call(env, "POST", `/api/h/${id}/action`, { type: "resume" }, K, T + 600);
   assert.deepEqual(r.body.state.pauses.at(-1), [T + 60, T + 600, "guest"]);
 });
+
+test("handover 3.6: an Urgent alert from the kitchen reaches the family until they mark it seen; only kind and time are kept", async () => {
+  const { env } = memEnv();
+  const c = await call(env, "POST", "/api/households", { parent: "Papa", caregiver: "Asha", tz: "America/Chicago", as: "family" });
+  const pair = await call(env, "POST", "/api/pair", { code: c.body.code });
+  const K = pair.body.key, F = c.body.familyKey, id = c.body.id, T = 1_800_000_000;
+  assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "smoke", at: T }, K)).status, 409);   // needs a yes first
+  await call(env, "POST", `/api/h/${id}/action`, { type: "consent" }, K);
+  assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "smoke", at: T }, F)).status, 403);   // family can't raise one
+  assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "burglar", at: T }, K)).status, 400);
+  const r = await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "scream", at: T - 5, checkin: "no_answer", scores: { scream: 0.9 } }, K);
+  assert.equal(r.status, 200);
+  const a = r.body.state.alerts[0];
+  assert.deepEqual(Object.keys(a).sort(), ["at", "checkin", "id", "kind", "seen"]);
+  assert.equal(a.seen, null);
+  assert.equal((await call(env, "POST", `/api/h/${id}/seen`, { id: a.id }, K)).status, 403);
+  const s = await call(env, "POST", `/api/h/${id}/seen`, { id: a.id }, F);
+  assert.equal(s.status, 200);
+  assert.ok(s.body.state.alerts[0].seen > 0);
+});

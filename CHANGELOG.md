@@ -41,3 +41,17 @@
   the run** (it passes the handover's narrower gate at 0.9 only). Not shipped; `models/judge.json` not written; Kitchen20 TEST not
   touched. DESED is not on this machine.
 - 3.4: `python -m eval.own_kitchen --timeline --session <name>` scores a labelled recording old rule vs new rule; dry-run checked.
+
+## Sun Nov 15, ~2:20–2:50 PM CT: safety wired, minimal (3.6)
+- The kitchen device runs Shaurya's safety engine (`web/public/js/safety.js`) on every window: detector scores and the alarm-pattern
+  count come from `listen.js` (device only, never sent). Wired: smoke or fire alarm (U1), a crash then a cry or stillness (U3),
+  screaming (U4), and "I need help" from the check-in. A crash or screaming first asks "Are you OK?" on the kitchen screen (read
+  aloud) with "I'm OK" / "I need help"; no answer in time, or "I need help", sends an Urgent alert. Not wired: CO alarm, repeated
+  distress (U5), Worth-a-look notes, Web Push.
+- Server (`web/src/household.js`): kitchen action `alert` stores only kind, time and how the check-in ended (last 20); family route
+  `seen` marks one seen. Family view: a red "Urgent" banner per unseen alert from the last 12 hours, "Call <parent> now. Kettle
+  can't call for help itself." Consent screen says so.
+- Checked: API test (roles, consent gate, stored fields); browser run with a synthetic T3 smoke-alarm pattern through Chromium's
+  fake microphone: alert stored after 12 s, kitchen says "Kettle told Asha", family banner shown, cleared by "I've seen this";
+  17 ordinary and confusing sounds (cooking, TV, voices, cough, crying, laughing, glass breaking, siren, dog, alarm clock, knock),
+  about 4 windows each: no alert.

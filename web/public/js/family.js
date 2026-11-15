@@ -1,5 +1,6 @@
 // Meera's view (Kettle web): reads the household's labels and draws the same day the kitchen screen shows.
-import { today as computeToday, ruleTitle, week, DISPLAY, KIND_NAMES, KINDS_SHOWN } from "./core.js";
+import { today as computeToday, ruleTitle, week, clock, DISPLAY, KIND_NAMES, KINDS_SHOWN } from "./core.js";
+import { TEXT as SAFETY_TEXT } from "./safety.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 
@@ -69,6 +70,7 @@ function draw() {
   const heard = $("#heard"); heard.textContent = "";
   for (const h of t.heard) heard.append(el("li", { text: `${h.name}: ${h.text}${h.n > 1 ? ` (${h.n}×)` : ""}` }));
   $("#heard-sec").hidden = !t.heard.length;
+  drawUrgent(n);
   drawWeek();
   $("#foot-who").textContent = `${n.parent} sees the same day on the kitchen screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);
@@ -76,6 +78,24 @@ function draw() {
   drawInvite();
 }
 
+/** Handover 3.6: a red banner for each Urgent alert from the kitchen device that nobody here has marked as seen (last 12 hours). */
+function drawUrgent(n) {
+  const box = $("#urgent");
+  const list = (srv.alerts || []).filter((a) => !a.seen && a.at > now() - 12 * 3600);
+  const key = list.map((a) => a.id).join(",");
+  if (box.dataset.k === key) return;
+  box.dataset.k = key; box.textContent = "";
+  for (const a of list) {
+    const why = a.checkin === "no_answer" ? ` Nobody answered "Are you OK?" on the kitchen screen.` : a.checkin === "help" ? ` ${n.parent} pressed "I need help".` : "";
+    box.append(el("div", { class: "urgent", role: "alert" },
+      el("p", { class: "u-h", text: `Urgent: Kettle heard ${SAFETY_TEXT[a.kind] || "something urgent"} at ${clock(a.at, t.tz_offset)}.` }),
+      el("p", { class: "u-b", text: `${why} Call ${n.parent} now. Kettle can't call for help itself.`.trim() }),
+      el("button", { class: "btn", type: "button", text: "I've seen this", onclick: async () => {
+        try { const r = await api(`/api/h/${link.id}/seen`, { method: "POST", key: link.key, body: { id: a.id } }); srv = r.state; draw(); }
+        catch (e) { toast(e.message || "Couldn't reach Kettle."); }
+      } })));
+  }
+}
 function drawWeek() {
   const w = week(srv, now(), { tz: srv.tz, hop: HOP_S });
   const known = w.rows.some((r) => r.state !== "unknown");

@@ -3,6 +3,7 @@ import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, 
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
+import { newEngine, step as safetyStep, timeouts as safetyTimeouts, answer as safetyAnswer, TEXT as SAFETY_TEXT } from "./safety.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
 // can be a spare phone or tablet on a charger as well as a laptop.
@@ -109,6 +110,7 @@ async function boot() {
     if (sec % 5 === 0) poll();
     if (sec % 4 === 0) flush();
     teachTick();
+    if (mic) handleSafety(safetyTimeouts(safety, now()));
     watchdog();
     if (srv && !document.hidden) draw();
   });
@@ -180,6 +182,27 @@ function merge(list) {
   for (const e of list || []) m.set(e.end, e);
   events = [...m.values()].sort((a, b) => a.end - b.end).filter((e) => e.end > now() - 36 * 3600);
 }
+// ---------------------------------------------------------------- safety (handover v3.2, 3.6): smoke alarm, a crash then a cry, screaming
+// The engine (safety.js) runs on this device; only an Urgent alert's kind and time go to the family. A crash or screaming first asks
+// "Are you OK?" here; the family is told if nobody answers, or if the parent presses "I need help".
+const safety = newEngine();
+const WIRED = ["smoke", "fall", "fall_still", "scream", "help"];
+function handleSafety(acts) {
+  for (const a of acts || []) {
+    if (a.do === "checkin" && ["fall", "scream"].includes(a.rule)) {
+      ui.checkin = { type: a.type, deadline: a.deadline, text: SAFETY_TEXT[a.type] };
+      speak(["Are you OK?", "Kettle heard " + SAFETY_TEXT[a.type] + ".", "Press I'm OK, or I need help."]);
+      draw();
+    } else if (a.do === "alert" && a.tier === "urgent" && WIRED.includes(a.type)) {
+      ui.checkin = null;
+      act("alert", { kind: a.type, at: a.at, checkin: a.checkin || "none" });
+      ui.alerted = { at: Date.now(), text: SAFETY_TEXT[a.type] };
+      draw();
+    } else if (a.do === "alert" && ui.checkin) { ui.checkin = null; draw(); }
+  }
+}
+function reply(r) { const acts = safetyAnswer(safety, now(), r); ui.checkin = null; handleSafety(acts); if (r === "ok") toast("Thank you. Nobody was told."); draw(); }
+
 async function act(type, extra = {}) {
   ui.pauseMenu = false;
   try { const r = await api(`/api/h/${link.id}/action`, { method: "POST", key: link.key, body: { type, ...extra } }); srv = r.state; sync(); }
@@ -227,6 +250,8 @@ async function startListening() {
           if (w.end - teach.lastSent < HOP_S - 0.5) return;    // still one window per 10 s to the family while teaching
           teach.lastSent = w.end;
         }
+        if (w.safety && teach.step < 0) handleSafety(safetyStep(safety, { t: w.end, ...w.safety, db: w.db, floor: enrolment ? enrolment.floor : null,
+          kinds: w.kinds, kindsDevice: w.kindsDevice, label: w.label }, { urgent: true, concern: false }));
         const ev = shareable(w);
         events.push(ev); queue.push(ev); saveQueue(); flush();
         if (ui.setup === "check" && !ui.check) ui.check = { label: rawLabel(ev, 0.66) };
@@ -289,6 +314,14 @@ function meter(v) {
 // ---------------------------------------------------------------- what to show (same states and words as the Python kitchen screen)
 function screen(t) {
   const n = t.names, k = t.kitchen, hb = t.heartbeat;
+  if (ui.checkin) {
+    const left = Math.max(0, Math.ceil(ui.checkin.deadline - now()));
+    return { state: "error", head: "Are you OK?", body: [`Kettle heard ${ui.checkin.text}.`, `If nobody answers in ${left} seconds, Kettle tells ${n.caregiver}.`],
+      controls: [button("I'm OK", () => reply("ok"), "primary"), button("I need help", () => reply("help"), "danger")] };
+  }
+  if (ui.alerted && Date.now() - ui.alerted.at < 60000) return { state: "error", head: `Kettle told ${n.caregiver}.`,
+    body: [`It heard ${ui.alerted.text}. ${n.caregiver} sees an urgent note on their phone. If you need help now, call for it.`],
+    controls: [button("OK", () => { ui.alerted = null; draw(); }, "primary")] };
   if (ui.gone) return { state: "error", head: `This ${DEVICE} isn't connected any more.`, body: [ui.gone, "Ask your family member for a new code."],
     controls: [el("a", { class: "btn kbtn primary", href: "/kitchen", text: "Enter a new code", onclick: () => { forgetHome(link.id); } })] };
   if (ui.down) return { state: "error", head: "Kettle can't reach the internet.", body: ["It keeps listening and will send what it heard when the connection is back."],
@@ -302,7 +335,8 @@ function screen(t) {
     const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
       `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`,
       `${n.caregiver} will also see when people were talking (that shows a visit, never what was said) and when the TV or radio was on. You can hide any of these.`,
-      "Kettle never names voices, coughs, crying or bathroom sounds. If a guest or carer comes, you can pause it for them."];
+      "Kettle never names voices, coughs, crying or bathroom sounds. If a guest or carer comes, you can pause it for them.",
+      `If it hears a smoke alarm, screaming, or a crash and then a cry, it asks "Are you OK?" here and tells ${n.caregiver} if nobody answers. It can't call for help itself.`];
     return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
         button("Read this to me", () => speak([`This ${DEVICE} listens for kitchen sounds.`, ...lines]), "quiet-k")] };

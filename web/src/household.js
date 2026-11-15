@@ -89,6 +89,11 @@ export function tallyDays(s, evs) {
  * store: { getState(), putState(s), addEvents(evs), eventsSince(t), prune(before), wipe() }
  * Returns { status, body }.
  */
+// Urgent safety alerts the kitchen device may raise (web/public/js/safety.js): smoke/CO alarm, a crash then a cry or stillness,
+// screaming, and the "I need help" button. Only the kind and time are stored; the family view shows a red banner until seen.
+export const SAFETY_TYPES = ["smoke", "co", "fall", "fall_still", "scream", "help"];
+const MAX_ALERTS = 20;
+
 export async function handle(store, { method, route, key, body, now }) {
   const s = await store.getState();
   if (!s) return { status: 404, body: { error: "This Kettle link isn't valid any more. Ask for a new one." } };
@@ -124,7 +129,7 @@ export async function handle(store, { method, route, key, body, now }) {
   if (method === "POST" && route === "action") {
     if (role !== "kitchen") return { status: 403, body: { error: "Only the person at the kitchen laptop can do this." } };
     const type = body?.type;
-    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "device", "privacy"].includes(type)) return { status: 400, body: { error: "unknown action" } };
+    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "device", "privacy", "alert"].includes(type)) return { status: 400, body: { error: "unknown action" } };
     if (type === "device") {            // allowed before consent: it says what the device is, nothing about the room
       if (!["phone", "tablet", "laptop"].includes(body.kind)) return { status: 400, body: { error: "bad device" } };
       const level = body.level >= 0 && body.level <= 1 ? Math.round(body.level * 100) / 100 : null;
@@ -141,6 +146,10 @@ export async function handle(store, { method, route, key, body, now }) {
       const hide = Array.isArray(body.hide) ? body.hide.filter((h) => HIDEABLE.includes(h)) : [];
       const kindsOff = Array.isArray(body.kindsOff) ? body.kindsOff.filter((k) => Object.hasOwn(KIND_NAMES, k)) : [];
       actions.privacy(s, now, { hide, kindsOff });
+    } else if (type === "alert") {     // handover v3.2, 3.6: an Urgent safety alert from the kitchen device (no audio, no scores)
+      if (!SAFETY_TYPES.includes(body.kind) || !["no_answer", "help", "none"].includes(body.checkin || "none")) return { status: 400, body: { error: "bad alert" } };
+      const at = Math.min(now, Math.max(now - 3600, +body.at || now));
+      s.alerts = [...(s.alerts || []), { id: `a${Math.round(at)}`, kind: body.kind, at, checkin: body.checkin || "none", seen: null }].slice(-MAX_ALERTS);
     } else if (type === "mic") {
       if (!["ok", "blocked", "none"].includes(body.state)) return { status: 400, body: { error: "bad mic state" } };
       actions.mic(s, now, { state: body.state });
@@ -151,6 +160,14 @@ export async function handle(store, { method, route, key, body, now }) {
   if (method === "POST" && route === "rules") {
     if (role !== "family") return { status: 403, body: { error: "Checks are set from the family view." } };
     try { s.rules = validateRules(body?.rules); } catch (e) { return { status: 400, body: { error: String(e.message || e) } }; }
+    changed = true;
+    return done(200);
+  }
+  if (method === "POST" && route === "seen") {
+    if (role !== "family") return { status: 403, body: { error: "Alerts are acknowledged from the family view." } };
+    const a = (s.alerts || []).find((x) => x.id === body?.id);
+    if (!a) return { status: 404, body: { error: "no such alert" } };
+    a.seen = now;
     changed = true;
     return done(200);
   }
