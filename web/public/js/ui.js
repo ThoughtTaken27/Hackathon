@@ -94,6 +94,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   hit.tabIndex = 0;
   hit.setAttribute("role", "slider");
   hit.setAttribute("aria-label", "Drag along the day to see what was happening");
+  hit.setAttribute("aria-valuemin", "0"); hit.setAttribute("aria-valuemax", "100");
   root.append(labels, hit, ticks, list);
   if (onSelect) root.append(el("p", { class: "drag-hint" },
     el("span", { class: "touch", text: "Slide a finger along the day to see what was happening and when." }),
@@ -102,7 +103,8 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   let first = true, selected = null, last = [], lastT = null, span0 = null, drag = null, swallowClick = false;
   // Real text widths (the old guess of 7.4 px a letter overlapped labels on phones, where the kitchen text is larger).
   const cv = document.createElement("canvas").getContext("2d");
-  const textW = (node, text) => { const cs = getComputedStyle(node); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; return cv.measureText(text).width; };
+  const fonts = new Map();              // one style read per node per render, not one per label (each read can force a style recalc)
+  const textW = (node, text) => { let f = fonts.get(node); if (!f) { const cs = getComputedStyle(node); f = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; fonts.set(node, f); } cv.font = f; return cv.measureText(text).width; };
   // Redraw when the bar's width changes (rotation, sheet opening, first layout): labels and ticks depend on it.
   let lastW = 0;
   if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => { const w = bar.clientWidth; if (lastT && w && Math.abs(w - lastW) > 1) render(lastT); }).observe(bar);
@@ -116,7 +118,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     return [t.day0 + startH * 3600, t.day0 + endH * 3600];
   }
   function render(t) {
-    last = t.blocks; lastT = t;
+    last = t.blocks; lastT = t; fonts.clear();
     empty.hidden = t.blocks.length > 0;
     empty.textContent = t.heartbeat.state === "never" ? `The day appears here once ${t.names.parentMid || t.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(t), span = z - a;
@@ -147,7 +149,8 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     const prev = new Set([...labels.children].map((s) => s.dataset.key));
     labels.textContent = "";
     let right = -Infinity;
-    for (const b of t.blocks.filter((x) => x.state !== "empty")) {
+    const showLabels = labels.offsetParent !== null || getComputedStyle(labels).display !== "none";
+    for (const b of showLabels ? t.blocks.filter((x) => x.state !== "empty") : []) {
       const x = (width * (Math.max(a, b.start) - a)) / span, bw = (width * (Math.min(z, b.end) - Math.max(a, b.start))) / span;
       const tw = textW(labels, b.label) + 2;
       if (x < right + 10 || bw < Math.min(tw, 44) || x + tw > width + 2) continue;
@@ -204,7 +207,9 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     const tw = tip.offsetWidth, px = f * r.width;
     tip.style.transform = `translateX(${Math.round(Math.max(-px, Math.min(r.width - px - tw, -tw / 2)))}px)`;
     hit.setAttribute("aria-valuetext", tip.textContent);
-    setSelected(b ? blockKey(b) : null);
+    const nk = b ? blockKey(b) : null;
+    if (drag && drag.moved && nk && nk !== selected && navigator.vibrate) { try { navigator.vibrate(6); } catch {} }   // a light tick per stretch (Android)
+    setSelected(nk);
   }
   hit.addEventListener("pointerdown", (e) => {
     if (e.button > 0 || !last.length) return;
@@ -237,17 +242,52 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   };
   hit.addEventListener("pointerup", end);
   hit.addEventListener("pointercancel", end);
-  hit.addEventListener("keydown", (e) => {
-    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key) || !last.length) return;
-    e.preventDefault();
+  // One stretch earlier or later (arrow keys, and the readout's arrow buttons on a phone).
+  function step(dir, edge = false) {
+    if (!last.length || !span0) return;
     const seq = last.filter((b) => !(b.state === "empty" && b.end - b.start < 60));
     let i = seq.findIndex((b) => blockKey(b) === selected);
-    i = e.key === "Home" ? 0 : e.key === "End" ? seq.length - 1 : i < 0 ? (e.key === "ArrowLeft" ? seq.length - 1 : 0) : i + (e.key === "ArrowLeft" ? -1 : 1);
+    i = edge ? (dir < 0 ? 0 : seq.length - 1) : i < 0 ? (dir < 0 ? seq.length - 1 : 0) : i + dir;
     const b = seq[Math.max(0, Math.min(seq.length - 1, i))];
     const r = bar.getBoundingClientRect(), [a, z] = span0;
     scrubTo(r.left + (r.width * ((Math.max(a, b.start) + Math.min(z, b.end)) / 2 - a)) / (z - a));
+  }
+  hit.addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key) || !last.length) return;
+    e.preventDefault();
+    step(e.key === "ArrowLeft" || e.key === "Home" ? -1 : 1, e.key === "Home" || e.key === "End");
   });
-  return { render, select };
+  return { render, select, step, selected: () => selected };
+}
+
+/** The line above a day bar: the stretch you're on (tap, drag, or the arrows), or a one-line hint when nothing is chosen.
+ *  Same component on the family view, the landing demo and the phone mock-up, so they can't drift apart.
+ *  Usage: const ro = readout(node); const bar = dayBar(box, { onSelect: (b) => ro(b) }); ro.bind(bar); ro(null, hasBlocks) */
+export function readout(root, { hint = ["Slide along the day to read it", "Drag along the day to read it"], empty = "The day fills in as Kettle hears it" } = {}) {
+  root.classList.add("readout");
+  root.setAttribute("aria-live", "polite");
+  const arrow = (d, label) => el("button", { class: "ro-step", type: "button", "aria-label": label, html: `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="${d}"/></svg>` });
+  const prev = arrow("M10 3.5 5.5 8l4.5 4.5", "Earlier stretch"), next = arrow("M6 3.5 10.5 8 6 12.5", "Later stretch");
+  const body = el("div", { class: "ro-body" });
+  root.textContent = ""; root.append(prev, body, next);
+  let bar = null, has = false;
+  prev.addEventListener("click", () => bar && bar.step(-1));
+  next.addEventListener("click", () => bar && bar.step(1));
+  function show(b, hasBlocks) {
+    if (hasBlocks != null) has = hasBlocks;
+    prev.disabled = next.disabled = !has;
+    const key = b ? `${b.start}|${b.label}|${b.range}` : `none|${has}`;
+    if (body.dataset.k === key) return; body.dataset.k = key;
+    body.textContent = "";
+    if (b) {
+      const sw = el("i", { class: "ro-sw" + (b.activity ? "" : ` blk ${b.state}`) });
+      if (b.activity) sw.style.background = `var(${COLOUR[b.activity]})`;
+      body.append(el("span", { class: "ro-line" }, sw, el("b", { text: b.label })), el("span", { class: "ro-time num", text: glue(b.range) }));
+    } else body.append(el("span", { class: "ro-hint" }, ...(has ? [el("span", { class: "touch", text: hint[0] }), el("span", { class: "mouse", text: hint[1] })] : [el("span", { text: empty })])));
+    body.classList.remove("swap"); void body.offsetWidth; body.classList.add("swap");
+  }
+  show.bind = (b) => { bar = b; };
+  return show;
 }
 
 export function legend(root) {
@@ -296,6 +336,8 @@ export function evidenceCard(b) {
 }
 
 export function rulesList(root, rules) {
+  const key = JSON.stringify(rules.map((r) => [r.state, r.title, r.detail, r.note]));
+  if (root._k === key) return; root._k = key;          // unchanged checks: leave the DOM alone
   root.textContent = "";
   for (const r of rules) {
     root.append(el("div", { class: "rule", "data-state": r.state },

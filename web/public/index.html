@@ -18,7 +18,8 @@
 <link rel="stylesheet" href="/css/landing.css?v=w7">
 <link rel="stylesheet" href="/css/landing2.css?v=w7">
 <link rel="stylesheet" href="/css/type.css?v=w7">
-<style>.lp-switch{display:flex;flex-wrap:wrap;gap:6px;padding:4px 6px 12px}.lp-sw{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:0;color:#9fb3cf;background:rgba(143,169,201,.12);cursor:pointer}.lp-sw[aria-pressed="true"]{color:#fff;background:rgba(143,169,201,.32)}.lp-sw:focus-visible{outline:2px solid #fff;outline-offset:2px}</style>
+<link rel="stylesheet" href="/css/family.css?v=p1">
+<link rel="stylesheet" href="/css/polish.css?v=p1">
 </head>
 <body class="lx">
 <header class="lx-nav" id="nav"><div class="lx-nav-in">
@@ -35,7 +36,6 @@
   <section class="lx-hero" aria-labelledby="hero-h">
     <div class="lx-hero-bg" aria-hidden="true"></div>
     <div class="lx-hero-in">
-      <a class="lx-chip rise" style="--d:0" href="#how">A calmer way to check in <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay, in any room. <em>Without a camera.</em></h1>
       <p class="lx-lede rise" style="--d:2">Kettle turns a spare phone or laptop in the rooms of someone you love into a calm timeline of their day, from sound alone. No recordings, no words.</p>
       <div class="lx-cta rise" style="--d:3">
@@ -44,7 +44,6 @@
       </div>
     </div>
     <div class="lx-panel-wrap rise" style="--d:4">
-      <div class="lp-switch" role="group" aria-label="Show an invented example for"><button type="button" class="lp-sw" aria-pressed="true" data-n="" data-r="parent" data-t="kitchen">Your parent, kitchen</button><button type="button" class="lp-sw" aria-pressed="false" data-n="Grandma" data-r="grandparent" data-t="bedroom">Grandma, bedroom</button><button type="button" class="lp-sw" aria-pressed="false" data-n="Dad" data-r="parent" data-t="kitchen">Dad, kitchen</button><button type="button" class="lp-sw" aria-pressed="false" data-n="" data-r="parent" data-t="living">Your parent, living room</button></div>
       <div class="lx-panel theme-dark" aria-label="An invented sample day, playing">
         <div class="lp-top">
           <p class="lp-title" id="lp-title">Your parent's kitchen, today</p>
@@ -53,22 +52,19 @@
           <span class="lp-live"><i></i>listening</span>
           <span class="lp-clock num" id="lp-clock">6:00 AM</span>
         </div>
-        <div class="lp-steps" aria-hidden="true">
-          <span data-s="0"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Hear 10 s</span>
-          <span data-s="1"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Name it</span>
-          <span data-s="2"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Forget the sound</span>
-          <span data-s="3"><svg viewBox="0 0 16 16"><path d="M3.5 8.5l3 3 6-7"/></svg>Send the label</span>
-        </div>
         <div class="lp-grid">
           <section class="lp-card">
             <div class="lp-card-h"><p>What Kettle heard</p><span class="lp-dot-line"><i></i>on the device in the room</span></div>
             <ol class="lp-heard" id="lp-heard"></ol>
           </section>
-          <section class="lp-card">
+          <section class="lp-card lp-fam fam">
             <div class="lp-card-h"><p>What the family sees</p><span class="muted num" id="lp-count"></span></div>
             <p class="lp-sum" id="lp-sum">Waiting for the first sound…</p>
-            <div id="lp-bar"></div>
-            <div class="lp-rules" id="lp-rules"></div>
+            <div class="lp-day">
+              <div id="lp-ro"></div>
+              <div id="lp-bar"></div>
+            </div>
+            <div class="rules lp-rules" id="lp-rules"></div>
           </section>
         </div>
       </div>
@@ -242,6 +238,6 @@
   <nav aria-label="Footer"><a href="/start">Set up</a><a href="/pair">Enter a code</a><a href="/how-sure">How sure</a><a href="/credits">Credits</a><a href="#faq">FAQ</a></nav>
   <p>Prototype, not medical advice. Not an emergency device. The sample days are recordings from a public research home, not anyone we know. Landscapes are generated, not photographs.</p>
 </div></footer>
-<script type="module" src="/js/landing.js?v=w7"></script>
+<script type="module" src="/js/landing.js?v=p1"></script>
 </body>
 </html>

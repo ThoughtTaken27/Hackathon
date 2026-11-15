@@ -1,0 +1,86 @@
+/* Kettle landing, polish pass (Nov 15). Loaded last on the landing only.
+   1) Speed: no live blur inside the page body. backdrop-filter under a panel that tilts on scroll, and filter: blur on
+      big reveal blocks, forced a full repaint every frame (measured p90 frame 50 ms on a desktop). Transform + opacity only.
+   2) The hero demo's family half and the phone mock-up use the real family view's parts (family.css, scoped by .fam). */
+
+/* ---------- 1. speed ---------- */
+.lx main *, .lx main *::before, .lx main *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.lx-panel-wrap { background: rgba(26,27,31,.92); }
+.lx-seg { background: rgba(20,21,25,.96); }
+.lx-sec .lx-sec-head, .lx-flow, .lx-cards, .lx-stage, .lx-numbers, .lx-faq-grid, .lx-why-in { filter: none !important; }
+.lx-h1 .w { will-change: auto; }
+.lx-hero-in { will-change: opacity, transform; }
+.lx-panel-wrap { will-change: transform; contain: layout paint; }
+.lx-card, .lx-panel, .dev { contain: layout paint; }
+@keyframes lx-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes lx-rise-panel { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes lx-swap { from { opacity: 0; transform: translateY(8px); } }
+@keyframes lx-row { from { opacity: 0; transform: translateY(-6px); } }
+/* headline words: blur only during the one-time entrance on wide screens; phones get opacity + rise */
+@media (max-width: 760px) { .words-in .w { filter: none !important; } }
+
+/* ---------- hero: tighter, no chip ---------- */
+.lx-hero-in { padding-top: 24px; }
+@media (max-width: 600px) { .lx-hero-in { padding-top: 8px; } }
+
+/* ---------- 2. hero demo ---------- */
+.lx-panel { padding: 16px; }
+.lp-top { padding: 2px 4px 14px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.lp-grid { gap: 12px; align-items: stretch; }
+.lp-card { min-height: 0; padding: 16px; border-radius: 16px; }
+.lp-card-h { margin-bottom: 12px; min-height: 20px; }
+/* heard list: a fixed six-row window so the panel never changes height while it plays */
+.lp-heard { height: calc(6 * 38px); overflow: hidden; align-content: start; }
+.lp-heard li { height: 36px; }
+@media (max-width: 859px) {
+  .lp-heard { height: calc(4 * 38px); }
+  .lp-heard li:nth-child(n+5) { display: none; }
+  .lp-heard .conf i { width: 32px; }
+}
+.lp-fam { display: flex; flex-direction: column; }
+.lp-fam .lp-sum { font-size: 15px; line-height: 22px; min-height: 44px; margin: 0 0 12px; color: rgba(255,255,255,.9); }
+.lp-fam .lp-day { border-radius: 16px; background: #141519; box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); padding: 0 14px 6px; }
+.lp-fam .readout { height: 48px; margin: 0 -8px; grid-template-columns: 36px 1fr 36px; }
+.lp-fam .ro-step { width: 36px; height: 36px; }
+.lp-fam .ro-line { font-size: 15px; } .lp-fam .ro-time { font-size: 13px; } .lp-fam .ro-hint { font-size: 13px; }
+.lp-fam .bar-hit { height: 56px; } .lp-fam .bar { top: 6px; height: 44px; border-radius: 12px; }
+.lp-fam .now-tick { height: 52px; }
+.lp-fam .scrub { height: 52px; }
+.lx-panel .lp-fam .ticks { font-size: 12px; }
+.lp-fam .rules.lp-rules { margin-top: 12px; grid-template-columns: 1fr; border-radius: 14px; }
+.lp-fam .rules .rule { padding: 11px 14px; }
+.lp-fam .rules .rule .name { font-size: 12px; line-height: 16px; }
+.lp-fam .rules .rule .state { font-size: 14px; line-height: 20px; }
+.lp-fam .rules .rule .state::before { margin-top: 6px; }
+@media (min-width: 860px) { .lp-fam .rules.lp-rules { grid-template-columns: 1fr 1fr; } .lp-fam .rules .rule + .rule::before { left: 0; right: auto; top: 12px; bottom: 12px; width: 1px; height: auto; } }
+
+/* ---------- phone mock-up in "Two screens" ---------- */
+.f-mini.fam { padding: 60px 18px 24px; gap: 0; align-content: start; }
+.f-mini.fam .fam-head { gap: 6px; margin-bottom: 14px; }
+.f-mini.fam .fam-date { font-size: 13px; }
+.f-mini.fam .fam-title { font-size: 30px; line-height: 34px; }
+.f-mini.fam .hb { font-size: 14px; line-height: 20px; margin-top: 2px; }
+.f-mini.fam .hb .dot { margin-top: 6px; }
+.f-mini.fam .fam-summary { font-size: 16px; line-height: 23px; min-height: 69px; margin: 0 0 14px; }
+.f-mini.fam .day-card { padding: 0 14px 12px; border-radius: 20px; }
+.f-mini.fam .readout { height: 50px; margin: 0 -8px; grid-template-columns: 36px 1fr 36px; }
+.f-mini.fam .ro-step { width: 36px; height: 36px; }
+.f-mini.fam .ro-line { font-size: 15px; } .f-mini.fam .ro-time, .f-mini.fam .ro-hint { font-size: 13px; }
+.f-mini.fam .bar-hit { height: 60px; } .f-mini.fam .bar { top: 8px; height: 44px; }
+.f-mini.fam .now-tick, .f-mini.fam .scrub { height: 56px; }
+.f-mini.fam .rules { margin-top: 12px; }
+.f-mini.fam .rule { padding: 11px 14px; }
+.f-mini.fam .rule .state { font-size: 14px; line-height: 20px; }
+.f-mini.fam .legend { display: none; }
+
+.lp-card-h .num, #lp-count { font-size: 12.5px; line-height: 16px; color: rgba(255,255,255,.5); }
+.fam .ro-hint, .fam .ro-hint > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.fam .ro-body { overflow: hidden; }
+@media (max-width: 600px) {
+  .lx-panel-wrap { padding: 5px; border-radius: 22px; }
+  .lx-panel { padding: 10px; border-radius: 18px; }
+  .lp-top { padding: 4px 6px 10px; margin-bottom: 10px; }
+  .lp-card { padding: 12px; border-radius: 14px; }
+  .lp-fam .lp-day { padding: 0 10px 4px; }
+  .lp-card-h .lp-dot-line { display: none; }
+}

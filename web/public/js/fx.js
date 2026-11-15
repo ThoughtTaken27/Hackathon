@@ -34,7 +34,7 @@ export function scrub(block, { base = 0.16, soft = 10 } = {}) {
   return () => {
     const p = progress(block, 0.88, 0.32), n = ws.length, head = p * (n + soft);
     if (Math.abs(head - last) < 0.05) return; last = head;
-    ws.forEach((w, i) => { const r = clamp((head - i) / soft); w.style.opacity = (base + (1 - base) * r).toFixed(3); w.style.filter = r > 0.98 ? "" : `blur(${(1 - r) * 4 * (r > 0 ? 1 : 0.5)}px)`; });
+    ws.forEach((w, i) => { const o = (base + (1 - base) * clamp((head - i) / soft)).toFixed(2); if (w._o !== o) { w._o = o; w.style.opacity = o; } });   // opacity only: a per-word blur repainted the whole paragraph every frame
   };
 }
 

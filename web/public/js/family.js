@@ -1,11 +1,11 @@
 // The family view (Kettle web): reads the household's labels and draws the same day the room screen shows.
 import { today as computeToday, ruleTitle, week, clock, DISPLAY, KIND_NAMES, KINDS_SHOWN } from "./core.js";
 import { TEXT as SAFETY_TEXT } from "./safety.js";
-import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, rulesList, qr, linkFor, copy, toast } from "./ui.js";
+import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, readout, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 
 const link = linkFromHash("family");
-let srv = null, events = [], t = null, failures = 0;
+let srv = null, events = [], t = null, failures = 0, lastSig = "", lastDraw = 0;
 
 if (!link) {
   $("#app").innerHTML = "";
@@ -15,17 +15,25 @@ if (!link) {
     el("div", { class: "actions" }, el("a", { class: "btn primary lg", href: "/pair", text: "I have a code" }), el("a", { class: "btn lg", href: "/start", text: "Set up Kettle" }))));
 } else boot();
 
+// The readout above the bar (ui.js) names the stretch you're on. The evidence card below only rebuilds when the chosen
+// stretch or its text changes, so an open "Details" stays open while the page refreshes.
+let evKey = "";
+const ro = link ? readout($("#readout")) : null;
 const bar = link ? dayBar($("#bar"), { onSelect: (b) => {
-  const box = $("#evidence"); box.textContent = "";
-  const c = evidenceCard(b); if (c) box.append(c);
+  ro(b);
+  const k = b ? `${b.start}|${b.end}|${b.card}|${(b.heard || []).join()}` : "";
+  if (k === evKey) return; evKey = k;
+  const box = $("#evidence"), c = evidenceCard(b);
+  box.textContent = ""; if (c) box.append(c);
   $("#fold").classList.toggle("open", !!c);
 } }) : null;
+if (ro) ro.bind(bar);
 const drawLegend = link ? legend($("#bar")) : null;
 
 async function boot() {
   await poll();
   setInterval(() => { if (!document.hidden) poll(); }, 5000);
-  setInterval(() => { if (srv && !document.hidden) draw(); }, 1000);
+  setInterval(() => { if (srv && !document.hidden) draw(); }, 15000);   // the clock moves by minutes; new labels redraw from poll()
   document.addEventListener("visibilitychange", () => !document.hidden && poll());
   addEventListener("resize", () => srv && draw());
 }
@@ -35,9 +43,10 @@ async function poll() {
     const r = await api(`/api/h/${link.id}/state?since=${since}`, { key: link.key, retries: 1 });
     const m = new Map(events.map((e) => [e.end, e])); for (const e of r.events) m.set(e.end, e);
     events = [...m.values()].sort((a, b) => a.end - b.end).filter((e) => e.end > now() - 36 * 3600);
+    const sig = JSON.stringify(r.state) + "|" + events.length + "|" + (events.length ? events[events.length - 1].end : 0);
     srv = r.state; failures = 0;
     saveHome(link.id, { parent: srv.names.parent, caregiver: srv.names.caregiver });
-    draw();
+    if (sig !== lastSig || Date.now() - lastDraw > 14000) { lastSig = sig; draw(); }
   } catch (e) {
     if (e.status === 403 || e.status === 404) return gone(e.message);
     if (++failures >= 3) { $("#hb").dataset.state = "stale"; setText($("#hb .text"), "Can't reach Kettle right now. Retrying…"); }
@@ -52,16 +61,17 @@ function gone(msg) {
 
 function draw() {
   t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
+  lastDraw = Date.now();
   const n = t.names;
   document.title = `${n.place} today · Kettle`;
-  $("#eyebrow").textContent = n.caregiverSet ? `What ${n.caregiver} sees` : "What you see";
-  const ttl = $("#title"), ttlText = `${n.place}, `;
-  if (ttl.dataset.t !== ttlText) { ttl.dataset.t = ttlText; ttl.textContent = ttlText; ttl.append(el("em", { text: "today" })); }
+  const ttl = $("#title"), ttlText = n.place;
+  if (ttl.dataset.t !== ttlText) { ttl.dataset.t = ttlText; ttl.textContent = `${ttlText} `; ttl.append(el("span", { class: "dim", text: "today" })); }
   const hm = /^(\d+):\d+ (AM|PM)$/.exec(t.now_text || "");
   if (hm && window.kettleSky) window.kettleSky((+hm[1] % 12) + (hm[2] === "PM" ? 12 : 0));
-  $("#date").textContent = `${t.date_text} · ${n.parent}'s time`;
+  setText($("#date"), n.self ? `${t.date_text} · ${t.now_text}` : `${t.date_text} · ${t.now_text}, ${n.parent}'s time`);
   $("#hb").dataset.state = t.heartbeat.state;
-  setText($("#hb .text"), t.heartbeat.battery ? `${t.heartbeat.text} · ${t.heartbeat.battery}` : t.heartbeat.text);
+  const hbText = t.heartbeat.text.replace(/ Nothing is known after that\.$/, "");        // the summary already says what isn't known
+  setText($("#hb .text"), t.heartbeat.battery ? `${hbText} · ${t.heartbeat.battery}` : hbText);
   setText($("#summary"), t.summary || (t.heartbeat.state === "never" ? "" : "Nothing heard yet today."));
   setText($("#coverage"), t.coverage ? t.coverage.text : "");
   const hid = [...(t.kitchen.hide || []).map((c) => DISPLAY[c]), ...(t.kitchen.kinds_off || []).map((k) => KIND_NAMES[k])];
@@ -74,6 +84,7 @@ function draw() {
   drawWeek();
   $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);
+  if (!bar.selected()) ro(null, t.blocks.length > 0);
   rulesList($("#rules"), t.rules);
   drawInvite();
 }

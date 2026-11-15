@@ -1,6 +1,6 @@
 // Kettle landing (dark): a live sample day in the hero panel, interactive steps, both real screens, numbers from results.json.
 import { DISPLAY, COLOUR, KIND_NAMES, clock, rawLabel } from "./core.js";
-import { $, el, setText, dayBar, legend, rulesList, homes, reduceMotion } from "./ui.js";
+import { $, el, setText, dayBar, legend, readout, rulesList, homes, reduceMotion } from "./ui.js";
 import { play } from "./sample.js";
 import { place } from "./people.js";
 import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
@@ -23,7 +23,9 @@ document.querySelectorAll(".lp-sw").forEach((b) => b.addEventListener("click", (
 
 // ---------- hero panel: what Kettle heard (the device in the room) beside what the family sees
 const heardList = $("#lp-heard"), steps = [...document.querySelectorAll(".lp-steps span")];
-const heroBar = dayBar($("#lp-bar"));
+const heroRo = readout($("#lp-ro"));
+const heroBar = dayBar($("#lp-bar"), { onSelect: (b) => heroRo(b) });
+heroRo.bind(heroBar);
 let heard = [], stepT = [];
 function runSteps() {
   stepT.forEach(clearTimeout); stepT = [];
@@ -66,6 +68,7 @@ function heroFrame(t) {
   setText($("#lp-sum"), t.summary || "Listening. Nothing named yet.");
   $("#lp-count").textContent = `${t.sample.i} of ${t.sample.n} labels`;
   heroBar.render(t);
+  if (!heroBar.selected()) heroRo(null, t.blocks.length > 0);
   rulesList($("#lp-rules"), t.rules);
 }
 let heroPlayer = null;
@@ -117,18 +120,27 @@ K.append(el("div", { class: "kitchen k-mini" },
   el("div", { class: "chip big" }, el("span", { class: "txt", id: "k-chip", text: "Waiting for the first sound…" })),
   el("div", { class: "k-controls" }, el("span", { class: "btn kbtn primary pause", text: "Pause" }), el("span", { class: "btn kbtn", text: "Turn it off" })),
   el("div", { id: "k-bar" })));
-F.append(el("div", { class: "f-mini" },
+// The phone: the real family view's parts (same classes, same readout, same grouped checks), at phone size.
+F.append(el("div", { class: "f-mini fam" },
   el("div", { class: "notch" }), el("div", { class: "sbar" }, el("span", { class: "num", id: "f-clock", text: "9:41" }), el("span", { text: "●●●" })),
-  el("p", { class: "eyebrow", text: "What the family sees" }), el("h1", {}, "The kitchen, ", el("em", { text: "today" })),
-  el("p", { class: "hb", "data-state": "listening" }, el("span", { class: "dot" }), el("span", { class: "text", text: "Listening · last heard just now" })),
-  el("p", { class: "summary", id: "f-sum" }), el("div", { class: "card" }, el("div", { id: "f-bar" })), el("div", { class: "rules", id: "f-rules" })));
-const kBar = dayBar($("#k-bar"), { big: true }), fBar = dayBar($("#f-bar")), fLegend = legend($("#f-bar"));
+  el("header", { class: "fam-head" },
+    el("p", { class: "fam-date num", id: "f-date", text: "Today" }),
+    el("h1", { class: "fam-title" }, "Your parent's kitchen ", el("span", { class: "dim", text: "today" })),
+    el("p", { class: "hb", "data-state": "listening" }, el("span", { class: "dot" }), el("span", { class: "text", text: "Listening · last heard just now" }))),
+  el("p", { class: "fam-summary summary", id: "f-sum" }),
+  el("section", { class: "day-card" }, el("div", { id: "f-ro" }), el("div", { id: "f-bar" })),
+  el("div", { class: "rules", id: "f-rules" })));
+const fRo = readout($("#f-ro"));
+const kBar = dayBar($("#k-bar"), { big: true }), fBar = dayBar($("#f-bar"), { onSelect: (b) => fRo(b) }), fLegend = legend($("#f-bar"));
+fRo.bind(fBar);
 let stage = null, stageOn = false;
 function stageFrame(t) {
   setText($("#k-chip"), t.chip || "Waiting for the first sound…");
   setText($("#f-sum"), t.summary || "Nothing heard yet today.");
   $("#f-clock").textContent = t.now_text.replace(/ (AM|PM)$/, "");
+  setText($("#f-date"), `${t.date_text} · ${t.now_text}`);
   kBar.render(t); fBar.render(t); fLegend(t); rulesList($("#f-rules"), t.rules);
+  if (!fBar.selected()) fRo(null, t.blocks.length > 0);
 }
 async function startStage(sid) {
   if (stage) stage.stop();
@@ -183,12 +195,11 @@ onScrollFrame(() => {
   if (RM) return;
   const y = scrollY;
   if (y < 1400) {
-    heroBg.style.transform = `translate3d(0, ${(y * 0.38).toFixed(1)}px, 0) scale(${(1 + y * 0.00012).toFixed(4)})`;
+    heroBg.style.transform = `translate3d(0, ${(y * 0.38).toFixed(1)}px, 0)`;
     heroBg.style.opacity = (1 - Math.min(1, Math.max(0, (y - 380) / 520))).toFixed(3);   // the sky is gone before it can drift under the next section
     const f = Math.min(1, y / 520);
     heroIn.style.opacity = (1 - f).toFixed(3);
     heroIn.style.transform = `translate3d(0, ${(-y * 0.12).toFixed(1)}px, 0)`;
-    heroIn.style.filter = f > 0.02 ? `blur(${(f * 4).toFixed(2)}px)` : "";
     const p = progress(panelWrap, 1.0, 0.25);
     panelWrap.style.transform = `perspective(1800px) rotateX(${((1 - p) * 14).toFixed(2)}deg) scale(${(0.94 + p * 0.06).toFixed(4)})`;
   }
