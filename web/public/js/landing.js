@@ -34,12 +34,12 @@ async function start(sid) {
   player = await play(sid, frame, { seconds: reduceMotion() ? 0.5 : 18, loop: true });
 }
 document.querySelectorAll(".stage-bar [data-sid]").forEach((b) => b.addEventListener("click", () => start(b.dataset.sid)));
-$("#watch").addEventListener("click", (e) => { e.preventDefault(); $("#stage").scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "center" }); start("usual"); });
+$("#watch").addEventListener("click", (e) => { e.preventDefault(); $("#stage").scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "center" }); start("nobreakfast"); });
 
 // play only while the stage is on screen
 let started = false;
 new IntersectionObserver((es) => es.forEach((e) => {
-  if (e.isIntersecting && !started) { started = true; start("usual"); }
+  if (e.isIntersecting && !started) { started = true; start("nobreakfast"); }
   if (!e.isIntersecting && player && started) { player.stop(); started = false; }
 }), { threshold: 0.25 }).observe($("#stage"));
 

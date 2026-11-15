@@ -40,7 +40,7 @@ def steps(scenario: dict, day0: float) -> list[dict]:
     """The scenario as a flat list of clips with their staged [start, end] times."""
     out = []
     for seg in scenario["segments"]:
-        if seg.get("gap"):
+        if seg.get("gap") or seg.get("pause"):       # nothing heard; a pause is drawn by the web sample player
             continue
         a, z = at(day0, seg["from"]), at(day0, seg["to"])
         d = (z - a) / len(seg["clips"])

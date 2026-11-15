@@ -1,5 +1,5 @@
 {
- "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard.",
+ "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard. Added Nov 15: 'Breakfast didn't happen' (no kitchen sound before the 10 AM check), 'A visitor came' (conversation), 'Dad paused it' (a 1-hour pause drawn as Paused) and 'Laptop closed' (a gap drawn as Not listening, so the check says Can't tell).",
  "usual": {
   "title": "A usual morning",
   "started": "06:00",
@@ -139,6 +139,184 @@
     ],
     "from": "14:50",
     "to": "18:30"
+   }
+  ]
+ },
+ "nobreakfast": {
+  "title": "Breakfast didn't happen",
+  "started": "06:00",
+  "segments": [
+   {
+    "clips": [
+     "DevNode1_ex30_1.flac",
+     "DevNode1_ex30_2.flac",
+     "DevNode1_ex30_3.flac",
+     "DevNode1_ex30_4.flac",
+     "DevNode1_ex30_5.flac",
+     "DevNode1_ex30_6.flac",
+     "DevNode1_ex30_7.flac",
+     "DevNode1_ex30_8.flac"
+    ],
+    "from": "06:00",
+    "to": "09:10"
+   },
+   {
+    "clips": [
+     "DevNode1_ex231_1.flac",
+     "DevNode1_ex231_2.flac",
+     "DevNode1_ex231_3.flac",
+     "DevNode1_ex231_4.flac"
+    ],
+    "from": "09:10",
+    "to": "10:30"
+   }
+  ]
+ },
+ "visitor": {
+  "title": "A visitor came",
+  "started": "07:00",
+  "segments": [
+   {
+    "clips": [
+     "DevNode1_ex30_1.flac",
+     "DevNode1_ex30_2.flac"
+    ],
+    "from": "07:00",
+    "to": "07:30"
+   },
+   {
+    "clips": [
+     "DevNode1_ex50_1.flac",
+     "DevNode1_ex50_2.flac",
+     "DevNode1_ex50_3.flac",
+     "DevNode1_ex50_4.flac",
+     "DevNode1_ex50_5.flac"
+    ],
+    "from": "07:30",
+    "to": "07:55"
+   },
+   {
+    "clips": [
+     "DevNode1_ex70_1.flac",
+     "DevNode1_ex70_2.flac",
+     "DevNode1_ex70_3.flac",
+     "DevNode1_ex70_4.flac"
+    ],
+    "from": "07:55",
+    "to": "08:15"
+   },
+   {
+    "clips": [
+     "DevNode1_ex30_3.flac",
+     "DevNode1_ex30_4.flac",
+     "DevNode1_ex30_5.flac"
+    ],
+    "from": "08:15",
+    "to": "10:00"
+   },
+   {
+    "clips": [
+     "DevNode1_ex206_1.flac",
+     "DevNode1_ex206_2.flac",
+     "DevNode1_ex206_3.flac",
+     "DevNode1_ex206_4.flac",
+     "DevNode1_ex206_5.flac",
+     "DevNode1_ex206_6.flac"
+    ],
+    "from": "10:00",
+    "to": "10:50"
+   },
+   {
+    "clips": [
+     "DevNode1_ex56_1.flac",
+     "DevNode1_ex56_2.flac",
+     "DevNode1_ex56_3.flac",
+     "DevNode1_ex56_4.flac"
+    ],
+    "from": "10:50",
+    "to": "11:05"
+   }
+  ]
+ },
+ "paused": {
+  "title": "Dad paused it",
+  "started": "06:00",
+  "segments": [
+   {
+    "clips": [
+     "DevNode1_ex30_1.flac",
+     "DevNode1_ex30_2.flac",
+     "DevNode1_ex30_3.flac"
+    ],
+    "from": "06:00",
+    "to": "07:30"
+   },
+   {
+    "clips": [
+     "DevNode1_ex50_1.flac",
+     "DevNode1_ex50_2.flac",
+     "DevNode1_ex50_3.flac",
+     "DevNode1_ex50_4.flac",
+     "DevNode1_ex50_5.flac"
+    ],
+    "from": "07:30",
+    "to": "07:55"
+   },
+   {
+    "pause": true,
+    "from": "08:00",
+    "to": "09:00"
+   },
+   {
+    "clips": [
+     "DevNode1_ex56_1.flac",
+     "DevNode1_ex56_2.flac",
+     "DevNode1_ex56_3.flac",
+     "DevNode1_ex56_4.flac"
+    ],
+    "from": "09:00",
+    "to": "09:15"
+   },
+   {
+    "clips": [
+     "DevNode1_ex231_1.flac",
+     "DevNode1_ex231_2.flac",
+     "DevNode1_ex231_3.flac",
+     "DevNode1_ex231_4.flac"
+    ],
+    "from": "09:15",
+    "to": "10:30"
+   }
+  ]
+ },
+ "closed": {
+  "title": "Laptop closed",
+  "started": "06:00",
+  "segments": [
+   {
+    "clips": [
+     "DevNode1_ex30_1.flac",
+     "DevNode1_ex30_2.flac",
+     "DevNode1_ex30_3.flac",
+     "DevNode1_ex30_4.flac"
+    ],
+    "from": "06:00",
+    "to": "07:40"
+   },
+   {
+    "gap": true,
+    "from": "07:40",
+    "to": "10:20"
+   },
+   {
+    "clips": [
+     "DevNode1_ex231_5.flac",
+     "DevNode1_ex231_6.flac",
+     "DevNode1_ex231_7.flac",
+     "DevNode1_ex231_8.flac"
+    ],
+    "from": "10:20",
+    "to": "11:00"
    }
   ]
  }

@@ -22,7 +22,7 @@ sys.path.insert(0, str(ROOT))
 os.environ["TZ"] = "America/Chicago"
 time.tzset()
 
-from kettle import demo, encoders, evidence, live, model, view  # noqa: E402
+from kettle import demo, encoders, evidence, kinds, live, model, view  # noqa: E402
 
 WEB = ROOT / "web"
 
@@ -46,8 +46,15 @@ def main() -> int:
             pass
         s = d["state"]
         evs = [{k: e[k] for k in ("start", "end", "label", "conf", "probs", "novel", "sounds")} for e in s["events"]]
-        days[sid] = {"title": d["title"], "started": demo.at(day0, sc["started"]) - day0,
-                     "events": [{**e, "start": round(e["start"] - day0, 1), "end": round(e["end"] - day0, 1)} for e in evs]}
+        web_evs = []
+        for e, src in zip(evs, s["events"]):         # what a kitchen laptop would send: named sound types only (sense.js)
+            _, scores = encoders.embed(enc, demo.read_clip(src["clip"])[None, :])
+            nm = kinds.named(scores[0])
+            h = kinds.hold(e["label"], e["conf"], e["novel"], scores[0], theta)
+            web_evs.append({**e, "sounds": [{"name": x["name"], "score": x["score"]} for x in nm[:3]], "kinds": [x["id"] for x in nm],
+                            **({"hold": h} if h else {}), "start": round(e["start"] - day0, 1), "end": round(e["end"] - day0, 1)})
+        pauses = [[demo.at(day0, g["from"]) - day0, demo.at(day0, g["to"]) - day0] for g in sc["segments"] if g.get("pause")]
+        days[sid] = {"title": d["title"], "started": demo.at(day0, sc["started"]) - day0, "events": web_evs, **({"pauses": pauses} if pauses else {})}
         end = s["events"][-1]["end"]
         # the states both screens must agree on, each with Python's answer
         cases = [("live", s, end + 5), ("stale", s, end + 2 * 3600), ("evening", s, day0 + 20 * 3600)]
