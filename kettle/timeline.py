@@ -3,6 +3,9 @@
 Rules, in order (all transparent, all unit-tested in tests/test_timeline.py):
 1. Each window's raw label is its top activity, or "not_sure" if its top probability is below theta,
    or "talk_or_tv" if TV and Conversation are the top two and within 0.15 of each other.
+1b. Second opinion (kettle/witness.py, added Sat Nov 14 after the other-homes test): when the head has no answer,
+   clear general kitchen tags may name a kitchen activity; a kitchen label is withdrawn when the tags hear a motor
+   or bathroom sound instead.
 2. Smoothing (2 of 3): a window shows the label that at least 2 of {previous, itself, next} share.
    If all three differ it shows "not_sure". The first and last window of a run keep their raw label.
 2b. Bridging: a "Not sure" stretch of at most BRIDGE_S seconds between two windows of the same activity takes that
@@ -12,6 +15,9 @@ Rules, in order (all transparent, all unit-tested in tests/test_timeline.py):
 3. Consecutive windows with the same shown label merge into one block.
 4. Gaps longer than STALE_S between windows (when not paused) become "Not listening" blocks;
    pause intervals become "Paused" blocks. Smoothing never reaches across a gap.
+5. Settle before showing (hold_last): while Kettle is listening, the newest window is held back until the next one
+   arrives, because rule 2 can still change it. So nothing on the bar, in the summary or in a check is ever taken
+   back: a check that reads "Met" stays met. (Before this rule a lone window could flip a check to Met and back.)
 """
 from __future__ import annotations
 
@@ -109,7 +115,7 @@ def _state(label: str) -> str:
     return "activity"
 
 
-def _block(evs: list[dict], label: str) -> dict:
+def _block(evs: list[dict], label: str, theta: float | None = None) -> dict:
     """Merge windows sharing a shown label into one block with its evidence."""
     if label in ("not_sure", "talk_or_tv"):
         conf = sum(max(e["probs"].values()) for e in evs) / len(evs)
@@ -123,7 +129,8 @@ def _block(evs: list[dict], label: str) -> dict:
     return {"start": evs[0]["start"], "end": evs[-1]["end"], "state": _state(label),
             "activity": label if _state(label) in ("activity", "empty") else None,
             "conf": round(conf, 3), "n_windows": len(evs), "sounds": evidence.merge([e["sounds"] for e in evs]),
-            "guesses": [{"activity": g, "p": round(guesses[g], 3)} for g in top2]}
+            "guesses": [{"activity": g, "p": round(guesses[g], 3)} for g in top2],
+            "by_sounds": 0 if theta is None else sum(by_sounds(e, theta) for e in evs)}
 
 
 def _subtract(a: float, b: float, cuts: list[tuple[float, float]]) -> list[tuple[float, float]]:
@@ -145,23 +152,29 @@ def _subtract(a: float, b: float, cuts: list[tuple[float, float]]) -> list[tuple
 
 def blocks(events: list[dict], theta: float, pauses: list = (),
            listening_from: float | None = None, now: float | None = None, listening_now: bool = False,
-           gap_s: float = STALE_S, bridge_s: float = BRIDGE_S) -> list[dict]:
+           gap_s: float = STALE_S, bridge_s: float = BRIDGE_S, hold_last: bool = False) -> list[dict]:
     """All blocks for the day bar, in time order: activities, not sure, quiet, not listening, paused.
 
     pauses: [start, end] or [start, end, "off"] stretches when the parent paused or turned Kettle off.
     listening_from: when Kettle was switched on (so the time between that and the first window is not
     'not listening'); now + listening_now: whether the stretch after the last window is still live.
+    hold_last: rule 5; the newest window of the day is left off until the next one arrives (use while listening).
     """
     events = sorted(events, key=lambda e: e["end"])
     out: list[dict] = []
-    for run in runs(events, gap_s):
-        labs = bridge(smooth([raw_label(e, theta) for e in run]), run, bridge_s)
+    all_runs = runs(events, gap_s)
+    for r, run in enumerate(all_runs):
+        labs = smooth([raw_label(e, theta) for e in run])
+        if hold_last and r == len(all_runs) - 1:        # rule 5: the newest window isn't settled yet; its neighbour
+            labs, run = labs[:-1], run[:-1]             # already used it for 2-of-3, and bridging must not lean on it
+        labs = bridge(labs, run, bridge_s)
+        n = len(run)
         i = 0
-        while i < len(run):
+        while i < n:
             j = i
-            while j + 1 < len(run) and labs[j + 1] == labs[i]:
+            while j + 1 < n and labs[j + 1] == labs[i]:
                 j += 1
-            out.append(_block(run[i:j + 1], labs[i]))
+            out.append(_block(run[i:j + 1], labs[i], theta))
             i = j + 1
     for p in pauses:
         out.append({"start": p[0], "end": p[1], "state": "paused", "activity": None, "conf": None,
@@ -186,8 +199,12 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
 
 # ---------------------------------------------------------------- summary sentence
 
-def _round15(t: float) -> float:
-    return round(t / 900) * 900
+SUMMARY_ROUND_S = 300      # the summary rounds to 5 minutes, so "cooking around 8:05" agrees with a bar that starts at 8:05
+
+
+def _round5(t: float) -> float:
+    """Nearest 5 minutes. (It was 15 until Sat Nov 14: a reviewer saw "typing around 8:00-8:15" over a bar showing cooking from 8:05.)"""
+    return round(t / SUMMARY_ROUND_S) * SUMMARY_ROUND_S
 
 
 def _clock(t: float, tz_offset_s: int) -> str:
@@ -204,12 +221,12 @@ def clock_range(a: float, z: float, tz: int) -> str:
 
 
 def _span(b: dict, tz: int) -> str:
-    """One summary item: 'cooking around 8:00–8:30 AM', 'washing up around 8:45 AM', 'TV from about 9:15 AM'."""
-    a, z = _round15(b["start"]), _round15(b["end"])
+    """One summary item: 'cooking around 8:05–8:25 AM', 'washing up around 8:45 AM', 'TV from about 9:15 AM'."""
+    a, z = _round5(b["start"]), _round5(b["end"])
     name = PHRASE[b["activity"]]
     if b["activity"] == "watching_tv" and z - a >= 3600:
         return f"TV from about {_clock(a, tz)}"
-    if z - a < 900:
+    if z - a < 600:
         return f"{name} around {_clock(a, tz)}"
     return f"{name} around {clock_range(a, z, tz)}"
 

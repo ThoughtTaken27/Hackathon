@@ -28,7 +28,8 @@ def keep_labels() -> np.ndarray:
     names = json.loads((ROOT / "models" / "audioset_labels.json").read_text())
     amap = json.loads((ROOT / "docs/research/kettle/probes/maps/audioset_map.json").read_text())["map"]
     ev = json.loads((ROOT / "kettle" / "evidence_labels.json").read_text())["labels"]
-    keep = {n for v in amap.values() for n in v} | set(ev)
+    wit = json.loads((ROOT / "models" / "witness.json").read_text())          # the second opinion's tags (kettle/witness.py)
+    keep = {n for v in amap.values() for n in v} | set(ev) | {n for v in wit["kitchen"].values() for n in v} | set(wit["veto"])
     return np.array([i for i, n in enumerate(names) if n in keep])
 
 

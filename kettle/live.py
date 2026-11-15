@@ -10,7 +10,7 @@ import time
 
 import numpy as np
 
-from kettle import encoders, evidence, model
+from kettle import encoders, evidence, model, witness
 from kettle.labels import CLASSES
 from kettle.rules import DEFAULT_RULES
 
@@ -129,7 +129,9 @@ def can_listen(s: dict, now: float) -> bool:
 # ---------------------------------------------------------------- hearing
 
 def classify(enc: dict, head: dict, waves: np.ndarray) -> list[dict]:
-    """float32 [B, samples] -> per window {'label', 'conf', 'probs', 'sounds'} (the model's output only)."""
+    """float32 [B, samples] -> per window {'label', 'conf', 'probs', 'novel', 'w', 'sounds'} (the model's output only).
+
+    'w' is the second opinion (kettle/witness.py): three numbers made from the encoder's general sound tags."""
     emb, audioset = encoders.embed(enc, waves)
     P = model.predict_proba(head, emb)
     nov = model.novelty(head, emb) if "novelty" in head else np.zeros(len(P))
@@ -139,7 +141,7 @@ def classify(enc: dict, head: dict, waves: np.ndarray) -> list[dict]:
         out.append({"label": CLASSES[k], "conf": round(float(p[k]), 3),
                     "probs": {c: round(float(v), 4) for c, v in zip(CLASSES, p)},
                     "novel": bool("novelty" in head and d > head["novelty"]["threshold"]),
-                    "sounds": evidence.top_sounds(a)})
+                    "w": witness.opinion(a), "sounds": evidence.top_sounds(a)})
     return out
 
 

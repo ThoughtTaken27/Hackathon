@@ -1,7 +1,8 @@
 // One household's sync logic, independent of where it runs (Cloudflare Durable Object or the local dev server).
 // It stores only what the Python app stores: the parent's choices (consent, pause, off), Meera's checks, and window
 // labels with times and scores. No audio ever reaches it; the kitchen page labels sound on the parent's own device.
-import { CLASSES, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
+import { CLASSES, MEAL, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
+import { SHOWN_SOUNDS } from "../public/js/sounds.js";
 
 export const KEEP_DAYS = 8;            // labels older than this are deleted
 const MAX_EVENTS_PER_POST = 60;
@@ -40,9 +41,15 @@ function cleanEvent(e, now) {
   if (!CLASSES.includes(e.label)) return null;
   const probs = {};
   for (const c of CLASSES) { const v = +(e.probs || {})[c]; if (!(v >= 0 && v <= 1)) return null; probs[c] = Math.round(v * 1e4) / 1e4; }
-  const sounds = Array.isArray(e.sounds) ? e.sounds.slice(0, 3).filter((x) => x && typeof x.name === "string")
-    .map((x) => ({ name: x.name.slice(0, 48), score: Math.round((+x.score || 0) * 1000) / 1000 })) : [];
-  return { start, end, label: e.label, conf: Math.round(probs[e.label] * 1000) / 1000, probs, novel: !!e.novel, sounds };
+  // only names on the allow-list are kept (kettle/evidence_labels.json): the server refuses anything else a client sends
+  const sounds = Array.isArray(e.sounds) ? e.sounds.slice(0, 3).filter((x) => x && typeof x.name === "string" && SHOWN_SOUNDS.has(x.name))
+    .map((x) => ({ name: x.name, score: Math.round((+x.score || 0) * 1000) / 1000 })) : [];
+  const out = { start, end, label: e.label, conf: Math.round(probs[e.label] * 1000) / 1000, probs, novel: !!e.novel, sounds };
+  // the second opinion: two scores and one of three kitchen words, nothing else
+  const w = e.w;
+  if (w && typeof w === "object" && MEAL.has(w.family) && w.k >= 0 && w.k <= 1 && w.v >= 0 && w.v <= 1)
+    out.w = { k: Math.round(w.k * 1000) / 1000, family: w.family, v: Math.round(w.v * 1000) / 1000 };
+  return out;
 }
 
 /**

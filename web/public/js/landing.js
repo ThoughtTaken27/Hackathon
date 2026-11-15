@@ -1,5 +1,5 @@
 // Kettle landing (dark): a live sample day in the hero panel, interactive steps, both real screens, numbers from results.json.
-import { DISPLAY, COLOUR, clock } from "./core.js";
+import { DISPLAY, COLOUR, clock, rawLabel } from "./core.js";
 import { $, el, setText, dayBar, legend, rulesList, homes, reduceMotion } from "./ui.js";
 import { play } from "./sample.js";
 
@@ -29,11 +29,12 @@ function heroFrame(t) {
     heard.unshift(e); heard = heard.slice(0, 6);
     heardList.textContent = "";
     heard.forEach((x, i) => {
-      const ns = x.novel || x.conf < 0.66;
+      const lab = rawLabel(x, 0.66), ns = lab === "not_sure";       // the same rule the day bar uses
+      const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking or TV" : DISPLAY[lab];
       const li = el("li", { class: (ns ? "ns " : "") + (i === 0 ? "enter" : "") },
         el("span", { class: "t num", text: clock(x.end, t.tz_offset) }),
-        el("span", { class: "sw", style: `background:var(${COLOUR[x.label]})${ns ? ";opacity:.35" : ""}` }),
-        el("span", { class: "lab" }, ns ? "Not sure" : DISPLAY[x.label], el("small", { text: (x.sounds[0] || {}).name || "" })),
+        el("span", { class: "sw", style: `background:var(${COLOUR[lab] || COLOUR[x.label]})${ns ? ";opacity:.35" : ""}` }),
+        el("span", { class: "lab" }, name, el("small", { text: (x.sounds[0] || {}).name || "" })),
         el("span", { class: "conf num" }, el("i", {}, el("b", { style: `--p:${x.conf}` })), x.conf.toFixed(2)));
       heardList.append(li);
     });

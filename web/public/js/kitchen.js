@@ -90,7 +90,7 @@ async function startListening() {
       clockNow: now,
       onLevel: (v) => meter(v),
       onWindow: (w) => {
-        const ev = { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, sounds: w.sounds };
+        const ev = { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds };
         events.push(ev); queue.push(ev); saveQueue(); flush();
         if (srv) srv.last_window_t = ev.end;
         draw(true);

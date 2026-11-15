@@ -79,6 +79,10 @@ def block_view(b: dict, now: float) -> dict:
         out["how_sure"] = how
         out["card"] = (f"Quiet · {rng} · Kettle was listening; the kitchen was quiet." if b["state"] == "empty"
                        else f"{DISPLAY[b['activity']]} · {rng} · {b['n_windows']} windows · how sure: {how}")
+        if 2 * b.get("by_sounds", 0) > b["n_windows"]:       # most of this block was named by the second opinion
+            out["how_sure"] = "medium"
+            out["card"] = (f"{DISPLAY[b['activity']]} · {rng} · {b['n_windows']} windows · how sure: medium · "
+                           "named from general kitchen sounds, because this room sounds unlike the home Kettle learned in")
     elif b["state"] == "not_sure":
         g = " · ".join(f"{DISPLAY[x['activity']]} {x['p']:.2f}" for x in b["guesses"])
         out["card"] = f"Not sure · {rng} · Kettle heard something but couldn't tell what. Closest guesses: {g}."
@@ -115,7 +119,8 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
     if s.get("off_at"):
         pauses.append([max(s["off_at"], day0), now, "off"])
     started = max(s["started_at"], day0) if s.get("started_at") else None
-    blks = timeline.blocks(events, theta, pauses=pauses, now=now, listening_now=live_now, listening_from=started)
+    blks = timeline.blocks(events, theta, pauses=pauses, now=now, listening_now=live_now, listening_from=started,
+                           hold_last=live_now)
     if hb["state"] in ("stale", "mic_blocked", "no_mic") and not any(b["state"] != "paused" for b in blks):
         a = max(day0, hb["since"] or day0)          # e.g. just after midnight with the laptop asleep
         if now - a > 1:
@@ -125,16 +130,9 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
     chip = s.get("chip")
     chip_text = None
     if chip and live_now and now - chip["t"] < 10:
-        probs = chip["probs"]
-        top = sorted(probs, key=probs.get, reverse=True)
-        if chip["conf"] < theta:
-            chip_text = "Not sure what that is"
-        elif chip["label"] == "absence":
-            chip_text = "Quiet"
-        elif {top[0], top[1]} == {"watching_tv", "social_activity"} and probs[top[0]] - probs[top[1]] < 0.15:
-            chip_text = "Sounds like talking or TV"
-        else:
-            chip_text = f"Sounds like {PHRASE[chip['label']]}"
+        lab = timeline.raw_label(chip, theta)            # the same rule as the day bar, so the chip never disagrees with it
+        chip_text = {"not_sure": "Not sure what that is", "absence": "Quiet", "talk_or_tv": "Sounds like talking or TV"}.get(lab) \
+            or f"Sounds like {PHRASE[lab]}"
     return {
         "now": now, "now_text": clock(now, now), "day0": day0, "tz_offset": tz,
         "date_text": time.strftime("%A, %B ", time.localtime(now)) + str(time.localtime(now).tm_mday),

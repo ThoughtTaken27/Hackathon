@@ -5,6 +5,8 @@
 Writes
   web/public/model/head.json       the frozen head (numbers only), same sha256 as models/head.json
   web/public/model/evidence.json   which of CED's 527 AudioSet outputs may be shown, and their names
+  web/public/model/witness.json    the second opinion: tag positions and thresholds (models/witness.json, as indices)
+  web/public/js/sounds.js          the same allow-list as a module, so the sync server can drop any other sound name
   web/public/data/sample-days.json the three sample days: real model labels on held-out clips, times as offsets from midnight
   web/test/fixtures.json           Python's view.today() for many states, which web/test/core.test.mjs must reproduce
 """
@@ -22,7 +24,7 @@ sys.path.insert(0, str(ROOT))
 os.environ["TZ"] = "America/Chicago"
 time.tzset()
 
-from kettle import demo, encoders, evidence, live, model, view  # noqa: E402
+from kettle import demo, encoders, evidence, live, model, view, witness  # noqa: E402
 
 WEB = ROOT / "web"
 
@@ -36,6 +38,12 @@ def main() -> int:
     (WEB / "public" / "model" / "evidence.json").write_text(json.dumps(
         {"shown": evidence.SHOWN, "index": [int(i) for i in evidence._IDX]}))
 
+    (WEB / "public" / "model" / "witness.json").write_text(json.dumps(
+        {"kitchen": witness.KITCHEN_IDX, "veto": witness.VETO_IDX, "tau_k": witness.TAU_K, "tau_v": witness.TAU_V}))
+    (WEB / "public" / "js" / "sounds.js").write_text(
+        "// Made by tools/export_web_fixtures.py from kettle/evidence_labels.json. The only sound names Kettle may send or store.\n"
+        f"export const SHOWN_SOUNDS = new Set({json.dumps(evidence.SHOWN)});\n")
+
     enc = encoders.load()
     day0 = time.mktime((2026, 11, 10, 0, 0, 0, 0, 0, -1))       # a fixed Tuesday, Chicago time
     theta = head["theta"]
@@ -45,7 +53,7 @@ def main() -> int:
         while demo.advance(d, enc, head):
             pass
         s = d["state"]
-        evs = [{k: e[k] for k in ("start", "end", "label", "conf", "probs", "novel", "sounds")} for e in s["events"]]
+        evs = [{k: e[k] for k in ("start", "end", "label", "conf", "probs", "novel", "w", "sounds")} for e in s["events"]]
         days[sid] = {"title": d["title"], "started": demo.at(day0, sc["started"]) - day0,
                      "events": [{**e, "start": round(e["start"] - day0, 1), "end": round(e["end"] - day0, 1)} for e in evs]}
         end = s["events"][-1]["end"]

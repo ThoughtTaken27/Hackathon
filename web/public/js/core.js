@@ -59,7 +59,13 @@ function dayName(t, off) { return DAYS[local(t, off).getUTCDay()]; }
 export function staleS(hop) { return 2 * hop + 30; }
 export const BRIDGE_S = 30;
 
-export function rawLabel(ev, theta) {
+// Second opinion (kettle/witness.py; numbers from models/witness.json, checked by web/test/core.test.mjs).
+// Each window carries w = { k, family, v }: the strongest general kitchen tag, which activity it belongs to, and the
+// strongest "motor or bathroom" tag, all made on the device. Two plain rules:
+//   rescue: the head has no answer (unfamiliar sound, or below theta) and k >= TAU_K and k > v  -> show w.family
+//   veto:   the head says a kitchen activity but v >= TAU_V and v > k                           -> show "Not sure"
+export const TAU_K = 0.15, TAU_V = 0.3;
+export function headLabel(ev, theta) {
   if (ev.novel) return "not_sure";
   const p = ev.probs;
   const top = Object.keys(p).sort((a, b) => p[b] - p[a]);
@@ -68,6 +74,15 @@ export function rawLabel(ev, theta) {
     return "talk_or_tv";
   return p[top[0]] >= theta ? top[0] : "not_sure";
 }
+const rescues = (lab, w) => !!w && lab === "not_sure" && w.k >= TAU_K && w.k > w.v;
+const vetoes = (lab, w) => !!w && MEAL.has(lab) && w.v >= TAU_V && w.v > w.k;
+export function rawLabel(ev, theta) {
+  const lab = headLabel(ev, theta);
+  if (vetoes(lab, ev.w)) return "not_sure";
+  if (rescues(lab, ev.w)) return ev.w.family;
+  return lab;
+}
+export const bySounds = (ev, theta) => rescues(headLabel(ev, theta), ev.w);
 export function smooth(labels) {
   return labels.map((lab, i) => {
     if (i === 0 || i === labels.length - 1) return lab;
@@ -106,7 +121,7 @@ export function mergeSounds(lists, k = 3) {
   const n = Math.max(1, lists.length);
   return [...total.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(([name, v]) => ({ name, score: round3(v / n) }));
 }
-function makeBlock(evs, label) {
+function makeBlock(evs, label, theta) {
   let conf;
   if (label === "not_sure" || label === "talk_or_tv") conf = evs.reduce((s, e) => s + Math.max(...Object.values(e.probs)), 0) / evs.length;
   else conf = evs.reduce((s, e) => s + (e.probs[label] || 0), 0) / evs.length;
@@ -116,7 +131,8 @@ function makeBlock(evs, label) {
   const st = stateOf(label);
   return { start: evs[0].start, end: evs[evs.length - 1].end, state: st, activity: st === "activity" || st === "empty" ? label : null,
     conf: round3(conf), n_windows: evs.length, sounds: mergeSounds(evs.map((e) => e.sounds)),
-    guesses: top2.map((g) => ({ activity: g, p: round3(guesses[g]) })) };
+    guesses: top2.map((g) => ({ activity: g, p: round3(guesses[g]) })),
+    by_sounds: evs.reduce((n, e) => n + (bySounds(e, theta) ? 1 : 0), 0) };
 }
 function subtract(a, b, cuts) {
   let parts = [[a, b]];
@@ -133,19 +149,25 @@ function subtract(a, b, cuts) {
 }
 const emptyBlock = (start, end, state, extra = {}) => ({ start, end, state, activity: null, conf: null, n_windows: 0, sounds: [], guesses: [], ...extra });
 
-export function blocks(events, theta, { pauses = [], listeningFrom = null, now = null, listeningNow = false, gap = staleS(2), bridgeS = BRIDGE_S } = {}) {
+// holdLast (timeline rule 5, "settle before showing"): while Kettle is listening, the newest window is left off until the
+// next one arrives, because 2-of-3 smoothing can still change it. Nothing on the bar, in the summary or in a check is ever
+// taken back: a check that reads "Met" stays met.
+export function blocks(events, theta, { pauses = [], listeningFrom = null, now = null, listeningNow = false, gap = staleS(2), bridgeS = BRIDGE_S, holdLast = false } = {}) {
   const evs = events.slice().sort((a, b) => a.end - b.end);
   const out = [];
-  for (const run of runs(evs, gap)) {
-    const labs = bridge(smooth(run.map((e) => rawLabel(e, theta))), run, bridgeS);
+  const allRuns = runs(evs, gap);
+  allRuns.forEach((full, r) => {
+    let labs = smooth(full.map((e) => rawLabel(e, theta))), run = full;
+    if (holdLast && r === allRuns.length - 1) { labs = labs.slice(0, -1); run = full.slice(0, -1); }
+    labs = bridge(labs, run, bridgeS);
     let i = 0;
     while (i < run.length) {
       let j = i;
       while (j + 1 < run.length && labs[j + 1] === labs[i]) j++;
-      out.push(makeBlock(run.slice(i, j + 1), labs[i]));
+      out.push(makeBlock(run.slice(i, j + 1), labs[i], theta));
       i = j + 1;
     }
-  }
+  });
   for (const p of pauses) out.push(emptyBlock(p[0], p[1], "paused", { kind: p.length > 2 ? p[2] : "pause" }));
   const cuts = pauses.map((p) => [p[0], p[1]]);
   const heard = out.filter((b) => b.state !== "paused").map((b) => [b.start, b.end]).sort((x, y) => x[0] - y[0] || x[1] - y[1]);
@@ -157,11 +179,11 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
   return out.sort((x, y) => x.start - y.start);
 }
 
-const round15 = (t) => pyRound(t / 900) * 900;
+const round5 = (t) => pyRound(t / 300) * 300;      // 5 minutes, so the summary agrees with the bar and the checks
 function span(b, off) {
-  const a = round15(b.start), z = round15(b.end), name = PHRASE[b.activity];
+  const a = round5(b.start), z = round5(b.end), name = PHRASE[b.activity];
   if (b.activity === "watching_tv" && z - a >= 3600) return `TV from about ${clock(a, off)}`;
-  if (z - a < 900) return `${name} around ${clock(a, off)}`;
+  if (z - a < 600) return `${name} around ${clock(a, off)}`;
   return `${name} around ${clockRange(a, z, off)}`;
 }
 export function summary(blks, off, listeningSince = null) {
@@ -385,6 +407,10 @@ export function blockView(b, off, names) {
     out.how_sure = how;
     out.card = b.state === "empty" ? `Quiet · ${rng} · Kettle was listening; the kitchen was quiet.`
       : `${DISPLAY[b.activity]} · ${rng} · ${b.n_windows} windows · how sure: ${how}`;
+    if (2 * (b.by_sounds || 0) > b.n_windows) {       // most of this block was named by the second opinion
+      out.how_sure = "medium";
+      out.card = `${DISPLAY[b.activity]} · ${rng} · ${b.n_windows} windows · how sure: medium · named from general kitchen sounds, because this room sounds unlike the home Kettle learned in`;
+    }
   } else if (b.state === "not_sure") {
     const g = b.guesses.map((x) => `${DISPLAY[x.activity]} ${fmt2(x.p)}`).join(" · ");
     out.card = `Not sure · ${rng} · Kettle heard something but couldn't tell what. Closest guesses: ${g}.`;
@@ -395,12 +421,8 @@ export function blockView(b, off, names) {
 }
 export function chipText(ev, theta, now, live) {
   if (!ev || !live || now - ev.end > 15) return null;
-  const p = ev.probs, top = Object.keys(p).sort((a, b) => p[b] - p[a]);
-  if (ev.novel || ev.conf < theta) return "Not sure what that is";
-  if (ev.label === "absence") return "Quiet";
-  const pair = new Set([top[0], top[1]]);
-  if (pair.has("watching_tv") && pair.has("social_activity") && p[top[0]] - p[top[1]] < TALK_OR_TV_MARGIN) return "Sounds like talking or TV";
-  return `Sounds like ${PHRASE[ev.label]}`;
+  const lab = rawLabel(ev, theta);             // the same rule as the day bar, so the chip never disagrees with it
+  return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking or TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
 }
 
 /**
@@ -417,7 +439,7 @@ export function today(s, events, now, { theta, tz = null, off = null, day0 = nul
   if (s.paused_at != null && isPaused(s, now)) pauses.push([Math.max(s.paused_at, day0), now]);
   if (s.off_at) pauses.push([Math.max(s.off_at, day0), now, "off"]);
   const started = s.started_at ? Math.max(s.started_at, day0) : null;
-  const blks = blocks(evs, theta, { pauses, now, listeningNow: liveNow, listeningFrom: started, gap: staleS(hop) });
+  const blks = blocks(evs, theta, { pauses, now, listeningNow: liveNow, listeningFrom: started, gap: staleS(hop), holdLast: liveNow });
   if (["stale", "mic_blocked", "no_mic"].includes(hb.state) && !blks.some((b) => b.state !== "paused")) {
     const a = Math.max(day0, hb.since || day0);
     if (now - a > 1) blks.push(emptyBlock(a, now, "not_listening"));

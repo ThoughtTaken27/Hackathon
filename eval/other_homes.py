@@ -137,15 +137,22 @@ def desed_kind(events: dict) -> str:
     return "pets_alarms"
 
 
+def main_sound(events: dict) -> str | None:
+    """The kitchen event that lasts longest in a DESED clip ('Frying', 'Dishes' or 'Blender'), or None."""
+    k = {c: events.get(c, 0) for c in ("Frying", "Dishes", "Blender")}
+    return max(k, key=k.get) if max(k.values()) > 0 else None
+
+
 def rows_from_embeddings(head: dict) -> list[dict]:
     """Every clip as {set, kind, group, half, probs, novel, w}: the head's output and the second opinion, no audio."""
     out = []
 
-    def add(name, emb, tags, kinds, groups, files):
+    def add(name, emb, tags, kinds, groups, files, main=None):
         P = model.predict_proba(head, emb)
         nov = model.novelty(head, emb) > head["novelty"]["threshold"]
         for i in range(len(P)):
             out.append({"set": name, "file": str(files[i]), "kind": str(kinds[i]), "group": str(groups[i]), "half": half(groups[i]),
+                        "main": main[i] if main else None,
                         "probs": {c: round(float(v), 4) for c, v in zip(CLASSES, P[i])}, "novel": bool(nov[i]),
                         "w": witness.opinion(tags[i])})
     z = np.load(EMB / "desed" / "public_eval.npz")
@@ -153,7 +160,7 @@ def rows_from_embeddings(head: dict) -> list[dict]:
     keep = [i for i, f in enumerate(z["files"]) if str(f).rsplit("_", 2)[0] not in aset]
     f = z["files"][keep]
     add("desed", z["emb"][keep], z["audioset"][keep], [desed_kind(ev.get(str(x), {})) for x in f],
-        [up.get(str(x), str(x).rsplit("_", 2)[0]) for x in f], f)
+        [up.get(str(x), str(x).rsplit("_", 2)[0]) for x in f], f, main=[main_sound(ev.get(str(x), {})) for x in f])
     for name in ("kitchen20", "esc50_house"):
         q = np.load(EMB / name / "all.npz")
         add(name, q["emb"], q["audioset"], q["category"], q["source"], q["files"])
@@ -258,6 +265,28 @@ def markdown(R: dict) -> str:
             if x["n"]:
                 L.append(f"- {kd}: {a['value']}% → {x['value']}% (n = {x['n']})")
         L.append("")
+    if "test" in R:
+        a, b = R["tune"]["v2"]["desed_kitchen_caught"], R["test"]["v2"]["desed_kitchen_caught"]
+        fk = R["test"]["v2"]["desed_false_kitchen"]
+        gap = round(a["value"] - b["value"], 1)
+        L += ["## Read this before quoting the numbers", "",
+              (f"- **The test half came in lower than we wrote we expected.** PREREGISTER-V2 expected 'caught' within about 10 points of the tune value "
+               f"({a['value']}%). The test value is {b['value']}% [{b['ci'][0]}, {b['ci'][1]}]: {gap} points lower, with a wide interval ({b['n']} clips, {b['groups']} uploaders). "
+               f"We did not retune. {b['value']}% is the number to quote." if gap > 10 else
+               f"- The test half ({b['value']}%) is within about 10 points of the tune half ({a['value']}%), as PREREGISTER-V2 expected."),
+              f"- The false-kitchen bar (at most 5% on DESED test non-kitchen clips) was {'met' if fk['value'] <= 5 else 'MISSED'}: {fk['k']} of {fk['n']}.",
+              "- v2 still misses many single 10-second kitchen windows in other homes. A real meal is many windows; whether that adds up to "
+              "'the meal was noticed' is what the own-kitchen recordings measure.",
+              "- Known misses by design: blenders and juicers (the tags can't tell them from a vacuum cleaner). Known false kitchen labels: footsteps on a "
+              "crunchy surface (heard as 'Crunch') and running water outside the kitchen."]
+        if R.get("post_hoc"):
+            ph = R["post_hoc"]
+            L += ["- **Post hoc (looked at after the test run, so a description and not a result):** by the clip's main kitchen sound, v2 caught "
+                  + "; ".join(f"{k.lower()} {ph['test'][k]['k']} of {ph['test'][k]['n']} on the test half (tune: {ph['tune'][k]['k']} of {ph['tune'][k]['n']})" for k in ("Frying", "Dishes", "Blender"))
+                  + ". The two halves hold different shares of blender clips, which is where the gap between them comes from.",
+                  f"- {ph['novel']['k']} of the {ph['novel']['n']} real-home clips were flagged 'unlike anything it learned' by the head's own check: "
+                  "outside the research home, the second opinion does almost all of the work."]
+        L.append("")
     g = R["sins_dev"]
     L += ["## Guard: the research home (SINS dev, out-of-fold; used for tuning, so this is not a test)", "",
           "| | v1 | v2 |", "|---|---|---|",
@@ -293,6 +322,11 @@ def main(argv: list[str]) -> int:
          "head_sha256": head["sha256"], "dropped_audioset": dropped, "tune": table(rows, theta, "tune"), "sins_dev": sins_guard(sins, theta)}
     if test:
         R["test"] = table(rows, theta, "test")
+        d = [r for r in rows if r["set"] == "desed"]
+        R["post_hoc"] = {h: {k: {"k": sum(shown(r, theta, "v2") in MEAL for r in d if r["half"] == h and r["kind"] == "kitchen" and r.get("main") == k),
+                                 "n": sum(1 for r in d if r["half"] == h and r["kind"] == "kitchen" and r.get("main") == k)} for k in ("Frying", "Dishes", "Blender")}
+                         for h in ("tune", "test")}
+        R["post_hoc"]["novel"] = {"k": sum(r["novel"] for r in d), "n": len(d)}
         if "--from-cache" not in argv:
             run_log.write_text(json.dumps({"scored_at": R["made"], "head_sha256": head["sha256"], "tau_k": witness.TAU_K, "tau_v": witness.TAU_V,
                                            "witness_sha256": hashlib.sha256((ROOT / "models" / "witness.json").read_bytes()).hexdigest()}, indent=1))

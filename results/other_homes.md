@@ -1,6 +1,6 @@
 # Other homes: Kettle outside the research home
 
-Made by `python -m eval.other_homes` (Sat Nov 14 2026, 09:43 PM CST). Rules and metrics were fixed in `eval/PREREGISTER-V2.md` before the test halves were scored.
+Made by `python -m eval.other_homes` (Sat Nov 14 2026, 09:51 PM CST). Rules and metrics were fixed in `eval/PREREGISTER-V2.md` before the test halves were scored.
 One clip = one 10-second window, no smoothing. v1 = the rule shipped until Sat Nov 14 9:45 PM CT. v2 = v1 checked by the second opinion (`kettle/witness.py`).
 Leakage audit: 25 DESED clips whose videos are also in AudioSet (the encoder's pretraining data) were dropped.
 
@@ -112,19 +112,23 @@ Per category, v1 → v2 (share shown as a kitchen activity; n):
 - esc50_house/snoring: 0.0% → 0.0% (n = 18)
 - esc50_house/coughing: 0.0% → 0.0% (n = 19)
 
+## Read this before quoting the numbers
+
+- **The test half came in lower than we wrote we expected.** PREREGISTER-V2 expected 'caught' within about 10 points of the tune value (63.0%). The test value is 43.0% [25.9, 60.5]: 20.0 points lower, with a wide interval (79 clips, 56 uploaders). We did not retune. 43.0% is the number to quote.
+- The false-kitchen bar (at most 5% on DESED test non-kitchen clips) was met: 0 of 191.
+- v2 still misses many single 10-second kitchen windows in other homes. A real meal is many windows; whether that adds up to 'the meal was noticed' is what the own-kitchen recordings measure.
+- Known misses by design: blenders and juicers (the tags can't tell them from a vacuum cleaner). Known false kitchen labels: footsteps on a crunchy surface (heard as 'Crunch') and running water outside the kitchen.
+- **Post hoc (looked at after the test run, so a description and not a result):** by the clip's main kitchen sound, v2 caught frying 24 of 25 on the test half (tune: 53 of 62); dishes 10 of 15 on the test half (tune: 15 of 19); blender 0 of 39 on the test half (tune: 0 of 27). The two halves hold different shares of blender clips, which is where the gap between them comes from.
+- 615 of the 667 real-home clips were flagged 'unlike anything it learned' by the head's own check: outside the research home, the second opinion does almost all of the work.
+
 ## Guard: the research home (SINS dev, out-of-fold; used for tuning, so this is not a test)
 
 | | v1 | v2 |
 |---|---|---|
-| Kitchen windows shown as a kitchen activity | 86.9% [84.0, 89.9] (2607 of 3000, 33 sources) | 89.5% [87.2, 92.0] (2686 of 3000, 33 sources) |
+| Kitchen windows shown as a kitchen activity | 86.9% [84.0, 89.9] (2607 of 3000, 33 sources) | 89.4% [87.1, 91.7] (2682 of 3000, 33 sources) |
 | Other windows shown as a kitchen activity | 0.7% [0.1, 1.8] (44 of 5920, 224 sources) | 0.8% [0.2, 1.9] (49 of 5920, 224 sources) |
-| Windows shown with their true label | 82.2% | 82.8% |
-| Windows shown as Not sure | 13.3% | 12.3% |
+| Windows shown with their true label | 82.2% | 82.7% |
+| Windows shown as Not sure | 13.3% | 12.4% |
 
 ## What this does not show
 These are 10-second clips from YouTube and Freesound: other homes and other microphones, but often close to the sound, and close to what the encoder was pretrained on. It is not a laptop across a real kitchen for a morning. Our own kitchens are the real test (eval/OWN_KITCHEN_GUIDE.md).
-## Read this before quoting the numbers
-- **The test half came in lower than we wrote we expected.** PREREGISTER-V2 expected "caught" within about 10 points of the tune value (63.0%). The test value is 43.0% [25.9, 60.5]: 20 points lower, with a wide interval (79 clips, 56 uploaders). We did not retune. 43% is the number to quote.
-- The false-kitchen bar (5% on DESED test non-kitchen clips) was met: 0 of 191.
-- v2 still misses more than half of single 10-second kitchen windows in other homes. A real meal is many windows; whether that adds up to "the meal was noticed" is what the own-kitchen recordings measure.
-- Known misses by design: blenders and juicers (the tags can't tell them from a vacuum cleaner), peeling. Known false kitchen labels: footsteps on a crunchy surface (heard as "Crunch"), running water outside the kitchen.

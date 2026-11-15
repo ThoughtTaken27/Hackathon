@@ -1,17 +1,26 @@
 // The frozen head on CED-tiny's outputs, exactly as kettle/model.py + kettle/live.py classify():
-// standardise -> logistic regression -> softmax(/T) -> top label; Mahalanobis novelty; top 3 shown household sounds.
+// standardise -> logistic regression -> softmax(/T) -> top label; Mahalanobis novelty; top 3 shown household sounds;
+// and the second opinion w = { k, family, v } from the encoder's general tags (kettle/witness.py).
 import { CLASSES } from "./core.js";
 
 /** head.json + evidence.json -> flat arrays for speed. */
-export function prepare(head, ev) {
+export function prepare(head, ev, wit = null) {
   const nov = head.novelty;
-  return { head, D: head.mean.length, K: CLASSES.length, shown: ev.shown, index: ev.index,
+  return { head, D: head.mean.length, K: CLASSES.length, shown: ev.shown, index: ev.index, wit,
     coef: head.coef.map((r) => Float64Array.from(r)), mean: Float64Array.from(head.mean), std: Float64Array.from(head.std),
     nMeans: nov ? nov.means.map((r) => Float64Array.from(r)) : null, prec: nov ? nov.precision.map((r) => Float64Array.from(r)) : null,
     novThr: nov ? nov.threshold : Infinity, T: head.temperature || 1 };
 }
 
-/** embedding [192] + AudioSet probabilities [527] -> { label, conf, probs, novel, sounds } */
+/** 527 AudioSet probabilities -> { k, family, v }: three numbers, no tag names (same as kettle/witness.py opinion()). */
+export function opinion(wit, as) {
+  let k = -1, family = null;
+  for (const f of ["cooking", "dishwashing", "eating"]) { let m = 0; for (const i of wit.kitchen[f]) m = Math.max(m, as[i]); if (m > k) { k = m; family = f; } }
+  let v = 0; for (const i of wit.veto) v = Math.max(v, as[i]);
+  return { k: Math.round(k * 1000) / 1000, family, v: Math.round(v * 1000) / 1000 };
+}
+
+/** embedding [192] + AudioSet probabilities [527] -> { label, conf, probs, novel, w, sounds } */
 export function decide(m, emb, as) {
   const z = new Float64Array(m.D);
   for (let i = 0; i < m.D; i++) z[i] = (emb[i] - m.mean[i]) / m.std[i];
@@ -35,5 +44,5 @@ export function decide(m, emb, as) {
   const sounds = m.index.map((ix, i) => ({ name: m.shown[i], score: as[ix] })).sort((a, b) => b.score - a.score).slice(0, 3)
     .map((s) => ({ name: s.name, score: Math.round(s.score * 1000) / 1000 }));
   const label = CLASSES[best];
-  return { label, conf: Math.round((e[best] / sum) * 1000) / 1000, probs, novel, sounds };
+  return { label, conf: Math.round((e[best] / sum) * 1000) / 1000, probs, novel, w: m.wit ? opinion(m.wit, as) : undefined, sounds };
 }

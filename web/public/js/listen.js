@@ -19,7 +19,7 @@ export async function loadModel(onProgress = () => {}) {
   const ort = window.ort;
   ort.env.wasm.wasmPaths = "/vendor/ort/";
   ort.env.wasm.numThreads = 1;
-  const [head, ev] = await Promise.all([fetch("/model/head.json").then((r) => r.json()), fetch("/model/evidence.json").then((r) => r.json())]);
+  const [head, ev, wit] = await Promise.all(["head", "evidence", "witness"].map((n) => fetch(`/model/${n}.json`).then((r) => r.json())));
   const front = await ort.InferenceSession.create(new Uint8Array(await (await fetch("/model/logmel.onnx")).arrayBuffer()), { executionProviders: ["wasm"] });
   const res = await fetch("/model/ced-tiny.onnx");
   if (!res.ok) throw new Error("model download failed");
@@ -35,11 +35,11 @@ export async function loadModel(onProgress = () => {}) {
   for (const p of parts) { buf.set(p, o); o += p.length; }
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
-  model = { ort, front, session, head: prepare(head, ev) };
+  model = { ort, front, session, head: prepare(head, ev, wit) };
   return model;
 }
 
-/** float32 [160000] at 16 kHz -> { label, conf, probs, novel, sounds, ms } */
+/** float32 [160000] at 16 kHz -> { label, conf, probs, novel, w, sounds, ms } */
 export async function classify(wave) {
   const m = model, t0 = performance.now();
   const f = await m.front.run({ wave: new m.ort.Tensor("float32", wave, [1, wave.length]) });

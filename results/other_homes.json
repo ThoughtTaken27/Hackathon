@@ -1,5 +1,5 @@
 {
- "made": "Sat Nov 14 2026, 09:43 PM CST",
+ "made": "Sat Nov 14 2026, 09:51 PM CST",
  "theta": 0.66,
  "tau_k": 0.15,
  "tau_v": 0.3,
@@ -962,12 +962,12 @@
   },
   "v2": {
    "kitchen_caught": {
-    "value": 89.5,
+    "value": 89.4,
     "ci": [
-     87.2,
-     92.0
+     87.1,
+     91.7
     ],
-    "k": 2686,
+    "k": 2682,
     "n": 3000,
     "groups": 33
    },
@@ -981,8 +981,8 @@
     "n": 5920,
     "groups": 224
    },
-   "right_label": 82.8,
-   "not_sure": 12.3
+   "right_label": 82.7,
+   "not_sure": 12.4
   }
  },
  "test": {
@@ -1913,6 +1913,40 @@
      "groups": 20
     }
    }
+  }
+ },
+ "post_hoc": {
+  "tune": {
+   "Frying": {
+    "k": 53,
+    "n": 62
+   },
+   "Dishes": {
+    "k": 15,
+    "n": 19
+   },
+   "Blender": {
+    "k": 0,
+    "n": 27
+   }
+  },
+  "test": {
+   "Frying": {
+    "k": 24,
+    "n": 25
+   },
+   "Dishes": {
+    "k": 10,
+    "n": 15
+   },
+   "Blender": {
+    "k": 0,
+    "n": 39
+   }
+  },
+  "novel": {
+   "k": 615,
+   "n": 667
   }
  }
 }
