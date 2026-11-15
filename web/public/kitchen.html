@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#FAFAFA">
 <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/app.css?v=w2">
+<link rel="stylesheet" href="/css/app.css?v=w3">
 </head>
 <body>
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
@@ -20,6 +20,7 @@
     <div class="k-status" id="status" data-state="never">
       <span class="dot" aria-hidden="true"></span>
       <div>
+        <p class="step-k" id="kstep" hidden></p>
         <h1 class="k-head" id="head" aria-live="polite">Opening Kettle…</h1>
         <div id="body"></div>
       </div>
@@ -30,10 +31,10 @@
     <div id="extra"></div>
   </div>
   <footer class="k-foot">
-    <span>Nothing is recorded. Only the kind of sound is noted, on this laptop.</span>
+    <span>Nothing is recorded. Only the kind of sound is noted, on this device.</span>
     <span><a href="/how-sure">How sure is Kettle?</a> · <strong>Prototype, not medical advice.</strong></span>
   </footer>
 </main>
-<script type="module" src="/js/kitchen.js?v=w2"></script>
+<script type="module" src="/js/kitchen.js?v=w3"></script>
 </body>
 </html>

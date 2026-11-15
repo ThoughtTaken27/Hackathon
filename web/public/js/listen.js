@@ -61,8 +61,29 @@ export async function decodeFile(file) {
  * Start the microphone. onWindow({ start, end, ...classify() }) every HOP_S seconds once 10 s are buffered.
  * clockNow() gives the shared clock (server-corrected unix seconds). Returns { stop(), level() }.
  */
+// Local testing only: on localhost, ?qamic=cooking plays web/public/_qa/cooking.flac (git-ignored) in place of the microphone,
+// so every screen can be checked without a real mic. Never active on any other host.
+function qaClip() {
+  if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return null;
+  const q = new URLSearchParams(location.search).get("qamic");
+  if (q && /^[a-z]+$/.test(q)) sessionStorage.setItem("kettle.qamic", q);
+  return sessionStorage.getItem("kettle.qamic");
+}
+qaClip();   // read ?qamic now: kitchen.js strips the query from the address when it reads the pairing key
+async function micStream() {
+  const qa = qaClip();
+  if (!qa) return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+  const ctx = new AudioContext({ sampleRate: SR });
+  const src = ctx.createBufferSource();
+  src.buffer = await ctx.decodeAudioData(await (await fetch(`/_qa/${qa}.flac`)).arrayBuffer());
+  src.loop = true;
+  const dest = ctx.createMediaStreamDestination();
+  src.connect(dest); src.start(); await ctx.resume();
+  return dest.stream;
+}
+
 export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+  const stream = await micStream();
   let ctx;
   try { ctx = new AudioContext({ sampleRate: SR }); } catch { ctx = new AudioContext(); }
   await ctx.audioWorklet.addModule("/js/worklet.js");

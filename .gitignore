@@ -49,3 +49,4 @@ results/baselines/apple_*.jsonl
 !results/baselines/apple_*_activity.csv
 !results/cache/
 !results/cache/**
+web/public/_qa/

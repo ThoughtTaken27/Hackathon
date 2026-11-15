@@ -1,6 +1,6 @@
 // Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this device, sends only labels.
-import { today as computeToday, canListen } from "./core.js";
-import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast } from "./ui.js";
+import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL } from "./core.js";
+import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S } from "./listen.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
@@ -8,7 +8,11 @@ import { loadModel, startMic, HOP_S } from "./listen.js";
 const UA = navigator.userAgent || "";
 const DEVICE = /iPad|Tablet|Android(?!.*Mobile)/.test(UA) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(UA)) ? "tablet" : /Android|iPhone|iPod|Mobile/.test(UA) ? "phone" : "laptop";
 const link = linkFromHash("kitchen");
-const ui = { step: "intro", pauseMenu: false, mic: "idle", model: 0, down: false, failures: 0, showChip: true, resumedAt: 0, resumedText: "" };
+const ui = { step: "intro", pauseMenu: false, mic: "idle", model: 0, down: false, failures: 0, showChip: true, resumedAt: 0, resumedText: "", setup: null, check: null };
+// First-time setup on this device, after the parent says yes: 2) where to put it, 3) a live sound check. Remembered per home.
+const SKEY = link ? `kettle.setup.${link.id}` : null;
+const setupDone = () => { try { return localStorage.getItem(SKEY) === "1"; } catch { return true; } };
+const finishSetup = () => { try { localStorage.setItem(SKEY, "1"); } catch {} ui.setup = null; ui.check = null; draw(); };
 let srv = null, events = [], queue = [], mic = null, wake = null, t = null, silentRun = 0, flushing = false;
 const bar = dayBar($("#bar"), { big: true });
 const QKEY = link ? `kettle.queue.${link.id}` : null;
@@ -22,20 +26,20 @@ function speak(lines) { if (!("speechSynthesis" in window)) return; speechSynthe
 if (!link) {
   $("#status").dataset.state = "never";
   $("#head").textContent = `Connect this ${DEVICE} to your family`;
-  const inp = el("input", { class: "input code-input", maxlength: 7, autocomplete: "off", autocapitalize: "characters", spellcheck: "false", "aria-label": "Six-letter code", placeholder: "ABC 123" });
   const err = el("p", { class: "err", role: "alert" });
-  const go = async () => {
+  const go = async (code) => {
     err.textContent = "";
     try {
-      const r = await api("/api/pair", { method: "POST", body: { code: inp.value } });
+      const r = await api("/api/pair", { method: "POST", body: { code } });
       saveHome(r.id, { [r.role + "Key"]: r.key });
       location.href = r.role === "kitchen" ? "/kitchen" : "/family";
-    } catch (e) { err.textContent = e.message; }
+    } catch (e) { err.textContent = e.message; ci.error(); ci.focus(); }
   };
-  inp.addEventListener("keydown", (e) => e.key === "Enter" && go());
-  $("#body").append(el("p", { class: "k-body", text: "Type the six-letter code from the family member's phone." }), el("div", { style: "max-width:420px;margin-top:20px" }, inp, err));
-  $("#controls").append(button("Connect", go, "primary"), el("a", { class: "btn kbtn quiet-k", href: "/start", text: "Set up Kettle from scratch" }));
-  inp.focus();
+  const ci = codeInput({ onComplete: go });
+  $("#body").append(el("p", { class: "k-body", text: "Type the six-letter code from your family member's phone." }), el("div", { style: "margin-top:24px" }, ci.node, err));
+  $("#controls").append(button("Connect", () => (ci.value().length === 6 ? go(ci.value()) : ((err.textContent = "Type all six letters and numbers."), ci.error())), "primary"),
+    el("a", { class: "btn kbtn quiet-k", href: "/start", text: "Set up Kettle from scratch" }));
+  ci.focus();
 } else boot();
 
 // ---------------------------------------------------------------- paired
@@ -104,6 +108,7 @@ async function startListening() {
         if (silentRun === 0 && srv && srv.mic === "blocked") act("mic", { state: "ok" });
         const ev = { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds };
         events.push(ev); queue.push(ev); saveQueue(); flush();
+        if (ui.setup === "check" && !ui.check) ui.check = { label: rawLabel(ev, 0.66) };
         if (srv) srv.last_window_t = ev.end;
         draw(true);
       },
@@ -159,16 +164,17 @@ function screen(t) {
   if (ui.down) return { state: "error", head: "Kettle can't reach the internet.", body: ["It keeps listening and will send what it heard when the connection is back."],
     controls: [button("Try again", () => poll(), "primary")], bar: true, chip: true };
   if (!k.consent) {
-    if (ui.step === "teachback") return { state: "never", head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`],
+    if (ui.step === "teachback") return { state: "never", stepK: 1, head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`],
       controls: [button(`Yes, ${n.caregiver} can see this`, () => act("consent"), "primary"), button("No, not now", () => { ui.step = "declined"; draw(); })] };
     if (ui.step === "declined") return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`],
       controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
     const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
       `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
-    return { state: "never", head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
+    return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
         button("Read this to me", () => speak([`This ${DEVICE} listens for kitchen sounds.`, ...lines]), "quiet-k")] };
   }
+  if (ui.setup === "place" && !k.paused) return placeScreen(n);
   if (k.off) return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`], controls: [button("Start", () => act("start"), "primary")] };
   if (k.paused) {
     const weekly = k.pause_reason === "weekly";
@@ -190,6 +196,7 @@ function screen(t) {
       helper: none ? null : ["Steps for a helper", "Chrome: click the icon left of the address, then Microphone, then Allow, then Try again. Safari: Settings for this website, then Microphone, then Allow."],
       controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
   }
+  if (ui.setup === "check" && ui.mic === "on") return checkScreen(n);
   const today = new Date(now() * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: srv.tz });
   const since = k.consent_day === today ? `Listening since ${k.consent_text} today.` : `Listening since ${k.consent_day}.`;
   const base = { bar: true, chip: true, checks: t.rules.map((r) => r.title),
@@ -198,6 +205,43 @@ function screen(t) {
   if (hb.state === "starting") return { ...base, state: "starting", head: "Listening…", body: ["The first sound label appears in about 10 seconds."] };
   return { ...base, state: hb.state === "listening" ? "listening" : "starting", head: "Listening for kitchen sounds",
     body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines()] };
+}
+
+// ---------------------------------------------------------------- first-time setup: placement, then a live sound check
+const STRESS = { tvOff: 84, tvSame: 40 };   // results/stress.json, other homes: kitchen clips caught with no TV vs a TV as loud as the cooking
+function guideRow(n, title, sub, status = null) {
+  return el("li", { "data-ok": status ? status[0] : "" },
+    el("span", { class: "g-n", "aria-hidden": "true", text: status ? "" : String(n) }),
+    el("div", {}, el("p", { class: "g-t", text: title }), el("p", { class: "g-s", text: sub }),
+      status ? el("p", { class: "g-live", text: status[1] }) : null));
+}
+function placeScreen(n) {
+  const power = dev.charging === true ? ["yes", "Plugged in now."] : dev.charging === false ? ["no", `On battery now (${Math.round((dev.level || 0) * 100)}%). Plug it in.`]
+    : ["", "This browser doesn't say. Check the cable."];
+  const awake = "wakeLock" in navigator ? ["yes", "Kettle keeps the screen on while this page is open."]
+    : ["no", `Set Auto-Lock or Screen timeout to Never in this ${DEVICE}'s settings.`];
+  const guide = el("ol", { class: "k-guide" },
+    guideRow(1, "Near the stove and sink", "Within a couple of steps. Kettle hears less from across the room."),
+    guideRow(2, "Away from the TV", `In our tests, a TV as loud as the cooking cut what Kettle caught from ${STRESS.tvOff}% to ${STRESS.tvSame}%.`),
+    guideRow(3, "Plugged in", "Kettle listens all day.", power),
+    guideRow(4, "Screen on, this page open", "Phones and tablets stop the microphone when the screen locks.", awake));
+  return { state: "never", stepK: 2, head: `Where should this ${DEVICE} live?`, body: [], guide,
+    controls: [button("It's in place. Start listening", () => { ui.setup = "check"; ui.check = null; sync(); }, "primary"),
+      button("Skip setup", () => { finishSetup(); sync(); }, "quiet-k")] };
+}
+function checkScreen(n) {
+  const c = ui.check;
+  meterEl = el("span", { class: "meter lg", "aria-hidden": "true" }, ...Array.from({ length: 9 }, () => el("i")));
+  if (!c) return { state: "listening", stepK: 3, head: "Quick sound check", body: ["Run the tap, or clink two plates together, for about 10 seconds.", "Kettle will say what it heard."],
+    guide: el("div", { class: "k-check" }, meterEl, el("p", { class: "g-s", text: "Listening. The answer appears within 10 seconds." })),
+    controls: [button("Skip the sound check", finishSetup, "quiet-k")] };
+  const name = c.label === "not_sure" ? "something it couldn't name" : c.label === "talk_or_tv" ? "talking or TV" : (DISPLAY[c.label] || c.label).toLowerCase();
+  if (MEAL.has(c.label)) return { state: "listening", stepK: 3, done: true, head: `Kettle heard ${name}.`,
+    body: [`This spot works. ${n.caregiver} will see moments like this on the timeline, never the sound itself.`],
+    controls: [button("Finish setup", finishSetup, "primary")] };
+  return { state: "starting", stepK: 3, head: `Kettle heard ${name}.`,
+    body: ["That isn't a kitchen sound yet. Move a little closer to the sink, or make the sound a bit louder, then try again."],
+    controls: [button("Try again", () => { ui.check = null; draw(); }, "primary"), button("Finish anyway", finishSetup, "quiet-k")] };
 }
 
 let exampleNode = null;
@@ -224,7 +268,8 @@ function sync() {
     ui.resumedText = last ? (last.end - last.start < 60 ? "Paused for under a minute." : `Paused from ${last.range}.`) : "";
   }
   const should = canListen(srv, now());
-  if (should && ui.mic === "idle") startListening();
+  if (should && !setupDone() && !ui.setup) ui.setup = "place";
+  if (should && ui.mic === "idle" && ui.setup !== "place") startListening();
   if (!should && mic) stopListening();
   draw();
 }
@@ -235,6 +280,11 @@ function draw(fresh = false) {
   const s = screen(t);
   $("#who-tag").textContent = `${t.names.parent}'s kitchen`;
   $("#status").dataset.state = s.state;
+  $("#status").classList.toggle("done", !!s.done);
+  const ks = $("#kstep");
+  ks.hidden = !s.stepK || ui.pauseMenu;
+  if (s.stepK) { ks.textContent = ""; ks.append(el("span", { class: "dots", "aria-hidden": "true" }, [1, 2, 3].map((i) => el("i", { class: i <= s.stepK ? "on" : "" }))),
+    `Setup, step ${s.stepK} of 3`); }
   setText($("#head"), ui.pauseMenu ? "How long should Kettle stop listening?" : s.head);
   const body = $("#body"); body.textContent = "";
   for (const line of s.body.filter(Boolean)) body.append(el("p", { class: "k-body", text: line }));
@@ -245,6 +295,7 @@ function draw(fresh = false) {
       el("ul", {}, s.checks.map((c) => el("li", { text: c })))));
   }
   if (s.example) body.append(exampleBar());
+  if (s.guide) body.append(s.guide);
   if (s.helper) body.append(el("details", { class: "helper" }, el("summary", { text: s.helper[0] }), el("p", { text: s.helper[1] })));
   const ctr = $("#controls"); ctr.textContent = "";
   if (ui.pauseMenu) {

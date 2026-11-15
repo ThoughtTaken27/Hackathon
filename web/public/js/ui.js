@@ -81,7 +81,13 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
   hit.append(bar, nowTick, empty);
   root.append(labels, hit, ticks, list);
   const nodes = new Map();
-  let first = true, selected = null, last = [];
+  let first = true, selected = null, last = [], lastT = null;
+  // Real text widths (the old guess of 7.4 px a letter overlapped labels on phones, where the kitchen text is larger).
+  const cv = document.createElement("canvas").getContext("2d");
+  const textW = (node, text) => { const cs = getComputedStyle(node); cv.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; return cv.measureText(text).width; };
+  // Redraw when the bar's width changes (rotation, sheet opening, first layout): labels and ticks depend on it.
+  let lastW = 0;
+  if (typeof ResizeObserver !== "undefined") new ResizeObserver(() => { const w = bar.clientWidth; if (lastT && w && Math.abs(w - lastW) > 1) render(lastT); }).observe(bar);
   // From the first hour Kettle heard anything today (6 AM before that), to a little after now; at least 3 hours.
   function range(t) {
     const first = t.blocks.length ? Math.min(...t.blocks.map((b) => b.start)) : t.day0 + from * 3600;
@@ -92,7 +98,7 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     return [t.day0 + startH * 3600, t.day0 + endH * 3600];
   }
   function render(t) {
-    last = t.blocks;
+    last = t.blocks; lastT = t;
     empty.hidden = t.blocks.length > 0;
     empty.textContent = t.heartbeat.state === "never" ? `The day appears here once ${t.names.parent} turns Kettle on.` : "Nothing heard yet today.";
     const [a, z] = range(t), span = z - a;
@@ -116,22 +122,25 @@ export function dayBar(root, { big = false, onSelect = null, from = 6 } = {}) {
     for (const [k, n] of nodes) if (!seen.has(k)) { n.remove(); nodes.delete(k); }
     nowTick.style.left = pct(t.now);
     nowTick.hidden = t.now < a || t.now > z || !t.blocks.length;
-    const width = bar.clientWidth || 600;
+    const width = bar.clientWidth;
+    lastW = width;
+    if (!width) { labels.textContent = ""; ticks.textContent = ""; return; }           // not laid out yet: the observer redraws
     const prev = new Set([...labels.children].map((s) => s.dataset.key));
     labels.textContent = "";
     let right = -Infinity;
     for (const b of t.blocks.filter((x) => x.state !== "empty")) {
       const x = (width * (Math.max(a, b.start) - a)) / span, bw = (width * (Math.min(z, b.end) - Math.max(a, b.start))) / span;
-      const tw = b.label.length * (big ? 9 : 7.4) + 4;
-      if (x < right + 8 || bw < Math.min(tw, 44) || x + tw > width + 2) continue;
+      const tw = textW(labels, b.label) + 2;
+      if (x < right + 10 || bw < Math.min(tw, 44) || x + tw > width + 2) continue;
       const s = el("span", { text: b.label, style: `left:${((100 * x) / width).toFixed(3)}%` });
       s.dataset.key = blockKey(b);
       if (!first && !prev.has(s.dataset.key)) s.classList.add("fade");
       labels.append(s); right = x + tw;
     }
     ticks.textContent = "";
-    const spanH = span / 3600, fit = Math.max(2, Math.floor(width / (big ? 96 : 70)));
-    const every = [1, 2, 3, 4, 6].find((e) => spanH / e <= fit) || 6;
+    // as many hour labels as fit with a clear gap: the widest label ("10 AM") plus 14 px between neighbours
+    const spanH = span / 3600, room = textW(ticks, "10 AM") + 14, fit = Math.max(2, Math.floor(width / room));
+    const every = [1, 2, 3, 4, 6, 12].find((e) => spanH / e <= fit) || 12;
     const h0 = Math.round((a - t.day0) / 3600), hEnd = Math.round((z - t.day0) / 3600);
     for (let h = h0; h <= hEnd; h++) {
       if ((h - h0) % every !== 0) continue;
@@ -222,3 +231,34 @@ export function toast(text) {
   clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600);
 }
 export async function copy(text) { try { await navigator.clipboard.writeText(text); toast("Copied"); } catch { toast("Couldn't copy. Select the text instead."); } }
+
+// ---------------------------------------------------------------- six-box pairing code
+// One real <input> (so paste, autofill and screen readers work) drawn as six boxes. A wrong code shakes the row:
+// timings from transitions.dev "Error State Shake" (MIT): 6 px, 4 px overshoot, 80/60/80/60 ms, cubic-bezier(0.22, 1, 0.36, 1).
+export function codeInput({ onComplete, label = "Six-letter code" } = {}) {
+  const boxes = Array.from({ length: 6 }, (_, i) => el("span", { class: "cbox" + (i === 2 ? " gap" : "") }));
+  const inp = el("input", { class: "code-real", inputmode: "text", maxlength: 7, autocomplete: "one-time-code", autocapitalize: "characters",
+    spellcheck: "false", "aria-label": label, enterkeyhint: "go" });
+  const row = el("div", { class: "code6" }, ...boxes, inp);
+  const clean = () => inp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+  const paint = () => {
+    const v = clean(), focused = document.activeElement === inp;
+    boxes.forEach((b, i) => { b.textContent = v[i] || ""; b.classList.toggle("cur", focused && i === Math.min(v.length, 5)); b.classList.toggle("on", !!v[i]); });
+    row.classList.remove("bad");
+  };
+  inp.addEventListener("input", () => { inp.value = clean(); paint(); if (inp.value.length === 6 && onComplete) onComplete(inp.value); });
+  inp.addEventListener("focus", paint); inp.addEventListener("blur", paint);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && clean().length === 6 && onComplete) onComplete(clean()); });
+  row.addEventListener("click", () => inp.focus());
+  return {
+    node: row, input: inp, value: clean, focus: () => inp.focus(),
+    error() {
+      row.classList.add("bad");
+      inp.select();                     // typing again replaces the wrong code
+      if (reduceMotion()) return;
+      row.animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(-4px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }],
+        { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+    },
+    clear() { inp.value = ""; paint(); },
+  };
+}

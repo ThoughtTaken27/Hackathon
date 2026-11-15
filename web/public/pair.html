@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#FAFAFA">
 <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/app.css?v=w2">
+<link rel="stylesheet" href="/css/app.css?v=w3">
 </head>
 <body>
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
@@ -16,21 +16,21 @@
 <main class="shell"><div class="narrow enter">
   <h1 class="h1">Enter your code</h1>
   <p class="lead">Six letters and numbers, from the other screen. Spaces don't matter.</p>
-  <div class="field2" style="margin-top:28px"><input class="input code-input" id="code" maxlength="7" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" aria-label="Six-letter code" placeholder="ABC 123"></div>
+  <div id="code-slot" style="margin-top:28px"></div>
   <p class="err" id="err" role="alert"></p>
   <div class="actions"><button class="btn primary lg" type="button" id="go">Connect</button><a class="btn lg" href="/start">Set up Kettle instead</a></div>
 </div></main>
 <script type="module">
-import { $, api, saveHome } from "/js/ui.js";
-const go = async () => {
-  $("#err").textContent = "";
-  try { const r = await api("/api/pair", { method: "POST", body: { code: $("#code").value } }); saveHome(r.id, { [r.role + "Key"]: r.key }); location.href = r.role === "kitchen" ? "/kitchen" : "/family"; }
-  catch (e) { $("#err").textContent = e.message; }
+import { $, api, saveHome, codeInput } from "/js/ui.js";
+const go = async (code) => {
+  $("#err").textContent = ""; $("#go").disabled = true; $("#go").textContent = "Connecting…";
+  try { const r = await api("/api/pair", { method: "POST", body: { code } }); saveHome(r.id, { [r.role + "Key"]: r.key }); location.href = r.role === "kitchen" ? "/kitchen" : "/family"; }
+  catch (e) { $("#err").textContent = e.message; ci.error(); $("#go").disabled = false; $("#go").textContent = "Connect"; ci.focus(); }
 };
-$("#go").addEventListener("click", go);
-$("#code").addEventListener("keydown", (e) => e.key === "Enter" && go());
-$("#code").addEventListener("input", (e) => { const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6); e.target.value = v.length > 3 ? v.slice(0, 3) + " " + v.slice(3) : v; if (v.length === 6) go(); });
-$("#code").focus();
+const ci = codeInput({ onComplete: go });
+$("#code-slot").append(ci.node);
+$("#go").addEventListener("click", () => ci.value().length === 6 ? go(ci.value()) : (($("#err").textContent = "Type all six letters and numbers."), ci.error()));
+ci.focus();
 </script>
 </body>
 </html>

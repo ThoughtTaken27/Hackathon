@@ -19,10 +19,10 @@ const head = (k, title, lead) => [el("p", { class: "step-k" }, dots(k), `Step ${
 function step1() {
   const choice = (as, icon, t1, t2) => el("button", { class: "choice", type: "button", onclick: () => { st.as = as; step2(); } },
     el("span", { class: "ico", html: ICON[icon] }), el("span", {}, el("span", { class: "t1", text: t1 }), el("span", { class: "t2", style: "display:block", text: t2 })), el("span", { class: "chev", html: ICON.chev }));
-  show(el("div", {}, ...head(1, "Where are you right now?", "Kettle needs two screens: a laptop that stays in your parent's kitchen, and your own phone or computer."),
+  show(el("div", {}, ...head(1, "Where are you right now?", "Kettle needs two screens: a spare phone, tablet or laptop that stays in your parent's kitchen, and your own phone."),
     el("div", { class: "choices" },
-      choice("family", "phone", "On my own phone or computer", "You'll get a code to type on your parent's laptop."),
-      choice("kitchen", "laptop", "At my parent's kitchen laptop", "This laptop becomes the kitchen screen. You'll scan a code with your phone.")),
+      choice("family", "phone", "On my own phone or computer", "You'll get a code to type on the kitchen device."),
+      choice("kitchen", "laptop", "At the kitchen device", "The spare phone, tablet or laptop that will stay in the kitchen. You'll scan a code with your phone.")),
     el("p", { class: "meta muted", style: "margin-top:20px" }, "Already have a six-letter code? ", el("a", { href: "/pair", text: "Enter it here" }), ".")));
 }
 
@@ -56,19 +56,19 @@ async function step3(r) {
   const code = el("p", { class: "code-big num", html: `${r.code.slice(0, 3)}<span> </span>${r.code.slice(3)}` });
   const card = el("div", { class: "pair-card" });
   if (r.codeFor === "kitchen") {
-    card.append(el("p", { class: "step-k", text: `On ${P}'s kitchen laptop` }),
-      el("ol", { class: "steps-mini" }, el("li", { text: `Open ${location.host}/kitchen in Chrome, Edge or Safari.` }), el("li", { text: "Type this code:" })), code,
-      el("p", { class: "meta muted", text: "The code works for 48 hours. Or send this link to the laptop:" }),
+    card.append(el("p", { class: "step-k", text: `On the device that stays in ${P}'s kitchen` }),
+      el("ol", { class: "steps-mini" }, el("li", { text: `Open ${location.host}/kitchen in Chrome or Safari on a spare phone, tablet or laptop.` }), el("li", { text: "Type this code:" })), code,
+      el("p", { class: "meta muted", text: "The code works for 48 hours. Or send this link to that device:" }),
       el("div", { class: "linkbox" }, el("code", { text: otherUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(otherUrl) })),
-      el("ol", { class: "steps-mini", style: "counter-reset: s 2" }, el("li", { text: `${P} reads one screen and presses Yes. Nothing starts without that.` }), el("li", { text: "Keep the laptop plugged in with the page open. Kettle keeps the screen awake." })));
+      el("ol", { class: "steps-mini", style: "counter-reset: s 2" }, el("li", { text: `${P} reads one screen and presses Yes. Nothing starts without that.` }), el("li", { text: `Kettle then shows ${P} where to put it and checks that it can hear the kitchen. About two minutes.` })));
   } else {
     const q = await qr(otherUrl, 196);
     card.append(el("p", { class: "step-k", text: `On ${C}'s phone` }),
       el("div", { class: "pair" }, el("div", {}, el("p", { class: "panel-h", text: "Scan with your phone's camera" }), el("p", { class: "meta muted", text: `Or open ${location.host}/pair on it and type:` }), code), q),
       el("div", { class: "linkbox" }, el("code", { text: otherUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(otherUrl) })));
   }
-  show(el("div", {}, ...head(3, r.codeFor === "kitchen" ? `Now connect ${P}'s laptop` : "Now connect your phone",
-    r.codeFor === "kitchen" ? "You can do this now, or the next time you're there. Your view shows the code until it's connected." : `This laptop is now ${P}'s kitchen screen. Connect your phone, then hand over to ${P}.`),
+  show(el("div", {}, ...head(3, r.codeFor === "kitchen" ? `Now connect ${P}'s kitchen device` : "Now connect your phone",
+    r.codeFor === "kitchen" ? "You can do this now, or the next time you're there. Your view shows the code until it's connected." : `This device is now ${P}'s kitchen screen. Connect your phone, then hand over to ${P}.`),
     card,
     el("div", { class: "actions" },
       el("a", { class: "btn primary lg", href: mine, text: r.as === "kitchen" ? `Continue to ${P}'s kitchen screen` : "Open my family view" }),

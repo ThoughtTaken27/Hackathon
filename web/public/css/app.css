@@ -482,3 +482,51 @@ a.btn { text-decoration: none; }
 .privacy-line { flex-wrap: nowrap; align-items: flex-start; }
 .privacy-line::before { margin-top: 3px; }
 @media (max-width: 520px) { .actions > .btn.lg, .actions > a.btn.lg { flex: 1 1 100%; } }
+
+/* ---------------------------------------------------------------- kitchen first-time setup (placement guide, sound check) */
+#kstep { margin-bottom: 10px; }
+.k-guide { list-style: none; margin: 20px 0 0; padding: 0; display: grid; gap: 0; max-width: 34em; }
+.k-guide li { display: grid; grid-template-columns: 32px 1fr; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); }
+.k-guide li:first-child { border-top: 0; padding-top: 4px; }
+.g-n { width: 28px; height: 28px; border-radius: 999px; background: var(--line); color: var(--ink); font-size: 15px; font-weight: 560;
+  display: grid; place-items: center; font-variant-numeric: tabular-nums; margin-top: 1px; }
+.k-guide li[data-ok="yes"] .g-n { background: var(--ok); }
+.k-guide li[data-ok="yes"] .g-n::after { content: ""; width: 10px; height: 6px; border: solid #fff; border-width: 0 0 2.4px 2.4px; transform: translateY(-1px) rotate(-45deg); }
+.k-guide li[data-ok="no"] .g-n { background: transparent; box-shadow: inset 0 0 0 2.4px var(--stale); }
+.k-guide li[data-ok=""] .g-n:empty { background: transparent; box-shadow: inset 0 0 0 2.4px var(--line-strong); }
+.g-t { font-size: var(--fs-kbody); line-height: 1.3; color: var(--ink); font-weight: 520; letter-spacing: -0.015em; }
+.g-s { font-size: 17px; line-height: 25px; color: var(--muted); margin-top: 3px; }
+.g-live { font-size: 17px; line-height: 25px; color: var(--ink); margin-top: 6px; font-weight: 500; }
+.k-guide li[data-ok="no"] .g-live { color: var(--stale); }
+.k-check { margin-top: 22px; display: grid; gap: 10px; justify-items: start; }
+.meter.lg { height: 56px; gap: 6px; margin-left: 0; }
+.meter.lg i { width: 7px; }
+/* success: the status dot becomes a check (spring-in, transitions.dev "success check" timing) */
+.k-status.done .dot { background: var(--ok); display: grid; place-items: center; }
+.k-status.done .dot::before { content: ""; width: 9px; height: 5px; border: solid #fff; border-width: 0 0 2.4px 2.4px; transform: translateY(-1px) rotate(-45deg); }
+@media (prefers-reduced-motion: no-preference) {
+  .k-status.done .dot { animation: k-pop 420ms cubic-bezier(0.34, 1.35, 0.64, 1) both; }
+  @keyframes k-pop { 0% { transform: scale(.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+}
+
+/* phones: the live status card and the kitchen column never grow wider than the screen (it pushed a 393px page to 500px) */
+.k-main > * { min-width: 0; }
+.chip.big { max-width: 100%; box-sizing: border-box; }
+.chip .txt { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  .chip.big { font-size: 34px; line-height: 40px; padding: 18px 22px; border-radius: 26px; }
+  .k-status { gap: 16px; }
+}
+
+/* six-box pairing code (ui.js codeInput) */
+.code6 { position: relative; display: flex; gap: 8px; align-items: center; max-width: 380px; cursor: text; }
+.code6 .cbox { flex: 1; aspect-ratio: 4 / 5; max-width: 56px; border-radius: 14px; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--line-strong);
+  display: grid; place-items: center; font-size: 28px; font-weight: 560; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 0;
+  transition: box-shadow 150ms ease-out; }
+.code6 .cbox.gap { margin-right: 10px; }
+.code6 .cbox.cur { box-shadow: inset 0 0 0 2px var(--ink); }
+.code6 .cbox.cur:empty::after { content: ""; width: 2px; height: 30px; background: var(--ink); animation: caret 1s steps(1) infinite; }
+.code6.bad .cbox { box-shadow: inset 0 0 0 2px var(--danger); }
+.code6 .code-real { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; border: 0; padding: 0; color: transparent; caret-color: transparent; }
+@keyframes caret { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .code6 .cbox.cur:empty::after { animation: none; } }

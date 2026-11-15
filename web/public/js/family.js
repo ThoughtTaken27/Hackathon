@@ -10,7 +10,7 @@ if (!link) {
   $("#app").innerHTML = "";
   $("#app").append(el("div", { class: "narrow", style: "padding-top:24px" },
     el("h1", { class: "h1", text: "Open your family view" }),
-    el("p", { class: "lead", text: "Use the link Kettle gave you when you set it up, or type a six-letter code from the kitchen laptop." }),
+    el("p", { class: "lead", text: "Use the link Kettle gave you when you set it up, or type a six-letter code from the kitchen device." }),
     el("div", { class: "actions" }, el("a", { class: "btn primary lg", href: "/pair", text: "I have a code" }), el("a", { class: "btn lg", href: "/start", text: "Set up Kettle" }))));
 } else boot();
 
@@ -75,7 +75,7 @@ async function drawInvite() {
   if (key === inviteShown) return; inviteShown = key; box.textContent = "";
   if (!need) return;
   const P = t.names.parent;
-  if (!home.kitchenKey) { box.append(el("div", { class: "banner" }, el("p", {}, el("strong", { text: `Waiting for ${P}'s laptop.` }), ` Kettle starts when ${P} says yes on the kitchen screen.`))); return; }
+  if (!home.kitchenKey) { box.append(el("div", { class: "banner" }, el("p", {}, el("strong", { text: `Waiting for ${P}'s kitchen device.` }), ` Kettle starts when ${P} says yes on the kitchen screen.`))); return; }
   let code = home.kitchenCode;
   if (!code || (home.kitchenCodeExp || 0) < now() + 600) {
     try { const r = await api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "kitchen", key: home.kitchenKey } });
@@ -83,10 +83,10 @@ async function drawInvite() {
   }
   const url = linkFor("kitchen", link.id, home.kitchenKey);
   box.append(el("div", { class: "pair-card", style: "margin-top:20px" },
-    el("p", { class: "step-k", text: "Next: connect the kitchen laptop" }),
-    el("h2", { class: "section-title", text: `On ${P}'s laptop, go to ${location.host}/kitchen and type` }),
+    el("p", { class: "step-k", text: "Next: connect the kitchen device" }),
+    el("h2", { class: "section-title", text: `On ${P}'s kitchen device, go to ${location.host}/kitchen and type` }),
     code ? el("p", { class: "code-big num", html: `${code.slice(0, 3)}<span> </span>${code.slice(3)}` }) : null,
-    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the laptop that stays in the kitchen.` }),
+    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the kitchen.` }),
     el("div", { class: "linkbox" }, el("code", { text: url }), el("button", { class: "btn", type: "button", text: "Copy link", onclick: () => copy(url) }))));
 }
 
@@ -139,7 +139,7 @@ $("#menu-btn").addEventListener("click", async () => {
   qr(famUrl, 152).then((q) => { q.style.marginTop = "14px"; q.style.justifySelf = "start"; body.insertBefore(q, del); });
   const del = el("div", {}, el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
     el("p", { class: "panel-h", text: "Delete this home" }),
-    el("p", { class: "meta muted", text: "Removes every label and setting from Kettle's server for good. The kitchen laptop stops sending." }),
+    el("p", { class: "meta muted", text: "Removes every label and setting from Kettle's server for good. The kitchen device stops sending." }),
     el("div", { class: "actions", style: "margin-top:12px" },
       el("button", { class: "btn danger-link", type: "button", text: "Delete everything", onclick: async (e) => {
         if (e.currentTarget.dataset.sure !== "1") { e.currentTarget.dataset.sure = "1"; e.currentTarget.textContent = "Press again to delete for good"; return; }
