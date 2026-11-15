@@ -5,13 +5,13 @@
 // ---------------------------------------------------------------- labels
 export const CLASSES = ["absence", "cooking", "dishwashing", "eating", "other", "social_activity", "vacuum_cleaner", "watching_tv", "working"];
 export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing" };
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing", kitchen: "Kitchen activity" };
 export const PHRASE = { absence: "quiet", cooking: "cooking", dishwashing: "washing up", eating: "eating", other: "some activity",
-  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing" };
+  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing", kitchen: "kitchen activity" };
 export const COLOUR = { absence: "--act-empty", cooking: "--act-cooking", dishwashing: "--act-washing", eating: "--act-eating",
-  other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working" };
-export const MEAL = new Set(["cooking", "dishwashing", "eating"]);
-export const ACTIVE = new Set(CLASSES.filter((c) => c !== "absence"));
+  other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working", kitchen: "--act-kitchen" };
+export const MEAL = new Set(["cooking", "dishwashing", "eating", "kitchen"]);   // "kitchen": a stretch heard as kitchen, not which activity
+export const ACTIVE = new Set([...CLASSES, "kitchen"].filter((c) => c !== "absence"));
 const TALK_OR_TV_MARGIN = 0.15;
 // The named household sound types (web/public/model/kinds.json, measured by eval/beyond.py). Order = display order.
 // No pets, phone or doorbell: the same choice as the sound-name allow-list (kettle/evidence_labels.json).
@@ -75,6 +75,70 @@ export const BRIDGE_S = 30;
 //   rescue: the head has no answer (unfamiliar sound, or below theta) and k >= TAU_K and k > v  -> show w.family
 //   veto:   the head says a kitchen activity but v >= TAU_V and v > k                           -> show "Not sure"
 export const TAU_K = 0.15, TAU_V = 0.3;
+// Rule 2c (kettle/witness.py name_kitchen; models/witness.json "_evidence"; added Sun Nov 15 after a real-kitchen test showed
+// pots while cooking as "washing up" and cutlery as "eating"). Rescued windows say only "kitchen"; each stretch of them is
+// named from evidence across all its windows: each window votes for the louder of cooking sounds and running water;
+// cooking if its votes are >= COOK_SHARE of the stretch and >= water's; else any water vote -> washing up;
+// chewing -> eating; otherwise "kitchen activity". Windows from before carry no evidence numbers and keep the old family.
+export const TAU_COOK = 0.05, TAU_WATER = 0.05, TAU_MOUTH = 0.1, COOK_SHARE = 0.1;
+const FAMILIES = ["cooking", "dishwashing", "eating"];
+export function nameKitchen(evs) {
+  const ws = evs.map((e) => e.w || {});
+  if (!ws.some((w) => "cook" in w)) {
+    const fams = ws.map((w) => w.family).filter((f) => FAMILIES.includes(f));
+    if (!fams.length) return "kitchen";
+    let best = FAMILIES[0];
+    for (const f of FAMILIES) if (fams.filter((x) => x === f).length > fams.filter((x) => x === best).length) best = f;
+    return best;
+  }
+  // each window votes for the louder of its cooking and running-water evidence (a sink at 0.7 beats a faint "stir")
+  const n = ws.length;
+  const cook = ws.filter((w) => (w.cook || 0) >= TAU_COOK && (w.cook || 0) >= (w.water || 0)).length;
+  const water = ws.filter((w) => (w.water || 0) >= TAU_WATER && (w.water || 0) > (w.cook || 0)).length;
+  if (cook >= Math.max(1, COOK_SHARE * n) && cook >= water) return "cooking";
+  if (water >= 1) return "dishwashing";
+  if (ws.some((w) => (w.mouth || 0) >= TAU_MOUTH)) return "eating";
+  return "kitchen";
+}
+export function nameStretches(labels, run) {
+  const out = labels.slice();
+  let i = 0;
+  while (i < out.length) {
+    if (out[i] !== "kitchen") { i++; continue; }
+    let j = i;
+    while (j + 1 < out.length && out[j + 1] === "kitchen") j++;
+    const name = nameKitchen(run.slice(i, j + 1));
+    for (let k = i; k <= j; k++) out[k] = name;
+    i = j + 1;
+  }
+  return absorb(out, run);
+}
+// Rule 2d (kettle/timeline.py _absorb): a washing-up, eating or unnamed kitchen stretch with no evidence of its own (no running
+// water, no chewing), at most SHORT_FLIP windows long, next to cooking, is cooking. The case: the head was 93% sure of
+// "washing up" on plates and cutlery between frying, with no tap heard.
+export const SHORT_FLIP = 3;
+export function votes(evs) {
+  const ws = evs.map((e) => e.w || {});
+  return { cook: ws.filter((w) => (w.cook || 0) >= TAU_COOK && (w.cook || 0) >= (w.water || 0)).length,
+    water: ws.filter((w) => (w.water || 0) >= TAU_WATER && (w.water || 0) > (w.cook || 0)).length,
+    mouth: ws.filter((w) => (w.mouth || 0) >= TAU_MOUTH).length, has: ws.some((w) => "cook" in w) };
+}
+function unsupported(label, evs) {
+  const v = votes(evs);
+  if (!v.has) return false;
+  return (label === "dishwashing" && v.water === 0) || (label === "eating" && v.mouth === 0) || label === "kitchen";
+}
+function absorb(labels, run) {
+  const out = labels.slice(), segs = [];
+  for (let i = 0; i < out.length;) { let j = i; while (j + 1 < out.length && out[j + 1] === out[i]) j++; segs.push([i, j]); i = j + 1; }
+  segs.forEach(([i, j], n) => {
+    const lab = out[i];
+    if (!["dishwashing", "eating", "kitchen"].includes(lab) || !unsupported(lab, run.slice(i, j + 1))) return;
+    const near = [n - 1, n + 1].filter((m) => m >= 0 && m < segs.length).map((m) => out[segs[m][0]]);
+    if (j - i + 1 <= SHORT_FLIP && near.includes("cooking")) for (let k = i; k <= j; k++) out[k] = "cooking";
+  });
+  return out;
+}
 export function headLabel(ev, theta) {
   if (ev.novel) return "not_sure";
   const p = ev.probs;
@@ -90,7 +154,7 @@ export function rawLabel(ev, theta) {
   if (ev.private) return "private";
   const lab = headLabel(ev, theta);
   if (vetoes(lab, ev.w)) return "not_sure";
-  if (rescues(lab, ev.w)) return ev.w.family;
+  if (rescues(lab, ev.w)) return "cook" in ev.w ? "kitchen" : ev.w.family;
   return lab;
 }
 export const bySounds = (ev, theta) => rescues(headLabel(ev, theta), ev.w);
@@ -190,7 +254,7 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
   allRuns.forEach((full, r) => {
     let labs = smooth(full.map((e) => rawLabel(e, theta))), run = full;
     if (holdLast && r === allRuns.length - 1) { labs = labs.slice(0, -1); run = full.slice(0, -1); }
-    labs = bridge(labs, run, bridgeS);
+    labs = nameStretches(bridge(labs, run, bridgeS), run);
     let i = 0;
     while (i < run.length) {
       let j = i;
@@ -246,14 +310,15 @@ export function displayName(b) {
 }
 
 // ---------------------------------------------------------------- rules (kettle/rules.py)
-export const MAX_RULES = 3;
+export const MAX_RULES = 8;          // plan v3.1: up to 8 checks, including the "Worth a look" concerns
 const CANT_TELL_SHARE = 0.25, WINDOW_START_H = 6;
 export const DEFAULT_RULES = [{ id: "r1", type: "kitchen_by", time: "10:00" }, { id: "r2", type: "tv_over", hours: 4 }];
 function hhmm(s) { const [h, m] = s.split(":").map(Number); return `${(h % 12) || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; }
 export function ruleTitle(r) {
-  if (r.type === "kind_by") return `${KIND_NAMES[r.kind]} by ${hhmm(r.time)}`;
+  if (r.type === "concern") return concernTitle(r);
+  if (r.type === "kind_by") return `${KIND_NAMES[r.kind] || r.kind} by ${hhmm(r.time)}`;
   if (r.type === "tv_over") return `TV on for more than ${r.hours} hour${r.hours !== 1 ? "s" : ""}`;
-  return `${r.type === "kitchen_by" ? "Kitchen activity" : "Some sound of activity"} by ${hhmm(r.time)}`;
+  return `${r.type === "kitchen_by" ? "Kitchen activity" : "Activity"} by ${hhmm(r.time)}`;
 }
 function counts(r, b) {
   if (r.type === "kind_by") return !!(b.kinds && b.kinds[r.kind]);
@@ -273,7 +338,8 @@ function dur(seconds) {
   return h && m ? `${h} h ${m} min` : h ? `${h} h` : `${m} min`;
 }
 const byStart = (blks) => blks.slice().sort((a, b) => a.start - b.start);
-function ruleOne(r, blks, now, day0, off, hidden = []) {
+function ruleOne(r, blks, now, day0, off, hidden = [], ctx = {}) {
+  if (r.type === "concern") return concernOne(r, blks, now, day0, off, hidden, ctx);
   if (r.type === "tv_over") return ruleTv(r, blks, now, day0, off, hidden);
   const [h, m] = r.time.split(":").map(Number);
   const deadline = day0 + h * 3600 + m * 60;
@@ -326,15 +392,186 @@ function ruleTv(r, blks, now, day0, off, hidden = []) {
         : `Can't tell: Kettle wasn't listening for ${dur(missing)} today.`;
     return { state: "cant_tell", at: null, detail: lead, note: total ? `TV heard for ${dur(total)}.` : null };
   }
+  // plan S7/F2: when Kettle couldn't name the sound for more than a quarter of the time it listened, it may have missed
+  // the TV. Say "Can't tell", never "No TV heard today".
+  const listened = blks.filter((b) => LISTENED.includes(b.state) && b.end > start).reduce((s, b) => s + b.end - Math.max(b.start, start), 0);
+  const unnamed = blks.filter((b) => (b.state === "not_sure" || b.state === "talk_or_tv") && b.end > start).reduce((s, b) => s + b.end - Math.max(b.start, start), 0);
+  if (listened > 0 && unnamed > CANT_TELL_SHARE * listened)
+    return { state: "cant_tell", at: null, detail: `Can't tell: Kettle couldn't name the sound for ${dur(unnamed)} of the ${dur(listened)} it listened today.`,
+      note: total ? `TV heard for ${dur(total)}.` : null };
   return { state: "under", at: null, detail: total ? `TV for ${dur(total)} so far today` : "No TV heard today", note: null };
 }
-export function evaluateRules(rules, blks, now, day0, off, hidden = []) {
-  return rules.slice(0, MAX_RULES).map((r) => ({ id: r.id, type: r.type, title: ruleTitle(r), ...ruleOne(r, blks, now, day0, off, hidden) }));
+const LISTENED = ["activity", "empty", "not_sure", "talk_or_tv", "private"];
+
+// ---------------------------------------------------------------- "Worth a look" concerns (plan v3.1, Workstream C; kettle/concerns.py)
+// Not urgent, but worth a call. Each reads the same blocks as the checks; the family can change the numbers or remove it.
+// Device-side ones (stove, beep, water, cough) are measured on the listening device (safety.js) and arrive as alerts.
+export const CONCERNS = {
+  too_quiet: { hours: 4, from: "08:00", to: "20:00", escalate: 6 },     // C1
+  no_meal: { time: "14:00" },                                           // C2
+  tv_long: { hours: 8 },                                                // C3
+  tv_night: { hours: 1 },                                               // C4
+  night: { minutes: 30 },                                               // C5
+  stove: {}, beep: {}, water: {},                                       // C6, C7, C9 (on the device)
+  device_off: { hours: 2 },                                             // C10
+  cough: {},                                                            // C11 (opt-in, on the device)
+  unusual: {},                                                          // C12
+};
+export const DEVICE_CONCERNS = ["stove", "beep", "water", "cough"];
+const HEARD = ["activity", "talk_or_tv", "not_sure", "private"];
+const heardBlock = (b) => HEARD.includes(b.state) && !(b.state === "activity" && b.activity === "absence");
+const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+export function concernTitle(r) {
+  const c = { ...CONCERNS[r.cid], ...r };
+  return {
+    too_quiet: `No activity for ${plural(c.hours, "hour")} (${hhmm(c.from)}–${hhmm(c.to)})`,
+    no_meal: `No kitchen activity by ${hhmm(c.time)}`,
+    tv_long: `TV on for more than ${plural(c.hours, "hour")}`,
+    tv_night: `TV on between 1 and 5 AM for more than ${plural(c.hours, "hour")}`,
+    night: `Up at night (midnight to 5 AM) for more than ${c.minutes} min`,
+    stove: "Stove maybe left on (40 min of frying or boiling, nothing else)",
+    beep: "A timer or appliance beeping for 5 minutes",
+    water: "Water left running for 20 minutes",
+    device_off: `The listening device off for ${plural(c.hours, "hour")} during the day`,
+    cough: "Unusual coughing (counted on the device only)",
+    unusual: "A day unlike their usual (after a week)",
+  }[r.cid] || "A check";
+}
+function validConcern(r, id) {
+  const cid = r.cid || r.id;
+  if (!Object.hasOwn(CONCERNS, cid)) throw new Error("unknown concern");
+  const out = { id, type: "concern", cid };
+  const num = (k, lo, hi) => { if (r[k] == null) return; const v = Number(r[k]); if (!(v >= lo && v <= hi)) throw new Error(`bad ${k}`); out[k] = v; };
+  const time = (k) => { if (r[k] == null) return; const [h, m] = String(r[k]).split(":").map(Number); if (!(h >= 0 && h < 24 && m >= 0 && m < 60)) throw new Error("bad time");
+    out[k] = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`; };
+  if (cid === "too_quiet") { num("hours", 1, 12); num("escalate", 2, 16); time("from"); time("to"); }
+  if (cid === "no_meal") time("time");
+  if (cid === "tv_long") num("hours", 2, 16);
+  if (cid === "tv_night") num("hours", 0.5, 4);
+  if (cid === "night") num("minutes", 10, 240);
+  if (cid === "device_off") num("hours", 1, 12);
+  return out;
+}
+const atClock = (day0, s) => { const [h, m] = s.split(":").map(Number); return day0 + h * 3600 + m * 60; };
+function overlap(blks, pred, a, z) {
+  let total = 0, first = null, last = null;
+  for (const b of blks) {
+    if (!pred(b)) continue;
+    const s0 = Math.max(a, b.start), s1 = Math.min(z, b.end);
+    if (s1 > s0) { total += s1 - s0; first = first == null ? s0 : Math.min(first, s0); last = last == null ? s1 : Math.max(last, s1); }
+  }
+  return { total, first, last };
+}
+const secOfDay = (t, off) => (((t + off) % 86400) + 86400) % 86400;
+function concernOne(r, blks, now, day0, off, hidden, ctx) {
+  const c = { ...CONCERNS[r.cid], ...r };
+  const B = byStart(blks);
+  const res = (state, detail, extra = {}) => ({ state, at: null, detail, note: null, ...extra });
+  const alerts = (ctx.alerts || []).filter((a) => a.type === r.cid && a.at >= day0);
+  if (DEVICE_CONCERNS.includes(r.cid)) {
+    if (alerts.length) return res("note", `Heard at ${clock(alerts[alerts.length - 1].at, off)}: ${alerts[alerts.length - 1].text || "see the note"}.`, { at: alerts[alerts.length - 1].at });
+    return res("watching", "Kettle listens for this on the listening device.");
+  }
+  if (r.cid === "no_meal") {
+    const x = ruleOne({ type: "kitchen_by", time: c.time }, blks, now, day0, off, hidden);
+    return { ...x, state: { met: "ok", missed: "note" }[x.state] || x.state };
+  }
+  if (r.cid === "tv_long") {
+    const x = ruleTv({ type: "tv_over", hours: c.hours }, blks, now, day0, off, hidden);
+    return { ...x, state: { over: "note", under: "ok" }[x.state] || x.state };
+  }
+  if (r.cid === "tv_night" || r.cid === "night") {
+    if (r.cid === "tv_night" && hidden.includes("watching_tv")) return res("cant_tell", "Can't tell: TV is kept private on the listening device.");
+    const a = day0 + (r.cid === "tv_night" ? 3600 : 0), z = day0 + 5 * 3600;
+    if (now < a) return res("not_yet", `Checks from ${clock(a, off)}`);
+    const pred = r.cid === "tv_night" ? (b) => b.state === "activity" && b.activity === "watching_tv" : heardBlock;
+    const o = overlap(B, pred, a, Math.min(now, z));
+    const limit = r.cid === "tv_night" ? c.hours * 3600 : c.minutes * 60;
+    if (o.total > limit) {
+      const what = r.cid === "tv_night" ? "TV on" : "Activity";
+      return res("note", `${what} for ${dur(o.total)} between ${clock(a, off)} and ${clock(z, off)} (${clockRange(o.first, o.last, off)}).`, { at: o.first });
+    }
+    if (r.cid === "night") {
+      const keys = Object.keys(ctx.days || {}).sort().slice(-8, -1);
+      const nights = keys.filter((k) => ((ctx.days[k].night || 0) * (ctx.hop || 10)) >= limit).length;
+      if (nights >= 3) return res("note", `Activity after midnight on ${nights} of the last ${keys.length} nights.`);
+    }
+    const gaps = unheard(B, a, Math.min(now, z)).reduce((s2, [x, y]) => s2 + y - x, 0);
+    if (gaps > CANT_TELL_SHARE * (Math.min(now, z) - a)) return res("cant_tell", `Can't tell: Kettle wasn't listening for ${dur(gaps)} of that time.`);
+    return res("ok", o.total ? `${dur(o.total)} so far, under ${dur(limit)}.` : "Nothing heard.");
+  }
+  if (r.cid === "device_off") {
+    const a = atClock(day0, "08:00"), z = Math.min(now, atClock(day0, "20:00"));
+    if (z <= a) return res("not_yet", `Checks from ${clock(a, off)}`);
+    const o = overlap(B, (b) => b.state === "not_listening", a, z);
+    if (o.total >= c.hours * 3600) return res("note", `Kettle couldn't listen for ${dur(o.total)} today: the device was off, asleep or disconnected.`, { at: o.first });
+    return res("ok", o.total ? `Not listening for ${dur(o.total)} today.` : "Listening all day so far.");
+  }
+  if (r.cid === "too_quiet") {
+    const a = atClock(day0, c.from), z = Math.min(now, atClock(day0, c.to));
+    if (now < a) return res("not_yet", `Checks from ${clock(a, off)}`);
+    const heard = B.filter(heardBlock);
+    if (!heard.some((b) => b.start < z)) return res("ok", "Waiting for the first activity today.");
+    // quiet stretches between sounds, counting only time Kettle was listening (paused and not-listening time don't count)
+    let best = { quiet: 0, from: null, to: null, open: false }, prevEnd = null;
+    const stretch = (x, y, open) => {
+      const s0 = Math.max(x, a), s1 = Math.min(y, z);
+      if (s1 <= s0) return;
+      const lost = overlap(B, (b) => b.state === "not_listening" || b.state === "paused", s0, s1).total;
+      const quiet = s1 - s0 - lost;
+      if (quiet > best.quiet) best = { quiet, from: x, to: y, open };
+    };
+    for (const b of heard) { if (prevEnd != null && b.start > prevEnd) stretch(prevEnd, b.start, false); prevEnd = Math.max(prevEnd ?? b.end, b.end); }
+    if (prevEnd != null && now > prevEnd) stretch(prevEnd, now, true);
+    if (best.quiet >= c.hours * 3600) {
+      const escalate = best.open && best.quiet >= c.escalate * 3600;
+      return res("note", best.open ? `No activity heard for ${dur(best.quiet)}, since ${clock(best.from, off)}.`
+        : `No activity heard for ${dur(best.quiet)} (${clockRange(best.from, best.to, off)}).`, { at: best.from, escalate });
+    }
+    return res("ok", best.quiet >= 1800 ? `Longest quiet stretch so far: ${dur(best.quiet)}.` : "Activity heard through the day.");
+  }
+  if (r.cid === "unusual") {
+    const keys = Object.keys(ctx.days || {}).sort();
+    const todayKey = new Date((now + off) * 1000).toISOString().slice(0, 10);
+    const past = keys.filter((k) => k < todayKey).slice(-7).map((k) => ctx.days[k]).filter((d) => d && d.meal != null).map((d) => secOfDay(d.meal, d.off ?? off));
+    if (past.length < 5) return res("not_yet", `Kettle needs about a week of days to learn what's usual (${past.length} so far).`);
+    const lo = Math.min(...past), hi = Math.max(...past), usual = `${clock(day0 + lo, 0)}–${clock(day0 + hi, 0)}`.replace(/^(.*) (AM|PM)–(.*) \2$/, "$1–$3 $2");
+    const first = B.find((b) => b.state === "activity" && MEAL.has(b.activity));
+    if (first && first.start - day0 > hi + 3600) return res("note", `First kitchen activity at ${clock(first.start, off)}, later than usual (${usual} on recent days).`, { at: first.start });
+    if (!first && now - day0 > hi + 3600) return res("note", `No kitchen activity yet. On recent days it was by ${clock(day0 + hi, 0)}.`);
+    return res(first ? "ok" : "not_yet", first ? `Within the usual range (${usual}).` : `Usually between ${usual}.`);
+  }
+  return res("ok", "");
+}
+
+/**
+ * The status strip above the family summary (plan 2d): red "Urgent" for an open urgent alert today, amber
+ * "Worth a look" for notes, grey "Can't tell" when Kettle could tell what happened for under 75% of the day or isn't
+ * listening, green "All OK so far today" only when none of these. Never green when coverage is low.
+ */
+export function statusStrip({ alerts = [], rules = [], coverage: cov = null, heartbeat: hb = null, day0 = 0 }) {
+  const open = alerts.filter((a) => a.tier === "urgent" && a.at >= day0 && !a.acked);
+  if (open.length) return { level: "urgent", text: open.length === 1 ? "Urgent: tap to see" : `Urgent: ${open.length} alerts, tap to see`, n: open.length };
+  const notes = rules.filter((r) => r.type === "concern" && r.state === "note").length
+    + alerts.filter((a) => a.tier === "concern" && a.at >= day0 && !a.dismissed && !rules.some((r) => r.concern === a.type && r.state === "note")).length;
+  if (notes) return { level: "look", text: `Worth a look: ${plural(notes, "note")}`, n: notes };
+  const st = hb ? hb.state : null;
+  if (st && !["listening", "starting"].includes(st)) return { level: "cant_tell", text: st === "paused" ? "Can't tell: Kettle is paused" : "Can't tell: Kettle isn't listening right now", n: 0 };
+  if (!cov) return { level: "cant_tell", text: "Can't tell yet: Kettle has heard too little today", n: 0 };
+  if (cov.pct < 75) return { level: "cant_tell", text: `Can't tell: Kettle could only tell what was happening for ${cov.pct}% of the day`, n: 0 };
+  return { level: "ok", text: "All OK so far today", n: 0 };
+}
+
+export function evaluateRules(rules, blks, now, day0, off, hidden = [], ctx = {}) {
+  return rules.slice(0, MAX_RULES).map((r) => ({ id: r.id, type: r.type, ...(r.type === "concern" ? { concern: r.cid } : {}), title: ruleTitle(r),
+    ...ruleOne(r, blks, now, day0, off, hidden, ctx) }));
 }
 export function validateRules(rules) {
-  if (!Array.isArray(rules) || rules.length > MAX_RULES) throw new Error("up to 3 checks");
+  if (!Array.isArray(rules) || rules.length > MAX_RULES) throw new Error(`up to ${MAX_RULES} checks`);
   return rules.map((r, i) => {
     if (!r || typeof r !== "object") throw new Error("each check is an object");
+    if (r.type === "concern") return validConcern(r, `r${i + 1}`);
+    if (r.type === "activity_by") r = { ...r, type: "any_by" };
     if (r.type === "kitchen_by" || r.type === "any_by") {
       const [h, m] = String(r.time).split(":").map(Number);
       if (!(h >= 0 && h < 24 && m >= 0 && m < 60)) throw new Error("bad time");
@@ -487,7 +724,8 @@ export function blockView(b, off, names) {
 }
 export function chipText(ev, theta, now, live) {
   if (!ev || !live || now - ev.end > 15) return null;
-  const lab = rawLabel(ev, theta);             // the same rule as the day bar, so the chip never disagrees with it
+  let lab = rawLabel(ev, theta);               // the same rule as the day bar, so the chip never disagrees with it
+  if (lab === "kitchen") lab = nameKitchen([ev]);   // rule 2c on this one window
   return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking or TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
 }
 
@@ -564,13 +802,13 @@ export function today(s, events, now, { theta, tz = null, off = null, day0 = nul
   const since = hb.since || hb.last_heard;
   if (["paused", "stale", "off", "mic_blocked", "no_mic"].includes(hb.state) && since && sum) sum += ` Nothing is known after ${clock(since, off)}.`;
   const last = evs.length ? evs[evs.length - 1] : null;
-  return {
+  const out = {
     now, now_text: clock(now, off), day0, tz_offset: off, date_text: dateText(now, off), names,
     heartbeat: heartbeatLine(hb, now, off, names, s.device || null),
     device: s.device || null,
     blocks: blks.map((b) => blockView(b, off, names)),
     summary: sum,
-    rules: evaluateRules(s.rules || DEFAULT_RULES, blks, now, day0, off, s.hide || []),
+    rules: evaluateRules(s.rules || DEFAULT_RULES, blks, now, day0, off, s.hide || [], { alerts: s.alerts || [], days: s.days || {}, hop }),
     coverage: coverage(blks),
     heard: heardToday(evs, off),
     rule_defs: s.rules || DEFAULT_RULES,
@@ -581,4 +819,7 @@ export function today(s, events, now, { theta, tz = null, off = null, day0 = nul
       listening_since_text: s.started_at ? clock(s.started_at, off) : "", hide: s.hide || [], kinds_off: s.kinds_off || [] },
     theta,
   };
+  out.alerts = (s.alerts || []).filter((a) => a.at >= day0 - 86400).map((a) => ({ ...a, at_text: clock(a.at, off), since_text: a.since ? clock(a.since, off) : null }));
+  out.status = statusStrip({ alerts: out.alerts, rules: out.rules, coverage: out.coverage, heartbeat: out.heartbeat, day0 });
+  return out;
 }

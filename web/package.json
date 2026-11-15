@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "node dev.mjs",
-    "test": "node --test test/core.test.mjs test/api.test.mjs test/fixes.test.mjs test/sense.test.mjs"
+    "test": "node --test test/core.test.mjs test/api.test.mjs test/fixes.test.mjs test/sense.test.mjs test/push.test.mjs test/safety.test.mjs test/people.test.mjs test/lint-words.test.mjs"
   },
   "dependencies": {
     "@fontsource/instrument-serif": "^5.3.0",

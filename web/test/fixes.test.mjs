@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { CLASSES, MEAL, TAU_K, TAU_V, rawLabel, headLabel, bySounds, blocks, today, newState, actions, evaluateRules } from "../public/js/core.js";
+import { CLASSES, MEAL, TAU_K, TAU_V, TAU_COOK, TAU_WATER, TAU_MOUTH, COOK_SHARE, nameKitchen, rawLabel, headLabel, bySounds, blocks, today, newState, actions, evaluateRules } from "../public/js/core.js";
 import { opinion } from "../public/js/head.js";
 import { SHOWN_SOUNDS } from "../public/js/sounds.js";
 import * as H from "../src/household.js";
@@ -28,7 +28,48 @@ test("opinion(): three numbers from the listed tags only", () => {
   const as = new Float32Array(527);
   as[names.indexOf("Dishes, pots, and pans")] = 0.61; as[names.indexOf("Vacuum cleaner")] = 0.2;
   as[names.indexOf("Blender")] = 0.99; as[names.indexOf("Speech")] = 0.99;         // neither is kitchen evidence
-  assert.deepEqual(opinion(web, as), { k: 0.61, family: "dishwashing", v: 0.2 });
+  assert.deepEqual(opinion(web, as), { k: 0.61, family: "dishwashing", v: 0.2, cook: 0, water: 0, mouth: 0 });
+  as[names.indexOf("Sizzle")] = 0.3; as[names.indexOf("Water tap, faucet")] = 0.07; as[names.indexOf("Crunch")] = 0.2;
+  assert.deepEqual(opinion(web, as), { k: 0.61, family: "dishwashing", v: 0.2, cook: 0.3, water: 0.07, mouth: 0.2 });
+});
+
+test("rule 2c thresholds match models/witness.json", () => {
+  const cfg = read("models/witness.json"), names = read("models/audioset_labels.json"), web = read("web/public/model/witness.json");
+  assert.equal(TAU_COOK, cfg.tau_cook); assert.equal(TAU_WATER, cfg.tau_water); assert.equal(TAU_MOUTH, cfg.tau_mouth); assert.equal(COOK_SHARE, cfg.cook_share);
+  for (const g of ["cook", "water", "mouth"]) assert.deepEqual(web.evidence[g].map((i) => names[i]), cfg.evidence[g]);
+});
+
+const ev0 = (t) => ev(t, "other", 0.3);
+// Parth's own kitchen, Sun Nov 15: pots and cutlery while his mom cooked were shown as "washing up" and "eating".
+test("rule 2c: a kitchen stretch is named from evidence across all its windows", () => {
+  const TH = 0.66;
+  const win = (t, fam, ev) => ({ ...ev0(t), novel: true, w: { k: 0.4, family: fam, v: 0, cook: 0, water: 0, mouth: 0, ...ev } });
+  // pots clanking (tags say "Dishes, pots, and pans" = old washing up) and cutlery (old eating), sizzle in 2 of 12 windows, no water
+  const cooking = Array.from({ length: 12 }, (_, i) => win(i * 10, i % 3 ? "dishwashing" : "eating", i === 4 || i === 9 ? { cook: 0.2 } : {}));
+  const b1 = blocks(cooking, TH).filter((b) => b.state === "activity");
+  assert.equal(b1.length, 1); assert.equal(b1[0].activity, "cooking");
+  // the same clatter with no cooking sound and no water: "kitchen activity", not a guess
+  const clatter = Array.from({ length: 6 }, (_, i) => win(i * 10, "dishwashing", {}));
+  assert.deepEqual(blocks(clatter, TH).filter((b) => b.state === "activity").map((b) => b.activity), ["kitchen"]);
+  // running water in the stretch, no cooking sounds: washing up
+  const wash = Array.from({ length: 6 }, (_, i) => win(i * 10, "dishwashing", i === 2 ? { water: 0.3 } : {}));
+  assert.deepEqual(blocks(wash, TH).filter((b) => b.state === "activity").map((b) => b.activity), ["dishwashing"]);
+  // chewing, nothing else: eating
+  const eat = Array.from({ length: 6 }, (_, i) => win(i * 10, "eating", i === 3 ? { mouth: 0.3 } : {}));
+  assert.deepEqual(blocks(eat, TH).filter((b) => b.state === "activity").map((b) => b.activity), ["eating"]);
+  // windows from before the change (no evidence numbers) keep the old answer
+  const old = Array.from({ length: 4 }, (_, i) => ({ ...ev0(i * 10), novel: true, w: { k: 0.4, family: "eating", v: 0 } }));
+  assert.deepEqual(blocks(old, TH).filter((b) => b.state === "activity").map((b) => b.activity), ["eating"]);
+  // rule 2d: the head 93% sure of "washing up" for 2 windows of plates between frying, no tap: one cooking block
+  const fry = (t) => win(t, "cooking", { cook: 0.4 });
+  const head = (t) => ({ ...ev(t, "dishwashing", 0.93), w: { k: 0.5, family: "dishwashing", v: 0, cook: 0.09, water: 0.001, mouth: 0 } });
+  const mix = [fry(0), fry(10), fry(20), head(30), head(40), fry(50), fry(60), fry(70)];
+  assert.deepEqual(blocks(mix, TH).filter((b) => b.state === "activity").map((b) => b.activity), ["cooking"]);
+  // the same with a tap running: real washing up stays
+  const tap = (t) => ({ ...ev(t, "dishwashing", 0.93), w: { k: 0.5, family: "dishwashing", v: 0, cook: 0, water: 0.3, mouth: 0 } });
+  assert.deepEqual(blocks([fry(0), fry(10), fry(20), tap(30), tap(40), fry(50), fry(60), fry(70)], TH).filter((b) => b.state === "activity").map((b) => b.activity), ["cooking", "dishwashing", "cooking"]);
+  assert.ok(MEAL.has("kitchen"));                                   // a kitchen stretch still meets "kitchen activity by 10"
+  assert.equal(nameKitchen([win(0, "eating", { cook: 0.06 })]), "cooking");
 });
 
 test("second opinion: rescue, veto, and a confident head is left alone", () => {

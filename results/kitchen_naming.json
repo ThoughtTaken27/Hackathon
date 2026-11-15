@@ -1,0 +1,174 @@
+{
+ "what": "Rule 2c (naming a kitchen stretch from evidence across its windows): measured through the app's own timeline code.",
+ "process": "before rule 2c was chosen, an exploratory comparison of other approaches (a bigger tagger, CED-small; and a trained logistic judge) was scored once on Kitchen20 TEST halves. Neither approach ships. This script's TEST numbers are for rule 2c, whose thresholds never saw those halves, but the halves were looked at once today, so they are not pristine. The first version of rule 2c checked cooking evidence before water. Its first TEST run (Kitchen20: right 130 -> 123, wrong activity 9 -> 14) showed sink clips with a faint \"stir\" tag named cooking. The rule was changed so each window votes for the louder of the two, checked on the TUNE halves and SINS dev, and TEST was scored a second time. Both TEST runs are kept in results/kitchen_naming.json (\"first_test_run\"). Rule 2d (a short washing-up or eating flip with no water or chewing of its own, next to cooking, is cooking) was then added after a browser end-to-end run on a frying-and-cutlery clip showed the head 93% sure of \"washing up\" with no tap; it was chosen on SINS dev and TUNE halves (python -m eval.kitchen_naming --dev), and TEST was scored a third time for the rule as shipped. The clean measurement is the team's own kitchen recording.",
+ "thresholds": {
+  "tau_cook": 0.05,
+  "tau_water": 0.05,
+  "tau_mouth": 0.1,
+  "cook_share": 0.1
+ },
+ "sets": {
+  "sins_dev_sessions": {
+   "n": 1027,
+   "before": {
+    "not_meal": 895,
+    "false_kitchen": 13,
+    "meal": 132,
+    "right": 130,
+    "wrong_activity": 2,
+    "kitchen_unnamed": 0
+   },
+   "after": {
+    "not_meal": 895,
+    "false_kitchen": 13,
+    "meal": 132,
+    "right": 132,
+    "wrong_activity": 0,
+    "kitchen_unnamed": 0
+   }
+  },
+  "kitchen20_tune": {
+   "n": 473,
+   "before": {
+    "not_meal": 290,
+    "false_kitchen": 16,
+    "meal": 183,
+    "right": 85,
+    "wrong_activity": 5,
+    "kitchen_unnamed": 0
+   },
+   "after": {
+    "not_meal": 290,
+    "false_kitchen": 16,
+    "meal": 183,
+    "right": 86,
+    "wrong_activity": 4,
+    "kitchen_unnamed": 0
+   }
+  },
+  "kitchen20_test": {
+   "n": 465,
+   "before": {
+    "not_meal": 243,
+    "false_kitchen": 11,
+    "meal": 222,
+    "right": 130,
+    "wrong_activity": 9,
+    "kitchen_unnamed": 0
+   },
+   "after": {
+    "not_meal": 243,
+    "false_kitchen": 11,
+    "meal": 222,
+    "right": 130,
+    "wrong_activity": 7,
+    "kitchen_unnamed": 2
+   }
+  },
+  "desed_tune": {
+   "n": 260,
+   "before": {
+    "not_meal": 179,
+    "false_kitchen": 0,
+    "meal": 62,
+    "right": 46,
+    "wrong_activity": 7,
+    "kitchen_unnamed": 0,
+    "dishes": 19,
+    "dishes_called_washing_or_eating": 12,
+    "dishes_called_cooking": 3,
+    "dishes_called_kitchen": 0
+   },
+   "after": {
+    "not_meal": 179,
+    "false_kitchen": 0,
+    "meal": 62,
+    "right": 46,
+    "wrong_activity": 6,
+    "kitchen_unnamed": 1,
+    "dishes": 19,
+    "dishes_called_washing_or_eating": 4,
+    "dishes_called_cooking": 3,
+    "dishes_called_kitchen": 8
+   }
+  },
+  "desed_test": {
+   "n": 231,
+   "before": {
+    "not_meal": 191,
+    "false_kitchen": 0,
+    "meal": 25,
+    "right": 24,
+    "wrong_activity": 0,
+    "kitchen_unnamed": 0,
+    "dishes": 15,
+    "dishes_called_washing_or_eating": 6,
+    "dishes_called_cooking": 4,
+    "dishes_called_kitchen": 0
+   },
+   "after": {
+    "not_meal": 191,
+    "false_kitchen": 0,
+    "meal": 25,
+    "right": 24,
+    "wrong_activity": 0,
+    "kitchen_unnamed": 0,
+    "dishes": 15,
+    "dishes_called_washing_or_eating": 1,
+    "dishes_called_cooking": 6,
+    "dishes_called_kitchen": 3
+   }
+  }
+ },
+ "first_test_run": {
+  "rule": "cooking checked before water (superseded)",
+  "sets": {
+   "kitchen20_test": {
+    "n": 465,
+    "before": {
+     "not_meal": 243,
+     "false_kitchen": 11,
+     "meal": 222,
+     "right": 130,
+     "wrong_activity": 9,
+     "kitchen_unnamed": 0
+    },
+    "after": {
+     "not_meal": 243,
+     "false_kitchen": 11,
+     "meal": 222,
+     "right": 123,
+     "wrong_activity": 14,
+     "kitchen_unnamed": 2
+    }
+   },
+   "desed_test": {
+    "n": 231,
+    "before": {
+     "not_meal": 191,
+     "false_kitchen": 0,
+     "meal": 25,
+     "right": 24,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0,
+     "dishes": 15,
+     "dishes_called_washing_or_eating": 6,
+     "dishes_called_cooking": 4,
+     "dishes_called_kitchen": 0
+    },
+    "after": {
+     "not_meal": 191,
+     "false_kitchen": 0,
+     "meal": 25,
+     "right": 24,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0,
+     "dishes": 15,
+     "dishes_called_washing_or_eating": 0,
+     "dishes_called_cooking": 7,
+     "dishes_called_kitchen": 3
+    }
+   }
+  }
+ }
+}

@@ -9,7 +9,7 @@ from __future__ import annotations
 from kettle.labels import ACTIVE, MEAL, PHRASE
 from kettle.timeline import _clock, clock_range
 
-MAX_RULES = 3
+MAX_RULES = 8              # plan v3.1: up to 8 checks, including the "Worth a look" concerns (kettle/concerns.py)
 CANT_TELL_SHARE = 0.25     # unheard share of the window above which a check says "Can't tell"
 WINDOW_START_H = 6         # "by 10:00 AM" checks the stretch from 6:00 AM
 
@@ -21,10 +21,13 @@ DEFAULT_RULES = [
 
 def title(rule: dict) -> str:
     """The check's name as the caregiver wrote it."""
+    if rule["type"] == "concern":
+        from kettle import concerns
+        return concerns.title(rule)
     if rule["type"] == "tv_over":
         h = rule["hours"]
         return f"TV on for more than {h:g} hour{'s' if h != 1 else ''}"
-    what = "Kitchen activity" if rule["type"] == "kitchen_by" else "Some sound of activity"
+    what = "Kitchen activity" if rule["type"] == "kitchen_by" else "Activity"
     return f"{what} by {_hhmm(rule['time'])}"
 
 
@@ -60,7 +63,7 @@ def _dur(seconds: float) -> str:
     return f"{h} h {m} min" if h and m else f"{h} h" if h else f"{m} min"
 
 
-def evaluate(rules: list[dict], blocks: list[dict], now: float, day0: float, tz: int) -> list[dict]:
+def evaluate(rules: list[dict], blocks: list[dict], now: float, day0: float, tz: int, ctx: dict | None = None) -> list[dict]:
     """Every rule -> {'id', 'type', 'title', 'state', 'at', 'detail', 'note'}.
 
     day0 = local midnight today (unix s); tz = local offset from UTC in seconds (for clock text).
@@ -68,11 +71,15 @@ def evaluate(rules: list[dict], blocks: list[dict], now: float, day0: float, tz:
     """
     out = []
     for r in rules[:MAX_RULES]:
-        out.append({"id": r["id"], "type": r["type"], "title": title(r), **_one(r, blocks, now, day0, tz)})
+        extra = {"concern": r["cid"]} if r["type"] == "concern" else {}
+        out.append({"id": r["id"], "type": r["type"], **extra, "title": title(r), **_one(r, blocks, now, day0, tz, ctx or {})})
     return out
 
 
-def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
+def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int, ctx: dict | None = None) -> dict:
+    if r["type"] == "concern":
+        from kettle import concerns
+        return concerns.one(r, blocks, now, day0, tz, ctx or {})
     if r["type"] == "tv_over":
         return _tv(r, blocks, now, day0, tz)
     h, m = map(int, r["time"].split(":"))
@@ -133,19 +140,35 @@ def _tv(r: dict, blocks: list[dict], now: float, day0: float, tz: int) -> dict:
         return {"state": "cant_tell", "at": None,
                 "detail": lead,
                 "note": f"TV heard for {_dur(total)}." if total else None}
+    # plan S7/F2: Kettle couldn't name the sound for over a quarter of the time it listened -> it may have missed the TV
+    listened = sum(b["end"] - max(b["start"], start) for b in blocks if b["state"] in LISTENED and b["end"] > start)
+    unnamed = sum(b["end"] - max(b["start"], start) for b in blocks if b["state"] in ("not_sure", "talk_or_tv") and b["end"] > start)
+    if listened > 0 and unnamed > CANT_TELL_SHARE * listened:
+        return {"state": "cant_tell", "at": None,
+                "detail": f"Can't tell: Kettle couldn't name the sound for {_dur(unnamed)} of the {_dur(listened)} it listened today.",
+                "note": f"TV heard for {_dur(total)}." if total else None}
     return {"state": "under", "at": None,
             "detail": f"TV for {_dur(total)} so far today" if total else "No TV heard today", "note": None}
+
+
+LISTENED = ("activity", "empty", "not_sure", "talk_or_tv", "private")
 
 
 def validate(rules: list[dict]) -> list[dict]:
     """Clean rules from the caregiver page: at most 3, known types, sane times. Raises ValueError."""
     if not isinstance(rules, list) or len(rules) > MAX_RULES:
-        raise ValueError("up to 3 checks")
+        raise ValueError(f"up to {MAX_RULES} checks")
     out = []
     for i, r in enumerate(rules):
         if not isinstance(r, dict):
             raise ValueError("each check is an object")
         t = r.get("type")
+        if t == "concern":
+            from kettle import concerns
+            out.append(concerns.validate(r, f"r{i + 1}"))
+            continue
+        if t == "activity_by":
+            t = "any_by"
         if t in ("kitchen_by", "any_by"):
             h, m = map(int, str(r["time"]).split(":"))
             if not (0 <= h < 24 and 0 <= m < 60):

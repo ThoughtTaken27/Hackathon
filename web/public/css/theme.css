@@ -10,7 +10,7 @@
   --canvas: #0B0C0E; --card: #15161A; --line: rgba(255,255,255,.08); --line-strong: rgba(255,255,255,.15);
   --ink: #F2F2F3; --text: #B9BBC2; --muted: #8B8E97; --faint: #5A5D66;
   --ok: #4CC386; --paused: #8FA9C9; --stale: #D7A640; --danger: #FF7A7A;
-  --act-cooking: #e8662f; --act-eating: #1fb07c; --act-washing: #3d8be6; --act-tv: #d99a12;
+  --act-cooking: #e8662f; --act-eating: #1fb07c; --act-washing: #3d8be6; --act-kitchen: #c29470; --act-tv: #d99a12;
   --act-talk: #de6a95; --act-working: #9085e9; --act-vacuum: #19a619; --act-moving: #7d8690; --act-empty: rgba(255,255,255,.16);
   --hatch: rgba(185,187,194,.30); --fill-soft: rgba(255,255,255,.045); --focus: rgba(255,255,255,.4);
   --edge: inset 0 0 0 1px rgba(255,255,255,.08);

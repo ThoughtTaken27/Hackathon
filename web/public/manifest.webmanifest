@@ -1,3 +1,18 @@
-{ "name": "Kettle", "short_name": "Kettle", "start_url": "/family", "display": "standalone", "background_color": "#FAFAFA", "theme_color": "#FAFAFA",
-  "description": "A calm day timeline from kitchen sounds. No audio leaves the kitchen laptop.",
-  "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png" }, { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png" }] }
+{
+  "id": "/family",
+  "name": "Kettle",
+  "short_name": "Kettle",
+  "description": "Know the day went okay, in any room, without a camera. No audio leaves the listening device.",
+  "start_url": "/family",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B0C0E",
+  "theme_color": "#0B0C0E",
+  "icons": [
+    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Listening device", "short_name": "Listen", "url": "/listen" }
+  ]
+}

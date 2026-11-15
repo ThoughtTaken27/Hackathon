@@ -4,20 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kettle · know the day went okay, without a camera</title>
-<meta name="description" content="Kettle turns a spare phone or laptop in your parent's kitchen into a calm timeline of their day, from sound alone. No recordings, no words. and it tells you how often it's wrong.">
+<meta name="description" content="Kettle turns a spare phone or laptop in the rooms of someone you love into a calm timeline of their day, from sound alone. No camera, no recordings, no words. And it tells you how often it's wrong.">
 <meta property="og:title" content="Kettle">
-<meta property="og:description" content="A calm day timeline from kitchen sounds. No camera, no recordings, no words.">
+<meta property="og:description" content="A calm day timeline from the sounds of any room. No camera, no recordings, no words.">
 <meta property="og:image" content="/img/og.png">
 <meta name="theme-color" content="#0B0C0E">
 <link rel="icon" href="/img/icon.svg" type="image/svg+xml">
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/img/scene-hero.svg" as="image">
-<link rel="stylesheet" href="/css/app.css?v=w5">
-<link rel="stylesheet" href="/css/theme.css?v=w5">
-<link rel="stylesheet" href="/css/landing.css?v=w5">
-<link rel="stylesheet" href="/css/landing2.css?v=w5">
-<link rel="stylesheet" href="/css/type.css?v=w5">
+<link rel="stylesheet" href="/css/app.css?v=w6">
+<link rel="stylesheet" href="/css/theme.css?v=w6">
+<link rel="stylesheet" href="/css/landing.css?v=w6">
+<link rel="stylesheet" href="/css/landing2.css?v=w6">
+<link rel="stylesheet" href="/css/type.css?v=w6">
+<style>.lp-switch{display:flex;flex-wrap:wrap;gap:6px;padding:4px 6px 12px}.lp-sw{font:inherit;font-size:13px;padding:6px 12px;border-radius:999px;border:0;color:#9fb3cf;background:rgba(143,169,201,.12);cursor:pointer}.lp-sw[aria-pressed="true"]{color:#fff;background:rgba(143,169,201,.32)}.lp-sw:focus-visible{outline:2px solid #fff;outline-offset:2px}</style>
 </head>
 <body class="lx">
 <header class="lx-nav" id="nav"><div class="lx-nav-in">
@@ -35,19 +36,20 @@
     <div class="lx-hero-bg" aria-hidden="true"></div>
     <div class="lx-hero-in">
       <a class="lx-chip rise" style="--d:0" href="#how">A calmer way to check in <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay. <em>Without a camera.</em></h1>
-      <p class="lx-lede rise" style="--d:2">Kettle turns a spare phone or laptop in your parent's kitchen into a calm timeline of their day, from sound alone. No recordings, no words.</p>
+      <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay, in any room. <em>Without a camera.</em></h1>
+      <p class="lx-lede rise" style="--d:2">Kettle turns a spare phone or laptop in the rooms of someone you love into a calm timeline of their day, from sound alone. No recordings, no words.</p>
       <div class="lx-cta rise" style="--d:3">
         <a class="lx-pill lg" href="/start">Set it up, free <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
         <a class="lx-ghost lg" href="#screens">Watch both screens</a>
       </div>
     </div>
     <div class="lx-panel-wrap rise" style="--d:4">
-      <div class="lx-panel theme-dark" aria-label="A sample day, playing">
+      <div class="lp-switch" role="group" aria-label="Show an invented example for"><button type="button" class="lp-sw" aria-pressed="true" data-n="" data-r="parent" data-t="kitchen">Your parent, kitchen</button><button type="button" class="lp-sw" aria-pressed="false" data-n="Grandma" data-r="grandparent" data-t="bedroom">Grandma, bedroom</button><button type="button" class="lp-sw" aria-pressed="false" data-n="Dad" data-r="parent" data-t="kitchen">Dad, kitchen</button><button type="button" class="lp-sw" aria-pressed="false" data-n="" data-r="parent" data-t="living">Your parent, living room</button></div>
+      <div class="lx-panel theme-dark" aria-label="An invented sample day, playing">
         <div class="lp-top">
-          <p class="lp-title">The kitchen, today</p>
+          <p class="lp-title" id="lp-title">Your parent's kitchen, today</p>
           <span class="lp-sp"></span>
-          <span class="lp-tag">Sample day</span>
+          <span class="lp-tag">Invented example</span>
           <span class="lp-live"><i></i>listening</span>
           <span class="lp-clock num" id="lp-clock">6:00 AM</span>
         </div>
@@ -59,7 +61,7 @@
         </div>
         <div class="lp-grid">
           <section class="lp-card">
-            <div class="lp-card-h"><p>What Kettle heard</p><span class="lp-dot-line"><i></i>on the kitchen laptop</span></div>
+            <div class="lp-card-h"><p>What Kettle heard</p><span class="lp-dot-line"><i></i>on the device in the room</span></div>
             <ol class="lp-heard" id="lp-heard"></ol>
           </section>
           <section class="lp-card">
@@ -80,7 +82,7 @@
         <h2 class="sr" id="why-h">Why Kettle</h2>
         <div class="lx-scrub">
         <p class="lx-statement">About 28% of Americans over 65 live alone. The people who love them mostly check in by worrying: an unanswered call, a text with no reply.</p>
-        <p class="lx-statement">Cameras feel like being watched. Pendants end up in drawers. So Kettle asks nothing of your parent, and keeps nothing it hears.</p>
+        <p class="lx-statement">Cameras feel like being watched. Pendants end up in drawers. So Kettle asks nothing of them, and keeps nothing it hears.</p>
         <p class="lx-statement">It notes the shape of a day, cooking, eating, the TV, so a normal morning needs no anxious call, and a different one gets noticed sooner.</p>
         </div>
         <a class="lx-pill" href="#how">See how it works <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -110,25 +112,25 @@
   <section class="lx-sec" id="how" aria-labelledby="how-h">
     <div class="lx-sec-head split">
       <div><p class="lx-label">How it works</p><h2 class="lx-h2" id="how-h">From a quiet kitchen to a <em>calm</em> answer</h2></div>
-      <p class="lx-sub">Two minutes to set up. Your parent says yes on their own screen. Then you look whenever you wonder.</p>
+      <p class="lx-sub">Two minutes to set up. They say yes on their own screen. Then you look whenever you wonder.</p>
     </div>
     <div class="lx-flow">
       <figure class="lx-scene scene-morning" aria-hidden="true"><div class="lx-scene-ui theme-dark" id="flow-ui"></div></figure>
       <div class="lx-acc" role="tablist" aria-label="Steps">
         <button class="acc" type="button" role="tab" aria-selected="true" data-i="0"><span class="acc-h"><span class="acc-n num">1</span>You set it up</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b"><span>On your phone, choose what you call your parent and add your name. Kettle gives you a six-letter code for their kitchen device.</span></span><span class="acc-p"><i></i></span></button>
-        <button class="acc" type="button" role="tab" aria-selected="false" data-i="1"><span class="acc-h"><span class="acc-n num">2</span>Your parent says yes</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>On your phone, say who it is for, what you call them and which room, then add your name. Kettle gives you a six-letter code for the device in that room.</span></span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="false" data-i="1"><span class="acc-h"><span class="acc-n num">2</span>They say yes</span><span class="acc-i" aria-hidden="true"></span>
           <span class="acc-b"><span>They type the code, read one screen in big type, and choose. Nothing listens until they do, and one button pauses it any time.</span></span><span class="acc-p"><i></i></span></button>
-        <button class="acc" type="button" role="tab" aria-selected="false" data-i="2"><span class="acc-h"><span class="acc-n num">3</span>Kettle listens, in their kitchen</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b"><span>Every 10 seconds a small sound model in their browser names what it hears, then forgets the sound. Only the label leaves the kitchen.</span></span><span class="acc-p"><i></i></span></button>
+        <button class="acc" type="button" role="tab" aria-selected="false" data-i="2"><span class="acc-h"><span class="acc-n num">3</span>Kettle listens, in their room</span><span class="acc-i" aria-hidden="true"></span>
+          <span class="acc-b"><span>Every 10 seconds a small sound model in their browser names what it hears, then forgets the sound. Only the label leaves the room.</span></span><span class="acc-p"><i></i></span></button>
         <button class="acc" type="button" role="tab" aria-selected="false" data-i="3"><span class="acc-h"><span class="acc-n num">4</span>You check in, calmly</span><span class="acc-i" aria-hidden="true"></span>
-          <span class="acc-b"><span>A day bar, one plain sentence, and the checks you set, like "kitchen activity by 10 AM". No alerts, no nagging.</span></span><span class="acc-p"><i></i></span></button>
+          <span class="acc-b"><span>A day bar, one plain sentence, and the checks you set, like "activity by 10 AM". No alerts, no nagging.</span></span><span class="acc-p"><i></i></span></button>
       </div>
     </div>
   </section>
 
   <section class="lx-sec" id="privacy" aria-labelledby="priv-h">
-    <div class="lx-sec-head"><p class="lx-label">Privacy, by design</p><h2 class="lx-h2" id="priv-h">The sound never <em>leaves</em> the kitchen</h2></div>
+    <div class="lx-sec-head"><p class="lx-label">Privacy, by design</p><h2 class="lx-h2" id="priv-h">The sound never <em>leaves</em> the room</h2></div>
     <div class="lx-cards">
       <article class="lx-card wide">
         <div class="viz viz-flow" aria-hidden="true">
@@ -145,7 +147,7 @@
       </article>
       <article class="lx-card">
         <div class="viz viz-pause" aria-hidden="true"><span class="big-pause">Pause</span><p>The family sees <strong>Paused at 2:10 PM</strong></p></div>
-        <h3>Your parent stays in charge</h3>
+        <h3>They stay in charge</h3>
         <p>One big button pauses Kettle or turns it off. It asks again every week, and their screen shows exactly what you see.</p>
       </article>
       <article class="lx-card">
@@ -171,7 +173,7 @@
   <section class="lx-sec" id="screens" aria-labelledby="scr-h">
     <div class="lx-sec-head split">
       <div><p class="lx-label">Two screens</p><h2 class="lx-h2" id="scr-h">One day, seen <em>from both</em> sides</h2></div>
-      <p class="lx-sub">The kitchen laptop stays on the counter and says exactly what it's doing. The family's phone shows the same day, 300 miles away.</p>
+      <p class="lx-sub">The device stays on the counter and says exactly what it's doing. The family's phone shows the same day, 300 miles away.</p>
     </div>
     <div class="lx-stage scene-day" id="stage">
       <div class="stage-in">
@@ -239,6 +241,6 @@
   <nav aria-label="Footer"><a href="/start">Set up</a><a href="/pair">Enter a code</a><a href="/how-sure">How sure</a><a href="/credits">Credits</a><a href="#faq">FAQ</a></nav>
   <p>Prototype, not medical advice. Not an emergency device. The sample days are recordings from a public research home, not anyone we know. Landscapes are generated, not photographs.</p>
 </div></footer>
-<script type="module" src="/js/landing.js?v=w5"></script>
+<script type="module" src="/js/landing.js?v=w6"></script>
 </body>
 </html>

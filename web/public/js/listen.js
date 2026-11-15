@@ -40,8 +40,9 @@ export async function loadModel(onProgress = () => {}) {
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
   const sense = prepareSense(kinds, enrolCfg);
-  const SPEECH = ["Speech", "Conversation", "Narration, monologue", "Hubbub, speech noise, speech babble"];
-  sense.speech = ev.shown.map((n, i) => (SPEECH.includes(n) ? ev.index[i] : -1)).filter((i) => i >= 0);
+  // AudioSet classes 0 Speech, 4 Conversation, 5 Narration/monologue, 70 Hubbub: used on this device only, never sent,
+  // so the voices rule keeps working if voice names leave the shown-sounds allow-list (handover v3.2, 3.5).
+  sense.speech = [0, 4, 5, 70];
   model = { ort, front, session, head: prepare(head, ev, wit), sense };
   return model;
 }

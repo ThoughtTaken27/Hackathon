@@ -28,8 +28,10 @@ def main() -> int:
         # 1. family sets up
         fam.goto(BASE + "/start")
         fam.get_by_role("button", name="On my own phone or computer").click()
-        fam.get_by_label("Your first name").fill("Asha")
-        fam.get_by_role("button", name="Papa").click()
+        fam.get_by_role("button", name="My parent").click()           # v3.1 setup: who, what you call them, which room
+        fam.locator("#p").fill("Papa")
+        fam.get_by_role("button", name="Kitchen", exact=True).click()
+        fam.locator("#c").fill("Asha")
         fam.get_by_role("button", name="Create our Kettle").click()
         fam.wait_for_selector(".code-big")
         code = fam.locator(".code-big").first.inner_text().replace(" ", "")
@@ -65,7 +67,7 @@ def main() -> int:
             kit.get_by_role("button", name="Skip the sound check").click()
         kit.wait_for_function("() => !document.querySelector('.chip .txt') || !/Waiting/.test(document.querySelector('.chip .txt').textContent)", timeout=60000)
         log.append(f"first label after {time.time() - t0:.1f}s: {kit.locator('.chip .txt').inner_text()}")
-        kit.wait_for_timeout(22000)
+        kit.wait_for_timeout(int(os.environ.get("KETTLE_E2E_LISTEN_MS", "22000")))
         kit.screenshot(path=f"{OUT}/e2e-3-kitchen-listening.png")
 
         # 4. the family view shows them

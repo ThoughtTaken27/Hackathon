@@ -21,7 +21,7 @@
   --ok: #1A8F55; --paused: #4B6584; --stale: #8A6100; --danger: #C62828;
   /* activity hues: dataviz reference palette, assigned so real neighbours (cooking→eating→washing up→TV→conversation)
      pass the CVD and normal-vision checks (scripts/validate_palette.js); every block also has a text label */
-  --act-cooking: #eb6834; --act-eating: #1baf7a; --act-washing: #2a78d6; --act-tv: #eda100;
+  --act-cooking: #eb6834; --act-eating: #1baf7a; --act-washing: #2a78d6; --act-kitchen: #b98a63; --act-tv: #eda100;
   --act-talk: #e87ba4; --act-working: #6250d6; --act-vacuum: #008300; --act-moving: #8a919a; --act-empty: #CFCFCF;
   --hatch: rgba(107, 107, 107, .32);
   --fill-soft: #F2F2F2;
@@ -39,7 +39,7 @@
   :root {
     --canvas: #0E0E10; --card: #18181B; --line: #27272A; --line-strong: #34343A; --ink: #EDEDED; --text: #C4C4C8; --muted: #9A9AA2;
     --ok: #4CC386; --paused: #8FA9C9; --stale: #D7A640; --danger: #FF6B6B;
-    --act-cooking: #d95926; --act-eating: #199e70; --act-washing: #3987e5; --act-tv: #c98500;
+    --act-cooking: #d95926; --act-eating: #199e70; --act-washing: #3987e5; --act-kitchen: #c29470; --act-tv: #c98500;
     --act-talk: #d55181; --act-working: #9085e9; --act-vacuum: #0ca30c; --act-moving: #737c86; --act-empty: #3E3E44;
     --hatch: rgba(154, 154, 162, .35); --fill-soft: #222226; --focus: rgba(237, 237, 237, .3);
     --edge: 0 0 0 1px var(--line); --lift: 0 0 0 1px var(--line), 0 16px 40px -16px rgba(0, 0, 0, .6);

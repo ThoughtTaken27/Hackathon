@@ -27,6 +27,7 @@ DISPLAY: dict[str, str] = {
     "vacuum_cleaner": "Vacuuming",
     "watching_tv": "TV",
     "working": "Typing",
+    "kitchen": "Kitchen activity",      # not a head class: a stretch the general tags heard as kitchen, without saying which
 }
 
 # Lower-case form for sentences ("Sounds like washing up").
@@ -40,6 +41,7 @@ PHRASE: dict[str, str] = {
     "vacuum_cleaner": "vacuuming",
     "watching_tv": "TV",
     "working": "typing",
+    "kitchen": "kitchen activity",
 }
 
 # CSS custom property for each activity colour (defined in static/app.css).
@@ -53,13 +55,14 @@ COLOUR_TOKEN: dict[str, str] = {
     "vacuum_cleaner": "--act-vacuum",
     "watching_tv": "--act-tv",
     "working": "--act-working",
+    "kitchen": "--act-kitchen",
 }
 
 # Caregiver-level group: "kitchen activity" for the rule "kitchen activity by 10:00 AM".
-MEAL: set[str] = {"cooking", "dishwashing", "eating"}
+MEAL: set[str] = {"cooking", "dishwashing", "eating", "kitchen"}
 
 # Anything that is not "Quiet" counts as "some sound of activity".
-ACTIVE: set[str] = set(CLASSES) - {"absence"}
+ACTIVE: set[str] = (set(CLASSES) | {"kitchen"}) - {"absence"}
 
 # When TV and Conversation are this close, the screen says "Talking or TV" instead of guessing.
 TALK_OR_TV_MARGIN: float = 0.15

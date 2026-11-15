@@ -29,13 +29,22 @@ TAU_K: float = CFG["tau_k"]
 TAU_V: float = CFG["tau_v"]
 KITCHEN_IDX: dict[str, list[int]] = {f: [NAMES.index(n) for n in CFG["kitchen"][f]] for f in FAMILIES}
 VETO_IDX: list[int] = [NAMES.index(n) for n in CFG["veto"]]
+# Evidence for naming a kitchen stretch (added Sun Nov 15; see "_evidence" in models/witness.json and name_kitchen()).
+EVIDENCE_IDX: dict[str, list[int]] = {g: [NAMES.index(n) for n in CFG["evidence"][g]] for g in ("cook", "water", "mouth")}
+TAU_COOK: float = CFG["tau_cook"]
+TAU_WATER: float = CFG["tau_water"]
+TAU_MOUTH: float = CFG["tau_mouth"]
+COOK_SHARE: float = CFG["cook_share"]
 
 
 def opinion(audioset: np.ndarray) -> dict:
     """527 AudioSet probabilities for one window -> {'k', 'family', 'v'} (three numbers and a word; no tag names leave)."""
     fam = [float(audioset[KITCHEN_IDX[f]].max()) for f in FAMILIES]
     best = int(np.argmax(fam))
-    return {"k": round(fam[best], 3), "family": FAMILIES[best], "v": round(float(audioset[VETO_IDX].max()), 3)}
+    out = {"k": round(fam[best], 3), "family": FAMILIES[best], "v": round(float(audioset[VETO_IDX].max()), 3)}
+    for g, ix in EVIDENCE_IDX.items():                      # three more numbers: cooking, running-water and chewing evidence
+        out[g] = round(float(audioset[ix].max()), 3)
+    return out
 
 
 def opinions(audioset: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -52,3 +61,51 @@ def rescues(label: str, w: dict | None) -> bool:
 def vetoes(label: str, w: dict | None, kitchen: set[str]) -> bool:
     """True when the head says a kitchen activity but the general tags hear a motor or bathroom sound instead."""
     return bool(w) and label in kitchen and w["v"] >= TAU_V and w["v"] > w["k"]
+
+
+def name_kitchen(evs: list[dict]) -> str:
+    """Name a stretch the general tags called kitchen activity, from evidence across ALL its windows (added Sun Nov 15).
+
+    One loud pot or a fork on a plate in one 10-s window says little; minutes of windows say more. Order matters:
+      cooking      windows where cooking sounds (frying, sizzle, boiling, chopping, stirring) beat running water: at least
+                   COOK_SHARE of the stretch, and at least as many as the windows where water won
+      dishwashing  otherwise, running water (tap or sink) louder than any cooking sound in at least one window
+      eating       chewing or crunching in at least one window
+      kitchen      none of these: "kitchen activity", without guessing which one
+    Windows from before Sun Nov 15 carry no evidence numbers: they keep the old answer (the loudest tag's family).
+    """
+    ws = [e.get("w") or {} for e in evs]
+    if not any("cook" in w for w in ws):
+        fams = [w["family"] for w in ws if w.get("family") in FAMILIES]
+        return max(FAMILIES, key=lambda f: (fams.count(f), -FAMILIES.index(f))) if fams else "kitchen"
+    n = len(ws)
+    # each window votes for the louder of its cooking and running-water evidence (a sink at 0.7 beats a faint "stir")
+    cook = sum(1 for w in ws if w.get("cook", 0) >= TAU_COOK and w.get("cook", 0) >= w.get("water", 0))
+    water = sum(1 for w in ws if w.get("water", 0) >= TAU_WATER and w.get("water", 0) > w.get("cook", 0))
+    if cook >= max(1, COOK_SHARE * n) and cook >= water:
+        return "cooking"
+    if water >= 1:
+        return "dishwashing"
+    if any(w.get("mouth", 0) >= TAU_MOUTH for w in ws):
+        return "eating"
+    return "kitchen"
+
+
+def votes(evs: list[dict]) -> dict:
+    """Evidence votes in these windows: cook / water (the louder of the two wins each window) and mouth."""
+    ws = [e.get("w") or {} for e in evs]
+    return {"cook": sum(1 for w in ws if w.get("cook", 0) >= TAU_COOK and w.get("cook", 0) >= w.get("water", 0)),
+            "water": sum(1 for w in ws if w.get("water", 0) >= TAU_WATER and w.get("water", 0) > w.get("cook", 0)),
+            "mouth": sum(1 for w in ws if w.get("mouth", 0) >= TAU_MOUTH),
+            "has": any("cook" in w for w in ws)}
+
+
+SHORT_FLIP = 3      # rule 2d: an unsupported washing-up / eating / kitchen stretch this many windows or fewer, next to cooking, is cooking
+
+
+def unsupported(label: str, evs: list[dict]) -> bool:
+    """Rule 2d: washing up with no running water heard, eating with no chewing heard, or unnamed kitchen activity."""
+    v = votes(evs)
+    if not v["has"]:
+        return False
+    return (label == "dishwashing" and v["water"] == 0) or (label == "eating" and v["mouth"] == 0) or label == "kitchen"

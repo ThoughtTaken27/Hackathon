@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import time
 
-from kettle import heartbeat, live, rules, timeline
+from kettle import witness, heartbeat, live, rules, timeline
 from kettle.labels import DISPLAY, PHRASE
 
 PARENT = "Dad"          # how the caregiver refers to the parent (invented persona: Ravi, 79)
@@ -132,6 +132,8 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
     chip_text = None
     if chip and live_now and now - chip["t"] < 10:
         lab = timeline.raw_label(chip, theta)            # the same rule as the day bar, so the chip never disagrees with it
+        if lab == "kitchen":
+            lab = witness.name_kitchen([chip])           # rule 2c on this one window
         chip_text = {"not_sure": "Not sure what that is", "absence": "Quiet", "talk_or_tv": "Sounds like talking or TV"}.get(lab) \
             or f"Sounds like {PHRASE[lab]}"
     return {

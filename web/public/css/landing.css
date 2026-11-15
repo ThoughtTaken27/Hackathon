@@ -250,7 +250,7 @@
 .f-mini .sbar { position: absolute; top: 18px; left: 34px; right: 30px; display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; color: #171717; }
 .stage-bar { display: grid; justify-items: center; gap: 12px; margin-top: 22px; text-align: center; }
 .lx-seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: rgba(255,255,255,.05); box-shadow: inset 0 0 0 1px var(--ln); }
-.lx-seg button { all: unset; cursor: pointer; height: 44px; padding: 0 15px; border-radius: 999px; font-size: 13.5px; color: var(--tx3); transition: color 160ms ease, background-color 160ms ease; }
+.lx-seg button { all: unset; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; height: 44px; padding: 0 15px; border-radius: 999px; font-size: 13.5px; color: var(--tx3); transition: color 160ms ease, background-color 160ms ease; }
 .lx-seg button[aria-pressed="true"] { color: #0B0C0E; background: #F4F4F5; }
 .lx-seg button:focus-visible { outline: 2px solid rgba(255,255,255,.3); outline-offset: 2px; }
 .lx-fine { font-size: 13px; color: var(--tx4); }
@@ -302,6 +302,6 @@
 /* the real app screens inside the device frames always use the light palette */
 .light-scope { --canvas: #FAFAFA; --card: #FFFFFF; --line: #EBEBEB; --line-strong: #DEDEDE; --ink: #171717; --text: #4D4D4D; --muted: #6B6B6B;
   --ok: #1A8F55; --paused: #4B6584; --stale: #8A6100; --act-empty: #CFCFCF; --hatch: rgba(107,107,107,.32); --fill-soft: #F2F2F2;
-  --edge: 0 0 0 1px #EBEBEB, 0 1px 2px rgba(0,0,0,.04); --act-cooking: #eb6834; --act-eating: #1baf7a; --act-washing: #2a78d6; --act-tv: #eda100;
+  --edge: 0 0 0 1px #EBEBEB, 0 1px 2px rgba(0,0,0,.04); --act-cooking: #eb6834; --act-eating: #1baf7a; --act-washing: #2a78d6; --act-kitchen: #b98a63; --act-tv: #eda100;
   --act-talk: #e87ba4; --act-working: #6250d6; --act-vacuum: #008300; --act-moving: #8a919a; color: var(--text); }
 .lx-seg { flex-wrap: wrap; justify-content: center; max-width: 100%; }
