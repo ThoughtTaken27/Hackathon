@@ -162,6 +162,7 @@ onScrollFrame(() => {
   const y = scrollY;
   if (y < 1400) {
     heroBg.style.transform = `translate3d(0, ${(y * 0.38).toFixed(1)}px, 0) scale(${(1 + y * 0.00012).toFixed(4)})`;
+    heroBg.style.opacity = (1 - Math.min(1, Math.max(0, (y - 380) / 520))).toFixed(3);   // the sky is gone before it can drift under the next section
     const f = Math.min(1, y / 520);
     heroIn.style.opacity = (1 - f).toFixed(3);
     heroIn.style.transform = `translate3d(0, ${(-y * 0.12).toFixed(1)}px, 0)`;

@@ -1,0 +1,156 @@
+/* Kettle type system: one scale, loaded LAST on every page so it owns size, leading, tracking and weight.
+   Audit before this file (Nov 15): 27 font sizes, 7 weights, small text sitting in 25px line boxes, serif accents enlarging their line.
+   Scale: Arc foundation steps 12 / 14 / 16 / 18 / 22 / 28 / 36 / 52 / 72 (uiarc.dev), plus 24 for the kitchen's read-across-the-room body
+   and 64 for page titles (Vercel h1: Geist 64px). Tracking ramps with size, never one value (Vercel: -0.06em at 64px; Linear: -0.022em at 48px+,
+   -0.011em at 15px; Apple: small text near 0). Weights: 400 reading, 500 names/labels/headings, 450 big figures and statements, 600 wordmark. */
+:root {
+  --f12: 12px; --l12: 16px;
+  --f14: 14px; --l14: 20px;
+  --f16: 16px; --l16: 24px;
+  --f18: 18px; --l18: 28px;
+  --f22: 22px; --l22: 30px;
+  --f24: 24px; --l24: 34px;
+  --f28: 28px; --l28: 38px;
+  --tr-s: 0em; --tr-b: -0.006em; --tr-m: -0.011em; --tr-l: -0.018em; --tr-xl: -0.03em; --tr-d: -0.045em; --tr-h: -0.05em;
+}
+
+/* ---------- serif accents: same optical size everywhere, and they never push their line down ----------
+   An inline box at 1.08em with an inherited unitless line-height is 8% taller than its line; giving it lh = parent / 1.08 keeps every line equal. */
+.lx-h1 em, .lx-h2 em, .h1 em, .top h1 em, .f-mini h1 em, em.s { font-size: 1.08em; letter-spacing: -0.015em; }
+.lx-h1 { line-height: 0.98; } .lx-h1 em { line-height: 0.907; }
+.lx-h2 { line-height: 1.04; } .lx-h2 em { line-height: 0.963; }
+.h1, .top h1 { line-height: 1.02; } .h1 em, .top h1 em { line-height: 0.944; }
+.f-mini h1 em { line-height: 1.0; }
+
+/* ---------- display ---------- */
+.lx-h1 { letter-spacing: -0.055em; font-weight: 500; }
+.lx-h2 { font-size: clamp(36px, 4.2vw, 52px); letter-spacing: var(--tr-d); font-weight: 500; }
+.h1, .top h1 { font-size: clamp(40px, 5vw, 64px); letter-spacing: var(--tr-h); font-weight: 500; }
+.lx-stats dt, .lx-numbers dt { font-size: clamp(48px, 4.6vw, 64px); line-height: 1; letter-spacing: var(--tr-h); font-weight: 450; }
+.stat-n { font-size: 52px; line-height: 56px; letter-spacing: var(--tr-d); font-weight: 450; }
+.kitchen .k-head { letter-spacing: var(--tr-h); font-weight: 500; }
+.chip.big { font-size: 52px; line-height: 58px; letter-spacing: var(--tr-d); font-weight: 500; }
+
+/* ---------- 28: the one sentence that answers the page ---------- */
+.summary, .verdict { font-size: var(--f28); line-height: var(--l28); letter-spacing: -0.02em; font-weight: 450; }
+
+/* ---------- 24: statements and the kitchen's body copy ---------- */
+.lx-statement { font-size: clamp(20px, 1.9vw, 24px); line-height: 1.42; letter-spacing: var(--tr-l); font-weight: 450; }
+.lx-statement + .lx-statement { margin-top: 24px; }
+.kitchen .k-body, .k-rules { font-size: var(--f24); line-height: var(--l24); letter-spacing: var(--tr-m); }
+.kbtn { font-size: var(--f24); letter-spacing: var(--tr-m); font-weight: 500; }
+.kbtn.pause { font-size: var(--f28); }
+.big-pause { font-size: var(--f24); letter-spacing: var(--tr-m); font-weight: 500; }
+.g-t { font-size: var(--f24); line-height: 32px; letter-spacing: var(--tr-l); font-weight: 500; }
+
+/* ---------- 22: section and step titles ---------- */
+.acc-h { font-size: var(--f22); line-height: var(--l22); letter-spacing: var(--tr-l); font-weight: 450; }
+.acc-n { font-size: var(--f14); line-height: inherit; vertical-align: baseline; width: 28px; }
+.acc-b { padding-left: 28px; }
+.section-title, .sheet h2 { font-size: var(--f22); line-height: var(--l22); letter-spacing: var(--tr-l); font-weight: 500; }
+.su-h { font-size: var(--f22); line-height: var(--l22); letter-spacing: var(--tr-l); font-weight: 500; }
+.su-code { font-size: 36px; line-height: 40px; }
+
+/* ---------- 18: leads, card titles, questions, the state of a check ---------- */
+.lx-lede, .lead { font-size: var(--f18); line-height: var(--l18); letter-spacing: var(--tr-m); font-weight: 400; }
+.lx-card h3, .lx-faq summary, .choice .t1, .panel-h, .intro-head { font-size: var(--f18); line-height: 26px; letter-spacing: var(--tr-m); font-weight: 500; }
+.rule .state, .evidence .head { font-size: var(--f18); line-height: 26px; letter-spacing: var(--tr-m); }
+.rule[data-state="met"] .state, .rule[data-state="missed"] .state, .rule[data-state="over"] .state { font-weight: 500; }
+.g-s, .g-live { font-size: 20px; line-height: 28px; }       /* kitchen setup: a read-at-arm's-length step between 18 and 22 */
+.k-checks, .k-checks li, .k-foot { font-size: var(--f18); line-height: var(--l18); }
+
+/* ---------- 16: reading text ---------- */
+.lx-sub, .acc-b, .lx-faq p, .date, .top .date, .gap, .evidence p, .verdict + p, .banner p, .helper { font-size: var(--f16); line-height: var(--l16); letter-spacing: var(--tr-b); }
+.lx-card p { font-size: var(--f16); line-height: var(--l16); letter-spacing: var(--tr-b); max-width: 34em; }
+.btn.lg, .lx-pill.lg, .lx-ghost.lg { font-size: var(--f16); letter-spacing: var(--tr-b); font-weight: 500; }
+.input { font-size: 17px; }                                  /* 16+ keeps phones from zooming; 17 matches Apple's body size */
+.mark { font-size: 17px; letter-spacing: -0.02em; font-weight: 600; }
+.lx-foot .mark { font-size: 16px; }
+
+/* ---------- 14: UI text: nav, buttons, meta, table cells, captions ---------- */
+.lx-links a, .nav-link, .lx-ghost, .lx-pill, .lx-seg button, .btn, .link, .lx-chip, .lx-note, .lx-fine, .lx-built-k, .stage-caps p, .lx-foot-in,
+.meta, .privacy-line, .rules-foot, .hb, .eyebrow, .step-k, .rule .name, .choice .t2, .su-p, .lp-card-h p, .lp-heard li, .lp-sum, .lx-panel .lp-title,
+th, td, .dc-label, .dc-val, .linkbox, .steps-mini li, .field2 label, .err, .tiny, .viz-pause p, .ev-bars span, .lx-scene-ui .rule .state {
+  font-size: var(--f14); line-height: var(--l14); letter-spacing: var(--tr-s); }
+.lx-stats dd, .lx-numbers dd, .lx-card .viz-pause p { font-size: var(--f14); line-height: 22px; letter-spacing: var(--tr-s); }
+.btn, .lx-pill, .lx-ghost, .lx-seg button, .link, .lx-links a, .nav-link { font-weight: 500; }
+.lx-panel .lp-title, .lp-card-h p, .eyebrow, .step-k, .field2 label { font-weight: 500; }
+.lp-sum { font-size: 15px; line-height: 22px; }               /* inside the live panel the sentence leads its card by one step */
+.lx-built li { font-size: var(--f16); line-height: var(--l16); font-weight: 500; letter-spacing: var(--tr-m); }
+.stage-caps strong { font-size: var(--f16); line-height: 24px; font-weight: 500; }
+
+/* ---------- 12: tags, timestamps, axis ticks, legends, confidence, the panel's small print ---------- */
+.lx-label, .tag, .lp-tag, .lp-live, .lp-clock, .lp-dot-line, .lp-steps span, .lp-heard .t, .lp-heard .lab small, .lp-heard .conf,
+.lp-rules .rule .name, .viz-flow b, .viz-flow small, .ticks, .legend, .ci, .dc-tick, .badge, .su-k, .su-list p, .stage-caps p, .f-mini .eyebrow, .lx-fine {
+  font-size: var(--f12); line-height: var(--l12); letter-spacing: var(--tr-s); }
+.viz-flow b { font-weight: 500; }
+.lx-label, .eyebrow { height: 28px; padding: 0 12px; font-weight: 500; }
+.lx-label { font-size: var(--f12); }
+.eyebrow { font-size: var(--f12); }
+.lp-heard .lab { font-size: var(--f14); font-weight: 500; }
+.lp-rules .rule .state { font-size: var(--f14); line-height: var(--l14); }
+.stage-caps p { font-size: var(--f14); line-height: 20px; }
+.kitchen .ticks, .kitchen .labels { font-size: 17px; line-height: 24px; }
+.labels { font-size: var(--f14); line-height: var(--l14); letter-spacing: var(--tr-s); font-weight: 500; }
+.lx-panel .labels { font-size: 13px; }
+
+/* ---------- weights that aren't on the list go back to it ---------- */
+strong, b, .meta strong, td.strong, tr.row-shipped td, .dc-row.ours .dc-label, .evidence .head, .choice .t1 { font-weight: 500; }
+.btn.primary, .btn.selected, .lx-pill, .nav-cta { font-weight: 500 !important; }
+
+/* ---------- rhythm: an 8px grid for the gaps around type ---------- */
+.lx-label { margin-bottom: 24px; }
+.eyebrow { margin-bottom: 24px; }
+.lx-sec-head { margin-bottom: 56px; }
+.lx-sec-head.split .lx-sub { padding-bottom: 6px; }           /* sits the sub's last baseline on the heading's last baseline */
+.lx-lede { margin-top: 24px; }
+.lx-cta { margin-top: 32px; }
+.lx-h1 { margin-top: 24px; }
+.top .date { margin-top: 12px; }
+.lead { margin-top: 16px; }
+.lx-card h3 { margin-top: 24px; }
+.lx-card p { margin-top: 8px; }
+.lx-stats dd, .lx-numbers dd { margin-top: 12px; }
+.summary { margin: 32px 0; }
+.section-title { margin: 0 0 16px; }
+
+/* ---------- phones ---------- */
+@media (max-width: 520px) {
+  .h1, .top h1 { font-size: 40px; }
+  .summary, .verdict { font-size: var(--f22); line-height: var(--l22); margin: 24px 0; }
+  .lx-lede, .lead { font-size: 17px; line-height: 26px; }
+  .acc-h { font-size: var(--f18); line-height: 26px; }
+  .acc-n { line-height: 26px; }
+  .kitchen .k-head { font-size: 36px; line-height: 40px; }
+  .kitchen .k-body, .k-rules { font-size: 20px; line-height: 28px; }
+  .chip.big { font-size: 36px; line-height: 42px; }
+  .kbtn { font-size: 22px; } .kbtn.pause { font-size: var(--f24); }
+  .g-t { font-size: var(--f22); line-height: var(--l22); }
+  .g-s, .g-live { font-size: 18px; line-height: 26px; }
+  .stat-n { font-size: 40px; line-height: 44px; }
+}
+
+/* small print must still pass contrast: --tx4 (#5A5D66, ~2.9:1 on the canvas) is for rules and icons only, never text */
+.lx-fine, .lx-built-k, .lx-note, .lx-foot p, .acc-n { color: #80838C; }
+.lx-stats .dim, .lx-numbers .dim { color: #5A5D66; }   /* the % sign is decoration next to a 64px figure: large-text 3:1 holds */
+.kbtn { line-height: 1.2; }
+.ev-bars em { font-size: var(--f12); }
+
+/* privacy flow: icons share one row whatever their labels wrap to; the wires meet the icons' centres */
+.viz-flow { align-items: start; }
+.viz-flow .wire { align-self: start; margin-top: 22px; }
+@media (max-width: 720px) { .viz-flow .wire { margin-top: 0; align-self: center; } }
+
+/* how sure: the wordmark already goes home; a floating "Back" pill beside a wrapping date line only broke the header's edge */
+.top > .link { display: none; }
+.top { align-items: flex-start; }
+.privacy-line a { white-space: nowrap; }
+@media (max-width: 600px) { .lx-built-k::before, .lx-built-k::after { display: none; } }
+
+/* kitchen buttons outrank the generic 14px button text (both are .btn) */
+.btn.kbtn { font-size: var(--f24); line-height: 1.2; letter-spacing: var(--tr-m); }
+.btn.kbtn.pause { font-size: var(--f28); }
+@media (max-width: 520px) { .btn.kbtn { font-size: 22px; } .btn.kbtn.pause { font-size: var(--f24); } }
+.meter i { transform: scaleY(max(var(--v, .4), .4)); }
+@media (max-width: 899px) { .k-status .dot { margin-top: 19px; } }
+@media (max-width: 700px) { .k-status .dot { margin-top: 9px; } }   /* centre on a 40px heading line (36/40) */

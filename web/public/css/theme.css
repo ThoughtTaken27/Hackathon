@@ -43,7 +43,7 @@ html.embed .sky { display: none; }
 .nav { background: transparent; border-bottom: 1px solid transparent; -webkit-backdrop-filter: none; backdrop-filter: none;
   transition: background-color 300ms ease, border-color 300ms ease, -webkit-backdrop-filter 300ms ease, backdrop-filter 300ms ease; }
 .nav.solid { background: rgba(11,12,14,.72); border-bottom-color: var(--line); -webkit-backdrop-filter: saturate(1.4) blur(16px); backdrop-filter: saturate(1.4) blur(16px); }
-.nav-in { height: 68px; max-width: 1200px; }
+.nav-in { height: 68px; max-width: 1120px; }
 .mark { color: #fff; }
 .nav-link { color: rgba(255,255,255,.66); }
 @media (hover: hover) and (pointer: fine) { .nav-link:hover { color: #fff; } }

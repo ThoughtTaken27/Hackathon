@@ -15,12 +15,12 @@ function show(node) {
 }
 const dots = (k) => el("span", { class: "dots", "aria-hidden": "true" }, [1, 2, 3].map((i) => el("i", { class: i <= k ? "on" : "" })));
 const head = (k, title, lead) => [el("p", { class: "step-k" }, dots(k), `Step ${k} of 3`),
-  el("h1", { class: "h1" }, ...(Array.isArray(title) ? [title[0], el("em", { text: title[1] })] : [title])), lead ? el("p", { class: "lead", text: lead }) : null];
+  el("h1", { class: "h1" }, ...(Array.isArray(title) ? [title[0], title[2] ? el("br") : null, el("em", { text: title[1] })].filter(Boolean) : [title])), lead ? el("p", { class: "lead", text: lead }) : null];
 
 function step1() {
   const choice = (as, icon, t1, t2) => el("button", { class: "choice", type: "button", onclick: () => { st.as = as; step2(); } },
     el("span", { class: "ico", html: ICON[icon] }), el("span", {}, el("span", { class: "t1", text: t1 }), el("span", { class: "t2", style: "display:block", text: t2 })), el("span", { class: "chev", html: ICON.chev }));
-  show(el("div", {}, ...head(1, ["Where are you ", "right now?"], "Kettle needs two screens: a spare phone, tablet or laptop that stays in your parent's kitchen, and your own phone."),
+  show(el("div", {}, ...head(1, ["Where are you ", "right now?", true], "Kettle needs two screens: a spare phone, tablet or laptop that stays in your parent's kitchen, and your own phone."),
     el("div", { class: "choices" },
       choice("family", "phone", "On my own phone or computer", "You'll get a code to type on the kitchen device."),
       choice("kitchen", "laptop", "At the kitchen device", "The spare phone, tablet or laptop that will stay in the kitchen. You'll scan a code with your phone.")),

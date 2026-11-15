@@ -17,7 +17,11 @@ export function el(tag, attrs = {}, ...kids) {
   return e;
 }
 /** Crossfade text only when it changes. */
+// Typographic glue for display text: "8:35–8:50 AM" and "10 AM" never split across lines (no-break space before AM/PM,
+// word joiners around a range dash). Display only; the strings in data and tests are unchanged.
+export const glue = (t) => typeof t !== "string" ? t : t.replace(/(\d) (AM|PM|h|min|s)\b/g, "$1\u00A0$2").replace(/(\d)–(\d)/g, "$1\u2060–\u2060$2");
 export function setText(node, text) {
+  text = glue(text);
   if (node.textContent === text) return;
   if (reduceMotion() || !node.textContent) { node.textContent = text; return; }
   node.animate([{ opacity: 1, filter: "none" }, { opacity: 0, transform: "translateY(-3px)", filter: "blur(3px)" }], { duration: 180, easing: "cubic-bezier(.22,1,.36,1)" })
