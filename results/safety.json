@@ -190,6 +190,40 @@
    "note": "no public recordings of this danger were available to us; threshold set from false fires only",
    "false_fires_by_source": {}
   },
+  "gunshot": {
+   "name": "Gunshot",
+   "tau": 0.688,
+   "indices": [
+    427,
+    428,
+    429,
+    430,
+    431
+   ],
+   "positives_from": null,
+   "false_fire_heldout_all": {
+    "k": 0,
+    "n": 6021,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     0.1
+    ]
+   },
+   "false_fire_heldout_home_audio": {
+    "k": 0,
+    "n": 4416,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     0.1
+    ]
+   },
+   "false_per_hour_home_audio": 0.0,
+   "caught_heldout": null,
+   "note": "no public recordings of this danger were available to us; threshold set from false fires only",
+   "false_fires_by_source": {}
+  },
   "distress": {
    "name": "Groaning, moaning or crying",
    "tau": 0.137,
@@ -576,41 +610,43 @@
     "esc50_door_wood_knock_4-182034-A-30",
     "esc50_frog_3-102908-A-4",
     "esc50_helicopter_2-188822-B-40"
-   ]
+   ],
+   "reused": "Nonspeech7k audio not on this machine; alarm_pattern() is unchanged since the run that measured this, so that run's count is kept."
   }
  },
  "scenarios": {
   "pos_crash_then_groan": {
    "n": 60,
-   "urgent": 39,
-   "checkins": 39,
+   "urgent": 49,
+   "checkins": 49,
    "urgent_types": {
-    "fall": 39
+    "fall": 39,
+    "fall_still": 10
    },
    "rate": {
-    "k": 39,
+    "k": 49,
     "n": 60,
-    "pct": 65.0,
+    "pct": 81.7,
     "ci95": [
-     52.4,
-     75.8
+     70.1,
+     89.4
     ]
    }
   },
   "pos_crash_then_stillness": {
    "n": 60,
-   "urgent": 19,
-   "checkins": 19,
+   "urgent": 50,
+   "checkins": 50,
    "urgent_types": {
-    "fall_still": 19
+    "fall_still": 50
    },
    "rate": {
-    "k": 19,
+    "k": 50,
     "n": 60,
-    "pct": 31.7,
+    "pct": 83.3,
     "ci95": [
-     21.3,
-     44.2
+     72.0,
+     90.7
     ]
    }
   },
@@ -652,19 +688,19 @@
   },
   "pos_repeated_crying": {
    "n": 60,
-   "urgent": 43,
-   "checkins": 43,
+   "urgent": 44,
+   "checkins": 44,
    "urgent_types": {
-    "distress": 27,
+    "distress": 28,
     "scream": 16
    },
    "rate": {
-    "k": 43,
+    "k": 44,
     "n": 60,
-    "pct": 71.7,
+    "pct": 73.3,
     "ci95": [
-     59.2,
-     81.5
+     61.0,
+     82.9
     ]
    }
   },
@@ -729,6 +765,21 @@
    }
   },
   "neg_busy_kitchen": {
+   "n": 60,
+   "urgent": 0,
+   "checkins": 0,
+   "urgent_types": {},
+   "rate": {
+    "k": 0,
+    "n": 60,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     6.0
+    ]
+   }
+  },
+  "neg_cans_knocks_fireworks_while_cooking": {
    "n": 60,
    "urgent": 0,
    "checkins": 0,
@@ -758,89 +809,90 @@
  "scenarios_dev": {
   "pos_crash_then_groan": {
    "n": 60,
-   "urgent": 27,
-   "checkins": 27,
+   "urgent": 46,
+   "checkins": 46,
    "urgent_types": {
-    "fall": 26,
+    "fall": 35,
+    "fall_still": 10,
     "scream": 1
    },
    "rate": {
-    "k": 27,
+    "k": 46,
     "n": 60,
-    "pct": 45.0,
+    "pct": 76.7,
     "ci95": [
-     33.1,
-     57.5
+     64.6,
+     85.6
     ]
    }
   },
   "pos_crash_then_stillness": {
    "n": 60,
-   "urgent": 10,
-   "checkins": 10,
+   "urgent": 35,
+   "checkins": 35,
    "urgent_types": {
-    "fall_still": 10
+    "fall_still": 35
    },
    "rate": {
-    "k": 10,
+    "k": 35,
     "n": 60,
-    "pct": 16.7,
+    "pct": 58.3,
     "ci95": [
-     9.3,
-     28.0
+     45.7,
+     69.9
     ]
    }
   },
   "pos_smoke_alarm_during_cooking": {
    "n": 60,
-   "urgent": 40,
+   "urgent": 41,
    "checkins": 0,
    "urgent_types": {
-    "co": 10,
-    "smoke": 30
+    "co": 4,
+    "smoke": 37
    },
    "rate": {
-    "k": 40,
+    "k": 41,
     "n": 60,
-    "pct": 66.7,
+    "pct": 68.3,
     "ci95": [
-     54.1,
-     77.3
+     55.8,
+     78.7
     ]
    }
   },
   "pos_screaming": {
    "n": 60,
-   "urgent": 59,
-   "checkins": 59,
+   "urgent": 54,
+   "checkins": 54,
    "urgent_types": {
-    "scream": 59
+    "scream": 54
    },
    "rate": {
-    "k": 59,
+    "k": 54,
     "n": 60,
-    "pct": 98.3,
+    "pct": 90.0,
     "ci95": [
-     91.1,
-     99.7
+     79.9,
+     95.3
     ]
    }
   },
   "pos_repeated_crying": {
    "n": 60,
-   "urgent": 23,
-   "checkins": 23,
+   "urgent": 28,
+   "checkins": 28,
    "urgent_types": {
-    "distress": 16,
-    "scream": 7
+    "distress": 19,
+    "scream": 9
    },
    "rate": {
-    "k": 23,
+    "k": 28,
     "n": 60,
-    "pct": 38.3,
+    "pct": 46.7,
     "ci95": [
-     27.1,
-     51.0
+     34.6,
+     59.1
     ]
    }
   },
@@ -891,23 +943,37 @@
   },
   "neg_knocks_dogs_laughter": {
    "n": 60,
-   "urgent": 2,
-   "checkins": 2,
+   "urgent": 1,
+   "checkins": 1,
    "urgent_types": {
-    "fall": 1,
     "scream": 1
    },
    "rate": {
-    "k": 2,
+    "k": 1,
     "n": 60,
-    "pct": 3.3,
+    "pct": 1.7,
     "ci95": [
-     0.9,
-     11.4
+     0.3,
+     8.9
     ]
    }
   },
   "neg_busy_kitchen": {
+   "n": 60,
+   "urgent": 0,
+   "checkins": 0,
+   "urgent_types": {},
+   "rate": {
+    "k": 0,
+    "n": 60,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     6.0
+    ]
+   }
+  },
+  "neg_cans_knocks_fireworks_while_cooking": {
    "n": 60,
    "urgent": 0,
    "checkins": 0,
@@ -934,11 +1000,13 @@
    "types": []
   }
  },
- "process_note": "Disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms from screams and timers. The floors were raised to the plan's values (smoke 0.35, glass 0.3, fire 0.3) and the same simulator is also reported on development clips (scenarios_dev), so the change can be checked on data not used to report.",
+ "process_note": "v3.5 (eval/PREREGISTER-SAFETY-V35.md, written before this run): gunshot detector added (tau above every development negative, no gunshot recordings available), shouting rule (3 windows in 60 s), crash-then-stillness wait 600 s -> 120 s, and a new negative scenario (cans, knocks, fireworks, thunder while cooking). The new scenario draws from the shared random generator before the development run, so scenarios_dev timelines are redrawn (dev screaming 98.3% -> 90.0% is that resampling: with the shout rule switched off the same timelines give the same count). The script was rerun twice more only to edit this note; it is deterministic (seed 0) and the numbers were identical. Earlier, disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms from screams and timers. The floors were raised to the plan's values (smoke 0.35, glass 0.3, fire 0.3) and the same simulator is also reported on development clips (scenarios_dev), so the change can be checked on data not used to report.",
  "limits": [
   "No recordings of real falls (body hitting a floor): the crash is breaking glass, and a fall that makes little sound will be missed.",
   "Smoke and CO alarms are synthetic NFPA 72 tones mixed with household noise and simple echo, not recordings of real alarms.",
-  "No shouting-for-help clips: the shout detector has no measured catch rate and never raises an alert on its own.",
+  "No shouting-for-help clips: the shout detector has no measured catch rate; it alerts only after 3 shouts in 60 s.",
+  "No gunshot recordings could be fetched: the gunshot detector has no measured catch rate. Its threshold sits above every development clip; can openings, door knocks and fireworks are the measured false-alarm risks.",
+  "A crash followed by someone quietly leaving the room now looks like a fall after 2 minutes (was 10).",
   "Clips are close-microphone public recordings, joined in software; no real kitchen or real room has been measured yet."
  ]
 }

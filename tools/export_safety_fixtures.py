@@ -89,6 +89,18 @@ def scenarios() -> list[dict]:
     add("beep_ignored", [win(T0 + i * 30, hits=("beep",)) for i in range(12)])
     add("water_running", [win(T0 + i * 30, kinds=("tap",), db=-30) for i in range(45)])
     add("water_short_no", [win(T0 + i * 30, kinds=("tap",)) for i in range(10)] + quiet(T0 + 300, 40))
+    # v3.5 U8 gunshot: one window, no media -> urgent at once; with the TV on -> only a note; never while paused
+    add("gunshot", quiet(T0, 4) + [win(T0 + 20, hits=("gunshot",), db=-10), win(T0 + 25, hits=("gunshot",), db=-15)] + quiet(T0 + 30, 6))
+    add("gunshot_tv_note", [win(T0 + i * HOP, label="watching_tv", media=True) for i in range(3)] + [win(T0 + 15, hits=("gunshot",), media=True)] + quiet(T0 + 20, 3))
+    add("gunshot_paused_no", quiet(T0, 2) + [win(T0 + 10, hits=("gunshot",))], opts={"paused": True})
+    # v3.5 U9 shouting: 3 separate windows in 60 s -> check-in; one shout, or shouts 40 s apart, are nothing
+    add("shout_three", quiet(T0, 2) + sum(([win(T0 + 10 + 15 * i, hits=("shout",), db=-20)] + quiet(T0 + 15 + 15 * i, 2) for i in range(3)), []) + quiet(T0 + 60, 10))
+    add("shout_once_no", quiet(T0, 2) + [win(T0 + 10, hits=("shout",)), win(T0 + 15, hits=("shout",))] + quiet(T0 + 20, 10))
+    add("shout_spread_no", sum(([win(T0 + 40 * i, hits=("shout",))] + quiet(T0 + 5 + 40 * i, 7) for i in range(3)), []))
+    add("shout_with_tv_no", sum(([win(T0 + 15 * i, hits=("shout",), media=True)] + quiet(T0 + 5 + 15 * i, 2, media=True) for i in range(4)), []))
+    # v3.5 crash then 2 minutes of stillness (was 10), and still nothing at 90 s
+    add("fall_stillness_2min", cooking(T0, 20) + [win(T0 + 100, hits=("impact",), db=-15)] + quiet(T0 + 105, 26))
+    add("fall_stillness_90s_no", cooking(T0, 20) + [win(T0 + 100, hits=("impact",), db=-15)] + quiet(T0 + 105, 18))
     # U6 help button and U7 stillness check-in
     add("help_button", quiet(T0, 3), answers=[{"t": T0 + 7, "reply": "help"}])
     add("stillness_checkin_no_answer", quiet(T0, 2), answers=[{"t": T0 + 6, "reply": "ask_stillness"}] + [], opts={})
