@@ -1,0 +1,1918 @@
+{
+ "made": "Sat Nov 14 2026, 09:43 PM CST",
+ "theta": 0.66,
+ "tau_k": 0.15,
+ "tau_v": 0.3,
+ "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
+ "dropped_audioset": 25,
+ "tune": {
+  "v1": {
+   "desed_kitchen_caught": {
+    "value": 8.3,
+    "ci": [
+     2.5,
+     17.6
+    ],
+    "k": 9,
+    "n": 108,
+    "groups": 57
+   },
+   "desed_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 179,
+    "groups": 151
+   },
+   "desed_brief": {
+    "value": 5.0,
+    "ci": [
+     0.0,
+     16.7
+    ],
+    "k": 1,
+    "n": 20,
+    "groups": 18
+   },
+   "desed_water": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 27,
+    "groups": 25
+   },
+   "k20_activity_caught": {
+    "value": 1.2,
+    "ci": [
+     0.0,
+     3.3
+    ],
+    "k": 3,
+    "n": 247,
+    "groups": 100
+   },
+   "k20_false_kitchen": {
+    "value": 2.3,
+    "ci": [
+     0.0,
+     5.8
+    ],
+    "k": 4,
+    "n": 177,
+    "groups": 77
+   },
+   "esc_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 223,
+    "groups": 194
+   },
+   "by_kind": {
+    "desed/kitchen": {
+     "value": 8.3,
+     "ci": [
+      2.7,
+      16.7
+     ],
+     "k": 9,
+     "n": 108,
+     "groups": 57
+    },
+    "desed/brief": {
+     "value": 5.0,
+     "ci": [
+      0.0,
+      16.7
+     ],
+     "k": 1,
+     "n": 20,
+     "groups": 18
+    },
+    "desed/water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 27,
+     "groups": 25
+    },
+    "desed/vacuum": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 51,
+     "groups": 36
+    },
+    "desed/shaver": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 38,
+     "groups": 36
+    },
+    "desed/speech": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 1,
+     "groups": 1
+    },
+    "desed/pets_alarms": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 89,
+     "groups": 82
+    },
+    "kitchen20/blender": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 11
+    },
+    "kitchen20/boiling-water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 24,
+     "groups": 12
+    },
+    "kitchen20/chopping": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 12
+    },
+    "kitchen20/clean-dishes": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 20,
+     "groups": 5
+    },
+    "kitchen20/cutlery": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 9
+    },
+    "kitchen20/eat": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 16
+    },
+    "kitchen20/frying-pan": {
+     "value": 4.2,
+     "ci": [
+      0.0,
+      14.3
+     ],
+     "k": 1,
+     "n": 24,
+     "groups": 11
+    },
+    "kitchen20/juicer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 25,
+     "groups": 5
+    },
+    "kitchen20/peel": {
+     "value": 10.5,
+     "ci": [
+      0.0,
+      35.3
+     ],
+     "k": 2,
+     "n": 19,
+     "groups": 6
+    },
+    "kitchen20/plates": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 42,
+     "groups": 15
+    },
+    "kitchen20/fridge": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 27,
+     "groups": 12
+    },
+    "kitchen20/dishwasher": {
+     "value": 2.4,
+     "ci": [
+      0.0,
+      8.9
+     ],
+     "k": 1,
+     "n": 42,
+     "groups": 15
+    },
+    "kitchen20/sweep": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 31,
+     "groups": 11
+    },
+    "kitchen20/book": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 30,
+     "groups": 17
+    },
+    "kitchen20/cupboard": {
+     "value": 12.0,
+     "ci": [
+      0.0,
+      32.1
+     ],
+     "k": 3,
+     "n": 25,
+     "groups": 8
+    },
+    "kitchen20/drawer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 15
+    },
+    "kitchen20/stove-fan": {
+     "value": 21.9,
+     "ci": [
+      3.8,
+      40.4
+     ],
+     "k": 7,
+     "n": 32,
+     "groups": 10
+    },
+    "kitchen20/microwave": {
+     "value": 6.7,
+     "ci": [
+      0.0,
+      17.2
+     ],
+     "k": 2,
+     "n": 30,
+     "groups": 16
+    },
+    "kitchen20/water-flowing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 14
+    },
+    "esc50_house/vacuum_cleaner": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 12
+    },
+    "esc50_house/washing_machine": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 14
+    },
+    "esc50_house/keyboard_typing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 17
+    },
+    "esc50_house/footsteps": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 13
+    },
+    "esc50_house/door_wood_knock": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 18
+    },
+    "esc50_house/toilet_flush": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 22
+    },
+    "esc50_house/brushing_teeth": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 13,
+     "groups": 11
+    },
+    "esc50_house/clock_tick": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 23
+    },
+    "esc50_house/mouse_click": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 22
+    },
+    "esc50_house/door_wood_creaks": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 14,
+     "groups": 8
+    },
+    "esc50_house/pouring_water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 14,
+     "groups": 13
+    },
+    "esc50_house/snoring": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 15
+    },
+    "esc50_house/coughing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 19
+    }
+   }
+  },
+  "v2": {
+   "desed_kitchen_caught": {
+    "value": 63.0,
+    "ci": [
+     46.7,
+     73.9
+    ],
+    "k": 68,
+    "n": 108,
+    "groups": 57
+   },
+   "desed_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 179,
+    "groups": 151
+   },
+   "desed_brief": {
+    "value": 55.0,
+    "ci": [
+     35.0,
+     75.0
+    ],
+    "k": 11,
+    "n": 20,
+    "groups": 18
+   },
+   "desed_water": {
+    "value": 18.5,
+    "ci": [
+     4.0,
+     33.3
+    ],
+    "k": 5,
+    "n": 27,
+    "groups": 25
+   },
+   "k20_activity_caught": {
+    "value": 34.8,
+    "ci": [
+     26.6,
+     44.0
+    ],
+    "k": 86,
+    "n": 247,
+    "groups": 100
+   },
+   "k20_false_kitchen": {
+    "value": 3.4,
+    "ci": [
+     0.6,
+     7.3
+    ],
+    "k": 6,
+    "n": 177,
+    "groups": 77
+   },
+   "esc_false_kitchen": {
+    "value": 1.8,
+    "ci": [
+     0.4,
+     3.7
+    ],
+    "k": 4,
+    "n": 223,
+    "groups": 194
+   },
+   "by_kind": {
+    "desed/kitchen": {
+     "value": 63.0,
+     "ci": [
+      47.0,
+      73.3
+     ],
+     "k": 68,
+     "n": 108,
+     "groups": 57
+    },
+    "desed/brief": {
+     "value": 55.0,
+     "ci": [
+      33.3,
+      75.0
+     ],
+     "k": 11,
+     "n": 20,
+     "groups": 18
+    },
+    "desed/water": {
+     "value": 18.5,
+     "ci": [
+      7.7,
+      31.1
+     ],
+     "k": 5,
+     "n": 27,
+     "groups": 25
+    },
+    "desed/vacuum": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 51,
+     "groups": 36
+    },
+    "desed/shaver": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 38,
+     "groups": 36
+    },
+    "desed/speech": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 1,
+     "groups": 1
+    },
+    "desed/pets_alarms": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 89,
+     "groups": 82
+    },
+    "kitchen20/blender": {
+     "value": 3.8,
+     "ci": [
+      0.0,
+      11.1
+     ],
+     "k": 1,
+     "n": 26,
+     "groups": 11
+    },
+    "kitchen20/boiling-water": {
+     "value": 66.7,
+     "ci": [
+      41.2,
+      90.0
+     ],
+     "k": 16,
+     "n": 24,
+     "groups": 12
+    },
+    "kitchen20/chopping": {
+     "value": 34.8,
+     "ci": [
+      13.0,
+      54.3
+     ],
+     "k": 8,
+     "n": 23,
+     "groups": 12
+    },
+    "kitchen20/clean-dishes": {
+     "value": 75.0,
+     "ci": [
+      53.8,
+      100.0
+     ],
+     "k": 15,
+     "n": 20,
+     "groups": 5
+    },
+    "kitchen20/cutlery": {
+     "value": 8.7,
+     "ci": [
+      0.0,
+      15.2
+     ],
+     "k": 2,
+     "n": 23,
+     "groups": 9
+    },
+    "kitchen20/eat": {
+     "value": 95.2,
+     "ci": [
+      83.3,
+      100.0
+     ],
+     "k": 20,
+     "n": 21,
+     "groups": 16
+    },
+    "kitchen20/frying-pan": {
+     "value": 62.5,
+     "ci": [
+      32.1,
+      88.9
+     ],
+     "k": 15,
+     "n": 24,
+     "groups": 11
+    },
+    "kitchen20/juicer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 25,
+     "groups": 5
+    },
+    "kitchen20/peel": {
+     "value": 10.5,
+     "ci": [
+      0.0,
+      35.3
+     ],
+     "k": 2,
+     "n": 19,
+     "groups": 6
+    },
+    "kitchen20/plates": {
+     "value": 16.7,
+     "ci": [
+      4.2,
+      31.4
+     ],
+     "k": 7,
+     "n": 42,
+     "groups": 15
+    },
+    "kitchen20/fridge": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 27,
+     "groups": 12
+    },
+    "kitchen20/dishwasher": {
+     "value": 2.4,
+     "ci": [
+      0.0,
+      8.9
+     ],
+     "k": 1,
+     "n": 42,
+     "groups": 15
+    },
+    "kitchen20/sweep": {
+     "value": 3.2,
+     "ci": [
+      0.0,
+      9.7
+     ],
+     "k": 1,
+     "n": 31,
+     "groups": 11
+    },
+    "kitchen20/book": {
+     "value": 3.3,
+     "ci": [
+      0.0,
+      10.3
+     ],
+     "k": 1,
+     "n": 30,
+     "groups": 17
+    },
+    "kitchen20/cupboard": {
+     "value": 12.0,
+     "ci": [
+      0.0,
+      32.1
+     ],
+     "k": 3,
+     "n": 25,
+     "groups": 8
+    },
+    "kitchen20/drawer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 15
+    },
+    "kitchen20/stove-fan": {
+     "value": 21.9,
+     "ci": [
+      3.8,
+      40.4
+     ],
+     "k": 7,
+     "n": 32,
+     "groups": 10
+    },
+    "kitchen20/microwave": {
+     "value": 6.7,
+     "ci": [
+      0.0,
+      17.2
+     ],
+     "k": 2,
+     "n": 30,
+     "groups": 16
+    },
+    "kitchen20/water-flowing": {
+     "value": 68.4,
+     "ci": [
+      47.0,
+      85.7
+     ],
+     "k": 13,
+     "n": 19,
+     "groups": 14
+    },
+    "esc50_house/vacuum_cleaner": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 12
+    },
+    "esc50_house/washing_machine": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 14
+    },
+    "esc50_house/keyboard_typing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 17
+    },
+    "esc50_house/footsteps": {
+     "value": 5.6,
+     "ci": [
+      0.0,
+      23.1
+     ],
+     "k": 1,
+     "n": 18,
+     "groups": 13
+    },
+    "esc50_house/door_wood_knock": {
+     "value": 4.8,
+     "ci": [
+      0.0,
+      14.3
+     ],
+     "k": 1,
+     "n": 21,
+     "groups": 18
+    },
+    "esc50_house/toilet_flush": {
+     "value": 9.1,
+     "ci": [
+      0.0,
+      22.8
+     ],
+     "k": 2,
+     "n": 22,
+     "groups": 22
+    },
+    "esc50_house/brushing_teeth": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 13,
+     "groups": 11
+    },
+    "esc50_house/clock_tick": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 23
+    },
+    "esc50_house/mouse_click": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 22
+    },
+    "esc50_house/door_wood_creaks": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 14,
+     "groups": 8
+    },
+    "esc50_house/pouring_water": {
+     "value": 21.4,
+     "ci": [
+      7.1,
+      40.0
+     ],
+     "k": 3,
+     "n": 14,
+     "groups": 13
+    },
+    "esc50_house/snoring": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 15
+    },
+    "esc50_house/coughing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 19
+    }
+   }
+  }
+ },
+ "sins_dev": {
+  "v1": {
+   "kitchen_caught": {
+    "value": 86.9,
+    "ci": [
+     84.0,
+     89.9
+    ],
+    "k": 2607,
+    "n": 3000,
+    "groups": 33
+   },
+   "false_kitchen": {
+    "value": 0.7,
+    "ci": [
+     0.1,
+     1.8
+    ],
+    "k": 44,
+    "n": 5920,
+    "groups": 224
+   },
+   "right_label": 82.2,
+   "not_sure": 13.3
+  },
+  "v2": {
+   "kitchen_caught": {
+    "value": 89.5,
+    "ci": [
+     87.2,
+     92.0
+    ],
+    "k": 2686,
+    "n": 3000,
+    "groups": 33
+   },
+   "false_kitchen": {
+    "value": 0.8,
+    "ci": [
+     0.2,
+     1.9
+    ],
+    "k": 49,
+    "n": 5920,
+    "groups": 224
+   },
+   "right_label": 82.8,
+   "not_sure": 12.3
+  }
+ },
+ "test": {
+  "v1": {
+   "desed_kitchen_caught": {
+    "value": 6.3,
+    "ci": [
+     1.4,
+     11.8
+    ],
+    "k": 5,
+    "n": 79,
+    "groups": 56
+   },
+   "desed_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 191,
+    "groups": 153
+   },
+   "desed_brief": {
+    "value": 10.0,
+    "ci": [
+     0.0,
+     23.8
+    ],
+    "k": 2,
+    "n": 20,
+    "groups": 19
+   },
+   "desed_water": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 43,
+    "groups": 36
+   },
+   "k20_activity_caught": {
+    "value": 2.7,
+    "ci": [
+     0.9,
+     5.1
+    ],
+    "k": 8,
+    "n": 293,
+    "groups": 111
+   },
+   "k20_false_kitchen": {
+    "value": 1.3,
+    "ci": [
+     0.0,
+     3.3
+    ],
+    "k": 2,
+    "n": 153,
+    "groups": 81
+   },
+   "esc_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 257,
+    "groups": 212
+   },
+   "by_kind": {
+    "desed/kitchen": {
+     "value": 6.3,
+     "ci": [
+      1.4,
+      11.7
+     ],
+     "k": 5,
+     "n": 79,
+     "groups": 56
+    },
+    "desed/brief": {
+     "value": 10.0,
+     "ci": [
+      0.0,
+      23.8
+     ],
+     "k": 2,
+     "n": 20,
+     "groups": 19
+    },
+    "desed/water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 43,
+     "groups": 36
+    },
+    "desed/vacuum": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 42,
+     "groups": 29
+    },
+    "desed/shaver": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 43,
+     "groups": 41
+    },
+    "desed/speech": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 1,
+     "groups": 1
+    },
+    "desed/pets_alarms": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 105,
+     "groups": 86
+    },
+    "kitchen20/blender": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 8
+    },
+    "kitchen20/boiling-water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 11
+    },
+    "kitchen20/chopping": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 9
+    },
+    "kitchen20/clean-dishes": {
+     "value": 5.0,
+     "ci": [
+      0.0,
+      12.5
+     ],
+     "k": 2,
+     "n": 40,
+     "groups": 12
+    },
+    "kitchen20/cutlery": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 46,
+     "groups": 16
+    },
+    "kitchen20/eat": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 20
+    },
+    "kitchen20/frying-pan": {
+     "value": 13.6,
+     "ci": [
+      4.0,
+      26.3
+     ],
+     "k": 6,
+     "n": 44,
+     "groups": 18
+    },
+    "kitchen20/juicer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 7
+    },
+    "kitchen20/peel": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 30,
+     "groups": 7
+    },
+    "kitchen20/plates": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 8
+    },
+    "kitchen20/fridge": {
+     "value": 4.3,
+     "ci": [
+      0.0,
+      12.0
+     ],
+     "k": 1,
+     "n": 23,
+     "groups": 12
+    },
+    "kitchen20/dishwasher": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 24,
+     "groups": 8
+    },
+    "kitchen20/sweep": {
+     "value": 3.6,
+     "ci": [
+      0.0,
+      9.1
+     ],
+     "k": 1,
+     "n": 28,
+     "groups": 13
+    },
+    "kitchen20/book": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 16
+    },
+    "kitchen20/cupboard": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 13
+    },
+    "kitchen20/drawer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 34,
+     "groups": 21
+    },
+    "kitchen20/stove-fan": {
+     "value": 9.1,
+     "ci": [
+      0.0,
+      20.0
+     ],
+     "k": 2,
+     "n": 22,
+     "groups": 8
+    },
+    "kitchen20/microwave": {
+     "value": 14.3,
+     "ci": [
+      0.0,
+      37.5
+     ],
+     "k": 3,
+     "n": 21,
+     "groups": 15
+    },
+    "kitchen20/water-flowing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 31,
+     "groups": 23
+    },
+    "esc50_house/vacuum_cleaner": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 18
+    },
+    "esc50_house/washing_machine": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 12
+    },
+    "esc50_house/keyboard_typing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 20
+    },
+    "esc50_house/footsteps": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 19
+    },
+    "esc50_house/door_wood_knock": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 18
+    },
+    "esc50_house/toilet_flush": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 18
+    },
+    "esc50_house/brushing_teeth": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 27,
+     "groups": 18
+    },
+    "esc50_house/clock_tick": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 17
+    },
+    "esc50_house/mouse_click": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 16
+    },
+    "esc50_house/door_wood_creaks": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 18
+    },
+    "esc50_house/pouring_water": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 18
+    },
+    "esc50_house/snoring": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 18
+    },
+    "esc50_house/coughing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 20
+    }
+   }
+  },
+  "v2": {
+   "desed_kitchen_caught": {
+    "value": 43.0,
+    "ci": [
+     25.9,
+     60.5
+    ],
+    "k": 34,
+    "n": 79,
+    "groups": 56
+   },
+   "desed_false_kitchen": {
+    "value": 0.0,
+    "ci": [
+     0.0,
+     0.0
+    ],
+    "k": 0,
+    "n": 191,
+    "groups": 153
+   },
+   "desed_brief": {
+    "value": 75.0,
+    "ci": [
+     55.0,
+     90.9
+    ],
+    "k": 15,
+    "n": 20,
+    "groups": 19
+   },
+   "desed_water": {
+    "value": 30.2,
+    "ci": [
+     15.0,
+     46.8
+    ],
+    "k": 13,
+    "n": 43,
+    "groups": 36
+   },
+   "k20_activity_caught": {
+    "value": 42.7,
+    "ci": [
+     34.1,
+     52.1
+    ],
+    "k": 125,
+    "n": 293,
+    "groups": 111
+   },
+   "k20_false_kitchen": {
+    "value": 3.9,
+    "ci": [
+     1.3,
+     7.2
+    ],
+    "k": 6,
+    "n": 153,
+    "groups": 81
+   },
+   "esc_false_kitchen": {
+    "value": 2.7,
+    "ci": [
+     0.8,
+     5.3
+    ],
+    "k": 7,
+    "n": 257,
+    "groups": 212
+   },
+   "by_kind": {
+    "desed/kitchen": {
+     "value": 43.0,
+     "ci": [
+      25.0,
+      61.7
+     ],
+     "k": 34,
+     "n": 79,
+     "groups": 56
+    },
+    "desed/brief": {
+     "value": 75.0,
+     "ci": [
+      52.6,
+      90.5
+     ],
+     "k": 15,
+     "n": 20,
+     "groups": 19
+    },
+    "desed/water": {
+     "value": 30.2,
+     "ci": [
+      15.7,
+      43.6
+     ],
+     "k": 13,
+     "n": 43,
+     "groups": 36
+    },
+    "desed/vacuum": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 42,
+     "groups": 29
+    },
+    "desed/shaver": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 43,
+     "groups": 41
+    },
+    "desed/speech": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 1,
+     "groups": 1
+    },
+    "desed/pets_alarms": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 105,
+     "groups": 86
+    },
+    "kitchen20/blender": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 8
+    },
+    "kitchen20/boiling-water": {
+     "value": 40.9,
+     "ci": [
+      15.4,
+      69.6
+     ],
+     "k": 9,
+     "n": 22,
+     "groups": 11
+    },
+    "kitchen20/chopping": {
+     "value": 72.7,
+     "ci": [
+      37.5,
+      96.6
+     ],
+     "k": 16,
+     "n": 22,
+     "groups": 9
+    },
+    "kitchen20/clean-dishes": {
+     "value": 72.5,
+     "ci": [
+      55.8,
+      87.9
+     ],
+     "k": 29,
+     "n": 40,
+     "groups": 12
+    },
+    "kitchen20/cutlery": {
+     "value": 28.3,
+     "ci": [
+      12.5,
+      45.1
+     ],
+     "k": 13,
+     "n": 46,
+     "groups": 16
+    },
+    "kitchen20/eat": {
+     "value": 95.2,
+     "ci": [
+      85.0,
+      100.0
+     ],
+     "k": 20,
+     "n": 21,
+     "groups": 20
+    },
+    "kitchen20/frying-pan": {
+     "value": 77.3,
+     "ci": [
+      65.1,
+      88.1
+     ],
+     "k": 34,
+     "n": 44,
+     "groups": 18
+    },
+    "kitchen20/juicer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 7
+    },
+    "kitchen20/peel": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 30,
+     "groups": 7
+    },
+    "kitchen20/plates": {
+     "value": 19.0,
+     "ci": [
+      6.2,
+      33.3
+     ],
+     "k": 4,
+     "n": 21,
+     "groups": 8
+    },
+    "kitchen20/fridge": {
+     "value": 4.3,
+     "ci": [
+      0.0,
+      12.0
+     ],
+     "k": 1,
+     "n": 23,
+     "groups": 12
+    },
+    "kitchen20/dishwasher": {
+     "value": 4.2,
+     "ci": [
+      0.0,
+      12.0
+     ],
+     "k": 1,
+     "n": 24,
+     "groups": 8
+    },
+    "kitchen20/sweep": {
+     "value": 3.6,
+     "ci": [
+      0.0,
+      9.1
+     ],
+     "k": 1,
+     "n": 28,
+     "groups": 13
+    },
+    "kitchen20/book": {
+     "value": 13.6,
+     "ci": [
+      0.0,
+      31.6
+     ],
+     "k": 3,
+     "n": 22,
+     "groups": 16
+    },
+    "kitchen20/cupboard": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 13
+    },
+    "kitchen20/drawer": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 34,
+     "groups": 21
+    },
+    "kitchen20/stove-fan": {
+     "value": 9.1,
+     "ci": [
+      0.0,
+      20.0
+     ],
+     "k": 2,
+     "n": 22,
+     "groups": 8
+    },
+    "kitchen20/microwave": {
+     "value": 14.3,
+     "ci": [
+      0.0,
+      37.5
+     ],
+     "k": 3,
+     "n": 21,
+     "groups": 15
+    },
+    "kitchen20/water-flowing": {
+     "value": 96.8,
+     "ci": [
+      89.3,
+      100.0
+     ],
+     "k": 30,
+     "n": 31,
+     "groups": 23
+    },
+    "esc50_house/vacuum_cleaner": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 18
+    },
+    "esc50_house/washing_machine": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 12
+    },
+    "esc50_house/keyboard_typing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 23,
+     "groups": 20
+    },
+    "esc50_house/footsteps": {
+     "value": 22.7,
+     "ci": [
+      4.5,
+      41.7
+     ],
+     "k": 5,
+     "n": 22,
+     "groups": 19
+    },
+    "esc50_house/door_wood_knock": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 19,
+     "groups": 18
+    },
+    "esc50_house/toilet_flush": {
+     "value": 11.1,
+     "ci": [
+      0.0,
+      22.4
+     ],
+     "k": 2,
+     "n": 18,
+     "groups": 18
+    },
+    "esc50_house/brushing_teeth": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 27,
+     "groups": 18
+    },
+    "esc50_house/clock_tick": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 17,
+     "groups": 17
+    },
+    "esc50_house/mouse_click": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 18,
+     "groups": 16
+    },
+    "esc50_house/door_wood_creaks": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 26,
+     "groups": 18
+    },
+    "esc50_house/pouring_water": {
+     "value": 11.5,
+     "ci": [
+      0.0,
+      27.3
+     ],
+     "k": 3,
+     "n": 26,
+     "groups": 18
+    },
+    "esc50_house/snoring": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 22,
+     "groups": 18
+    },
+    "esc50_house/coughing": {
+     "value": 0.0,
+     "ci": [
+      0.0,
+      0.0
+     ],
+     "k": 0,
+     "n": 21,
+     "groups": 20
+    }
+   }
+  }
+ }
+}
