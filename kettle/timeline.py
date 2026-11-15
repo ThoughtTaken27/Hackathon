@@ -167,10 +167,6 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
 
 # ---------------------------------------------------------------- summary sentence
 
-def _round15(t: float) -> float:
-    return round(t / 900) * 900
-
-
 def _clock(t: float, tz_offset_s: int) -> str:
     """Unix seconds -> '8:15 AM' in the viewer's time zone (offset from UTC in seconds)."""
     s = int(t + tz_offset_s) % 86400
@@ -185,20 +181,22 @@ def clock_range(a: float, z: float, tz: int) -> str:
 
 
 def _span(b: dict, tz: int) -> str:
-    """One summary item: 'cooking around 8:00–8:30 AM', 'washing up around 8:45 AM', 'TV from about 9:15 AM'."""
-    a, z = _round15(b["start"]), _round15(b["end"])
+    """One summary item, with the same exact times the timeline shows (no rounding, so the sentence never
+    contradicts the bar): 'cooking 8:05–8:25 AM', 'washing up at 8:45 AM', 'TV from 9:23 AM'."""
+    a, z = b["start"], b["end"]
     name = PHRASE[b["activity"]]
     if b["activity"] == "watching_tv" and z - a >= 3600:
-        return f"TV from about {_clock(a, tz)}"
-    if z - a < 900:
-        return f"{name} around {_clock(a, tz)}"
-    return f"{name} around {clock_range(a, z, tz)}"
+        return f"TV from {_clock(a, tz)}"
+    if _clock(a, tz) == _clock(z, tz):
+        return f"{name} at {_clock(a, tz)}"
+    return f"{name} {clock_range(a, z, tz)}"
 
 
 def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = None) -> str:
     """The calm one-line summary built only from the blocks (never invents an activity).
 
-    "So far today: cooking around 8:00–8:30, washing up around 8:45, TV from about 9:15."
+    "So far today: cooking 8:05–8:25 AM, washing up at 8:45 AM and TV from 9:23 AM."
+    Times are the exact block edges drawn on the timeline (tests/test_summary_matches_timeline.py).
     Only activity blocks count; Quiet, Not sure, Talking or TV, gaps and pauses are left out.
     Same activity within 15 minutes is merged; at most the 3 most recent items are listed.
     """
@@ -220,8 +218,9 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
     for i, b in enumerate(merged[-3:]):
         text = _span(b, tz_offset_s)
         prev = merged[-3:][i - 1] if i else None
-        if prev is not None and prev["activity"] == b["activity"]:      # "TV from about 12:45 PM and again from about 2:45 PM"
-            text = "again " + text.split(" ", 1)[1]
+        if prev is not None and prev["activity"] == b["activity"]:      # "TV from 12:50 PM and TV again from 2:50 PM"
+            name = PHRASE[b["activity"]]
+            text = f"{name} again {text[len(name) + 1:]}"
         items.append(text)
     more = len(merged) - 3
     text = "So far today: " + ", ".join(items[:-1]) + (" and " if len(items) > 1 else "") + items[-1] + "."

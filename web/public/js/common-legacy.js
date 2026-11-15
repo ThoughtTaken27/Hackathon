@@ -7,8 +7,8 @@ const ACT_COLOUR = {
   working: "--act-working",
 };
 const ACT_NAME = {
-  absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Moving about",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Working (typing)",
+  absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing",
 };
 
 async function api(path, body) {

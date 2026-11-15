@@ -226,7 +226,7 @@ function baselineChart(d, pub) {
   add("ast_zeroshot", "AST zero-shot (AudioSet labels mapped)");
   add("ced_tiny_zeroshot", "CED-tiny zero-shot (AudioSet labels mapped)");
   add("apple_zeroshot", "Apple SoundAnalysis zero-shot (what a Mac ships)");
-  add("loudness_rule", "Loudness rule (loud = moving about)");
+  add("loudness_rule", "Loudness rule (loud = some activity)");
   add("majority", "Always 'Quiet' (majority)");
   rows.push(["DCASE 2018 baseline (published, full data)", { value: pub.dcase2018_baseline.dev_cv }, "pub"]);
   rows.push(["Best DCASE 2018 entry (published)", { value: pub.best_entry.dev_cv }, "pub"]);

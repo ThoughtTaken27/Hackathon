@@ -4,9 +4,9 @@
 
 // ---------------------------------------------------------------- labels
 export const CLASSES = ["absence", "cooking", "dishwashing", "eating", "other", "social_activity", "vacuum_cleaner", "watching_tv", "working"];
-export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Moving about",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Working (typing)" };
-export const PHRASE = { absence: "quiet", cooking: "cooking", dishwashing: "washing up", eating: "eating", other: "moving about",
+export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing" };
+export const PHRASE = { absence: "quiet", cooking: "cooking", dishwashing: "washing up", eating: "eating", other: "some activity",
   social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing" };
 export const COLOUR = { absence: "--act-empty", cooking: "--act-cooking", dishwashing: "--act-washing", eating: "--act-eating",
   other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working" };
@@ -157,12 +157,11 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
   return out.sort((x, y) => x.start - y.start);
 }
 
-const round15 = (t) => pyRound(t / 900) * 900;
-function span(b, off) {
-  const a = round15(b.start), z = round15(b.end), name = PHRASE[b.activity];
-  if (b.activity === "watching_tv" && z - a >= 3600) return `TV from about ${clock(a, off)}`;
-  if (z - a < 900) return `${name} around ${clock(a, off)}`;
-  return `${name} around ${clockRange(a, z, off)}`;
+function span(b, off) {       // exact block edges, the same times the timeline shows (never rounded)
+  const a = b.start, z = b.end, name = PHRASE[b.activity];
+  if (b.activity === "watching_tv" && z - a >= 3600) return `TV from ${clock(a, off)}`;
+  if (clock(a, off) === clock(z, off)) return `${name} at ${clock(a, off)}`;
+  return `${name} ${clockRange(a, z, off)}`;
 }
 export function summary(blks, off, listeningSince = null) {
   const merged = [];
@@ -180,7 +179,7 @@ export function summary(blks, off, listeningSince = null) {
   const last3 = merged.slice(-3);
   const items = last3.map((b, i) => {
     let text = span(b, off);
-    if (i && last3[i - 1].activity === b.activity) text = "again " + text.split(" ").slice(1).join(" ");
+    if (i && last3[i - 1].activity === b.activity) { const name = PHRASE[b.activity]; text = `${name} again ${text.slice(name.length + 1)}`; }
     return text;
   });
   const more = merged.length - 3;

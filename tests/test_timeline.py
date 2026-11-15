@@ -59,8 +59,8 @@ def test_summary_facts_equal_blocks():
     events = run_of(day, "cooking", 6, dur=300) + run_of(day + 1800, "dishwashing", 2, dur=300) + run_of(day + 3600, "watching_tv", 20, dur=300)
     b = timeline.blocks(events, TH)
     s = timeline.summary(b, tz)
-    assert s.startswith("So far today: cooking around 8:00–8:30 AM")
-    assert "washing up around 8:30–8:45 AM" in s and "TV from about 9:00 AM" in s
+    assert s.startswith("So far today: cooking 8:00–8:30 AM")
+    assert "washing up 8:30–8:40 AM" in s and "TV from 9:00 AM" in s
     for word in ("ate", "eating", "fine", "normal", "safe"):
         assert word not in s.lower()
 
@@ -89,3 +89,30 @@ def test_long_gap_different_sides_or_novel_sounds_are_not_bridged():
     assert [x["state"] for x in timeline.blocks(two_sides, TH)] == ["activity", "not_sure", "activity"]
     novel = run_of(0, "cooking", 3) + [dict(e, novel=True) for e in _unsure_gap(30, 2)] + run_of(50, "cooking", 3)
     assert [x["state"] for x in timeline.blocks(novel, TH)] == ["activity", "not_sure", "activity"]
+
+
+def test_summary_times_match_timeline_on_random_days():
+    """C1: every time range in the sentence is an exact block edge on the bar (no 15-minute rounding)."""
+    import random
+    import re
+    rng = random.Random(7)
+    acts = ["cooking", "dishwashing", "eating", "watching_tv", "working", "absence", "other"]
+    for _ in range(200):
+        t, events = 6 * 3600, []
+        for _seg in range(rng.randint(1, 12)):
+            n = rng.randint(1, 8)
+            events += run_of(t, rng.choice(acts), n, dur=rng.choice([10, 60, 150, 300]), conf=rng.choice([0.5, 0.9]))
+            t = events[-1]["end"] + rng.choice([0, 0, 0, 200])
+        b = timeline.blocks(events, TH)
+        s = timeline.summary(b, 0)
+        shown = {timeline.clock_range(x["start"], x["end"], 0) for x in b} | {timeline._clock(x["start"], 0) for x in b}
+        edges = {timeline._clock(x["start"], 0) for x in b} | {timeline._clock(x["end"], 0) for x in b}
+        for rng_text in re.findall(r"\d{1,2}:\d\d(?: [AP]M)?–\d{1,2}:\d\d [AP]M", s):
+            a, z = rng_text.split("–")
+            z_ampm = z[-2:]
+            a_full = a if a.endswith("M") else f"{a} {z_ampm}"
+            assert a_full in edges or any(e.startswith(a + " ") for e in edges), (s, rng_text)
+            assert z in edges, (s, rng_text)
+        for single in re.findall(r"(?:at|from) (\d{1,2}:\d\d [AP]M)", s):
+            assert single in edges, (s, single)
+        assert shown  # blocks exist whenever the sentence lists something
