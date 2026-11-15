@@ -55,3 +55,12 @@
   fake microphone: alert stored after 12 s, kitchen says "Kettle told Asha", family banner shown, cleared by "I've seen this";
   17 ordinary and confusing sounds (cooking, TV, voices, cough, crying, laughing, glass breaking, siren, dog, alarm clock, knock),
   about 4 windows each: no alert.
+
+## Sun Nov 15, ~2:50–3:10 PM CT: How sure, FAQ, a family-page fix (handover §6)
+- How sure: new section "Kitchen naming after a live test in a real kitchen" (rules 2c/2d before → after per set), the named-sound
+  table (precision, recall, false names, shown/hidden) and "Tried and not shipped" (judge, 2e/2f), all from
+  `web/public/data/accuracy.json` written by `tools/export_accuracy.py` from `results/*.json`.
+- FAQ, family footer, README: the "no alerts" wording was out of date after 3.6; now says which urgent notes exist and that
+  Kettle can't call for help.
+- `/family` opened without a link threw an error (listeners on elements that aren't there); guarded.
+- F4 (hero "Typing" on a Silence window, TV sample opening on Conversation): gone with the sample days rebuilt this morning.

@@ -141,11 +141,11 @@ function openSheet(which) { which.classList.add("open"); scrim.classList.add("op
 function closeSheets() { for (const s of document.querySelectorAll(".sheet")) s.classList.remove("open"); scrim.classList.remove("open"); }
 scrim.addEventListener("click", closeSheets);
 addEventListener("keydown", (e) => e.key === "Escape" && closeSheets());
-$("#print").addEventListener("click", () => window.print());
-$("#edit-rules").addEventListener("click", () => { draft = srv.rules.map((r) => ({ ...r })); fields(); openSheet(sheet); });
-$("#cancel-rules").addEventListener("click", closeSheets);
-$("#add-rule").addEventListener("click", () => { if (draft.length < 3) { draft.push({ type: "kitchen_by", time: "10:00" }); fields(); } });
-$("#save-rules").addEventListener("click", async () => {
+$("#print")?.addEventListener("click", () => window.print());
+$("#edit-rules")?.addEventListener("click", () => { draft = srv.rules.map((r) => ({ ...r })); fields(); openSheet(sheet); });
+$("#cancel-rules")?.addEventListener("click", closeSheets);
+$("#add-rule")?.addEventListener("click", () => { if (draft.length < 3) { draft.push({ type: "kitchen_by", time: "10:00" }); fields(); } });
+$("#save-rules")?.addEventListener("click", async () => {
   try { const r = await api(`/api/h/${link.id}/rules`, { method: "POST", key: link.key, body: { rules: draft } }); srv = r.state; closeSheets(); draw(); toast("Checks saved"); }
   catch (e) { $("#sheet-msg").textContent = e.message; }
 });
@@ -170,7 +170,7 @@ function fields() {
 }
 
 // ---------------------------------------------------------------- settings: invite, rename, delete
-$("#menu-btn").addEventListener("click", async () => {
+$("#menu-btn")?.addEventListener("click", async () => {
   if (!srv) return;
   const body = $("#settings-body"); body.textContent = "";
   const n = srv.names;

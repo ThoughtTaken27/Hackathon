@@ -4,7 +4,7 @@
 
 Track: AI + Health ("manage an ongoing one better"). Built for an adult child caring from a distance for a parent with early memory loss (invented persona: Meera, 34, and her father Ravi, 79, who consents on his own kitchen screen and can pause it).
 
-> **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't detect falls or call for help.
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't call for help. Its few urgent notes (a smoke alarm, screaming, a crash then a cry) ask "Are you OK?" on the kitchen screen first and appear on the family view only when it is open.
 
 | Meera's phone ("Dad's kitchen today") | Dad's kitchen laptop |
 |---|---|
