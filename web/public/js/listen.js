@@ -91,7 +91,9 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
     if (filled < ring.length || sinceHop < HOP_S * SR || busy) return;
     sinceHop = 0; busy = true;
     try {
-      const r = await classify(ring.slice());
+      const snap = ring.slice();
+      let winPeak = 0; for (let i = 0; i < snap.length; i += 4) { const a = Math.abs(snap[i]); if (a > winPeak) winPeak = a; }
+      const r = { ...(await classify(snap)), peak: winPeak };
       const end = clockNow();
       const start = prevEnd && end - prevEnd < 3 * HOP_S ? prevEnd : end - WIN_S;
       prevEnd = end;

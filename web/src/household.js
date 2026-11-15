@@ -91,7 +91,15 @@ export async function handle(store, { method, route, key, body, now }) {
   if (method === "POST" && route === "action") {
     if (role !== "kitchen") return { status: 403, body: { error: "Only the person at the kitchen laptop can do this." } };
     const type = body?.type;
-    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic"].includes(type)) return { status: 400, body: { error: "unknown action" } };
+    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "device"].includes(type)) return { status: 400, body: { error: "unknown action" } };
+    if (type === "device") {            // allowed before consent: it says what the device is, nothing about the room
+      if (!["phone", "tablet", "laptop"].includes(body.kind)) return { status: 400, body: { error: "bad device" } };
+      const level = body.level >= 0 && body.level <= 1 ? Math.round(body.level * 100) / 100 : null;
+      const ms = body.ms > 0 && body.ms < 600000 ? Math.round(body.ms) : null;
+      actions.device(s, now, { kind: body.kind, charging: typeof body.charging === "boolean" ? body.charging : null, level, ms });
+      changed = true;
+      return done(200);
+    }
     if (type !== "consent" && !s.consent) return { status: 409, body: { error: "Kettle needs a yes first." } };
     if (type === "pause") {
       const minutes = body.minutes == null ? null : Math.max(1, Math.min(24 * 60, +body.minutes || 15));

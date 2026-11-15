@@ -67,6 +67,37 @@ function renderResults(box, r) {
     box.append(el("p", { class: "verdict", text: `For the kitchen, on ${ev ? "test clips it had never heard" : "development clips"}: Kettle caught ${kc.cooking.recall.value.toFixed(0)}% of cooking, ${kc.dishwashing.recall.value.toFixed(0)}% of washing up and ${kc.eating.recall.value.toFixed(0)}% of eating. When it isn't sure, it says "Not sure" instead of guessing.` }));
   }
   box.append(el("p", { class: "gap", text: verdict(per, main.ours_ch0.confusion) }));
+  // outside the research home (results/other_homes.json, eval/PREREGISTER-V2.md): the honest headline
+  const oh = r.other_homes && r.other_homes.test ? r.other_homes : null;
+  if (oh) {
+    const f = (x) => `${x.value.toFixed(1)}%`, rng = (x) => x.k === 0 ? `0 of ${x.n} · true rate likely under ${(300 / x.n).toFixed(1)}% (rule of three)` : `${x.k} of ${x.n} · 95% CI ${x.ci[0].toFixed(0)}–${x.ci[1].toFixed(0)}`;
+    const a = oh.test.v1, b = oh.test.v2, ph = oh.post_hoc;
+    const cell = (x, label, sub) => el("div", { class: "stat" }, el("p", { class: "stat-n num", text: f(x) }), el("p", { class: "meta", text: label }), el("p", { class: "meta muted", text: sub }));
+    const kids = [
+      el("p", { class: "gap", text: `Everything below this box comes from one research home. So we tested Kettle on ${oh.test.v1.desed_kitchen_caught.n + oh.test.v1.desed_false_kitchen.n} ten-second clips from other people's homes that it had never heard (public YouTube home videos, labelled by the dataset's authors). The rule we first shipped showed a kitchen activity for only ${f(a.desed_kitchen_caught)} of real kitchen clips: it had learned one home, and flagged almost everything else as "unlike anything it learned".` }),
+      el("div", { class: "stat-row" },
+        cell(a.desed_kitchen_caught, "kitchen clips caught, first rule", rng(a.desed_kitchen_caught)),
+        cell(b.desed_kitchen_caught, "kitchen clips caught, with the second opinion", rng(b.desed_kitchen_caught)),
+        cell(b.desed_false_kitchen, "non-kitchen clips wrongly called kitchen (vacuum, shaver, speech, pets, alarms)", rng(b.desed_false_kitchen))),
+      el("p", { text: `The fix: the sound model under Kettle was pretrained on about 2 million clips from many places and still names general sounds ("frying", "dishes", "vacuum cleaner"). When Kettle's own one-home layer has no answer, those general sounds may name a kitchen activity; when it says "cooking" but the general sounds hear a motor, the label is withdrawn. The lists and the threshold were chosen on one half of the clips and scored once on the other half.` }),
+    ];
+    if (ph) kids.push(el("p", { class: "meta", text: `Where it still fails (looked at after the test, so a description): frying ${ph.test.Frying.k} of ${ph.test.Frying.n} and dishes ${ph.test.Dishes.k} of ${ph.test.Dishes.n} caught, but blenders ${ph.test.Blender.k} of ${ph.test.Blender.n}. The general sounds can't tell a blender from a vacuum cleaner, so Kettle misses blenders rather than call vacuuming "cooking".` }));
+    kids.push(el("p", { class: "meta", text: `A second public set of close-up kitchen sounds (Kitchen20): ${f(a.k20_activity_caught)} → ${f(b.k20_activity_caught)} caught (${b.k20_activity_caught.k} of ${b.k20_activity_caught.n}); fridge, dishwasher, sweeping and cupboards wrongly called kitchen activity ${f(a.k20_false_kitchen)} → ${f(b.k20_false_kitchen)} (${b.k20_false_kitchen.k} of ${b.k20_false_kitchen.n}). Household sounds from ESC-50 (vacuum, washing machine, typing, footsteps, toilet flush…): ${f(b.esc_false_kitchen)} wrongly called kitchen (${b.esc_false_kitchen.k} of ${b.esc_false_kitchen.n}). In the research home the second opinion changes little: kitchen windows caught ${f(oh.sins_dev.v1.kitchen_caught)} → ${f(oh.sins_dev.v2.kitchen_caught)}, false kitchen ${f(oh.sins_dev.v1.false_kitchen)} → ${f(oh.sins_dev.v2.false_kitchen)}.` }));
+    kids.push(el("p", { class: "meta muted", text: `What this does not show: these are 10-second clips, often recorded close to the sound, and ${oh.dropped_audioset} clips that overlap the sound model's own training videos were dropped. It is other homes and other microphones, not a device across a real kitchen for a whole morning. Tested ${oh.made}; the plan was written down before the test half was scored (eval/PREREGISTER-V2.md).` }));
+    box.append(section("Outside the research home: the test that changed Kettle", "other-homes", ...kids));
+  }
+  const stz = r.stress;
+  if (stz) {
+    const row = (name, obj, keys) => el("tr", {}, el("td", { text: name }), ...keys.map((k) => el("td", { class: "num", text: `${obj[k].toFixed(0)}%` })));
+    const gk = ["0", "-6", "-12", "-18", "-24"].filter((k) => k in stz.gain.research_home), tk = ["none", "10", "5", "0", "-5"].filter((k) => k in stz.tv.research_home);   // fixed order: JS sorts number-like keys
+    const t1 = el("table", {}, el("thead", {}, el("tr", {}, el("th", { text: "Kitchen sound turned down by" }), ...gk.map((g) => el("th", { class: "num", text: g === "0" ? "not changed" : `${-Number(g)} dB` })))),
+      el("tbody", {}, row("Research home", stz.gain.research_home, gk), row("Other homes", stz.gain.other_homes, gk)));
+    const t2 = el("table", { style: "margin-top:14px" }, el("thead", {}, el("tr", {}, el("th", { text: "TV on underneath (kitchen sound vs TV)" }), ...tk.map((k) => el("th", { class: "num", text: k === "none" ? "no TV" : `${k > 0 ? "+" : ""}${k} dB` })))),
+      el("tbody", {}, row("Research home", stz.tv.research_home, tk), row("Other homes", stz.tv.other_homes, tk)));
+    box.append(section("Stress tests: a quieter kitchen, and a TV left on", "stress", el("div", { class: "scroll-x" }, t1, t2),
+      el("p", { class: "meta muted", style: "margin-top:8px", text: `Share of kitchen clips still shown as a kitchen activity. Turning the sound down imitates a device further from the stove or gentler cooking; every 6 dB is roughly a doubling of distance. Research home: ${stz.n.research_home} clips the layer trained on, so read the drop, not the level. Other homes: ${stz.n.other_homes} frying and dishes clips. TV clips alone were called kitchen activity ${stz.tv_alone_false_kitchen.toFixed(1)}% of the time.` })));
+  }
+
   // lead with the measured gap (addendum item 5): what a Mac already ships vs Kettle, same clips, same metric
   const apple = ev ? ev.baselines && ev.baselines.apple_zeroshot : d.baselines.apple_zeroshot && d.baselines.apple_zeroshot.macro_f1;
   const oursHead = ev ? (ev.slices.unknown || ev.slices.all).ch0 : d.ours_ch0.macro_f1;

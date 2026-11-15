@@ -184,7 +184,7 @@ def api_results():
     if not p.exists():
         return {"status": "missing"}
     out = json.loads(p.read_text())
-    for extra in ("failures.json", "privacy_check.json", "eval_run.json", "runtime.json"):
+    for extra in ("failures.json", "privacy_check.json", "eval_run.json", "runtime.json", "other_homes.json", "stress.json"):
         q = RESULTS / extra
         if q.exists():
             out[extra.split(".")[0]] = json.loads(q.read_text())

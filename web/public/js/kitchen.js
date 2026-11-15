@@ -1,11 +1,15 @@
-// Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this laptop, sends only labels.
+// Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this device, sends only labels.
 import { today as computeToday, canListen } from "./core.js";
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast } from "./ui.js";
 import { loadModel, startMic, HOP_S } from "./listen.js";
 
+// What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
+// can be a spare phone or tablet on a charger as well as a laptop.
+const UA = navigator.userAgent || "";
+const DEVICE = /iPad|Tablet|Android(?!.*Mobile)/.test(UA) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(UA)) ? "tablet" : /Android|iPhone|iPod|Mobile/.test(UA) ? "phone" : "laptop";
 const link = linkFromHash("kitchen");
 const ui = { step: "intro", pauseMenu: false, mic: "idle", model: 0, down: false, failures: 0, showChip: true, resumedAt: 0, resumedText: "" };
-let srv = null, events = [], queue = [], mic = null, wake = null, t = null;
+let srv = null, events = [], queue = [], mic = null, wake = null, t = null, silentRun = 0, flushing = false;
 const bar = dayBar($("#bar"), { big: true });
 const QKEY = link ? `kettle.queue.${link.id}` : null;
 try { queue = QKEY ? JSON.parse(localStorage.getItem(QKEY)) || [] : []; } catch { queue = []; }
@@ -17,7 +21,7 @@ function speak(lines) { if (!("speechSynthesis" in window)) return; speechSynthe
 // ---------------------------------------------------------------- not paired yet: type the code
 if (!link) {
   $("#status").dataset.state = "never";
-  $("#head").textContent = "Connect this laptop to your family";
+  $("#head").textContent = `Connect this ${DEVICE} to your family`;
   const inp = el("input", { class: "input code-input", maxlength: 7, autocomplete: "off", autocapitalize: "characters", spellcheck: "false", "aria-label": "Six-letter code", placeholder: "ABC 123" });
   const err = el("p", { class: "err", role: "alert" });
   const go = async () => {
@@ -37,6 +41,7 @@ if (!link) {
 // ---------------------------------------------------------------- paired
 async function boot() {
   await poll();
+  watchBattery();
   setInterval(poll, 5000);
   setInterval(() => { if (srv) draw(); }, 1000);
   setInterval(flush, 4000);
@@ -69,12 +74,14 @@ async function act(type, extra = {}) {
   catch (e) { toast(e.message || "Couldn't reach Kettle. Trying again."); }
 }
 async function flush() {
-  if (!queue.length || !srv || !canListen(srv, now())) return;
+  if (flushing || !queue.length || !srv || !canListen(srv, now())) return;      // one upload at a time: a window is sent once
+  flushing = true;
   const batch = queue.slice(0, 60);
   try {
     await api(`/api/h/${link.id}/events`, { method: "POST", key: link.key, body: { events: batch, tz: Intl.DateTimeFormat().resolvedOptions().timeZone }, retries: 1 });
     queue = queue.slice(batch.length); saveQueue(); ui.down = false;
   } catch (e) { if (e.status === 409) { queue = []; saveQueue(); } }
+  finally { flushing = false; }
 }
 
 // ---------------------------------------------------------------- microphone + model
@@ -90,6 +97,11 @@ async function startListening() {
       clockNow: now,
       onLevel: (v) => meter(v),
       onWindow: (w) => {
+        if (dev.ms == null) { dev.ms = w.ms; reportDevice(); }
+        // A muted or switched-off microphone delivers exact silence. That is "not listening", never "Quiet": tell the family.
+        silentRun = w.peak < 1e-4 ? silentRun + 1 : 0;
+        if (silentRun >= 3) { if (silentRun === 3) act("mic", { state: "blocked" }); return; }
+        if (silentRun === 0 && srv && srv.mic === "blocked") act("mic", { state: "ok" });
         const ev = { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds };
         events.push(ev); queue.push(ev); saveQueue(); flush();
         if (srv) srv.last_window_t = ev.end;
@@ -105,6 +117,32 @@ async function startListening() {
   draw();
 }
 function stopListening() { if (mic) { mic.stop(); mic = null; } if (wake) { wake.release().catch(() => {}); wake = null; } if (ui.mic === "on") ui.mic = "idle"; }
+// ---------------------------------------------------------------- device report: kind, plugged in or not, and how fast it labels
+const dev = { kind: DEVICE, charging: null, level: null, ms: null, sent: "" };
+function reportDevice() {
+  const key = `${dev.charging}|${dev.level == null ? "" : Math.round(dev.level * 20)}|${dev.ms == null ? "" : 1}`;
+  if (key === dev.sent || !link) return;
+  dev.sent = key;
+  api(`/api/h/${link.id}/action`, { method: "POST", key: link.key, body: { type: "device", kind: dev.kind, charging: dev.charging, level: dev.level, ms: dev.ms } })
+    .then((r) => { srv = r.state; draw(); }).catch(() => { dev.sent = ""; });
+}
+async function watchBattery() {
+  try {
+    if (!navigator.getBattery) return reportDevice();          // Safari and Firefox don't share battery state; Kettle then says nothing about it
+    const b = await navigator.getBattery();
+    const read = () => { dev.charging = b.charging; dev.level = b.level; reportDevice(); draw(); };
+    b.addEventListener("chargingchange", read); b.addEventListener("levelchange", read); read();
+  } catch { reportDevice(); }
+}
+/** Plain lines about this device, shown under the listening headline: speed, power, and the screen staying on. */
+function deviceLines() {
+  const out = [];
+  if (dev.ms != null) out.push(dev.ms > 8000 ? `This ${DEVICE} is slow for Kettle: it needs ${(dev.ms / 1000).toFixed(1)} s to label 10 seconds of sound, so some moments are skipped.`
+    : `This ${DEVICE} labels 10 seconds of sound in ${(dev.ms / 1000).toFixed(1)} s.`);
+  if (dev.charging === false) out.push(`Plug this ${DEVICE} in. Kettle listens all day and needs the power${dev.level != null ? ` (battery ${Math.round(dev.level * 100)}%)` : ""}.`);
+  if (DEVICE !== "laptop") out.push(`Leave this page open with the screen on. Kettle keeps it awake while it listens${"wakeLock" in navigator ? "" : " if this " + DEVICE + "'s auto-lock is set to Never"}.`);
+  return out;
+}
 async function lockScreen() { try { if ("wakeLock" in navigator && !wake) { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => (wake = null)); } } catch {} }
 let meterEl = null, lastMeter = 0;
 function meter(v) {
@@ -116,22 +154,22 @@ function meter(v) {
 // ---------------------------------------------------------------- what to show (same states and words as the Python kitchen screen)
 function screen(t) {
   const n = t.names, k = t.kitchen, hb = t.heartbeat;
-  if (ui.gone) return { state: "error", head: "This laptop isn't connected any more.", body: [ui.gone, "Ask your family member for a new code."],
+  if (ui.gone) return { state: "error", head: `This ${DEVICE} isn't connected any more.`, body: [ui.gone, "Ask your family member for a new code."],
     controls: [el("a", { class: "btn kbtn primary", href: "/kitchen", text: "Enter a new code", onclick: () => { forgetHome(link.id); } })] };
   if (ui.down) return { state: "error", head: "Kettle can't reach the internet.", body: ["It keeps listening and will send what it heard when the connection is back."],
     controls: [button("Try again", () => poll(), "primary")], bar: true, chip: true };
   if (!k.consent) {
     if (ui.step === "teachback") return { state: "never", head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`],
       controls: [button(`Yes, ${n.caregiver} can see this`, () => act("consent"), "primary"), button("No, not now", () => { ui.step = "declined"; draw(); })] };
-    if (ui.step === "declined") return { state: "off", head: "Kettle is off.", body: ["This laptop isn't listening. Press Start when you want it on."],
+    if (ui.step === "declined") return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`],
       controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
-    const lines = ["The program is called Kettle. It uses this laptop's microphone and only notes the kind of sound, like 'dishes' or 'TV'.",
-      "It keeps no recordings and no words. The sound never leaves this laptop.", `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
-    return { state: "never", head: "This laptop listens for kitchen sounds.", body: lines, example: true,
+    const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
+      `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
+    return { state: "never", head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
-        button("Read this to me", () => speak(["This laptop listens for kitchen sounds.", ...lines]), "quiet-k")] };
+        button("Read this to me", () => speak([`This ${DEVICE} listens for kitchen sounds.`, ...lines]), "quiet-k")] };
   }
-  if (k.off) return { state: "off", head: "Kettle is off.", body: ["This laptop isn't listening. Press Start when you want it on."], controls: [button("Start", () => act("start"), "primary")] };
+  if (k.off) return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`], controls: [button("Start", () => act("start"), "primary")] };
   if (k.paused) {
     const weekly = k.pause_reason === "weekly";
     const until = weekly ? "Kettle waits for your answer before listening again." : hb.until_text ? `Starts listening again at ${hb.until_text}${hb.text.includes("tomorrow") ? " tomorrow" : ""}.` : "";
@@ -141,14 +179,14 @@ function screen(t) {
   }
   if (k.weekly_due) return { state: hb.state, head: "Kettle has been on for a week. Keep it on?", body: [`${n.caregiver} sees the kinds of sounds, not recordings or words.`, "If nobody answers, Kettle pauses tomorrow until you choose."],
     controls: [button("Keep it on", () => act("keep_on"), "primary"), button("Turn it off", () => act("off"))] };
-  if (ui.mic === "loading") return { state: "starting", head: "Getting Kettle ready…", body: ["Kettle's sound model is loading onto this laptop. This happens once."], progress: true, controls: [] };
+  if (ui.mic === "loading") return { state: "starting", head: "Getting Kettle ready…", body: [`Kettle's sound model is loading onto this ${DEVICE}. This happens once.`], progress: true, controls: [] };
   if (ui.mic === "model_failed") return { state: "error", head: "Kettle couldn't load.", body: ["Check the internet connection, then try again."], controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
-  if (ui.mic === "asking" || ui.mic === "idle") return { state: "starting", head: "A box will pop up about the microphone.", body: ["Press Allow. Only this laptop uses it."],
+  if (ui.mic === "asking" || ui.mic === "idle") return { state: "starting", head: "A box will pop up about the microphone.", body: [`Press Allow. Only this ${DEVICE} uses it.`],
     controls: [el("button", { class: "btn quiet", type: "button", text: "No box appeared? Try again", style: "font-size:var(--fs-lead)", onclick: () => { stopListening(); ui.mic = "idle"; sync(); } })] };
   if (ui.mic === "denied" || ui.mic === "none") {
     const none = ui.mic === "none";
     return { state: "error-soft", head: none ? "No microphone found." : "Kettle can't hear the kitchen.",
-      body: [none ? "Plug one in, or use a laptop with a built-in microphone." : `The microphone is switched off for Kettle. This isn't something you did wrong. ${n.caregiver} or a helper can turn it on.`],
+      body: [none ? "Plug one in, or use a phone, tablet or laptop with a built-in microphone." : `The microphone is switched off for Kettle. This isn't something you did wrong. ${n.caregiver} or a helper can turn it on.`],
       helper: none ? null : ["Steps for a helper", "Chrome: click the icon left of the address, then Microphone, then Allow, then Try again. Safari: Settings for this website, then Microphone, then Allow."],
       controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
   }
@@ -159,7 +197,7 @@ function screen(t) {
   if (Date.now() - ui.resumedAt < 10000 && ui.resumedText) return { ...base, state: "listening", head: "Kettle is listening again.", body: [ui.resumedText] };
   if (hb.state === "starting") return { ...base, state: "starting", head: "Listening…", body: ["The first sound label appears in about 10 seconds."] };
   return { ...base, state: hb.state === "listening" ? "listening" : "starting", head: "Listening for kitchen sounds",
-    body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`] };
+    body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines()] };
 }
 
 let exampleNode = null;

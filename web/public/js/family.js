@@ -57,7 +57,7 @@ function draw() {
   $("#title").textContent = `${n.parent}'s kitchen today`;
   $("#date").textContent = `${t.date_text} · ${n.parent}'s time`;
   $("#hb").dataset.state = t.heartbeat.state;
-  setText($("#hb .text"), t.heartbeat.text);
+  setText($("#hb .text"), t.heartbeat.battery ? `${t.heartbeat.text} · ${t.heartbeat.battery}` : t.heartbeat.text);
   setText($("#summary"), t.summary || (t.heartbeat.state === "never" ? "" : "Nothing heard yet today."));
   $("#foot-who").textContent = `${n.parent} sees the same day on the kitchen screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);

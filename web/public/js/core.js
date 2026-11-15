@@ -336,6 +336,8 @@ export const actions = {
   resume(s, now) { closePause(s, now); Object.assign(s, { paused_at: null, paused_until: null, pause_reason: null, started_at: now }); return log(s, now, "resume"); },
   keep_on(s, now) { s.last_confirm = now; if (s.pause_reason === "weekly") actions.resume(s, now); return log(s, now, "keep_on"); },
   mic(s, now, { state }) { Object.assign(s, { mic: state, mic_at: now }); if (state === "ok") s.started_at = now; return log(s, now, "mic", { state }); },
+  // what the kitchen device is and whether it's plugged in: so the family hears "on battery, 41%" before it goes quiet
+  device(s, now, { kind, charging = null, level = null, ms = null } = {}) { s.device = { kind, charging, level, ms, at: now }; return null; },
 };
 export function weeklyDue(s, now) { return !!s.consent && !s.off_at && s.last_confirm != null && now - s.last_confirm >= WEEK_S; }
 export function tick(s, now) {
@@ -381,23 +383,32 @@ function ago(sec) {
 }
 
 // ---------------------------------------------------------------- what both screens show (kettle/view.py)
-export function heartbeatLine(hb, now, off, names) {
-  const P = names.parent, c = (t) => (t ? clock(t, off) : "");
+/** How the kitchen device reads in a sentence. dev = { kind: "phone" | "tablet" | "laptop", charging, level } or null (older homes: a laptop). */
+export function deviceWord(dev) { return dev && ["phone", "tablet", "laptop"].includes(dev.kind) ? dev.kind : "laptop"; }
+/** A calm warning before the kitchen device runs out: "The kitchen phone is on battery (41%). Plug it in to keep Kettle listening." */
+export function batteryLine(dev) {
+  if (!dev || dev.charging !== false || !(dev.level >= 0)) return "";
+  return `The kitchen ${deviceWord(dev)} is on battery (${Math.round(dev.level * 100)}%). Plug it in to keep Kettle listening.`;
+}
+export function heartbeatLine(hb, now, off, names, dev = null) {
+  const P = names.parent, c = (t) => (t ? clock(t, off) : ""), D = deviceWord(dev);
+  const asleep = D === "laptop" ? "laptop asleep, closed or off" : `${D} asleep, off, or Kettle isn't on its screen`;
   const { state: st, since, until } = hb;
   let text = "";
   if (st === "never") text = `Kettle isn't on yet. It starts when ${P} chooses to turn it on.`;
   else if (st === "off") text = `Turned off by ${P} at ${c(since)}.`;
   else if (st === "starting") text = "Starting… the first label appears in about 10 seconds.";
   else if (st === "listening") { const a = now - hb.last_heard; text = a < 10 ? "Listening · last heard just now" : `Listening · last heard ${ago(a)} ago`; }
-  else if (st === "stale") text = since ? `Not listening since ${c(since)} (laptop asleep, closed or off). Nothing is known after that.` : "Not listening. Nothing is known about today yet.";
+  else if (st === "stale") text = since ? `Not listening since ${c(since)} (${asleep}). Nothing is known after that.` : "Not listening. Nothing is known about today yet.";
   else if (st === "paused") {
     const tomorrow = localMidnight(until, off) !== localMidnight(now, off);
     let tail = tomorrow ? `until tomorrow at ${c(until)} at the latest` : `resumes at ${c(until)}`;
     if (until - now > 300 * 86400) tail = `until ${P} answers the weekly question`;
     text = `Paused by ${P} at ${c(since)} · ${tail}`;
-  } else if (st === "mic_blocked") text = "Not listening: the microphone is blocked on the kitchen laptop.";
-  else if (st === "no_mic") text = "Not listening: no microphone was found on the kitchen laptop.";
-  return { state: st, text, since, until, last_heard: hb.last_heard, since_text: c(since), until_text: c(until) };
+  } else if (st === "mic_blocked") text = `Not listening: the microphone is blocked or silent on the kitchen ${D}.`.replace(" or silent on the kitchen laptop", " on the kitchen laptop");
+  else if (st === "no_mic") text = `Not listening: no microphone was found on the kitchen ${D}.`;
+  const battery = st === "listening" || st === "starting" ? batteryLine(dev) : "";
+  return { state: st, text, since, until, last_heard: hb.last_heard, since_text: c(since), until_text: c(until), battery };
 }
 export function blockView(b, off, names) {
   const rng = clockRange(b.start, b.end, off);
@@ -451,7 +462,8 @@ export function today(s, events, now, { theta, tz = null, off = null, day0 = nul
   const last = evs.length ? evs[evs.length - 1] : null;
   return {
     now, now_text: clock(now, off), day0, tz_offset: off, date_text: dateText(now, off), names,
-    heartbeat: heartbeatLine(hb, now, off, names),
+    heartbeat: heartbeatLine(hb, now, off, names, s.device || null),
+    device: s.device || null,
     blocks: blks.map((b) => blockView(b, off, names)),
     summary: sum,
     rules: evaluateRules(s.rules || DEFAULT_RULES, blks, now, day0, off),
