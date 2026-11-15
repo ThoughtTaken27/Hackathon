@@ -13,6 +13,16 @@ export const COLOUR = { absence: "--act-empty", cooking: "--act-cooking", dishwa
 export const MEAL = new Set(["cooking", "dishwashing", "eating"]);
 export const ACTIVE = new Set(CLASSES.filter((c) => c !== "absence"));
 const TALK_OR_TV_MARGIN = 0.15;
+// The named household sound types (web/public/model/kinds.json, measured by eval/beyond.py). Order = display order.
+export const KIND_NAMES = { kettle: "Kettle or a hot drink", frying: "Frying or sizzling", chopping: "Chopping", blender: "Blender",
+  microwave: "Microwave", dishes: "Dishes and cutlery", tap: "Running water", cupboard: "Cupboards and drawers", door: "A door",
+  doorbell: "Doorbell or knocking", phone: "Phone ringing", alarm: "An alarm or beeping", tv: "TV or radio", vacuum: "Vacuum cleaner",
+  typing: "Typing", footsteps: "Footsteps", pet: "A dog or cat", glass: "Glass breaking" };
+// Labels the parent may keep private (plan D2): they reveal visits and TV habits.
+export const HIDEABLE = ["social_activity", "watching_tv"];
+export const WHY_TEXT = { appliance: "only appliance hum, no kitchen sounds", novel: "a sound unlike anything it learned",
+  close: "two activities sounded alike", mixed: "the sounds kept changing", low: "it wasn't sure enough" };
+const WHY_ORDER = ["appliance", "novel", "close", "mixed", "low"];
 export const WEEK_S = 7 * 86400;
 
 // ---------------------------------------------------------------- Python-compatible number helpers
@@ -60,7 +70,8 @@ export function staleS(hop) { return 2 * hop + 30; }
 export const BRIDGE_S = 30;
 
 export function rawLabel(ev, theta) {
-  if (ev.novel) return "not_sure";
+  if (ev.private) return "private";
+  if (ev.novel || ev.hold) return "not_sure";
   const p = ev.probs;
   const top = Object.keys(p).sort((a, b) => p[b] - p[a]);
   const pair = new Set([top[0], top[1]]);
@@ -99,14 +110,33 @@ export function runs(events, gap) {
   }
   return out;
 }
-function stateOf(label) { return label === "absence" ? "empty" : label === "not_sure" || label === "talk_or_tv" ? label : "activity"; }
+function stateOf(label) { return label === "absence" ? "empty" : ["not_sure", "talk_or_tv", "private"].includes(label) ? label : "activity"; }
+/** Why a Not sure block couldn't be named, by majority of its windows (plan F10; kettle/timeline.py why_not_sure). */
+export function whyNotSure(evs, theta) {
+  const votes = Object.fromEntries(WHY_ORDER.map((k) => [k, 0]));
+  for (const e of evs) {
+    const p = Object.values(e.probs).sort((a, b) => b - a);
+    if (e.hold === "appliance") votes.appliance++;
+    else if (e.novel) votes.novel++;
+    else if (p[0] >= theta) votes.mixed++;
+    else if (p[0] - p[1] < TALK_OR_TV_MARGIN) votes.close++;
+    else votes.low++;
+  }
+  return WHY_ORDER.reduce((best, k) => (votes[k] > votes[best] ? k : best), WHY_ORDER[0]);
+}
+/** Named sound types in these windows: { id: { n, at } } (at = start of the first window naming it). */
+function kindsIn(evs) {
+  const out = {};
+  for (const e of evs) for (const k of e.kinds || []) { if (!out[k]) out[k] = { n: 0, at: e.start }; out[k].n++; }
+  return out;
+}
 export function mergeSounds(lists, k = 3) {
   const total = new Map();
   for (const lst of lists) for (const s of lst || []) total.set(s.name, (total.get(s.name) || 0) + s.score);
   const n = Math.max(1, lists.length);
   return [...total.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(([name, v]) => ({ name, score: round3(v / n) }));
 }
-function makeBlock(evs, label) {
+function makeBlock(evs, label, theta = 0.66) {
   let conf;
   if (label === "not_sure" || label === "talk_or_tv") conf = evs.reduce((s, e) => s + Math.max(...Object.values(e.probs)), 0) / evs.length;
   else conf = evs.reduce((s, e) => s + (e.probs[label] || 0), 0) / evs.length;
@@ -116,7 +146,8 @@ function makeBlock(evs, label) {
   const st = stateOf(label);
   return { start: evs[0].start, end: evs[evs.length - 1].end, state: st, activity: st === "activity" || st === "empty" ? label : null,
     conf: round3(conf), n_windows: evs.length, sounds: mergeSounds(evs.map((e) => e.sounds)),
-    guesses: top2.map((g) => ({ activity: g, p: round3(guesses[g]) })) };
+    guesses: top2.map((g) => ({ activity: g, p: round3(guesses[g]) })), kinds: kindsIn(evs),
+    taught: evs.filter((e) => e.taught).length, ...(label === "not_sure" ? { why: whyNotSure(evs, theta) } : {}) };
 }
 function subtract(a, b, cuts) {
   let parts = [[a, b]];
@@ -131,7 +162,7 @@ function subtract(a, b, cuts) {
   }
   return parts.filter(([p0, p1]) => p1 - p0 > 1);
 }
-const emptyBlock = (start, end, state, extra = {}) => ({ start, end, state, activity: null, conf: null, n_windows: 0, sounds: [], guesses: [], ...extra });
+const emptyBlock = (start, end, state, extra = {}) => ({ start, end, state, activity: null, conf: null, n_windows: 0, sounds: [], guesses: [], kinds: {}, ...extra });
 
 export function blocks(events, theta, { pauses = [], listeningFrom = null, now = null, listeningNow = false, gap = staleS(2), bridgeS = BRIDGE_S } = {}) {
   const evs = events.slice().sort((a, b) => a.end - b.end);
@@ -142,7 +173,7 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
     while (i < run.length) {
       let j = i;
       while (j + 1 < run.length && labs[j + 1] === labs[i]) j++;
-      out.push(makeBlock(run.slice(i, j + 1), labs[i]));
+      out.push(makeBlock(run.slice(i, j + 1), labs[i], theta));
       i = j + 1;
     }
   }
@@ -188,7 +219,7 @@ export function summary(blks, off, listeningSince = null) {
   return text;
 }
 export function displayName(b) {
-  return { not_sure: "Not sure", talk_or_tv: "Talking or TV", not_listening: "Not listening", paused: "Paused" }[b.state] || DISPLAY[b.activity];
+  return { not_sure: "Not sure", talk_or_tv: "Talking or TV", not_listening: "Not listening", paused: "Paused", private: "Private" }[b.state] || DISPLAY[b.activity];
 }
 
 // ---------------------------------------------------------------- rules (kettle/rules.py)
@@ -197,10 +228,12 @@ const CANT_TELL_SHARE = 0.25, WINDOW_START_H = 6;
 export const DEFAULT_RULES = [{ id: "r1", type: "kitchen_by", time: "10:00" }, { id: "r2", type: "tv_over", hours: 4 }];
 function hhmm(s) { const [h, m] = s.split(":").map(Number); return `${(h % 12) || 12}:${String(m).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; }
 export function ruleTitle(r) {
+  if (r.type === "kind_by") return `${KIND_NAMES[r.kind]} by ${hhmm(r.time)}`;
   if (r.type === "tv_over") return `TV on for more than ${r.hours} hour${r.hours !== 1 ? "s" : ""}`;
   return `${r.type === "kitchen_by" ? "Kitchen activity" : "Some sound of activity"} by ${hhmm(r.time)}`;
 }
 function counts(r, b) {
+  if (r.type === "kind_by") return !!(b.kinds && b.kinds[r.kind]);
   if (r.type === "kitchen_by") return b.state === "activity" && MEAL.has(b.activity);
   return (b.state === "activity" && ACTIVE.has(b.activity)) || b.state === "talk_or_tv";
 }
@@ -217,12 +250,16 @@ function dur(seconds) {
   return h && m ? `${h} h ${m} min` : h ? `${h} h` : `${m} min`;
 }
 const byStart = (blks) => blks.slice().sort((a, b) => a.start - b.start);
-function ruleOne(r, blks, now, day0, off) {
-  if (r.type === "tv_over") return ruleTv(r, blks, now, day0, off);
+function ruleOne(r, blks, now, day0, off, hidden = []) {
+  if (r.type === "tv_over") return ruleTv(r, blks, now, day0, off, hidden);
   const [h, m] = r.time.split(":").map(Number);
   const deadline = day0 + h * 3600 + m * 60;
   const start = Math.min(day0 + WINDOW_START_H * 3600, deadline - 3600);
   const first = byStart(blks).find((b) => counts(r, b) && b.end > start && b.start < deadline && b.start <= now);
+  if (first && r.type === "kind_by") {
+    const at = Math.max(first.kinds[r.kind].at, first.start);
+    return { state: "met", at, detail: `Met at ${clock(at, off)} (${KIND_NAMES[r.kind].toLowerCase()} heard)`, note: null };
+  }
   if (first) {
     const what = first.activity ? PHRASE[first.activity] : "talking or TV";
     const sure = (first.conf || 0) >= 0.8 ? "high" : "medium";
@@ -244,13 +281,14 @@ function ruleOne(r, blks, now, day0, off) {
   const whole = missing < 60 ? "Kettle was listening the whole time." : `Kettle was listening for ${pyRound(100 * (1 - missing / (deadline - start)))}% of that time.`;
   const unsure = blks.filter((b) => (b.state === "not_sure" || b.state === "talk_or_tv") && b.start < deadline && b.end > start);
   const note = (later ? `First heard at ${clock(later.start, off)}. ` : "") + "You might call to say hello.";
-  if (unsure.length) {
+  if (unsure.length && r.type !== "kind_by") {
     const mins = unsure.reduce((s, b) => s + Math.min(b.end, deadline) - Math.max(b.start, start), 0);
     return { state: "missed", at: deadline, detail: `No clear kitchen activity by ${hhmm(r.time)}. Kettle heard sounds it couldn't name for ${dur(mins)} before then.`, note };
   }
   return { state: "missed", at: deadline, detail: `Not heard by ${hhmm(r.time)}. ${whole}`, note };
 }
-function ruleTv(r, blks, now, day0, off) {
+function ruleTv(r, blks, now, day0, off, hidden = []) {
+  if (hidden.includes("watching_tv")) return { state: "cant_tell", at: null, detail: "Can't tell: TV is kept private on the kitchen laptop.", note: null };
   const tv = blks.filter((b) => b.state === "activity" && b.activity === "watching_tv");
   const total = tv.reduce((s, b) => s + b.end - b.start, 0);
   if (total > r.hours * 3600) return { state: "over", at: null, detail: `TV for ${dur(total)} today (from ${clock(tv[0].start, off)})`, note: null };
@@ -267,8 +305,8 @@ function ruleTv(r, blks, now, day0, off) {
   }
   return { state: "under", at: null, detail: total ? `TV for ${dur(total)} so far today` : "No TV heard today", note: null };
 }
-export function evaluateRules(rules, blks, now, day0, off) {
-  return rules.slice(0, MAX_RULES).map((r) => ({ id: r.id, type: r.type, title: ruleTitle(r), ...ruleOne(r, blks, now, day0, off) }));
+export function evaluateRules(rules, blks, now, day0, off, hidden = []) {
+  return rules.slice(0, MAX_RULES).map((r) => ({ id: r.id, type: r.type, title: ruleTitle(r), ...ruleOne(r, blks, now, day0, off, hidden) }));
 }
 export function validateRules(rules) {
   if (!Array.isArray(rules) || rules.length > MAX_RULES) throw new Error("up to 3 checks");
@@ -278,6 +316,12 @@ export function validateRules(rules) {
       const [h, m] = String(r.time).split(":").map(Number);
       if (!(h >= 0 && h < 24 && m >= 0 && m < 60)) throw new Error("bad time");
       return { id: `r${i + 1}`, type: r.type, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` };
+    }
+    if (r.type === "kind_by") {
+      const [h, m] = String(r.time).split(":").map(Number);
+      if (!(h >= 0 && h < 24 && m >= 0 && m < 60)) throw new Error("bad time");
+      if (!Object.hasOwn(KIND_NAMES, r.kind)) throw new Error("unknown sound");
+      return { id: `r${i + 1}`, type: r.type, kind: r.kind, time: `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}` };
     }
     if (r.type === "tv_over") {
       const h = Number(r.hours);
@@ -295,7 +339,9 @@ export function newState() {
 }
 const log = (s, now, type, extra = {}) => { const rec = { t: now, type, ...extra }; s.log = (s.log || []).slice(-200); s.log.push(rec); return rec; };
 export function isPaused(s, now) { return !!s.paused_until && now < s.paused_until; }
-function closePause(s, now) { if (s.paused_at != null) s.pauses.push([s.paused_at, Math.min(now, s.paused_until || now)]); }
+function closePause(s, now) {
+  if (s.paused_at != null) s.pauses.push(s.pause_reason === "guest" ? [s.paused_at, Math.min(now, s.paused_until || now), "guest"] : [s.paused_at, Math.min(now, s.paused_until || now)]);
+}
 export function nextMorning(now, off, hour = 8) {
   const t8 = localMidnight(now, off) + hour * 3600;
   return t8 > now ? t8 : t8 + 86400;
@@ -312,13 +358,17 @@ export const actions = {
   },
   resume(s, now) { closePause(s, now); Object.assign(s, { paused_at: null, paused_until: null, pause_reason: null, started_at: now }); return log(s, now, "resume"); },
   keep_on(s, now) { s.last_confirm = now; if (s.pause_reason === "weekly") actions.resume(s, now); return log(s, now, "keep_on"); },
+  privacy(s, now, { hide = [], kindsOff = [] }) {
+    Object.assign(s, { hide: hide.filter((h) => HIDEABLE.includes(h)), kinds_off: kindsOff.filter((k) => Object.hasOwn(KIND_NAMES, k)) });
+    return log(s, now, "privacy", { hide: s.hide, kinds_off: s.kinds_off });
+  },
   mic(s, now, { state }) { Object.assign(s, { mic: state, mic_at: now }); if (state === "ok") s.started_at = now; return log(s, now, "mic", { state }); },
 };
 export function weeklyDue(s, now) { return !!s.consent && !s.off_at && s.last_confirm != null && now - s.last_confirm >= WEEK_S; }
 export function tick(s, now) {
   let changed = false;
   if (s.paused_until && now >= s.paused_until) {
-    s.pauses.push([s.paused_at, s.paused_until]);
+    s.pauses.push(s.pause_reason === "guest" ? [s.paused_at, s.paused_until, "guest"] : [s.paused_at, s.paused_until]);
     log(s, s.paused_until, "resume", { auto: true });
     Object.assign(s, { paused_at: null, paused_until: null, pause_reason: null, started_at: now });
     changed = true;
@@ -386,10 +436,15 @@ export function blockView(b, off, names) {
       : `${DISPLAY[b.activity]} · ${rng} · ${b.n_windows} windows · how sure: ${how}`;
   } else if (b.state === "not_sure") {
     const g = b.guesses.map((x) => `${DISPLAY[x.activity]} ${fmt2(x.p)}`).join(" · ");
-    out.card = `Not sure · ${rng} · Kettle heard something but couldn't tell what. Closest guesses: ${g}.`;
+    out.card = `Not sure · ${rng} · Kettle heard something but couldn't tell what: ${WHY_TEXT[b.why || "low"]}. Closest guesses: ${g}.`;
   } else if (b.state === "talk_or_tv") out.card = `Talking or TV · ${rng} · Kettle heard voices and can't tell talking from the TV here. It never keeps words.`;
   else if (b.state === "not_listening") out.card = `Not listening · ${rng} · Kettle can't say what happened here.`;
-  else if (b.state === "paused") { out.label = b.kind === "off" ? `Turned off by ${names.parent}` : `Paused by ${names.parent}`; out.card = `${out.label} · ${rng}`; }
+  else if (b.state === "private") out.card = `Private · ${rng} · ${names.parent} chose not to share this kind of sound.`;
+  else if (b.state === "paused") {
+    out.label = b.kind === "off" ? `Turned off by ${names.parent}` : b.kind === "guest" ? `Paused for a guest` : `Paused by ${names.parent}`;
+    out.card = `${out.label} · ${rng}`;
+  }
+  out.heard = Object.keys(KIND_NAMES).filter((k) => b.kinds && b.kinds[k]).map((k) => KIND_NAMES[k]);
   return out;
 }
 export function chipText(ev, theta, now, live) {
@@ -400,6 +455,29 @@ export function chipText(ev, theta, now, live) {
   const pair = new Set([top[0], top[1]]);
   if (pair.has("watching_tv") && pair.has("social_activity") && p[top[0]] - p[top[1]] < TALK_OR_TV_MARGIN) return "Sounds like talking or TV";
   return `Sounds like ${PHRASE[ev.label]}`;
+}
+
+/** Plan F1: how much of the listened time Kettle could put a name to, so a day of Not sure never reads as quiet. */
+export function coverage(blks) {
+  const heard = ["activity", "empty", "not_sure", "talk_or_tv", "private"];
+  let listened = 0, told = 0;
+  for (const b of blks) if (heard.includes(b.state)) { listened += b.end - b.start; if (b.state !== "not_sure") told += b.end - b.start; }
+  if (listened < 600) return null;
+  const pct = pyRound((100 * told) / listened);
+  return { pct, listened_s: listened, text: `Kettle could tell what was happening for ${pct}% of the time it listened today.` };
+}
+/** Named sound types heard today: [{ id, name, n, first, last, text }] in display order. */
+export function heardToday(evs, off) {
+  const agg = {};
+  for (const e of evs) for (const k of e.kinds || []) {
+    if (!Object.hasOwn(KIND_NAMES, k)) continue;
+    const a = agg[k] || (agg[k] = { id: k, name: KIND_NAMES[k], n: 0, first: e.start, last: e.start });
+    a.n++; a.first = Math.min(a.first, e.start); a.last = Math.max(a.last, e.start);
+  }
+  return Object.keys(KIND_NAMES).filter((k) => agg[k]).map((k) => {
+    const a = agg[k];
+    return { ...a, text: a.n === 1 || a.last - a.first < 120 ? `at ${clock(a.first, off)}` : `${clock(a.first, off)} to ${clock(a.last, off)}` };
+  });
 }
 
 /**
@@ -431,13 +509,15 @@ export function today(s, events, now, { theta, tz = null, off = null, day0 = nul
     heartbeat: heartbeatLine(hb, now, off, names),
     blocks: blks.map((b) => blockView(b, off, names)),
     summary: sum,
-    rules: evaluateRules(s.rules || DEFAULT_RULES, blks, now, day0, off),
+    rules: evaluateRules(s.rules || DEFAULT_RULES, blks, now, day0, off, s.hide || []),
+    coverage: coverage(blks),
+    heard: heardToday(evs, off),
     rule_defs: s.rules || DEFAULT_RULES,
     chip: chipText(last, theta, now, liveNow),
     last_event: last,
     kitchen: { consent: !!s.consent, off: !!s.off_at, paused: isPaused(s, now), pause_reason: isPaused(s, now) ? s.pause_reason : null,
       weekly_due: weeklyDue(s, now), consent_text: s.consent_at ? clock(s.consent_at, off) : "", consent_day: s.consent_at ? dayName(s.consent_at, off) : null,
-      listening_since_text: s.started_at ? clock(s.started_at, off) : "" },
+      listening_since_text: s.started_at ? clock(s.started_at, off) : "", hide: s.hide || [], kinds_off: s.kinds_off || [] },
     theta,
   };
 }

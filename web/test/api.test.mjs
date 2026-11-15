@@ -15,7 +15,8 @@ function memEnv() {
   });
   return { hs, env: {
     household: (id) => ({ init: async (s) => { hs[id] = { state: s, events: [] }; }, call: async (op) => (hs[id] ? handle(store(id), op) : { status: 404, body: {} }) }),
-    codes: { put: async (c, v) => { codes[c] = v; }, get: async (c) => codes[c] || null },
+    codes: { put: async (c, v) => { codes[c] = v; }, get: async (c) => codes[c] || null,
+      miss: async (w, t) => { (codes.__m ||= []).push([w, t]); }, misses: async (w, since) => (codes.__m || []).filter(([x, t]) => x === w && t > since).length },
   } };
 }
 const call = async (env, method, path, body, key, now = 1_800_000_000) => {
@@ -72,4 +73,44 @@ test("a bad pairing code says so plainly", async () => {
   const r = await call(env, "POST", "/api/pair", { code: "ZZZZZZ" });
   assert.equal(r.status, 404);
   assert.match(r.body.error, /didn't work/);
+});
+
+test("only allow-listed sound names and fields are stored (plan D1); private windows carry no scores", async () => {
+  const { cleanEvent } = await import("../src/household.js");
+  const T = 1_800_000_000;
+  const e = cleanEvent({ ...ev(T), sounds: [{ name: "Speech", score: 0.9 }, { name: "Running water", score: 0.3 }, { name: "Cough", score: 0.5 }],
+    kinds: ["tap", "cough", "kettle"], hold: "appliance", why: "appliance", audio: [1, 2, 3], db: -30, emb: [0.1] }, T);
+  assert.deepEqual(e.sounds, [{ name: "Running water", score: 0.3 }]);
+  assert.deepEqual(e.kinds, ["tap", "kettle"]);
+  assert.equal(e.hold, "appliance");
+  for (const k of ["audio", "db", "emb"]) assert.equal(k in e, false);
+  const p = cleanEvent({ start: T - 10, end: T, label: "private", probs: { social_activity: 0.99 }, sounds: [{ name: "Running water", score: 1 }] }, T);
+  assert.equal(p.private, true);
+  assert.equal(Math.max(...Object.values(p.probs)), 0);
+  assert.deepEqual(p.sounds, []);
+});
+
+test("pairing codes: 10 wrong tries from one address, then a 10-minute wait (plan D6)", async () => {
+  const { env } = memEnv();
+  const T = 1_800_000_000;
+  const c = await call(env, "POST", "/api/households", { as: "family" }, null, T);
+  for (let i = 0; i < 10; i++) assert.equal((await call(env, "POST", "/api/pair", { code: "ZZZZZZ" }, null, T + i)).status, 404);
+  assert.equal((await call(env, "POST", "/api/pair", { code: c.body.code }, null, T + 20)).status, 429);
+  assert.equal((await call(env, "POST", "/api/pair", { code: c.body.code }, null, T + 700)).status, 200);
+});
+
+test("guest pause and privacy choices are the parent's, and show on the family view", async () => {
+  const { env } = memEnv();
+  const T = 1_800_000_000;
+  const c = await call(env, "POST", "/api/households", { as: "family", tz: "UTC" }, null, T);
+  const pair = await call(env, "POST", "/api/pair", { code: c.body.code }, null, T);
+  const K = pair.body.key, F = c.body.familyKey, id = c.body.id;
+  await call(env, "POST", `/api/h/${id}/action`, { type: "consent" }, K, T);
+  assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "privacy", hide: ["watching_tv"] }, F, T)).status, 403);
+  const pr = await call(env, "POST", `/api/h/${id}/action`, { type: "privacy", hide: ["watching_tv", "cooking"], kindsOff: ["pet", "nope"] }, K, T);
+  assert.deepEqual(pr.body.state.hide, ["watching_tv"]);
+  assert.deepEqual(pr.body.state.kinds_off, ["pet"]);
+  await call(env, "POST", `/api/h/${id}/action`, { type: "pause", minutes: 120, reason: "guest" }, K, T + 60);
+  const r = await call(env, "POST", `/api/h/${id}/action`, { type: "resume" }, K, T + 600);
+  assert.deepEqual(r.body.state.pauses.at(-1), [T + 60, T + 600, "guest"]);
 });

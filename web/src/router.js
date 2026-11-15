@@ -6,6 +6,7 @@ import { create, randomId } from "./household.js";
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const CODE_TTL_S = 48 * 3600;
+export const PAIR_MISSES = 10, PAIR_WINDOW_S = 600;   // wrong codes allowed per address per 10 minutes (plan D6)
 const json = (status, body) => new Response(JSON.stringify(body), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" } });
 
@@ -35,9 +36,12 @@ export async function route(req, env, now = Date.now() / 1000) {
     }
 
     if (p === "/api/pair" && req.method === "POST") {
+      const who = req.headers.get("cf-connecting-ip") || req.headers.get("x-forwarded-for") || "local";
+      if ((await env.codes.misses(who, now - PAIR_WINDOW_S)) >= PAIR_MISSES)
+        return json(429, { error: "Too many wrong codes. Wait 10 minutes, then try again." });
       const b = await readBody(req);
       const v = await env.codes.get(normCode(b.code));
-      if (!v) return json(404, { error: "That code didn't work. Check the letters, or ask for a new code." });
+      if (!v) { await env.codes.miss(who, now); return json(404, { error: "That code didn't work. Check the letters, or ask for a new code." }); }
       return json(200, v);
     }
 

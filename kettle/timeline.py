@@ -28,7 +28,9 @@ def raw_label(ev: dict, theta: float) -> str:
 
     'not_sure' when the top probability is below theta, or when the sound is unlike all 9 activities (ev['novel']).
     """
-    if ev.get("novel"):
+    if ev.get("private"):
+        return "private"
+    if ev.get("novel") or ev.get("hold"):
         return "not_sure"
     probs = ev["probs"]
     top = sorted(probs, key=probs.get, reverse=True)
@@ -85,12 +87,35 @@ def runs(events: list[dict], gap_s: float = STALE_S) -> list[list[dict]]:
 def _state(label: str) -> str:
     if label == "absence":
         return "empty"
-    if label in ("not_sure", "talk_or_tv"):
+    if label in ("not_sure", "talk_or_tv", "private"):
         return label
     return "activity"
 
 
-def _block(evs: list[dict], label: str) -> dict:
+WHY_ORDER = ("appliance", "novel", "close", "mixed", "low")
+WHY_TEXT = {"appliance": "only appliance hum, no kitchen sounds", "novel": "a sound unlike anything it learned",
+            "close": "two activities sounded alike", "mixed": "the sounds kept changing", "low": "it wasn't sure enough"}
+
+
+def why_not_sure(evs: list[dict], theta: float) -> str:
+    """Why a Not sure block couldn't be named, by majority of its windows (plan F10): one of WHY_ORDER."""
+    votes = dict.fromkeys(WHY_ORDER, 0)
+    for e in evs:
+        p = sorted(e["probs"].values(), reverse=True)
+        if e.get("hold") == "appliance":
+            votes["appliance"] += 1
+        elif e.get("novel"):
+            votes["novel"] += 1
+        elif p[0] >= theta:
+            votes["mixed"] += 1
+        elif p[0] - p[1] < TALK_OR_TV_MARGIN:
+            votes["close"] += 1
+        else:
+            votes["low"] += 1
+    return max(WHY_ORDER, key=lambda k: (votes[k], -WHY_ORDER.index(k)))
+
+
+def _block(evs: list[dict], label: str, theta: float = 0.66) -> dict:
     """Merge windows sharing a shown label into one block with its evidence."""
     if label in ("not_sure", "talk_or_tv"):
         conf = sum(max(e["probs"].values()) for e in evs) / len(evs)
@@ -104,7 +129,8 @@ def _block(evs: list[dict], label: str) -> dict:
     return {"start": evs[0]["start"], "end": evs[-1]["end"], "state": _state(label),
             "activity": label if _state(label) in ("activity", "empty") else None,
             "conf": round(conf, 3), "n_windows": len(evs), "sounds": evidence.merge([e["sounds"] for e in evs]),
-            "guesses": [{"activity": g, "p": round(guesses[g], 3)} for g in top2]}
+            "guesses": [{"activity": g, "p": round(guesses[g], 3)} for g in top2],
+            **({"why": why_not_sure(evs, theta)} if label == "not_sure" else {})}
 
 
 def _subtract(a: float, b: float, cuts: list[tuple[float, float]]) -> list[tuple[float, float]]:
@@ -142,7 +168,7 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
             j = i
             while j + 1 < len(run) and labs[j + 1] == labs[i]:
                 j += 1
-            out.append(_block(run[i:j + 1], labs[i]))
+            out.append(_block(run[i:j + 1], labs[i], theta))
             i = j + 1
     for p in pauses:
         out.append({"start": p[0], "end": p[1], "state": "paused", "activity": None, "conf": None,
@@ -237,4 +263,4 @@ def label_name(label: str) -> str:
 def display_name(b: dict) -> str:
     """The label drawn on a block."""
     return {"not_sure": "Not sure", "talk_or_tv": "Talking or TV", "not_listening": "Not listening",
-            "paused": "Paused"}.get(b["state"]) or DISPLAY[b["activity"]]
+            "paused": "Paused", "private": "Private"}.get(b["state"]) or DISPLAY[b["activity"]]

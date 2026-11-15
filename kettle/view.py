@@ -81,7 +81,8 @@ def block_view(b: dict, now: float) -> dict:
                        else f"{DISPLAY[b['activity']]} · {rng} · {b['n_windows']} windows · how sure: {how}")
     elif b["state"] == "not_sure":
         g = " · ".join(f"{DISPLAY[x['activity']]} {x['p']:.2f}" for x in b["guesses"])
-        out["card"] = f"Not sure · {rng} · Kettle heard something but couldn't tell what. Closest guesses: {g}."
+        why = timeline.WHY_TEXT[b.get("why", "low")]
+        out["card"] = f"Not sure · {rng} · Kettle heard something but couldn't tell what: {why}. Closest guesses: {g}."
     elif b["state"] == "talk_or_tv":
         out["card"] = (f"Talking or TV · {rng} · Kettle heard voices and can't tell talking from the TV here. "
                        "It never keeps words.")

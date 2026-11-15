@@ -1,7 +1,7 @@
 // One household's sync logic, independent of where it runs (Cloudflare Durable Object or the local dev server).
 // It stores only what the Python app stores: the parent's choices (consent, pause, off), Meera's checks, and window
 // labels with times and scores. No audio ever reaches it; the kitchen page labels sound on the parent's own device.
-import { CLASSES, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
+import { CLASSES, HIDEABLE, KIND_NAMES, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
 
 export const KEEP_DAYS = 8;            // labels older than this are deleted
 const MAX_EVENTS_PER_POST = 60;
@@ -33,16 +33,33 @@ export function publicState(s) {
   return rest;
 }
 
-function cleanEvent(e, now) {
+const KIND_BY_NAME = new Map(Object.entries(KIND_NAMES).map(([id, name]) => [name, id]));
+const WHY = ["appliance", "novel", "close", "low", "quiet"];
+
+/**
+ * Keep only what the consent screen promises (plan D1): the activity label and its 9 scores, and named household
+ * sound types from the allow-list. Anything else a page might send (other tag names, audio, levels) is dropped here,
+ * even if a modified kitchen page tried to send it.
+ */
+export function cleanEvent(e, now) {
   if (!e || typeof e !== "object") return null;
   const start = +e.start, end = +e.end;
   if (!(end > start) || end - start > 600 || end > now + 120 || end < now - 86400) return null;
+  if (e.label === "private") {
+    const probs = Object.fromEntries(CLASSES.map((c) => [c, 0]));
+    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [] };
+  }
   if (!CLASSES.includes(e.label)) return null;
   const probs = {};
   for (const c of CLASSES) { const v = +(e.probs || {})[c]; if (!(v >= 0 && v <= 1)) return null; probs[c] = Math.round(v * 1e4) / 1e4; }
-  const sounds = Array.isArray(e.sounds) ? e.sounds.slice(0, 3).filter((x) => x && typeof x.name === "string")
-    .map((x) => ({ name: x.name.slice(0, 48), score: Math.round((+x.score || 0) * 1000) / 1000 })) : [];
-  return { start, end, label: e.label, conf: Math.round(probs[e.label] * 1000) / 1000, probs, novel: !!e.novel, sounds };
+  const sounds = Array.isArray(e.sounds) ? e.sounds.slice(0, 3).filter((x) => x && KIND_BY_NAME.has(x.name))
+    .map((x) => ({ name: x.name, score: Math.round(Math.min(1, Math.max(0, +x.score || 0)) * 1000) / 1000 })) : [];
+  const kinds = Array.isArray(e.kinds) ? [...new Set(e.kinds.filter((k) => Object.hasOwn(KIND_NAMES, k)))] : [];
+  const out = { start, end, label: e.label, conf: Math.round(probs[e.label] * 1000) / 1000, probs, novel: !!e.novel, sounds, kinds };
+  if (e.hold === "appliance") out.hold = "appliance";
+  if (WHY.includes(e.why)) out.why = e.why;
+  if (e.taught) out.taught = true;
+  return out;
 }
 
 /**
@@ -84,11 +101,15 @@ export async function handle(store, { method, route, key, body, now }) {
   if (method === "POST" && route === "action") {
     if (role !== "kitchen") return { status: 403, body: { error: "Only the person at the kitchen laptop can do this." } };
     const type = body?.type;
-    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic"].includes(type)) return { status: 400, body: { error: "unknown action" } };
+    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "privacy"].includes(type)) return { status: 400, body: { error: "unknown action" } };
     if (type !== "consent" && !s.consent) return { status: 409, body: { error: "Kettle needs a yes first." } };
     if (type === "pause") {
       const minutes = body.minutes == null ? null : Math.max(1, Math.min(24 * 60, +body.minutes || 15));
-      actions.pause(s, now, { minutes, reason: "parent", off: tzOffset(s.tz, now) });
+      actions.pause(s, now, { minutes, reason: body.reason === "guest" ? "guest" : "parent", off: tzOffset(s.tz, now) });
+    } else if (type === "privacy") {
+      const hide = Array.isArray(body.hide) ? body.hide.filter((h) => HIDEABLE.includes(h)) : [];
+      const kindsOff = Array.isArray(body.kindsOff) ? body.kindsOff.filter((k) => Object.hasOwn(KIND_NAMES, k)) : [];
+      actions.privacy(s, now, { hide, kindsOff });
     } else if (type === "mic") {
       if (!["ok", "blocked", "none"].includes(body.state)) return { status: 400, body: { error: "bad mic state" } };
       actions.mic(s, now, { state: body.state });
