@@ -1,0 +1,32 @@
+/* Credits page. Reuses the app tokens; adds only the list layout. */
+.cr-jump { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 0 0 24px; }
+.cr-jump a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: 999px; font-size: var(--fs-meta); line-height: var(--lh-meta); font-weight: 500; color: var(--text); text-decoration: none; box-shadow: var(--edge); transition: background-color 160ms var(--ease-out), transform 120ms var(--ease-out); }
+.cr-jump a:active { transform: scale(.97); }
+@media (hover: hover) { .cr-jump a:hover { background: var(--fill-soft); color: var(--ink); } }
+
+.cr { margin-top: 16px; scroll-margin-top: 76px; }
+.cr .section-title { margin-bottom: 8px; }
+.cr-p { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text); max-width: 46em; margin: 0 0 12px; text-wrap: pretty; }
+.cr-p strong { color: var(--ink); font-weight: 560; }
+.cr a { color: var(--ink); text-decoration-line: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+@media (hover: hover) { .cr a:hover { text-decoration-color: var(--ink); } }
+.cr code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .88em; color: var(--ink); background: var(--fill-soft); padding: 1px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+
+.cr-list { list-style: none; margin: 12px 0 0; padding: 0; }
+.cr-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 16px 0; border-top: 1px solid var(--line); }
+.cr-row:first-child { border-top: 0; padding-top: 4px; }
+.cr-main { color: var(--ink); font-weight: 520; font-size: var(--fs-body); line-height: var(--lh-body); letter-spacing: -0.011em; }
+.cr-main .cr-by { display: block; color: var(--muted); font-weight: 400; font-size: var(--fs-meta); line-height: var(--lh-meta); letter-spacing: 0; }
+.cr-main .cr-by a { color: var(--text); }
+.cr-use { margin: 0; color: var(--text); font-size: var(--fs-meta); line-height: var(--lh-meta); max-width: 60ch; text-wrap: pretty; }
+.cr-lic { color: var(--muted); font-size: var(--fs-meta); line-height: var(--lh-meta); font-variant-numeric: tabular-nums; }
+@media (min-width: 860px) {
+  .cr-row { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr) minmax(110px, 2fr); gap: 4px 28px; align-items: start; }
+  .cr-row.two { grid-template-columns: minmax(0, 5fr) minmax(0, 9fr); }
+  .cr-lic { text-align: right; }
+}
+
+.cr-links { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 2px 28px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); font-size: var(--fs-meta); line-height: var(--lh-meta); color: var(--text); }
+.cr-links li { padding: 5px 0; }
+.foot a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
+.foot code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .88em; }

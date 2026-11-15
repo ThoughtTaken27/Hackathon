@@ -109,3 +109,19 @@ test("the server keeps only allow-listed sound names and a well-formed second op
   for (const x of events) for (const s of x.sounds) assert.ok(SHOWN_SOUNDS.has(s.name));
   for (const banned of ["Chewing, mastication", "Laughter", "Cat", "Dog", "Cough", "Toilet flush", "Doorbell", "Telephone"]) assert.ok(!SHOWN_SOUNDS.has(banned), banned);
 });
+
+test("credits page: every dataset and model the code uses is credited, links are https, disclaimer is present", () => {
+  const html = fs.readFileSync(new URL("web/public/credits.html", root), "utf8");
+  for (const name of ["SINS", "DESED", "Kitchen20", "ESC-50", "AudioSet", "CED-tiny", "CED-small", "Audio Spectrogram Transformer", "CLAP", "Apple Sound Recognition",
+    "ONNX Runtime", "qrcode-generator", "Cloudflare", "Geist", "Instrument Serif", "transitions.dev", "Claude Code", "Aside", "REA", "Administration for Community Living"]) {
+    assert.ok(html.includes(name), `credits page is missing ${name}`);
+  }
+  assert.match(html, /Prototype, not medical advice/);
+  const hrefs = [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
+  for (const h of hrefs) assert.ok(h.startsWith("https://") || h.startsWith("/") || h.startsWith("#"), `unexpected link ${h}`);
+  for (const id of hrefs.filter((h) => h.startsWith("#")).map((h) => h.slice(1))) assert.ok(html.includes(`id="${id}"`), `anchor #${id} has no target`);
+  for (const local of hrefs.filter((h) => h.startsWith("/") && !h.includes("?")).map((h) => h.split("#")[0]).filter((h) => /\.(txt|css|js)$/.test(h))) {
+    assert.ok(fs.existsSync(new URL("web/public" + local, root)), `${local} is linked but missing`);
+  }
+  for (const page of ["index.html", "how-sure.html"]) assert.match(fs.readFileSync(new URL("web/public/" + page, root), "utf8"), /href="\/credits"/, `${page} does not link to /credits`);
+});
