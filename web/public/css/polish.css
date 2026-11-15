@@ -152,38 +152,6 @@
 }
 .lx-card p, .lx-sub, .lx-lede { text-wrap: pretty; }   /* no one-word last lines */
 
-/* ---------- hero: "Without a camera." acted out (Nov 15) ----------
-   An eye glances left and right, blinks, becomes a camera, and the camera is struck through. 9 s loop that starts once the
-   headline has landed. Stroke ~1.9 units = about the stem of the serif beside it; the strike uses the one warm accent.
-   Swaps cross-fade through a 3px blur so the eye and the camera read as one thing changing. Transform, opacity and filter on one small SVG. */
-.nobr { white-space: nowrap; }
-.peek { display: inline-block; width: .9em; height: .9em; margin: 0 .02em 0 .1em; vertical-align: -0.1em; opacity: 0; color: var(--ink);
-  animation: pk-in 700ms cubic-bezier(.22,1,.36,1) 1.15s forwards; }
-.peek svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.peek .pk-dot { fill: currentColor; stroke: none; }
-.peek .pk-strike { stroke: var(--accent); stroke-width: 2.1; stroke-dasharray: 25; stroke-dashoffset: 25; }
-.peek g, .peek line { transform-box: fill-box; transform-origin: center; }
-.peek .pk-cam { opacity: 0; }
-@keyframes pk-in { from { opacity: 0; transform: translateY(.2em) scale(.8); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
-@media (prefers-reduced-motion: no-preference) {
-  .peek .pk-eye { animation: pk-eye 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
-  .peek .pk-pupil { animation: pk-look 9s cubic-bezier(.45,0,.2,1) 1.9s infinite; }
-  .peek .pk-cam { animation: pk-cam 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
-  .peek .pk-strike { animation: pk-strike 9s cubic-bezier(.65,0,.35,1) 1.9s infinite; }
-}
-@keyframes pk-look { 0%, 4% { transform: none; } 10%, 17% { transform: translateX(-2.4px); } 23%, 30% { transform: translateX(2.4px); } 34%, 100% { transform: none; } }
-@keyframes pk-eye { 0%, 35% { opacity: 1; transform: none; filter: none; }
-  36.5% { transform: scaleY(.08); } 38% { transform: none; opacity: 1; filter: none; }
-  44%, 90% { opacity: 0; transform: scale(.86); filter: blur(3px); }
-  97%, 100% { opacity: 1; transform: none; filter: none; } }
-@keyframes pk-cam { 0%, 41% { opacity: 0; transform: scale(.86); filter: blur(3px); }
-  48%, 86% { opacity: 1; transform: none; filter: none; }
-  93%, 100% { opacity: 0; transform: scale(.92); filter: blur(3px); } }
-@keyframes pk-strike { 0%, 51% { stroke-dashoffset: 25; } 60%, 100% { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) {      /* still: the struck-through camera */
-  .peek { opacity: 1; animation: none; } .peek .pk-eye { opacity: 0; } .peek .pk-cam { opacity: 1; } .peek .pk-strike { stroke-dashoffset: 0; }
-}
-
 /* ---------- section headings: words blur up one after another when the section arrives (transitions.dev "Texts reveal" values) ---------- */
 .lx-sec .lx-sec-head { filter: none !important; }        /* the words carry the blur now; no double blur */
 .hw-in .hw { display: inline-block; opacity: 0; transform: translateY(.32em); filter: blur(8px);
@@ -194,15 +162,27 @@
 /* ---------- numbers: the % is set in the serif, like the heading accents ---------- */
 .lx-stats .dim, .lx-numbers .dim { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; margin-left: .04em; }
 
-/* the icon stands in for the word "camera" (the word stays for screen readers): when the camera appears it "takes a picture",
-   a small press and a warm shutter flash in the lens, then the strike draws through it and holds as the last word of the line */
-.peek .pk-flash { fill: var(--accent); stroke: none; opacity: 0; }
-@media (prefers-reduced-motion: no-preference) {
-  .peek .pk-cam { animation: pk-cam 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
-  .peek svg { animation: pk-click 9s cubic-bezier(.34,1.35,.64,1) 1.9s infinite; }
-  .peek .pk-flash { animation: pk-flash 9s ease-out 1.9s infinite; }
-}
-@keyframes pk-click { 0%, 49% { transform: none; } 50.5% { transform: scale(.9); } 53%, 100% { transform: none; } }
-@keyframes pk-flash { 0%, 50% { opacity: 0; transform: scale(.4); } 51.5% { opacity: .95; transform: scale(1.15); } 57%, 100% { opacity: 0; transform: scale(1); } }
-.peek .pk-strike { animation-delay: 2.2s !important; }
+
 #hero-h em { display: block; }   /* the punchline keeps its own line: "Without a [camera]." */
+
+/* ---------- hero: "Without a [camera]." in 3D emoji (Microsoft Fluent Emoji, MIT; animated set for the eyes and camera) ----------
+   10 s loop once the headline lands: the animated eyes look around, blur into the animated camera (its own flash plays),
+   the prohibited sign springs on top and holds, then everything blurs back to the eyes. Swaps cross-fade through a short blur. */
+.nobr { white-space: nowrap; }
+.peek { position: relative; display: inline-block; width: 1.02em; height: 1.02em; margin: 0 .02em 0 .1em; vertical-align: -0.16em;
+  opacity: 0; animation: pk-in 700ms cubic-bezier(.22,1,.36,1) 1.15s forwards; }
+.peek::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: -4%; height: 14%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(28,25,23,.22), transparent); z-index: -1; }     /* the soft contact shadow under the emoji */
+.peek img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.peek .pk-cam, .peek .pk-no { opacity: 0; }
+@keyframes pk-in { from { opacity: 0; transform: translateY(.2em) scale(.7); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .peek .pk-eyes { animation: pk-eyes 10s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
+  .peek .pk-cam { animation: pk-cam2 10s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
+  .peek .pk-no { animation: pk-no 10s cubic-bezier(.34,1.5,.64,1) 1.9s infinite; }
+}
+@keyframes pk-eyes { 0%, 32% { opacity: 1; transform: none; filter: none; } 38%, 92% { opacity: 0; transform: scale(.8); filter: blur(4px); } 98%, 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes pk-cam2 { 0%, 34% { opacity: 0; transform: scale(.8); filter: blur(4px); } 41%, 86% { opacity: 1; transform: none; filter: none; } 92%, 100% { opacity: 0; transform: scale(.9); filter: blur(4px); } }
+@keyframes pk-no { 0%, 58% { opacity: 0; transform: scale(1.6) rotate(-20deg); } 64%, 86% { opacity: .95; transform: none; } 92%, 100% { opacity: 0; transform: scale(.9); } }
+@media (prefers-reduced-motion: reduce) { .peek { opacity: 1; animation: none; } .peek .pk-eyes { opacity: 0; } .peek .pk-cam { opacity: 1; } .peek .pk-no { opacity: .95; } }
+.peek .pk-no { mix-blend-mode: multiply; }   /* the sign's white middle drops out, so the camera stays visible under the slash */
