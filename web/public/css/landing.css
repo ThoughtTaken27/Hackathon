@@ -12,7 +12,7 @@
 .pill-dot { width: 7px; height: 7px; border-radius: 99px; background: var(--ok); position: relative; }
 .pill-dot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: inherit; animation: ping 2.4s var(--ease-out) infinite; }
 .display { margin-top: 28px; font-size: clamp(46px, 8vw, 92px); line-height: .98; font-weight: 500; letter-spacing: -0.06em; color: var(--ink); text-wrap: balance; }
-.display .soft { display: block; color: color-mix(in srgb, var(--ink) 38%, var(--canvas)); }
+.display .soft { display: block; color: color-mix(in srgb, var(--ink) 58%, var(--canvas)); }
 .lede { margin-top: 28px; max-width: 36em; font-size: clamp(17px, 1.6vw, 20px); line-height: 1.55; color: var(--text); letter-spacing: -0.01em; text-wrap: pretty; }
 .cta { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .fine { margin-top: 18px; font-size: 13.5px; line-height: 20px; color: var(--muted); }

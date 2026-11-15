@@ -44,7 +44,7 @@ function step2() {
   } });
   show(el("div", {}, ...head(2, "Who is this for?", "These names appear on both screens, so the words feel like yours."),
     el("div", { class: "field2" }, el("label", { for: "p", text: "What do you call your parent?" }), pIn, chips),
-    el("div", { class: "field2" }, el("label", { for: "c", text: "Your first name" }), cIn, el("p", { class: "hint", text: "Your parent will read: “Your daughter or son can see the kinds of sound, never recordings.”" })),
+    el("div", { class: "field2" }, el("label", { for: "c", text: "Your first name" }), cIn, el("p", { class: "hint", text: "Your parent sees your name on the kitchen screen, so they know exactly who can see the timeline." })),
     err, el("div", { class: "actions" }, go, el("button", { class: "btn quiet", type: "button", text: "Back", onclick: step1 }))));
   cIn.addEventListener("keydown", (e) => e.key === "Enter" && go.click());
 }

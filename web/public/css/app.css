@@ -477,3 +477,8 @@ a.btn { text-decoration: none; }
 .k-checks li { padding: 6px 14px; border-radius: 999px; background: var(--card); box-shadow: var(--edge); color: var(--text); font-size: 16px; }
 .sheet { max-height: calc(100dvh - 24px); overflow: auto; }
 .narrow > div > .pair-card, .narrow .pair-card { margin-top: 32px; }
+/* review round 2 */
+.chip.big { font-size: 48px; line-height: 54px; }
+.privacy-line { flex-wrap: nowrap; align-items: flex-start; }
+.privacy-line::before { margin-top: 3px; }
+@media (max-width: 520px) { .actions > .btn.lg, .actions > a.btn.lg { flex: 1 1 100%; } }
