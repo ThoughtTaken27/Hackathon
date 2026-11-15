@@ -1,0 +1,191 @@
+{
+ "about": "Rule 2g: fewer \"Not sure\" windows, from the trained sound head (eval/sound_head.py, 8 names that passed the bar).",
+ "rule": {
+  "kettle": "kitchen",
+  "chopping": "kitchen",
+  "tap": "kitchen",
+  "typing": "working",
+  "tv": "watching_tv"
+ },
+ "gate": {
+  "min_not_sure_drop_pts": 10.0,
+  "max_false_blocks_rise_per_h": 0.5
+ },
+ "dev": {
+  "shipped": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.58,
+    "not_sure_share_pct": 8.9,
+    "false_activity_blocks_per_hour": 1.78,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.64
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.0
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 3.0
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 17,
+    "caught_pct": 23.0,
+    "pieces_per_session": 1.35,
+    "not_sure_share_pct": 80.9,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 8,
+      "pieces_per_session": 1.74
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 6,
+      "pieces_per_session": 1.5
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.17
+     }
+    }
+   }
+  },
+  "+2g sound fill": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.55,
+    "not_sure_share_pct": 8.5,
+    "false_activity_blocks_per_hour": 1.94,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.65
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.2
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.38
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 18,
+    "caught_pct": 24.3,
+    "pieces_per_session": 1.23,
+    "not_sure_share_pct": 75.0,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 10,
+      "pieces_per_session": 1.26
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 5,
+      "pieces_per_session": 1.33
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.2
+     }
+    }
+   }
+  }
+ },
+ "dev_gate": {
+  "caught_no_drop": true,
+  "false_blocks_ok": true,
+  "best_not_sure_drop_pts": 5.9,
+  "pass": false
+ },
+ "decision": "not shipped: failed the dev gate"
+}
