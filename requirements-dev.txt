@@ -1,3 +1,10 @@
-# Extra tools for screenshots and the privacy check (not needed to run Kettle)
+# Extra tools for tests, screenshots, the privacy check, the notebook and the web model export (not needed to run Kettle)
 -r requirements.txt
 playwright==1.65.2
+pytest==9.2.0
+onnx==1.23.2
+onnxruntime==1.32.0
+pillow==13.0.0
+nbformat==5.11.1
+nbconvert==7.17.1
+ipykernel==7.4.0

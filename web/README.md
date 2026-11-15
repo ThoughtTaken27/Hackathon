@@ -18,10 +18,10 @@ Open `/start` on one device and `/kitchen` on another (or two browser windows). 
 | Check | Command | Result |
 |---|---|---|
 | ONNX graphs vs the Python pipeline, 90 sample clips | `python tools/export_onnx.py` | same label 90/90, embedding diff < 1e-5 (`public/model/parity.json`) |
-| The browser runtime + JS head vs Python labels | `node web/test/parity-web.mjs <dir>` (clips dumped by the export step) | label, "unlike anything learned" and top sound 90/90; ~0.46 s per 10-s window (`public/model/parity-web.json`) |
+| The browser runtime + JS head vs Python labels | `python web/test/prepare.py` then `node web/test/parity-web.mjs web/.data/test` | label, "unlike anything learned" and top sound 90/90; ~0.46 s per 10-s window (`public/model/parity-web.json`) |
 | Timeline, summary, checks, heartbeat vs Python `view.today()` | `cd web && npm test` | 16 states across 3 sample days, identical text (`test/fixtures.json` from `tools/export_web_fixtures.py`) |
 | Sync API: pairing, consent gate, roles, delete | `cd web && npm test` | `test/api.test.mjs` |
-| End to end: set up, pair by code, consent, fake mic, family view, pause | `python web/test/e2e.py http://localhost:8787 <fake.wav> <out>` | first label in ~12 s; pause reaches the family view |
+| End to end: set up, pair by code, consent, fake mic, family view, pause, delete | `python web/test/e2e.py http://localhost:8787 web/.data/test/fake-kitchen.wav web/.data/test` | first label in ~12 s; pause reaches the family view; delete leaves a 404 |
 
 Differences from the Python app, on purpose: windows are 10 s apart (not 2 s) to keep sync light; the kitchen "Sounds like…" chip
 uses the latest 10-s window (not a separate 5-s one). The model, head, threshold and every timeline/check rule are unchanged.
