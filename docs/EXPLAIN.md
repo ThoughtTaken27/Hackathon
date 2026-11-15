@@ -248,3 +248,20 @@ Known limit: two stretches closer than a pixel apart can't both be reached by dr
 **Likely judge question:** "Is it accessible?" — The bar is a focusable slider: arrow keys, Home and End move between
 stretches, and the bubble text is its accessible value.
 
+### Neutral names and any room (`web/public/js/people.js who()`, `web/src/household.js create`)
+Every screen asks one function, `who()`, how to name the person and the room: until setup names someone it says "Your
+parent" (or "your parent" mid-sentence), and the room is whatever setup chose (kitchen, living room, bedroom...). We did it
+this way so no family sees a made-up "Dad" or "Mom", and a bedroom setup never says "kitchen"; one function keeps all screens
+consistent. Known limit: the model was measured on kitchen and one research home's sounds, so outside the kitchen the
+screens say it is a prototype, and per-room privacy rules (e.g. bedroom shows only an activity level) are not enforced yet.
+**Likely judge question:** "Does it work in a bedroom?" — It runs there and learns the room at setup, but we have no
+bedroom measurement; the screen says so.
+
+### Real homes, scored once (`eval/real_homes.py` → `results/real_homes.json`)
+Ten real-home recordings from TUT Sound Events 2016, with every sound labelled by the dataset's authors, run through the
+app's whole Python pipeline once. We chose it because we have no recording of our own kitchen and labelling our own audio
+would be the code author labelling the test. Known limit: 36 minutes in 10 homes; event labels, not activity labels, so
+"washing up" truth is "washing dishes or a running tap for 3+ seconds".
+**Likely judge question:** "Why does it almost never name a sound there?" — The sound head's thresholds were set for 90%
+precision on public clips; in unseen rooms its scores drop below them, so it stays silent rather than wrong.
+

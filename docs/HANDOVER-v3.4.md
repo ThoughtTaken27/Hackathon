@@ -52,3 +52,13 @@ the named-sounds line is now "rules passed one sound; a small trained classifier
 - `eval/confetti.py` builds events without the embedding, so its kinds come from the v1 rules; `eval/sound_fill.py` is the v2 version.
 - The scrubber swallows the stretch button's own click after a pointer interaction (else it would toggle twice); keyboard
   Enter on a stretch still toggles it.
+
+## 6. Added after 4:00 PM (same session)
+- **Merged to `main`:** PR #1 (v3.3 branch, incl. Parth's official-template write-up) + everything above. `main` = this branch.
+- **Neutral by default, any room:** "Your parent" until setup names someone; the chosen room names every screen; room-aware
+  setup on the room screen; `/listen` alias; Python twin + demo app neutral. Not done: per-room privacy rules in
+  `people.js ROOMS` (`showsSounds`, `showsActivities`) are not enforced, so they are not shown anywhere.
+- **Real-home test (instead of our own recording):** `python -m eval.real_homes` (needs TUT-SED 2016 in `data/raw/tut2016`:
+  `curl -L -o audio.zip https://zenodo.org/api/records/45759/files/TUT-sound-events-2016-development.audio.zip/content`, same for
+  `.meta.zip`, unzip both there). Result in `results/real_homes.json`, on How sure and in the write-up. Scored once; don't rerun
+  to tune. Our own kitchen recording (v3.3 §4) is still the best next measurement.

@@ -1,5 +1,19 @@
 # Changelog
 
+## Sun Nov 15, ~4:00–5:00 PM CT: neutral by default, any room; real-home test; merged to main
+- Merged: PR ThoughtTaken27/Hackathon#1 (handover v3.3 branch, incl. the official-template write-up) + v3.4 into `main`.
+- Neutral by default: no screen says "Mom" or "Dad" unless the family typed it. Until setup names someone, screens say
+  "Your parent" / "your parent" (`people.js who()`); the server keeps the relation and room from setup and stores no default
+  names (`web/src/household.js`). Python twin and the Python demo app say "your parent" too.
+- Any room: the room chosen in setup (kitchen, living room, bedroom, hallway, bathroom, whole home, other) names every screen
+  ("Grandma's living room, today", "the bedroom laptop"); the room screen's sound check, teach steps, placement tips and
+  example timeline follow the room; outside the kitchen it says plainly that Kettle was measured on kitchen sounds. Family
+  check presets outside the kitchen are activity checks. `/listen` is a room-neutral address for the same page as `/kitchen`.
+- Real-home test, scored once: `eval/real_homes.py` on TUT Sound Events 2016 "home" (10 real-home recordings, labelled by the
+  dataset authors) → `results/real_homes.json`; on How sure and in the write-up.
+- Checked: 142 web tests, 79 Python tests, smoke test, `eval.check_metrics` 0 problems, browser e2e errors [], screens for a
+  no-name bedroom home and a "Grandma, living room" home.
+
 ## Sun Nov 15, ~2:45–4:00 PM CT: trained sound head (v2), "Talking / TV", drag to read the day on phones
 - Why: only 1 of 15 everyday sound names passed the pre-registered bar with hand-written rules (most were caught, but too
   often named on look-alikes); on a phone the day bar's thin stretches were too small to tap; "TV" was shown when people talked.
