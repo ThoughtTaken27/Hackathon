@@ -130,6 +130,16 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 8 of 15 names passed (Kettle or a hot drink, Chopping, Running water, Cupboards and drawers, Timer or appliance beep, Talking / TV, Typing, Footsteps), up from 1 with the rules; the other 7 stay hidden from families (`results/sound_head.json`). The test halves were scored once before, with the rules; every choice in the head came from the tune halves.
 <!-- accuracy:end -->
 
+<!-- realhomes:start -->
+**Real homes, scored once (TUT Sound Events 2016 "home": 10 recordings, 36.3 minutes, 216 ten-second windows, every event labelled by the dataset's authors; nothing tuned on it):**
+
+- Windows with washing up or a running tap (N=55): the timeline named some kitchen activity in 52.7% [39.8, 65.3], "Washing up" itself in 21.8% [12.9, 34.4], and said "Not sure" in 41.8% [29.7, 55.0].
+- Windows with no kitchen sound (N=113): a kitchen activity was named anyway in 8.8% [4.9, 15.5].
+- Named sounds: tap named in 0 of 46 windows that had it, 0 wrong names; dishes named in 0 of 72 windows that had it, 0 wrong names; cupboard named in 2 of 29 windows that had it, 0 wrong names; footsteps named in 0 of 24 windows that had it, 0 wrong names.
+
+So in homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all; the precision-first thresholds don't carry over. `results/real_homes.json` (`python -m eval.real_homes`).
+<!-- realhomes:end -->
+
 <!-- tradeoff:start -->
 "Not sure" below θ = 0.66 (chosen on dev so shown labels are right 90% of the time). On dev, kitchen-activity blocks covered at least half of 33 of 33 kitchen sessions, but the right activity formed one such block in only 15: short "Not sure" stretches split it. A timeline rule added after the frozen test run (bridge a "Not sure" gap of up to 30 s inside one activity; model and θ unchanged) raised that to 26 of 33 and cut false kitchen blocks from 3.87 to 3.23 per 16-hour day. Its cost: 14% of held-out windows were "Not sure".
 <!-- tradeoff:end -->

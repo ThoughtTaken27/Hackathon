@@ -71,6 +71,19 @@ async function accuracy(box) {
       Object.keys(S.head).map((k) => [KIND_NAMES[k] || k, `${p(S.rules[k].precision)} → ${p(S.head[k].precision)}`, `${p(S.rules[k].recall)} → ${p(S.head[k].recall)} (N=${S.head[k].recall.n})`,
         `${S.rules[k].false_per_1000} → ${S.head[k].false_per_1000}`, S.head[k].shown ? "yes" : S.hidden_on_tune.includes(k) ? "hidden (failed on tune, never tested)" : "hidden"])),
     h("p", { class: "gap", text: `Hidden sounds are still computed on the device (for the privacy veto and safety notes) but never sent. Frying, dishes and the microwave came close and stay hidden: we don't move the bar after seeing the result. Honesty note: these held-out halves were scored once before, with the rules (results/sounds.json); every choice in the head came from the tune halves. Ten-second public clips are not a real kitchen.` }));
+  const H = A.real_homes;
+  if (H) {
+    const act = H.activity, pc = (r) => (r && r.pct != null ? `${r.pct.toFixed(0)}% (${r.k} of ${r.n})` : "–");
+    sec.append(h("h3", { text: "Real homes it never heard, scored once" }),
+      h("p", { class: "meta", text: `TUT Sound Events 2016 "home": ${H.n_recordings} recordings in real homes, ${H.minutes} minutes, every event labelled by the dataset's authors. Nothing in Kettle was tuned on it.` }),
+      table(["What happened", "Result"], [
+        ["Washing up or a running tap: some kitchen activity named", pc(act.named_any_kitchen_activity)],
+        ["… named \"Washing up\" itself", pc(act.named_washing_up)],
+        ["… \"Not sure\"", pc(act.not_sure)],
+        ["No kitchen sound at all: a kitchen activity named anyway", pc(act.kitchen_activity_named_anyway)],
+        ...Object.entries(H.sounds).map(([k, v]) => [`${KIND_NAMES[k] || k}: named when present`, `${v.recall.k} of ${v.windows_with_sound} (${v.false_named_windows} wrong names)`])]),
+      h("p", { class: "gap", text: "In homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all: the precision-first thresholds don't carry over. Teaching Kettle the room at setup is meant for this, and isn't measured here." }));
+  }
   const J = A.judge.dev, best = J["0.9"];
   sec.append(h("h3", { text: "Tried and not shipped" }),
     h("p", { class: "gap", text: `A trained judge on the 527 sound tags, across many homes: at its strictest it removed every wrong-activity call (${best.wrong_activity[0]} → ${best.wrong_activity[1]}) but named fewer real meals (${best.right[0]} → ${best.right[1]}), so it failed the gate we wrote before running it. Bridging "unlike anything it learned" gaps and naming TV from its tag didn't move the development numbers. All in results/judge.json and results/confetti.json.` }));

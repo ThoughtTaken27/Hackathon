@@ -22,6 +22,9 @@ def main() -> None:
            "confetti": {"decision": co["decision"], "variants": co["variants"]},
            "sound_fill": (lambda f: {"decision": f["decision"], "gate": f["dev_gate"],
                                      "k20": [f["dev"][v]["kitchen20_tune"]["not_sure_share_pct"] for v in ("shipped", "+2g sound fill")]})(R("sound_fill.json")),
+           "real_homes": (lambda r: {"source": r["source"], "n_windows": r["n_windows"], "n_recordings": len(r["recordings"]),
+                                     "minutes": round(sum(v["minutes"] for v in r["recordings"].values()), 1),
+                                     "sounds": r["sounds"], "activity": r["activity"]})(R("real_homes.json")),
            "source": "tools/export_accuracy.py"}
     (ROOT / "web" / "public" / "data" / "accuracy.json").write_text(json.dumps(out))
     print("wrote web/public/data/accuracy.json")
@@ -110,7 +113,21 @@ def fill_writeup(A: dict) -> None:
                 f"scored {cif(bl['apple_zeroshot'])}. Our model scored {cif(me)} on held-out test data:** a pre-registered sample of the official "
                 f"DCASE 2018 test set ({me['n_clips']:,} ten-second clips from {me['n_sessions']} sessions), scored once with the model frozen. "
                 "Macro F1 averages the 9 activities equally; brackets are 95% intervals from resampling sessions.")
-    blocks = {"headline": headline, "accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
+    H = A["real_homes"]
+    pr = lambda r: "–" if r["pct"] is None else f"{r['pct']:.1f}% [{r['ci95'][0]}, {r['ci95'][1]}]"
+    act = H["activity"]
+    real = "\n".join([
+        f"**Real homes, scored once (TUT Sound Events 2016 \"home\": {H['n_recordings']} recordings, {H['minutes']} minutes, "
+        f"{H['n_windows']} ten-second windows, every event labelled by the dataset's authors; nothing tuned on it):**", "",
+        f"- Windows with washing up or a running tap (N={act['washing_windows']}): the timeline named some kitchen activity in "
+        f"{pr(act['named_any_kitchen_activity'])}, \"Washing up\" itself in {pr(act['named_washing_up'])}, and said \"Not sure\" in {pr(act['not_sure'])}.",
+        f"- Windows with no kitchen sound (N={act['windows_without_kitchen_events']}): a kitchen activity was named anyway in {pr(act['kitchen_activity_named_anyway'])}.",
+        "- Named sounds: " + "; ".join(f"{k} named in {v['recall']['k']} of {v['windows_with_sound']} windows that had it, "
+                                        f"{v['false_named_windows']} wrong names" for k, v in H["sounds"].items()) + ".",
+        "", "So in homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all; the precision-first "
+        "thresholds don't carry over. `results/real_homes.json` (`python -m eval.real_homes`).",
+    ])
+    blocks = {"headline": headline, "realhomes": real, "accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
     p = ROOT / "docs" / "WRITEUP.md"
     t = p.read_text()
     for k, v in blocks.items():
