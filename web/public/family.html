@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="/css/theme.css?v=h5">
 <link rel="stylesheet" href="/css/type.css?v=h5">
 <link rel="stylesheet" href="/css/family.css?v=h5">
+<link rel="stylesheet" href="/css/urgent.css?v=u1">
 <script src="/js/chrome.js?v=w7" defer></script>
 </head>
 <body>
@@ -29,6 +30,7 @@
     <p class="hb" id="hb" data-state="never"><span class="dot" aria-hidden="true"></span><span class="text"></span></p>
   </header>
   <div id="urgent" aria-live="assertive"></div>
+  <div id="alert-log" class="alert-log" hidden></div>
   <div id="invite"></div>
   <p class="fam-summary summary" id="summary"></p>
   <section class="day-card" aria-label="Day timeline">
@@ -42,6 +44,7 @@
     </div>
   </section>
   <div class="fam-grid">
+    <section id="push" class="fam-sec push-sec" aria-label="Urgent alerts on this phone"></section>
     <section aria-labelledby="checks-h" class="fam-sec">
       <div class="sec-head"><h2 class="sec-title" id="checks-h">Your checks</h2><button class="btn sm" id="edit-rules" type="button">Edit</button></div>
       <div class="rules" id="rules"></div>
@@ -70,7 +73,7 @@
   </div>
   <footer class="foot fam-foot">
     <p id="foot-who"></p>
-    <p>Not an emergency device. Urgent notes are experimental and only show while this page is open. <strong>Prototype, not medical advice.</strong></p>
+    <p>Not an emergency device: it doesn't replace a smoke or CO detector, or 911. Urgent alerts reach this phone only if you turn them on above. <strong>Prototype, not medical advice.</strong></p>
   </footer>
 </main>
 
@@ -91,6 +94,6 @@
   <h2 id="settings-h">Settings</h2>
   <div id="settings-body"></div>
 </div>
-<script type="module" src="/js/family.js?v=p1"></script>
+<script type="module" src="/js/family.js?v=u1"></script>
 </body>
 </html>

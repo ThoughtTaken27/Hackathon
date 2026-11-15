@@ -1,10 +1,10 @@
 // The room screen (Kettle web; route /kitchen). Pairs with a code, asks the person first, labels sound on this device, sends only labels.
-import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
+import { today as computeToday, canListen, rawLabel, clock, tzOffset, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
 import { ROOMS, who } from "./people.js";
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
-import { newEngine, step as safetyStep, timeouts as safetyTimeouts, answer as safetyAnswer, TEXT as SAFETY_TEXT } from "./safety.js";
+import { newEngine, step as safetyStep, timeouts as safetyTimeouts, answer as safetyAnswer, help as safetyHelp, TEXT as SAFETY_TEXT } from "./safety.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
 // can be a spare phone or tablet on a charger as well as a laptop.
@@ -126,6 +126,7 @@ async function boot() {
     if (sec % 4 === 0) flush();
     teachTick();
     if (mic) handleSafety(safetyTimeouts(safety, now()));
+    if (alertQ.length && sec % 2 === 0) flushAlerts();
     watchdog();
     if (srv && !document.hidden) draw();
   });
@@ -197,26 +198,56 @@ function merge(list) {
   for (const e of list || []) m.set(e.end, e);
   events = [...m.values()].sort((a, b) => a.end - b.end).filter((e) => e.end > now() - 36 * 3600);
 }
-// ---------------------------------------------------------------- safety (handover v3.2, 3.6): smoke alarm, a crash then a cry, screaming
-// The engine (safety.js) runs on this device; only an Urgent alert's kind and time go to the family. A crash or screaming first asks
-// "Are you OK?" here; the family is told if nobody answers, or if the parent presses "I need help".
+// ---------------------------------------------------------------- safety (handover v3.5, 3.2): red at once, then ask
+// The engine (safety.js) runs on this device; only an Urgent alert's kind, time and check-in state go to the family. A crash then a
+// cry, screaming, shouting or repeated crying tells the family AT ONCE ("asking") and asks "Are you OK?" here; the answer (or no
+// answer) updates that same alert (same time = same alert on the server). Smoke, CO and gunshots skip the question.
+// Concern-tier notes (C6 stove, C7 beeping, C9 water) stay off on purpose ({ concern: false } below): they have never been checked
+// end to end, so they would be unmeasured alerts (How sure says so).
 const safety = newEngine();
-const WIRED = ["smoke", "fall", "fall_still", "scream", "help"];
+const WIRED = ["smoke", "co", "gunshot", "fall", "fall_still", "scream", "shout", "distress", "help"];
+const ALERT_Q = "kettle.alertQueue";
+let alertQ = (() => { try { return JSON.parse(localStorage.getItem(ALERT_Q) || "[]"); } catch { return []; } })(), alertBusy = false;
+const saveAlertQ = () => { try { localStorage.setItem(ALERT_Q, JSON.stringify(alertQ)); } catch {} };
+/** Alerts are queued and retried until the server has them: a dropped connection must never lose one. */
+function sendAlert(kind, at, checkin) { alertQ.push({ kind, at, checkin }); saveAlertQ(); flushAlerts(); }
+async function flushAlerts() {
+  if (alertBusy || !alertQ.length || !link) return;
+  alertBusy = true;
+  try {
+    while (alertQ.length) {
+      const a = alertQ[0];
+      if (a.at < now() - 3000) { alertQ.shift(); saveAlertQ(); continue; }          // too old to be news (the server keeps an hour)
+      try { const r = await api(`/api/h/${link.id}/action`, { method: "POST", key: link.key, body: { type: "alert", ...a }, retries: 2 }); srv = r.state; ui.alertFailed = false; }
+      catch (e) { if (!e.status || e.status >= 500 || e.status === 429) { ui.alertFailed = true; break; } }   // offline: keep it, try again next second
+      alertQ.shift(); saveAlertQ();
+    }
+  } finally { alertBusy = false; }
+}
+const fam = () => who(srv ? srv.names : null, "person");
+const clockNow = (t) => clock(t, tzOffset((srv && srv.tz) || "UTC", t));
 function handleSafety(acts) {
   for (const a of acts || []) {
-    if (a.do === "checkin" && ["fall", "scream"].includes(a.rule)) {
-      ui.checkin = { type: a.type, deadline: a.deadline, text: SAFETY_TEXT[a.type] };
-      speak(["Are you OK?", "Kettle heard " + SAFETY_TEXT[a.type] + ".", "Press I'm OK, or I need help."]);
+    if (a.do === "checkin") {
+      ui.checkin = { type: a.type, at: a.at, deadline: a.deadline, text: SAFETY_TEXT[a.type] };
+      if (WIRED.includes(a.type)) sendAlert(a.type, a.at, "asking");          // the family is told now, not after the countdown
+      speak(["Are you OK?", "Kettle heard " + SAFETY_TEXT[a.type] + ".", `${fam().Caregiver} has been told.`, "Press I'm OK, or I need help."]);
       draw();
-    } else if (a.do === "alert" && a.tier === "urgent" && WIRED.includes(a.type)) {
+    } else if (a.do === "alert" && (a.tier === "urgent" || a.checkin === "ok") && WIRED.includes(a.after || a.type)) {
+      // an answer or a timeout updates the alert sent when the check-in began; smoke, CO, gunshot and the help button are new alerts
+      const kind = a.after || a.type, at = a.checkin && a.checkin !== "help" ? (a.since ?? a.at) : a.after ? a.since : a.at;
+      sendAlert(kind, at, a.checkin || "none");
       ui.checkin = null;
-      act("alert", { kind: a.type, at: a.at, checkin: a.checkin || "none" });
-      ui.alerted = { at: Date.now(), text: SAFETY_TEXT[a.type] };
+      if (a.checkin !== "ok") { ui.alerted = { at: Date.now(), kind, text: SAFETY_TEXT[kind], checkin: a.checkin || "none" }; speak([`Kettle heard ${SAFETY_TEXT[kind]}.`, `Kettle told ${fam().caregiver}.`]); }
       draw();
     } else if (a.do === "alert" && ui.checkin) { ui.checkin = null; draw(); }
   }
 }
-function reply(r) { const acts = safetyAnswer(safety, now(), r); ui.checkin = null; handleSafety(acts); if (r === "ok") toast("Thank you. Nobody was told."); draw(); }
+function reply(r) {
+  const acts = safetyAnswer(safety, now(), r); ui.checkin = null; handleSafety(acts);
+  if (r === "ok") toast(`Thank you. ${fam().Caregiver} can see you're OK.`);
+  draw();
+}
 
 async function act(type, extra = {}) {
   ui.pauseMenu = false;
@@ -329,13 +360,16 @@ function meter(v) {
 // ---------------------------------------------------------------- what to show (same states and words as the Python kitchen screen)
 function screen(t) {
   const n = t.names, k = t.kitchen, hb = t.heartbeat;
+  const sendLine = ui.alertFailed ? "Kettle can't reach the internet. It keeps trying to tell them." : "";
   if (ui.checkin) {
     const left = Math.max(0, Math.ceil(ui.checkin.deadline - now()));
-    return { state: "error", head: "Are you OK?", body: [`Kettle heard ${ui.checkin.text}.`, `If nobody answers in ${left} seconds, Kettle tells ${n.caregiver}.`],
+    return { state: "urgent", head: "Are you OK?", body: [`Kettle heard ${ui.checkin.text} at ${clockNow(ui.checkin.at)}.`,
+      `${n.Caregiver} has been told. Press I'm OK to let them know you're fine.`,
+      `If nobody answers in ${left} seconds, Kettle tells ${n.caregiver} that nobody answered.`, sendLine].filter(Boolean),
       controls: [button("I'm OK", () => reply("ok"), "primary"), button("I need help", () => reply("help"), "danger")] };
   }
-  if (ui.alerted && Date.now() - ui.alerted.at < 60000) return { state: "error", head: `Kettle told ${n.caregiver}.`,
-    body: [`It heard ${ui.alerted.text}. ${n.Caregiver} sees an urgent note on their phone. If you need help now, call for it.`],
+  if (ui.alerted && Date.now() - ui.alerted.at < 120000) return { state: "urgent", head: ui.alerted.kind === "help" ? `${n.Caregiver} has been told you need help.` : `Urgent: Kettle heard ${ui.alerted.text}.`,
+    body: [`Heard at ${clockNow(ui.alerted.at / 1000)}. ${n.Caregiver} has been told on their phone.`, "If you need help now, call 911 or a neighbour. Kettle can't call for help itself.", sendLine].filter(Boolean),
     controls: [button("OK", () => { ui.alerted = null; draw(); }, "primary")] };
   if (ui.gone) return { state: "error", head: `This ${DEVICE} isn't connected any more.`, body: [ui.gone, "Ask your family member for a new code."],
     controls: [el("a", { class: "btn kbtn primary", href: "/kitchen", text: "Enter a new code", onclick: () => { forgetHome(link.id); } })] };
@@ -402,7 +436,8 @@ function screen(t) {
   const today = new Date(now() * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: srv.tz });
   const since = k.consent_day === today ? `Listening since ${k.consent_text} today.` : `Listening since ${k.consent_day}.`;
   const base = { bar: true, chip: true, checks: t.rules.map((r) => r.title), tools: true, share: true,
-    controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off")), popOutButton()].filter(Boolean) };
+    controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off")), popOutButton(),
+      button("I need help", () => handleSafety([safetyHelp(safety, now())]), "danger help-now")].filter(Boolean) };
   if (silentRun >= 3) return { ...base, chip: false, state: "error-soft", head: "Kettle hears nothing at all.",
     body: [`The microphone is sending silence, so ${n.caregiver} sees "Not listening". Check it isn't muted (a mute key, or a switch on a headset).`] };
   if (Date.now() - (ui.taughtAt || 0) < 15000) return { ...base, state: "listening", head: `Thank you. Kettle learned this ${roomWord()}.`,
