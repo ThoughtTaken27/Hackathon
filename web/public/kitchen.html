@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kettle · kitchen</title>
+<meta name="theme-color" content="#FAFAFA">
+<link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/app.css?v=w1">
+</head>
+<body>
+<nav class="nav" aria-label="Kettle"><div class="nav-in">
+  <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
+  <span class="nav-sp"></span>
+  <span class="tag" id="who-tag">Kitchen screen</span>
+</div></nav>
+<main class="kitchen">
+  <div class="k-main">
+    <div class="k-status" id="status" data-state="never">
+      <span class="dot" aria-hidden="true"></span>
+      <div>
+        <h1 class="k-head" id="head" aria-live="polite">Opening Kettle…</h1>
+        <div id="body"></div>
+      </div>
+    </div>
+    <div id="chip-wrap" hidden></div>
+    <div class="k-controls" id="controls"></div>
+    <section id="bar-section" hidden aria-label="Today's timeline"><div id="bar"></div></section>
+    <div id="extra"></div>
+  </div>
+  <footer class="k-foot">
+    <span>Nothing is recorded. Only the kind of sound is noted, on this laptop.</span>
+    <span><a href="/how-sure">How sure is Kettle?</a> · <strong>Prototype, not medical advice.</strong></span>
+  </footer>
+</main>
+<script type="module" src="/js/kitchen.js?v=w1"></script>
+</body>
+</html>

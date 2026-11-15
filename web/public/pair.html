@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enter your Kettle code</title>
+<meta name="theme-color" content="#FAFAFA">
+<link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/app.css?v=w1">
+</head>
+<body>
+<nav class="nav" aria-label="Kettle"><div class="nav-in">
+  <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
+</div></nav>
+<main class="shell"><div class="narrow enter">
+  <h1 class="h1">Enter your code</h1>
+  <p class="lead">Six letters and numbers, from the other screen. Spaces don't matter.</p>
+  <div class="field2" style="margin-top:28px"><input class="input code-input" id="code" maxlength="7" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" aria-label="Six-letter code" placeholder="ABC 123"></div>
+  <p class="err" id="err" role="alert"></p>
+  <div class="actions"><button class="btn primary lg" type="button" id="go">Connect</button><a class="btn lg" href="/start">Set up Kettle instead</a></div>
+</div></main>
+<script type="module">
+import { $, api, saveHome } from "/js/ui.js";
+const go = async () => {
+  $("#err").textContent = "";
+  try { const r = await api("/api/pair", { method: "POST", body: { code: $("#code").value } }); saveHome(r.id, { [r.role + "Key"]: r.key }); location.href = r.role === "kitchen" ? "/kitchen" : "/family"; }
+  catch (e) { $("#err").textContent = e.message; }
+};
+$("#go").addEventListener("click", go);
+$("#code").addEventListener("keydown", (e) => e.key === "Enter" && go());
+$("#code").addEventListener("input", (e) => { const v = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6); e.target.value = v.length > 3 ? v.slice(0, 3) + " " + v.slice(3) : v; if (v.length === 6) go(); });
+$("#code").focus();
+</script>
+</body>
+</html>

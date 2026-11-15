@@ -1,0 +1,13 @@
+{
+  "name": "kettle-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node dev.mjs",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "onnxruntime-web": "1.22.0",
+    "qrcode-generator": "1.4.4"
+  }
+}

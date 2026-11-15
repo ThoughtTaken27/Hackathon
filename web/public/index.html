@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kettle · know the day went okay, without a camera</title>
+<meta name="description" content="Kettle turns the laptop already in your parent's kitchen into a calm timeline of their day, from the kinds of sound alone. No recordings, no words, and it tells you how often it's wrong.">
+<meta property="og:title" content="Kettle">
+<meta property="og:description" content="A calm day timeline from kitchen sounds. No camera, no recordings, no words.">
+<meta property="og:image" content="/img/og.png">
+<meta name="theme-color" content="#FAFAFA">
+<link rel="icon" href="/img/icon.svg" type="image/svg+xml">
+<link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/css/app.css?v=w1">
+<link rel="stylesheet" href="/css/landing.css?v=w1">
+</head>
+<body class="landing">
+<nav class="nav" aria-label="Kettle"><div class="nav-in">
+  <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
+  <span class="nav-sp"></span>
+  <a class="nav-link hide-sm" href="#how">How it works</a>
+  <a class="nav-link hide-sm" href="#privacy">Privacy</a>
+  <a class="nav-link hide-sm" href="/how-sure">How sure</a>
+  <a class="nav-link" id="nav-home" href="/family" hidden>My home</a>
+  <a class="btn primary nav-cta" href="/start">Set up Kettle</a>
+</div></nav>
+
+<main>
+  <section class="hero">
+    <p class="pill reveal" style="--d:0"><span class="pill-dot" aria-hidden="true"></span>A free prototype you can try today</p>
+    <h1 class="display reveal" style="--d:1">Know the day went okay.<span class="soft">Without a camera.</span></h1>
+    <p class="lede reveal" style="--d:2">Kettle turns the laptop already in your parent's kitchen into a calm timeline of their day, from the kinds of sound alone. No recordings. No words. And it tells you how often it's wrong.</p>
+    <div class="cta reveal" style="--d:3">
+      <a class="btn primary xl" href="/start">Set up Kettle, free</a>
+      <a class="btn xl" href="#stage" id="watch">Watch a sample day</a>
+    </div>
+    <p class="fine reveal" style="--d:4">Two minutes to set up. Works in Chrome, Edge and Safari. No account, no app to install.</p>
+  </section>
+
+  <!-- the product stage: both real screens, playing a sample day -->
+  <section class="stage-wrap reveal" style="--d:3" id="stage" aria-label="Both screens playing a sample day">
+    <div class="stage">
+      <div class="dev laptop" data-w="1280" data-h="800">
+        <div class="lid"><div class="glass"><div class="canvas" id="kitchen-canvas"></div></div></div>
+        <div class="base" aria-hidden="true"></div>
+        <p class="dev-cap"><strong id="cap-k">Dad's kitchen</strong> His laptop, on the counter</p>
+      </div>
+      <div class="dev phone" data-w="390" data-h="844">
+        <div class="glass"><div class="canvas" id="family-canvas"></div></div>
+        <p class="dev-cap"><strong>Meera's phone</strong> 300 miles away</p>
+      </div>
+    </div>
+    <div class="stage-bar">
+      <div class="seg" role="group" aria-label="Sample days">
+        <button type="button" data-sid="usual" aria-pressed="true">A usual morning</button>
+        <button type="button" data-sid="quiet">A quiet morning</button>
+        <button type="button" data-sid="tv">A TV-only afternoon</button>
+      </div>
+      <p class="fine" id="stage-note">Real labels from Kettle's model on recordings from a public research home. Clock times are staged.</p>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <div class="sec-head">
+      <p class="kicker">How it works</p>
+      <h2 class="h2">Set up in two minutes. Then just look when you wonder.</h2>
+    </div>
+    <ol class="flow">
+      <li><span class="n num">1</span><h3>Create your home</h3><p>On your phone, pick what you call your parent and add your name. Kettle gives you a six-letter code.</p></li>
+      <li><span class="n num">2</span><h3>Your parent says yes</h3><p>On their kitchen laptop, open Kettle and type the code. They read one screen, in big type, and choose. Nothing starts without them.</p></li>
+      <li><span class="n num">3</span><h3>Check in, calmly</h3><p>Open your view any time: a day bar, one plain sentence, and the checks you set. No alerts, no nagging.</p></li>
+    </ol>
+  </section>
+
+  <section class="sec" id="privacy">
+    <div class="sec-head">
+      <p class="kicker">Privacy, by design</p>
+      <h2 class="h2">The sound never leaves the kitchen.</h2>
+      <p class="sub">The sound model runs inside the browser on your parent's laptop. It hears ten seconds, names the activity, and forgets the sound. Only the name, the time and a few scores are sent.</p>
+    </div>
+    <div class="bento">
+      <article class="tile t-wide">
+        <div class="flowviz" aria-hidden="true">
+          <div class="fv-col"><p class="fv-k">On the kitchen laptop</p><div class="fv-wave" id="fv-wave"></div><p class="fv-x"><s>10 seconds of sound</s> held in memory, then dropped</p></div>
+          <div class="fv-arrow"><svg width="64" height="12" viewBox="0 0 64 12"><path d="M0 6h60M55 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="fv-col"><p class="fv-k">What is sent</p><div class="packet num"><span><i style="background:var(--act-cooking)"></i>Cooking</span><span>8:05:10 AM</span><span>how sure 0.86</span></div><p class="fv-x">No audio. No words. No voices.</p></div>
+        </div>
+        <h3>Labels, never recordings</h3>
+        <p>We checked: in a 3-minute test of the original app, Kettle wrote no audio files and made no outbound connections. The browser version runs the identical model, tested to give the same label on all 90 sample clips.</p>
+      </article>
+      <article class="tile">
+        <div class="mini-pause" aria-hidden="true"><span class="btn kbtn primary pause">Pause</span><p class="tiny">Meera sees: <strong style="white-space:nowrap">Paused by Dad at 2:10 PM</strong></p></div>
+        <h3>Your parent stays in charge</h3>
+        <p>One big button pauses Kettle or turns it off. It asks again every week. Their screen shows exactly what you see.</p>
+      </article>
+      <article class="tile">
+        <div class="mini-rules" aria-hidden="true">
+          <div class="rule" data-state="met"><p class="name">Kitchen activity by 10:00 AM</p><p class="state">Met at 8:05 AM</p></div>
+          <div class="rule" data-state="under"><p class="name">TV on for more than 4 hours</p><p class="state">TV for 1 h 7 min so far</p></div>
+        </div>
+        <h3>Checks you set. No alerts.</h3>
+        <p>Kettle doesn't learn a routine or judge it. It answers the questions you choose, and says "Can't tell" when it wasn't listening.</p>
+      </article>
+      <article class="tile t-wide">
+        <div class="mini-evidence" aria-hidden="true">
+          <div class="evidence"><p class="head"><span class="sw" style="background:var(--act-cooking)"></span><span>Cooking</span><span class="muted t">8:05–8:25 AM</span></p>
+          <p>4 windows · how sure: medium</p><p>Sounds Kettle heard: mostly frying, some dishes and cupboards.</p></div>
+        </div>
+        <h3>It shows its work</h3>
+        <p>Tap any block to see why Kettle thinks so and how sure it was. When it can't tell, it says "Not sure" instead of guessing.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="numbers" aria-label="Measured results">
+    <div class="numbers-in">
+      <div class="numbers-head"><p class="kicker">Measured, not promised</p><h2 class="h2">How sure is Kettle?</h2></div>
+      <div class="mgrid">
+        <div class="m"><p class="m-n num" data-k="f1">84.1</p><p class="m-l">macro F1 on held-out benchmark clips it never heard, scored once</p></div>
+        <div class="m"><p class="m-n num" data-k="caught">89%</p><p class="m-l">of kitchen-activity moments caught</p></div>
+        <div class="m"><p class="m-n num" data-k="fa">0.5%</p><p class="m-l">of other moments wrongly called kitchen activity</p></div>
+        <div class="m"><p class="m-n num" data-k="ns">0.4%</p><p class="m-l">of off-list sounds (dogs, sirens) given a confident label</p></div>
+      </div>
+      <p class="strip-note">From the DCASE 2018 home-activity benchmark: recordings from one research home, not yet a real kitchen. Level with the official 2018 baseline, below the best entry. <a href="/how-sure">Every number, with its error bars</a></p>
+    </div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="sec-head"><p class="kicker">Questions</p><h2 class="h2">Asked plainly</h2></div>
+    <div class="faq">
+      <details><summary>Does Kettle record my parent?</summary><p>No. The laptop holds the last ten seconds of sound in memory, names the activity, and overwrites it. No audio is saved or sent, and no words are kept. Only labels like "Cooking, 8:05 AM" reach your phone.</p></details>
+      <details><summary>What do we need?</summary><p>A laptop with a microphone that can stay in the kitchen, plugged in, with Chrome, Edge or Safari open on Kettle. And your own phone or computer. No app to install, no account to create.</p></details>
+      <details><summary>Does it send alerts if something is wrong?</summary><p>No. Kettle is not an emergency device and can't detect falls. It shows a calm timeline and answers the checks you set, like "kitchen activity by 10 AM". You look when you wonder.</p></details>
+      <details><summary>What if the laptop sleeps or the Wi-Fi drops?</summary><p>Kettle keeps the screen awake while it listens. If the internet drops, it keeps labelling and sends everything when the connection is back. If the laptop is closed, your view says "Not listening", never a quiet day.</p></details>
+      <details><summary>How accurate is it?</summary><p>On a public benchmark it scored 84.1 macro F1 on clips it had never heard, scored once. It hasn't been measured in a real kitchen yet, and it mixes up moving about with typing most often. The "How sure" page lists every miss rate.</p></details>
+      <details><summary>Can we delete everything?</summary><p>Yes. Settings, Delete this home removes every label and setting from Kettle's server for good. Labels older than eight days are deleted on their own.</p></details>
+    </div>
+  </section>
+
+  <section class="final">
+    <h2 class="h2">A calmer way to check in.</h2>
+    <p class="sub">Free while it's a prototype. Two minutes to set up.</p>
+    <div class="cta"><a class="btn primary xl" href="/start">Set up Kettle</a><a class="btn xl" href="/pair">I have a code</a></div>
+  </section>
+</main>
+
+<footer class="home-foot"><div class="home-foot-in">
+  <span class="mark"><svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</span>
+  <span>Prototype, not medical advice. Not an emergency device. Meera and Ravi are invented people.</span>
+</div></footer>
+<script type="module" src="/js/landing.js?v=w1"></script>
+</body>
+</html>

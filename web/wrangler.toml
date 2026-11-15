@@ -1,0 +1,21 @@
+name = "kettle"
+main = "src/worker.js"
+compatibility_date = "2025-09-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "drop-trailing-slash"
+not_found_handling = "404-page"
+
+[[durable_objects.bindings]]
+name = "HOUSEHOLD"
+class_name = "Household"
+
+[[durable_objects.bindings]]
+name = "CODES"
+class_name = "Codes"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Household", "Codes"]

@@ -1,0 +1,9 @@
+{
+ "clips": 90,
+ "front_end_max_db_diff": 0.00012969970703125,
+ "embedding_max_abs_diff": 6.67572021484375e-06,
+ "audioset_max_abs_diff": 1.8775463104248047e-06,
+ "same_label": 90,
+ "onnx_mb": 22.11,
+ "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037"
+}

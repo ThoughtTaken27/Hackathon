@@ -1,0 +1,3 @@
+{ "name": "Kettle", "short_name": "Kettle", "start_url": "/family", "display": "standalone", "background_color": "#FAFAFA", "theme_color": "#FAFAFA",
+  "description": "A calm day timeline from kitchen sounds. No audio leaves the kitchen laptop.",
+  "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png" }, { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png" }] }
