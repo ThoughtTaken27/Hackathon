@@ -73,9 +73,13 @@ def blocks(m: dict) -> dict:
                          f"{mv[0]:.0f}–{mv[1]:.0f}% on every microphone, so its drop isn't a microphone effect."]
         em = e.get("meal_activity")
         if em:
-            held += ["", f"**Meera's check (any kitchen activity), held-out:** caught {f(em['caught'])}% of {em['n_meal']:,} windows "
-                         f"(**missed {em['missed']}**); **false alarms** on {f(em['false_alarm_rate'])}% of {em['n_other']:,} other windows "
-                         f"({em['false_alarms']}). Computed after the run from its saved predictions (not in the pre-registration)."]
+            hit = em['n_meal'] - em['missed']
+            held += ["", f"**Meera's check (any kitchen activity), held-out:** the top label caught **{hit:,} of {em['n_meal']:,}** kitchen-activity windows "
+                         f"(**missed {em['missed']}**): {100 * hit / em['n_meal']:.1f}% raw, **{em['caught']['value']}%** [{em['caught']['ci95'][0]}, {em['caught']['ci95'][1]}] reweighted. **False alarms** on "
+                         f"**{em['false_alarms']} of {em['n_other']:,}** other windows: {100 * em['false_alarms'] / em['n_other']:.2f}% raw, "
+                         f"**{em['false_alarm_rate']['value']}%** [{em['false_alarm_rate']['ci95'][0]}, {em['false_alarm_rate']['ci95'][1]}] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test "
+                         f"set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. "
+                         f"Computed after the run from its saved predictions (not in the pre-registration)."]
     dev_rows += ["", "**Development folds (session-disjoint, 4-fold; optimistic: the same folds chose the model):**", "",
                  "| System | Macro F1 | Notes |", "|---|---|---|",
                  f"| **Kettle, one microphone** | **{f(d['ours_ch0']['macro_f1'])}** | N = {d['n_clips']:,} clips / {d['n_sessions']} sessions |"]

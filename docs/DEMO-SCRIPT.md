@@ -8,7 +8,7 @@ app on Sun Nov 15 (Playwright walkthrough on the merged branch). **Bold** = the 
 | Take | What | Raw length | Used in the video |
 |---|---|---|---|
 | 1 | Setting up: the parent says yes, Kettle starts learning the kitchen | ~1 min | 0:28–0:40 |
-| 2 | Live: real cooking, family phone, pause, other tab, smoke alarm | ~3 min | 0:40–1:20 |
+| 2 | Live: real cooking, family phone, pause, other tab, what's shared | ~3 min | 0:40–1:20 |
 | 3 | Front page and How sure page (no microphone needed) | ~2 min | 0:00–0:28 and 1:20–1:55 |
 
 ---
@@ -22,8 +22,7 @@ app on Sun Nov 15 (Playwright walkthrough on the merged branch). **Bold** = the 
 2. Open **two Chrome windows** side by side:
    - **Left = kitchen laptop:** a normal window, about 1200 px wide.
    - **Right = family phone:** an **Incognito** window (Ctrl+Shift+N, Mac ⌘+Shift+N), narrow, about 420 px wide.
-3. Zoom both to 110%. Turn on Do Not Disturb. Plug the laptop in. Have ready: a pan, a metal spoon, the tap, and the smoke
-   detector's test button (or the test sound from `docs/VIDEO.md`).
+3. Zoom both to 110%. Turn on Do Not Disturb. Plug the laptop in. Have ready: a pan, a metal spoon and the tap.
 4. Warm up the sound model so the video never shows "Getting Kettle ready…": open `http://localhost:8787/kitchen` in the left
    window once and wait about 20 s, then close that tab. The model stays cached.
 
@@ -76,11 +75,10 @@ Start recording with the left window showing **"Listening for kitchen sounds"** 
 | 3 | Wait 10–20 s; don't click anything on the right (it refreshes itself every 5 s) | Right: summary **"So far today: cooking around …"**, coloured blocks on the bar, check **"Kitchen activity by 8:00 PM · Met at … (cooking …)"** | *"Far away, Asha sees the day fill in, and the check she set turns to met."* |
 | 4 | Left: click **Pause** | A menu: **A guest or carer is here (2 hours)**, **Pause for 15 minutes**, **Pause for 1 hour**, **Pause until tomorrow morning**, **Cancel** | *"Mom can pause it any time…"* |
 | 5 | Click **Pause for 15 minutes** | Left: **"Paused. Kettle isn't listening."** Right (within ~5 s): **"Paused by Mom at … · resumes at …"** | *"…and Asha sees that honestly."* |
-| 6 | Left: click **Resume listening** (must do this before the smoke alarm) | Left: **"Kettle is listening again."** | — |
+| 6 | Left: click **Resume listening** | Left: **"Kettle is listening again."** | — |
 | 7 | Left: open a new tab (Ctrl+T), show it for 3 s, then click back to the Kettle tab | The Kettle tab's title reads **"● Listening · Kettle"** | *"It keeps listening while the laptop is used for other things."* |
-| 8 | (Optional) Left: click **Keep it in a small window**, show the small window, close it, click **Listen in this tab instead** | — | — |
-| 9 | Press the smoke detector's **test** button near the laptop (or play `smoke_test.wav` from a phone) for ~15 s | Left: **"Kettle told Asha."** Right (within ~5–15 s): red banner **"Urgent: Kettle heard a smoke alarm at …"** | *"For a smoke alarm, screaming, or a crash then a cry, Kettle can raise an urgent note. It asks 'Are you OK?' first for a person, and it can't call for help: it's not an emergency device."* |
-| 10 | Right: click **I've seen this** | Banner disappears | — |
+| 8 | Left: scroll down and click **What Asha can see**. Untick **TV** | Right (within ~5 s): **"Mom chose not to share: TV."** under the summary | *"And Mom decides what's shared. If she'd rather keep the TV private, she unticks it, and Asha sees that she chose not to share it."* |
+| 9 | Left: tick **TV** again (so the rest of the recording isn't affected) | Note disappears | — |
 
 Stop recording Take 2.
 
@@ -95,10 +93,10 @@ recordings played through the same model"*.
 1. Go to `http://localhost:8787/`. Don't click for 10 s: the panel **"Your parent's kitchen, today"** plays a sample day
    ("What Kettle heard" on the left, "What the family sees" on the right).
    🎙 *"More than one in four Americans over sixty-five live alone… Kettle turns a spare laptop in the kitchen into a calm
-   timeline of the day, from sound alone."*
+   timeline of the day's activity, from sound alone, without recording anything."*
 2. Scroll slowly down to the three big numbers (**84.1**, **89%**, **0**) and stop for 3 s.
-   🎙 *"On held-out benchmark recordings it had never heard, scored once, Kettle reaches 84 macro F1, and it caught 89 percent
-   of kitchen-activity moments. No audio is ever saved."*
+   🎙 *"On held-out benchmark recordings it had never heard, scored once, Kettle reaches 84 macro F1, and it caught about nine in
+   ten kitchen-activity moments. No audio is ever saved."*
 3. (Fallback for Take 2 only) Scroll to the **Two screens** section and click **A usual morning**. Let it play for 15 s.
 
 **How sure (1:20–1:55):**
@@ -124,7 +122,7 @@ recordings played through the same model"*.
 |---|---|---|
 | Hook + numbers | Take 3, front page steps 1–2 | 0:00–0:28 |
 | Parent says yes | Take 1, steps 9–15 (speed up step 12–13 waits 2×) | 0:28–0:40 |
-| Live | Take 2, steps 1–9 (cut the waits) | 0:40–1:20 |
+| Live | Take 2, steps 1–8 (cut the waits) | 0:40–1:20 |
 | How sure + honest failure | Take 3, steps 4–6 | 1:20–1:52 |
 | Close | Take 3, step 7 | 1:52–1:55 |
 

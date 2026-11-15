@@ -4,7 +4,7 @@
 
 Track: AI + Health ("manage an ongoing one better"). Built for an adult child caring from a distance for a parent with early memory loss (invented persona: Meera, 34, and her father Ravi, 79, who consents on his own kitchen screen and can pause it).
 
-> **This project is a prototype and is not medical advice.** Kettle is not an emergency device: it can't call for help. Its few urgent notes (a smoke alarm, screaming, a crash then a cry) ask "Are you OK?" on the kitchen screen first and appear on the family view only when it is open.
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device and can't call for help. (An experimental urgent-sound layer is in the code, tested only on public and synthetic clips, never in a home; we make no detection claim for it.)
 
 | Meera's phone ("Dad's kitchen today") | Dad's kitchen laptop |
 |---|---|
@@ -67,7 +67,7 @@ Recall fell from dev to held-out for some activity 76% → 55%, washing up 89% �
 
 Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): typing ranged from 63% on node 3 to 88%, while some activity was 50–60% on every microphone, so its drop isn't a microphone effect.
 
-**Meera's check (any kitchen activity), held-out:** caught 89.3 [85.3, 94.1]% of 1,183 windows (**missed 144**); **false alarms** on 0.5 [0.2, 1.1]% of 6,608 other windows (41). Computed after the run from its saved predictions (not in the pre-registration).
+**Meera's check (any kitchen activity), held-out:** the top label caught **1,039 of 1,183** kitchen-activity windows (**missed 144**): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
 
 **Development folds (session-disjoint, 4-fold; optimistic: the same folds chose the model):**
 
