@@ -1,5 +1,7 @@
 # Kettle demo video: script, shot list and how to record it
 
+Click-by-click shooting script: `docs/DEMO-SCRIPT.md`.
+
 **Length: 1:55 (hard limit 2:00).** Upload as **unlisted** YouTube, then open the link in a private window to check it.
 Round 1 is blind: **no faces, no names, no school, no teammate names on screen or in the voice.** A real human voice reads
 the narration (no AI voice). The rubric wants numbers in the first 30 seconds.
@@ -42,11 +44,10 @@ Spoken numbers to double-check against the files right before recording: 28% · 
    cd web && npm install && node dev.mjs
    ```
    Open `http://localhost:8787`. Hard-refresh every page (Ctrl+Shift+R) so the newest version loads.
-2. **Fresh home:** open `/start` → "On my own phone or computer" → parent "Mom", your first name "Asha" (invented; never a real
-   name) → **Create our Kettle**. Open the kitchen link (or `/kitchen` + code) in the left window. Open your family link in the private
-   right window.
-3. **Checks:** in the family view, **Change checks** → add a preset that fits the recording time (e.g. "Lunch by 2" in the
-   afternoon; "Kitchen activity by 10:00 AM" will say Missed after 10 AM).
+2. **Fresh home:** follow `docs/DEMO-SCRIPT.md` Take 1 (exact buttons: **On my own phone or computer** → **My parent** → **Mom** →
+   **Kitchen** → first name "Asha" → **Create our Kettle** → **Copy** the kitchen link into the left window).
+3. **Checks:** in the family view, **Change checks** → **Remove** the defaults → add a preset whose time is still ahead
+   (afternoon: **Evening meal by 8**; morning: **Lunch by 2**) → **Save**. A check whose time has passed says "Can't tell".
 4. **Rehearse the kitchen sounds** 1–2 m from the laptop: a pan stirred with a metal spoon, the tap running into a bowl.
    **Use real sounds, not a phone playing a video**: sound from a speaker reads as TV to the model.
 5. **Smoke alarm:** the detector's own test button is best (warn the household first, it's loud). Fallback: play this file from a
