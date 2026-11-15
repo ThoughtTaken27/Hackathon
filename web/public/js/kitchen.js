@@ -34,16 +34,16 @@ const TEACH = [
   { c: "dishwashing", head: "Step 2 of 3: wash up or run the tap", body: "Rinse a few dishes for about a minute, the way you usually do.", s: 60 },
   { c: "cooking", head: "Step 3 of 3: cook, or pretend to", body: "Stir a pan, chop something or fry for about a minute. Real kitchen sounds work best.", s: 60 },
 ];
-const teach = { step: -1, t0: 0, samples: [], quietDbs: [], activeDbs: [], stepDbs: [], lastSent: 0, failed: false, level: 0 };
+const teach = { step: -1, ready: false, t0: 0, samples: [], quietDbs: [], activeDbs: [], stepDbs: [], lastSent: 0, failed: false, level: 0 };
 const WARM_S = 10;                                // the 10-s window must be filled with this step's sound first
 function startTeach() {
   if (!mic) { toast("Kettle is still starting the microphone. Try again in a few seconds."); return; }
   if (ui.setup === "teach") { setupFinished = true; try { localStorage.setItem(SKEY, "1"); } catch {} ui.setup = null; }
-  Object.assign(teach, { step: 0, t0: now(), samples: [], quietDbs: [], activeDbs: [], stepDbs: [], failed: false });
+  Object.assign(teach, { step: 0, ready: false, t0: now(), samples: [], quietDbs: [], activeDbs: [], stepDbs: [], failed: false });
   mic.setHop(2); draw();
 }
 function teachTick() {
-  if (teach.step < 0) return;
+  if (teach.step < 0 || !teach.ready) return;          // each step waits until the parent says they're ready
   const st = TEACH[teach.step];
   if (now() - teach.t0 < st.s + WARM_S) { draw(); return; }
   if (st.c !== "absence") {                       // microphone check: the activity must be clearly louder than quiet
@@ -52,7 +52,7 @@ function teachTick() {
     teach.activeDbs.push(...teach.stepDbs);
   }
   teach.stepDbs = [];
-  if (teach.step + 1 < TEACH.length) { teach.step++; teach.t0 = now(); draw(); return; }
+  if (teach.step + 1 < TEACH.length) { teach.step++; teach.ready = false; draw(); return; }
   enrolment = buildEnrolment(modelHead(), teach.samples, teach.quietDbs, teach.activeDbs);
   try { localStorage.setItem(EKEY, JSON.stringify(enrolment)); } catch {}
   teach.step = -1; mic && mic.setHop(HOP_S);
@@ -113,7 +113,16 @@ async function boot() {
     if (srv && !document.hidden) draw();
   });
   addEventListener("online", flush);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) { if (mic) lockScreen(); if (srv) draw(); } });
+  // Coming back to this tab: say that Kettle kept listening while it was out of sight.
+  let hiddenAt = 0, heardAt = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { hiddenAt = Date.now(); heardAt = events.length; return; }
+    if (mic) lockScreen();
+    if (srv) draw();
+    const n = events.length - heardAt;
+    if (mic && hiddenAt && Date.now() - hiddenAt > 20000) toast(`Kettle kept listening while this was out of sight: ${n} moment${n === 1 ? "" : "s"} noted.`);
+    hiddenAt = 0;
+  });
   addEventListener("resize", () => draw());
   // Closing this page stops Kettle. Ask first, so it isn't closed by accident while it listens.
   addEventListener("beforeunload", (e) => { if (mic && !ui.elsewhere) { e.preventDefault(); e.returnValue = ""; } });
@@ -144,7 +153,7 @@ function popOut() {
   if (!w) { toast("The browser blocked the new window. Allow pop-ups for this site, or keep this tab open."); return; }
   stopListening(); ui.elsewhere = true; draw();
 }
-function popOutButton() { return window.opener || ui.elsewhere ? null : button("Open Kettle in a small window", popOut, "quiet-k"); }
+function popOutButton() { return window.opener || ui.elsewhere ? null : button("Keep it in a small window", popOut, "quiet-k"); }
 /** The browser tab says what Kettle is doing, so it's visible from any other tab. */
 function tabTitle(s) {
   const t = ui.elsewhere ? "Kettle (in another window)" : s.state === "paused" ? "Paused · Kettle"
@@ -211,7 +220,7 @@ async function startListening() {
         if (silentRun === 0 && srv && srv.mic === "blocked") act("mic", { state: "ok" });
         if (teach.step >= 0) {                           // teaching: keep this kitchen's windows on the device
           const st = TEACH[teach.step];
-          if (w.end - teach.t0 >= WARM_S && w.end - teach.t0 <= st.s + WARM_S) {
+          if (teach.ready && w.end - teach.t0 >= WARM_S && w.end - teach.t0 <= st.s + WARM_S) {
             if (w.emb) teach.samples.push({ c: st.c, emb: Float32Array.from(w.emb) });
             (st.c === "absence" ? teach.quietDbs : teach.stepDbs).push(w.db);
           }
@@ -329,6 +338,12 @@ function screen(t) {
     const st = TEACH[teach.step];
     if (teach.failed) return { state: "error-soft", head: "Kettle could hardly hear that.", body: ["Move the laptop closer to the sink and the stove, with nothing covering it, then try this step again."],
       controls: [button("Try this step again", () => { teach.failed = false; teach.stepDbs = []; teach.t0 = now(); draw(); }, "primary"), button("Stop teaching", stopTeach, "quiet-k")] };
+    if (!teach.ready) {
+      const prev = teach.step > 0 ? `Step ${teach.step} done. ` : "";
+      return { state: "listening", head: `${prev}Ready for step ${teach.step + 1} of 3?`, body: [st.head.replace(/^Step \d of 3: /, "Next: "), st.body],
+        controls: [button(`I'm ready. Start step ${teach.step + 1}`, () => { teach.ready = true; teach.t0 = now(); teach.stepDbs = []; draw(); }, "primary"),
+          button("Stop teaching", stopTeach, "quiet-k")] };
+    }
     const left = Math.max(0, Math.ceil(st.s + WARM_S - (now() - teach.t0)));
     return { state: "listening", head: st.head, body: [st.body, `${left} seconds left.`], teachMeter: true,
       controls: [button("Stop teaching", stopTeach, "quiet-k")] };
@@ -336,7 +351,7 @@ function screen(t) {
   const today = new Date(now() * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: srv.tz });
   const since = k.consent_day === today ? `Listening since ${k.consent_text} today.` : `Listening since ${k.consent_day}.`;
   const base = { bar: true, chip: true, checks: t.rules.map((r) => r.title), tools: true, share: true,
-    controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off"))] };
+    controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off")), popOutButton()].filter(Boolean) };
   if (silentRun >= 3) return { ...base, chip: false, state: "error-soft", head: "Kettle hears nothing at all.",
     body: [`The microphone is sending silence, so ${n.caregiver} sees "Not listening". Check it isn't muted (a mute key, or a switch on a headset).`] };
   if (Date.now() - (ui.taughtAt || 0) < 15000) return { ...base, state: "listening", head: "Thank you. Kettle learned this kitchen.",
@@ -414,7 +429,6 @@ function tools() {
   return el("div", { class: "k-tools" },
     enrolment ? button("Teach Kettle this kitchen again", startTeach, "quiet-k") : null,
     enrolment ? button("Forget what it learned", forgetTeach, "quiet-k") : null,
-    popOutButton(),
     button(big ? "Smaller text" : "Larger text", toggleText, "quiet-k"),
     button("Dim the screen", dimScreen, "quiet-k"));
 }

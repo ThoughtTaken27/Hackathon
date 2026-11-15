@@ -1,38 +1,27 @@
 {
- "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard. Added Nov 15: 'Breakfast didn't happen' (no kitchen sound before the 10 AM check), 'A visitor came' (conversation), 'Dad paused it' (a 1-hour pause drawn as Paused) and 'Laptop closed' (a gap drawn as Not listening, so the check says Can't tell). Changed Nov 15: every segment now uses only clips the frozen model labels as that session's recorded activity (at or above \u03b8, not 'unlike anything it learned'), so the sample days show the screens working as designed; some clips repeat within a day. The washing-up session has one such clip of ten (the model hears its dish clatter as cooking), so washing up is that one clip, played twice to make a short block. How often Kettle is wrong is measured on the held-out test and shown on How sure, not here.",
+ "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard. Added Nov 15: 'Breakfast didn't happen' (no kitchen sound before the 10 AM check), 'A visitor came' (conversation), 'Dad paused it' (a 1-hour pause drawn as Paused) and 'Laptop closed' (a gap drawn as Not listening, so the check says Can't tell). Changed Nov 15: every segment now uses only clips the frozen model labels as that session's recorded activity (at or above \u03b8, not 'unlike anything it learned'), so the sample days show the screens working as designed; some clips repeat within a day. The washing-up session has one such clip of ten (the model hears its dish clatter as cooking), so washing up is that one clip, played twice to make a short block. How often Kettle is wrong is measured on the held-out test and shown on How sure, not here. 'A usual morning' (Nov 15, second pass) opens with one quiet clip, then cooking, eating, washing up, a short chat and TV.",
  "usual": {
   "title": "A usual morning",
   "started": "06:00",
   "segments": [
    {
     "clips": [
-     "DevNode1_ex30_3.flac",
-     "DevNode1_ex30_4.flac",
-     "DevNode1_ex30_5.flac",
-     "DevNode1_ex30_6.flac"
+     "DevNode1_ex30_3.flac"
     ],
     "from": "06:00",
-    "to": "07:40"
+    "to": "07:20"
    },
    {
     "clips": [
-     "DevNode1_ex141_1.flac",
-     "DevNode1_ex141_6.flac",
-     "DevNode1_ex141_9.flac"
-    ],
-    "from": "07:40",
-    "to": "08:00"
-   },
-   {
-    "clips": [
+     "DevNode1_ex50_1.flac",
      "DevNode1_ex50_3.flac",
      "DevNode1_ex50_4.flac",
      "DevNode1_ex50_5.flac",
      "DevNode1_ex50_6.flac",
      "DevNode1_ex50_7.flac"
     ],
-    "from": "08:00",
-    "to": "08:25"
+    "from": "07:20",
+    "to": "08:05"
    },
    {
     "clips": [
@@ -41,24 +30,31 @@
      "DevNode1_ex70_7.flac",
      "DevNode1_ex70_8.flac"
     ],
-    "from": "08:25",
-    "to": "08:45"
+    "from": "08:05",
+    "to": "08:30"
    },
    {
     "clips": [
      "DevNode1_ex56_1.flac",
      "DevNode1_ex56_1.flac"
     ],
-    "from": "08:45",
-    "to": "08:55"
+    "from": "08:30",
+    "to": "08:45"
    },
    {
     "clips": [
-     "DevNode1_ex30_7.flac",
-     "DevNode1_ex30_8.flac"
+     "DevNode1_ex30_4.flac"
     ],
-    "from": "08:55",
-    "to": "09:10"
+    "from": "08:45",
+    "to": "09:05"
+   },
+   {
+    "clips": [
+     "DevNode1_ex206_1.flac",
+     "DevNode1_ex206_3.flac"
+    ],
+    "from": "09:05",
+    "to": "09:25"
    },
    {
     "clips": [
@@ -66,10 +62,9 @@
      "DevNode1_ex231_3.flac",
      "DevNode1_ex231_4.flac",
      "DevNode1_ex231_5.flac",
-     "DevNode1_ex231_6.flac",
-     "DevNode1_ex231_7.flac"
+     "DevNode1_ex231_6.flac"
     ],
-    "from": "09:10",
+    "from": "09:25",
     "to": "10:30"
    }
   ]

@@ -90,13 +90,40 @@ export function applyEnrolment(sense, head, enrolment, emb, r) {
   return { ...r, probs, label, conf: Math.round(probs[label] * 1000) / 1000, novel: false, taught: true };
 }
 
+// Two on-device rules on top of the frozen head.
+//   Quiet (any window, even one the head named): the window is no louder than this kitchen's own quiet as taught in setup (+3 dB), or, before setup, than
+//   QUIET_DB (a near-silent room on a laptop microphone with gain control off). A real laptop's room hum is new to the model,
+//   which learned one research home's quiet. (Not "the quietest recent windows": a dog barking for a minute would become Quiet.)
+//   Voices (only windows the head could NOT name; a confident head is never changed): a person talking is the loudest thing Kettle can name (speech tags >= 0.5, above any body or bathroom sound).
+//   The model learned conversation from people talking across a room, so one close voice reads as new to it.
+export const QUIET_DB = -55, VOICE_MIN = 0.5;
+/** The level (dBFS) at or below which a window counts as Quiet. */
+export function quietLevel(enrolment) {
+  return enrolment && Number.isFinite(enrolment.floor) ? enrolment.floor : QUIET_DB;
+}
+function lean(r, c, alpha = 0.6) {                          // move the head's scores toward one class, the way setup windows vote
+  const probs = {};
+  for (const k of CLASSES) probs[k] = Math.round(((1 - alpha) * r.probs[k] + (k === c ? alpha : 0)) * 1e4) / 1e4;
+  return { ...r, probs, label: c, conf: Math.round(probs[c] * 1000) / 1000, novel: false };
+}
+export function roomRules(sense, ctx, as, db, r) {
+  if (Number.isFinite(db) && db <= quietLevel(ctx.enrolment)) return { ...lean(r, "absence", 1), why: "quiet" };   // any window: a near-silent room is Quiet
+  if (!r.novel && r.conf >= THETA) return r;
+  if (sense.speech && sense.speech.length) {
+    let sp = 0; for (const i of sense.speech) sp = Math.max(sp, as[i]);
+    let body = 0; for (const i of sense.veto) body = Math.max(body, as[i]);
+    if (sp >= VOICE_MIN && sp > body) return { ...lean(r, "social_activity"), why: "voices" };
+  }
+  return r;
+}
+
 /**
  * The whole on-device decision for one window, after head.js decide() (which already carries the second opinion w
  * and the allow-listed sound names). ctx = { head, enrolment, kindsOff }.
  * Adds: this kitchen's setup windows (only for windows the head couldn't name) and the named sound types.
  */
-export function refine(sense, ctx, emb, as, r) {
-  const out = applyEnrolment(sense, ctx.head, ctx.enrolment, emb, r);
+export function refine(sense, ctx, emb, as, r, db = NaN) {
+  const out = roomRules(sense, ctx, as, db, applyEnrolment(sense, ctx.head, ctx.enrolment, emb, r));
   const named = kindsOf(sense, as, ctx.kindsOff || []);
   return { ...out, novel: !!out.novel, taught: !!out.taught, kinds: named.map((k) => k.id) };
 }

@@ -39,7 +39,10 @@ export async function loadModel(onProgress = () => {}) {
   for (const p of parts) { buf.set(p, o); o += p.length; }
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
-  model = { ort, front, session, head: prepare(head, ev, wit), sense: prepareSense(kinds, enrolCfg) };
+  const sense = prepareSense(kinds, enrolCfg);
+  const SPEECH = ["Speech", "Conversation", "Narration, monologue", "Hubbub, speech noise, speech babble"];
+  sense.speech = ev.shown.map((n, i) => (SPEECH.includes(n) ? ev.index[i] : -1)).filter((i) => i >= 0);
+  model = { ort, front, session, head: prepare(head, ev, wit), sense };
   return model;
 }
 
@@ -51,7 +54,8 @@ export async function classify(wave, ctx = null) {
   const r = decide(m.head, out.emb.data, out.audioset.data);
   if (!ctx) return { ...r, ms: Math.round(performance.now() - t0) };          // the raw frozen head (parity tests)
   // on the kitchen device: this kitchen's setup windows and the named sound types (sense.js). emb and db never leave it.
-  return { ...refine(m.sense, { head: m.head.head, ...ctx }, out.emb.data, out.audioset.data, r), emb: out.emb.data, db: levelDb(wave),
+  const db = levelDb(wave);
+  return { ...refine(m.sense, { head: m.head.head, ...ctx }, out.emb.data, out.audioset.data, r, db), emb: out.emb.data, db,
     ms: Math.round(performance.now() - t0) };
 }
 

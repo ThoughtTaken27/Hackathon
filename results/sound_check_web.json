@@ -3289,5 +3289,660 @@
    "mic": "ok",
    "errors": []
   }
- ]
+ ],
+ "round2": {
+  "about": "After the quiet and voices rules (Nov 15, 12:30 CT): generated room tone at -63/-52/-36 dBFS, 3 close voices (free-spoken-digit-dataset, CC BY-SA 4.0, not committed), and regression clips.",
+  "results": [
+   {
+    "file": "clock_alarm_1.wav",
+    "windows": [
+     {
+      "label": "other",
+      "conf": 0.77,
+      "novel": true,
+      "kinds": [
+       "alarm"
+      ],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Clatter"
+      ]
+     },
+     {
+      "label": "other",
+      "conf": 0.628,
+      "novel": true,
+      "kinds": [
+       "alarm"
+      ],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Clatter"
+      ]
+     },
+     {
+      "label": "other",
+      "conf": 0.608,
+      "novel": true,
+      "kinds": [
+       "alarm"
+      ],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Clatter"
+      ]
+     }
+    ],
+    "chip": "Not sure what that is",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "conversation.wav",
+    "windows": [
+     {
+      "label": "social_activity",
+      "conf": 0.995,
+      "novel": false,
+      "kinds": [
+       "tv"
+      ],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Television"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.998,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Writing"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.998,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Narration, monologue"
+      ]
+     }
+    ],
+    "chip": "Sounds like conversation",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "cooking2.wav",
+    "windows": [
+     {
+      "label": "cooking",
+      "conf": 0.996,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Cupboard open or close",
+       "Writing",
+       "Drawer open or close"
+      ]
+     },
+     {
+      "label": "cooking",
+      "conf": 0.992,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Cupboard open or close",
+       "Writing",
+       "Door"
+      ]
+     },
+     {
+      "label": "cooking",
+      "conf": 0.991,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Writing",
+       "Cupboard open or close",
+       "Drawer open or close"
+      ]
+     }
+    ],
+    "chip": "Sounds like cooking",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "coughing_1.wav",
+    "windows": [
+     {
+      "label": "other",
+      "conf": 0.682,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Silence"
+      ]
+     },
+     {
+      "label": "other",
+      "conf": 0.636,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Silence"
+      ]
+     },
+     {
+      "label": "other",
+      "conf": 0.527,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Music",
+       "Speech",
+       "Silence"
+      ]
+     }
+    ],
+    "chip": "Not sure what that is",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "dog_1.wav",
+    "windows": [
+     {
+      "label": "working",
+      "conf": 0.347,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Speech",
+       "Music"
+      ]
+     },
+     {
+      "label": "working",
+      "conf": 0.347,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Speech",
+       "Music"
+      ]
+     },
+     {
+      "label": "working",
+      "conf": 0.347,
+      "novel": true,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Speech",
+       "Music"
+      ]
+     }
+    ],
+    "chip": "Not sure what that is",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "quiet.wav",
+    "windows": [
+     {
+      "label": "absence",
+      "conf": 0.457,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.662,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Tick-tock",
+       "Rustle"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.856,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Tick-tock"
+      ]
+     }
+    ],
+    "chip": "Quiet",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "roomtone_fan.wav",
+    "windows": [
+     {
+      "label": "other",
+      "conf": 0.467,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Wind"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.549,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Rustle",
+       "Silence",
+       "Wind"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.469,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Rustle",
+       "Silence",
+       "Wind"
+      ]
+     }
+    ],
+    "chip": "Not sure what that is",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "roomtone_quiet.wav",
+    "windows": [
+     {
+      "label": "absence",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Music",
+       "Rustle"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Music",
+       "Rustle"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Music",
+       "Rustle"
+      ]
+     }
+    ],
+    "chip": "Quiet",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "roomtone_soft.wav",
+    "windows": [
+     {
+      "label": "other",
+      "conf": 0.784,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Mechanical fan"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.817,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "absence",
+      "conf": 0.815,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Silence",
+       "Rustle",
+       "Tick-tock"
+      ]
+     }
+    ],
+    "chip": "Quiet",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "speech_theo.wav",
+    "windows": [
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     }
+    ],
+    "chip": "Sounds like conversation",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "tv2.wav",
+    "windows": [
+     {
+      "label": "watching_tv",
+      "conf": 0.982,
+      "novel": false,
+      "kinds": [
+       "tv"
+      ],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Television"
+      ]
+     },
+     {
+      "label": "watching_tv",
+      "conf": 0.998,
+      "novel": false,
+      "kinds": [
+       "tv"
+      ],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Narration, monologue"
+      ]
+     },
+     {
+      "label": "watching_tv",
+      "conf": 0.998,
+      "novel": false,
+      "kinds": [
+       "tv"
+      ],
+      "sounds": [
+       "Speech",
+       "Conversation",
+       "Narration, monologue"
+      ]
+     }
+    ],
+    "chip": "Sounds like TV",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "washing_up_A.wav",
+    "windows": [
+     {
+      "label": "dishwashing",
+      "conf": 0.997,
+      "novel": false,
+      "kinds": [
+       "tap"
+      ],
+      "sounds": [
+       "Water tap, faucet",
+       "Water",
+       "Sink (filling or washing)"
+      ]
+     },
+     {
+      "label": "dishwashing",
+      "conf": 0.994,
+      "novel": false,
+      "kinds": [
+       "tap"
+      ],
+      "sounds": [
+       "Water",
+       "Water tap, faucet",
+       "Sink (filling or washing)"
+      ]
+     },
+     {
+      "label": "dishwashing",
+      "conf": 0.991,
+      "novel": false,
+      "kinds": [
+       "tap"
+      ],
+      "sounds": [
+       "Water",
+       "Water tap, faucet",
+       "Sink (filling or washing)"
+      ]
+     }
+    ],
+    "chip": "Sounds like washing up",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "speech_jackson.wav",
+    "windows": [
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Clicking"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Clicking"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Clicking"
+      ]
+     }
+    ],
+    "chip": "Sounds like conversation",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "speech_nicolas.wav",
+    "windows": [
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Music"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Music"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 1,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Music"
+      ]
+     }
+    ],
+    "chip": "Sounds like conversation",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   },
+   {
+    "file": "speech_theo.wav",
+    "windows": [
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     },
+     {
+      "label": "social_activity",
+      "conf": 0.999,
+      "novel": false,
+      "kinds": [],
+      "sounds": [
+       "Speech",
+       "Narration, monologue",
+       "Tick-tock"
+      ]
+     }
+    ],
+    "chip": "Sounds like conversation",
+    "head": "Listening for kitchen sounds",
+    "mic": "ok",
+    "errors": []
+   }
+  ]
+ }
 }
