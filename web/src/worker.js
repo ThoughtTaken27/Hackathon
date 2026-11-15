@@ -24,6 +24,8 @@ export default {
         codes: {
           put: (code, value, ttl) => env.CODES.get(env.CODES.idFromName("codes")).put(code, value, ttl),
           get: (code) => env.CODES.get(env.CODES.idFromName("codes")).take(code),
+          miss: (who, t) => env.CODES.get(env.CODES.idFromName("codes")).miss(who, t),
+          misses: (who, since) => env.CODES.get(env.CODES.idFromName("codes")).misses(who, since),
         },
       });
     }
@@ -72,7 +74,10 @@ export class Codes extends DurableObject {
     super(ctx, env);
     this.sql = ctx.storage.sql;
     this.sql.exec("CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, v TEXT, exp REAL)");
+    this.sql.exec("CREATE TABLE IF NOT EXISTS misses (who TEXT, t REAL)");
   }
+  async miss(who, t) { this.sql.exec("DELETE FROM misses WHERE t < ?", t - 3600); this.sql.exec("INSERT INTO misses (who, t) VALUES (?, ?)", who, t); return true; }
+  async misses(who, since) { return this.sql.exec("SELECT COUNT(*) AS n FROM misses WHERE who = ? AND t > ?", who, since).toArray()[0].n; }
   async put(code, value, ttl) {
     const now = Date.now() / 1000;
     this.sql.exec("DELETE FROM codes WHERE exp < ?", now);

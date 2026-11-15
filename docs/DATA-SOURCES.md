@@ -67,3 +67,10 @@ Reachability checked from the Claude Code cloud container on **Nov 13, 2026**. C
 | Libraries | PyTorch 2.15 (BSD-3), torchaudio (BSD-2), transformers 5.23 (Apache-2.0), scikit-learn 1.9 (BSD-3), NumPy/SciPy (BSD-3), soundfile/libsndfile (BSD-3/LGPL), PyAV 18.1 (BSD-3; FFmpeg LGPL), FastAPI/Starlette (MIT), uvicorn (BSD-3), matplotlib (PSF-based), Playwright 1.65 (Apache-2.0), Pillow (HPND), nbconvert (BSD-3) | as listed | Pinned in `requirements.txt` / `requirements-dev.txt` |
 | Dataviz validator | `validate_palette.js` from Claude Code's bundled dataviz skill | — | Used to validate the activity colours; reference palette hues adopted |
 | AudioSet ontology label names | via `models/audioset_labels.json` (from the AST config, same 527-label order) | CC BY 4.0 (Google) | Evidence names and zero-shot maps |
+
+## Added in the improvement round (Sat Nov 14, 2026, evening)
+
+| Source | Use | Licence | Notes |
+| --- | --- | --- | --- |
+| [ESC-50](https://github.com/karolpiczak/ESC-50) clips 20–35 of 22 categories (352 clips) | Test the 18 named sound types, the privacy veto (8 sensitive categories) and the appliance hold | CC BY-NC 3.0 | `eval/esc50_kinds.py`; audio in `data/clips/esc50_kinds/` (git-ignored); only embeddings + AudioSet scores committed (`results/cache/ced-tiny_esc50kinds.npz`); no overlap with the off-list clips 0–9 |
+| AudioSet ontology classes (via CED-tiny's output layer) | Zero-shot sound types, e.g. Boiling, Water tap, Doorbell, Smoke detector | CC BY 4.0 (Google) | Index lists in `eval/beyond.py` KINDS |

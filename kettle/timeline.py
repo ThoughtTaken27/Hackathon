@@ -49,6 +49,8 @@ def raw_label(ev: dict, theta: float) -> str:
 
     Windows without a second opinion (ev['w'] missing: older data) keep the head's answer unchanged.
     """
+    if ev.get("private"):
+        return "private"                       # the parent chose not to share this kind of sound
     lab = head_label(ev, theta)
     w = ev.get("w")
     if witness.vetoes(lab, w, MEAL):
@@ -110,9 +112,32 @@ def runs(events: list[dict], gap_s: float = STALE_S) -> list[list[dict]]:
 def _state(label: str) -> str:
     if label == "absence":
         return "empty"
-    if label in ("not_sure", "talk_or_tv"):
+    if label in ("not_sure", "talk_or_tv", "private"):
         return label
     return "activity"
+
+
+WHY_ORDER = ("veto", "novel", "close", "mixed", "low")
+WHY_TEXT = {"veto": "a machine or bathroom sound was louder than any kitchen sound", "novel": "a sound unlike anything it learned",
+            "close": "two activities sounded alike", "mixed": "the sounds kept changing", "low": "it wasn't sure enough"}
+
+
+def why_not_sure(evs: list[dict], theta: float) -> str:
+    """Why a Not sure block couldn't be named, by majority of its windows (plan F10): one of WHY_ORDER."""
+    votes = dict.fromkeys(WHY_ORDER, 0)
+    for e in evs:
+        p = sorted(e["probs"].values(), reverse=True)
+        if witness.vetoes(head_label(e, theta), e.get("w"), MEAL):
+            votes["veto"] += 1
+        elif e.get("novel"):
+            votes["novel"] += 1
+        elif p[0] >= theta:
+            votes["mixed"] += 1
+        elif p[0] - p[1] < TALK_OR_TV_MARGIN:
+            votes["close"] += 1
+        else:
+            votes["low"] += 1
+    return max(WHY_ORDER, key=lambda k: (votes[k], -WHY_ORDER.index(k)))
 
 
 def _block(evs: list[dict], label: str, theta: float | None = None) -> dict:
@@ -130,7 +155,8 @@ def _block(evs: list[dict], label: str, theta: float | None = None) -> dict:
             "activity": label if _state(label) in ("activity", "empty") else None,
             "conf": round(conf, 3), "n_windows": len(evs), "sounds": evidence.merge([e["sounds"] for e in evs]),
             "guesses": [{"activity": g, "p": round(guesses[g], 3)} for g in top2],
-            "by_sounds": 0 if theta is None else sum(by_sounds(e, theta) for e in evs)}
+            "by_sounds": 0 if theta is None else sum(by_sounds(e, theta) for e in evs),
+            **({"why": why_not_sure(evs, theta)} if label == "not_sure" and theta is not None else {})}
 
 
 def _subtract(a: float, b: float, cuts: list[tuple[float, float]]) -> list[tuple[float, float]]:
@@ -273,5 +299,5 @@ def label_name(label: str) -> str:
 
 def display_name(b: dict) -> str:
     """The label drawn on a block."""
-    return {"not_sure": "Not sure", "talk_or_tv": "Talking or TV", "not_listening": "Not listening",
+    return {"not_sure": "Not sure", "talk_or_tv": "Talking or TV", "not_listening": "Not listening", "private": "Private",
             "paused": "Paused"}.get(b["state"]) or DISPLAY[b["activity"]]

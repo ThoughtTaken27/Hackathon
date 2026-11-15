@@ -22,11 +22,11 @@ DISPLAY: dict[str, str] = {
     "cooking": "Cooking",
     "dishwashing": "Washing up",
     "eating": "Eating",
-    "other": "Moving about",
+    "other": "Some activity",
     "social_activity": "Conversation",
     "vacuum_cleaner": "Vacuuming",
     "watching_tv": "TV",
-    "working": "Working (typing)",
+    "working": "Typing",
 }
 
 # Lower-case form for sentences ("Sounds like washing up").
@@ -35,7 +35,7 @@ PHRASE: dict[str, str] = {
     "cooking": "cooking",
     "dishwashing": "washing up",
     "eating": "eating",
-    "other": "moving about",
+    "other": "some activity",
     "social_activity": "conversation",
     "vacuum_cleaner": "vacuuming",
     "watching_tv": "TV",

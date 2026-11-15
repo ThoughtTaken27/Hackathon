@@ -4,7 +4,7 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // ---------- hero instrument: a staged morning, sound → label → block on the day bar ----------
 const SCENES = [
-  { t: "7:20 AM", v: "Working (typing)", sure: "how sure: high", seg: 0, now: 10, amp: 0.32, jitter: 0.5 },
+  { t: "7:20 AM", v: "Typing", sure: "how sure: high", seg: 0, now: 10, amp: 0.32, jitter: 0.5 },
   { t: "8:05 AM", v: "Cooking", sure: "how sure: high", seg: 1, now: 43, amp: 0.92, jitter: 0.9 },
   { t: "8:30 AM", v: "Eating", sure: "how sure: medium", seg: 2, now: 50, amp: 0.5, jitter: 0.7 },
   { t: "8:45 AM", v: "Washing up", sure: "how sure: high", seg: 3, now: 56, amp: 0.7, jitter: 0.45 },

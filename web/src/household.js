@@ -1,7 +1,7 @@
 // One household's sync logic, independent of where it runs (Cloudflare Durable Object or the local dev server).
 // It stores only what the Python app stores: the parent's choices (consent, pause, off), Meera's checks, and window
 // labels with times and scores. No audio ever reaches it; the kitchen page labels sound on the parent's own device.
-import { CLASSES, MEAL, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
+import { CLASSES, HIDEABLE, KIND_NAMES, MEAL, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
 import { SHOWN_SOUNDS } from "../public/js/sounds.js";
 
 export const KEEP_DAYS = 8;            // labels older than this are deleted
@@ -34,10 +34,14 @@ export function publicState(s) {
   return rest;
 }
 
-function cleanEvent(e, now) {
+export function cleanEvent(e, now) {
   if (!e || typeof e !== "object") return null;
   const start = +e.start, end = +e.end;
   if (!(end > start) || end - start > 600 || end > now + 120 || end < now - 86400) return null;
+  if (e.label === "private") {           // a label the parent keeps private: no scores, no sounds (plan D2)
+    const probs = Object.fromEntries(CLASSES.map((c) => [c, 0]));
+    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [] };
+  }
   if (!CLASSES.includes(e.label)) return null;
   const probs = {};
   for (const c of CLASSES) { const v = +(e.probs || {})[c]; if (!(v >= 0 && v <= 1)) return null; probs[c] = Math.round(v * 1e4) / 1e4; }
@@ -49,7 +53,31 @@ function cleanEvent(e, now) {
   const w = e.w;
   if (w && typeof w === "object" && MEAL.has(w.family) && w.k >= 0 && w.k <= 1 && w.v >= 0 && w.v <= 1)
     out.w = { k: Math.round(w.k * 1000) / 1000, family: w.family, v: Math.round(w.v * 1000) / 1000 };
+  // named household sound types: ids from the allow-list only (plan D1, A6); "taught" = helped by this kitchen's setup
+  out.kinds = Array.isArray(e.kinds) ? [...new Set(e.kinds.filter((k) => Object.hasOwn(KIND_NAMES, k)))] : [];
+  if (e.taught) out.taught = true;
   return out;
+}
+
+/**
+ * Plan B3: a tiny per-day tally kept as windows arrive, so the family's week view needs no scan of 8 days of labels.
+ * Per local day: windows heard, windows Kettle could name, first kitchen-activity window, first kettle sound,
+ * TV windows. Single windows, before the timeline's smoothing; 9 days kept.
+ */
+export function tallyDays(s, evs) {
+  const days = s.days || (s.days = {});
+  for (const e of evs) {
+    const off = tzOffset(s.tz || "UTC", e.end);
+    const key = new Date((e.start + off) * 1000).toISOString().slice(0, 10);
+    const d = days[key] || (days[key] = { n: 0, told: 0, meal: null, kettle: null, tv: 0, off });
+    d.n++;
+    const sure = !e.private && !e.novel && e.conf >= 0.66;
+    if (sure) d.told++;
+    if (sure && ["cooking", "dishwashing", "eating"].includes(e.label) && (d.meal == null || e.start < d.meal)) d.meal = e.start;
+    if ((e.kinds || []).includes("kettle") && (d.kettle == null || e.start < d.kettle)) d.kettle = e.start;
+    if (sure && e.label === "watching_tv") d.tv++;
+  }
+  for (const k of Object.keys(days).sort().slice(0, -9)) delete days[k];
 }
 
 /**
@@ -80,6 +108,7 @@ export async function handle(store, { method, route, key, body, now }) {
     const evs = (Array.isArray(body?.events) ? body.events : []).slice(0, MAX_EVENTS_PER_POST).map((e) => cleanEvent(e, now)).filter(Boolean);
     if (evs.length) {
       await store.addEvents(evs);
+      tallyDays(s, evs);
       s.last_window_t = Math.max(s.last_window_t || 0, ...evs.map((e) => e.end));
       if (s.mic !== "ok") { s.mic = "ok"; s.mic_at = now; }
       changed = true;
@@ -91,7 +120,7 @@ export async function handle(store, { method, route, key, body, now }) {
   if (method === "POST" && route === "action") {
     if (role !== "kitchen") return { status: 403, body: { error: "Only the person at the kitchen laptop can do this." } };
     const type = body?.type;
-    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "device"].includes(type)) return { status: 400, body: { error: "unknown action" } };
+    if (!["consent", "off", "start", "pause", "resume", "keep_on", "mic", "device", "privacy"].includes(type)) return { status: 400, body: { error: "unknown action" } };
     if (type === "device") {            // allowed before consent: it says what the device is, nothing about the room
       if (!["phone", "tablet", "laptop"].includes(body.kind)) return { status: 400, body: { error: "bad device" } };
       const level = body.level >= 0 && body.level <= 1 ? Math.round(body.level * 100) / 100 : null;
@@ -103,7 +132,11 @@ export async function handle(store, { method, route, key, body, now }) {
     if (type !== "consent" && !s.consent) return { status: 409, body: { error: "Kettle needs a yes first." } };
     if (type === "pause") {
       const minutes = body.minutes == null ? null : Math.max(1, Math.min(24 * 60, +body.minutes || 15));
-      actions.pause(s, now, { minutes, reason: "parent", off: tzOffset(s.tz, now) });
+      actions.pause(s, now, { minutes, reason: body.reason === "guest" ? "guest" : "parent", off: tzOffset(s.tz, now) });
+    } else if (type === "privacy") {
+      const hide = Array.isArray(body.hide) ? body.hide.filter((h) => HIDEABLE.includes(h)) : [];
+      const kindsOff = Array.isArray(body.kindsOff) ? body.kindsOff.filter((k) => Object.hasOwn(KIND_NAMES, k)) : [];
+      actions.privacy(s, now, { hide, kindsOff });
     } else if (type === "mic") {
       if (!["ok", "blocked", "none"].includes(body.state)) return { status: 400, body: { error: "bad mic state" } };
       actions.mic(s, now, { state: body.state });

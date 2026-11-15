@@ -34,6 +34,8 @@
   </div>
   <div id="invite"></div>
   <p class="summary" id="summary"></p>
+  <p class="coverage" id="coverage"></p>
+  <p class="coverage" id="hidden-note" hidden></p>
   <section class="card" aria-label="Day timeline">
     <div id="bar"></div>
     <div class="fold" id="fold"><div id="evidence"></div></div>
@@ -45,6 +47,18 @@
       <div class="rules" id="rules"></div>
       <p class="rules-foot" id="rules-foot">Rules you set. Kettle doesn't learn the routine and doesn't send alerts.</p>
       <div class="row" style="margin-top:14px"><button class="btn" id="edit-rules" type="button">Change checks</button></div>
+    </section>
+    <section aria-labelledby="heard-h" id="heard-sec" hidden>
+      <h2 class="section-title" id="heard-h">Sounds Kettle named today</h2>
+      <ul class="heard-list" id="heard"></ul>
+      <p class="rules-foot">Everyday household sounds only. Kettle never names voices, coughs, crying or bathroom sounds.</p>
+    </section>
+    <section aria-labelledby="week-h" id="week-sec" hidden>
+      <h2 class="section-title" id="week-h">This week</h2>
+      <p class="meta" id="week-text"></p>
+      <div class="week" id="week"></div>
+      <p class="rules-foot">A description, not an alarm. Counted from single 10-second labels. Bring it to a doctor's visit if it helps; it is not a diagnosis.</p>
+      <div class="row no-print" style="margin-top:12px"><button class="btn" type="button" id="print">Print this page</button></div>
     </section>
     <section aria-labelledby="about-h">
       <h2 class="section-title" id="about-h">How to read this</h2>

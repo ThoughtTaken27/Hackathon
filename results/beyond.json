@@ -1,0 +1,1302 @@
+{
+ "about": "Beyond the frozen head: measure every new on-device layer before the app uses it (improvement plan A2-A7, D1, G2, G4).",
+ "theta": 0.66,
+ "head_sha256": "fa5de76a7970865bddb4bed4206dc2b4145d90eb96d0155d85e402c863c54037",
+ "sound_types": {
+  "types": {
+   "kettle": {
+    "name": "Kettle or a hot drink",
+    "tau": 0.071,
+    "false_fire_dev_test": {
+     "k": 27,
+     "n": 1896,
+     "pct": 1.4,
+     "ci95": [
+      1.0,
+      2.1
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "esc50_hit": {
+     "k": 8,
+     "n": 16,
+     "pct": 50.0,
+     "ci95": [
+      28.0,
+      72.0
+     ],
+     "categories": [
+      "pouring_water"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 3,
+     "n": 208,
+     "pct": 1.4,
+     "ci95": [
+      0.5,
+      4.2
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 8,
+     "n": 16,
+     "pct": 50.0,
+     "ci95": [
+      28.0,
+      72.0
+     ]
+    }
+   },
+   "frying": {
+    "name": "Frying or sizzling",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 1,
+     "n": 1896,
+     "pct": 0.1,
+     "ci95": [
+      0.0,
+      0.3
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 143,
+     "n": 629,
+     "pct": 22.7,
+     "ci95": [
+      19.6,
+      26.2
+     ],
+     "related": [
+      "cooking"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 0,
+     "n": 224,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      1.7
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 143,
+     "n": 629,
+     "pct": 22.7,
+     "ci95": [
+      19.6,
+      26.2
+     ]
+    }
+   },
+   "chopping": {
+    "name": "Chopping",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 1896,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.2
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 4,
+     "n": 629,
+     "pct": 0.6,
+     "ci95": [
+      0.2,
+      1.6
+     ],
+     "related": [
+      "cooking"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 1,
+     "n": 224,
+     "pct": 0.4,
+     "ci95": [
+      0.1,
+      2.5
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 4,
+     "n": 629,
+     "pct": 0.6,
+     "ci95": [
+      0.2,
+      1.6
+     ]
+    }
+   },
+   "blender": {
+    "name": "Blender",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 1896,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.2
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 0,
+     "n": 629,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.6
+     ],
+     "related": [
+      "cooking"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 3,
+     "n": 224,
+     "pct": 1.3,
+     "ci95": [
+      0.5,
+      3.9
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 0,
+     "n": 629,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.6
+     ]
+    }
+   },
+   "microwave": {
+    "name": "Microwave",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 8,
+     "n": 1896,
+     "pct": 0.4,
+     "ci95": [
+      0.2,
+      0.8
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 2,
+     "n": 468,
+     "pct": 0.4,
+     "ci95": [
+      0.1,
+      1.5
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 1,
+     "n": 224,
+     "pct": 0.4,
+     "ci95": [
+      0.1,
+      2.5
+     ]
+    }
+   },
+   "dishes": {
+    "name": "Dishes and cutlery",
+    "tau": 0.077,
+    "false_fire_dev_test": {
+     "k": 15,
+     "n": 1896,
+     "pct": 0.8,
+     "ci95": [
+      0.5,
+      1.3
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 228,
+     "n": 560,
+     "pct": 40.7,
+     "ci95": [
+      36.7,
+      44.8
+     ],
+     "related": [
+      "dishwashing"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 15,
+     "n": 224,
+     "pct": 6.7,
+     "ci95": [
+      4.1,
+      10.8
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 227,
+     "n": 560,
+     "pct": 40.5,
+     "ci95": [
+      36.5,
+      44.7
+     ]
+    }
+   },
+   "tap": {
+    "name": "Running water",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 2,
+     "n": 1896,
+     "pct": 0.1,
+     "ci95": [
+      0.0,
+      0.4
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 66,
+     "n": 560,
+     "pct": 11.8,
+     "ci95": [
+      9.4,
+      14.7
+     ],
+     "related": [
+      "dishwashing"
+     ]
+    },
+    "esc50_hit": {
+     "k": 7,
+     "n": 16,
+     "pct": 43.8,
+     "ci95": [
+      23.1,
+      66.8
+     ],
+     "categories": [
+      "water_drops"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 17,
+     "n": 208,
+     "pct": 8.2,
+     "ci95": [
+      5.2,
+      12.7
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 63,
+     "n": 560,
+     "pct": 11.2,
+     "ci95": [
+      8.9,
+      14.1
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 7,
+     "n": 16,
+     "pct": 43.8,
+     "ci95": [
+      23.1,
+      66.8
+     ]
+    }
+   },
+   "cupboard": {
+    "name": "Cupboards and drawers",
+    "tau": 0.124,
+    "false_fire_dev_test": {
+     "k": 9,
+     "n": 1384,
+     "pct": 0.7,
+     "ci95": [
+      0.3,
+      1.2
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 8,
+     "n": 468,
+     "pct": 1.7,
+     "ci95": [
+      0.9,
+      3.3
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 0,
+     "n": 224,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      1.7
+     ]
+    }
+   },
+   "door": {
+    "name": "A door",
+    "tau": 0.123,
+    "false_fire_dev_test": {
+     "k": 13,
+     "n": 1384,
+     "pct": 0.9,
+     "ci95": [
+      0.5,
+      1.6
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 11,
+     "n": 468,
+     "pct": 2.4,
+     "ci95": [
+      1.3,
+      4.2
+     ]
+    },
+    "esc50_hit": {
+     "k": 2,
+     "n": 16,
+     "pct": 12.5,
+     "ci95": [
+      3.5,
+      36.0
+     ],
+     "categories": [
+      "door_wood_creaks"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 2,
+     "n": 208,
+     "pct": 1.0,
+     "ci95": [
+      0.3,
+      3.4
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 2,
+     "n": 16,
+     "pct": 12.5,
+     "ci95": [
+      3.5,
+      36.0
+     ]
+    }
+   },
+   "alarm": {
+    "name": "An alarm or beeping",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 884,
+     "pct": 0.0,
+     "ci95": [
+      0.0,
+      0.4
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "esc50_hit": {
+     "k": 15,
+     "n": 16,
+     "pct": 93.8,
+     "ci95": [
+      71.7,
+      98.9
+     ],
+     "categories": [
+      "clock_alarm"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 2,
+     "n": 208,
+     "pct": 1.0,
+     "ci95": [
+      0.3,
+      3.4
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 15,
+     "n": 16,
+     "pct": 93.8,
+     "ci95": [
+      71.7,
+      98.9
+     ]
+    }
+   },
+   "tv": {
+    "name": "TV or radio",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 1444,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.3
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 403,
+     "n": 500,
+     "pct": 80.6,
+     "ci95": [
+      76.9,
+      83.8
+     ],
+     "related": [
+      "watching_tv"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 0,
+     "n": 224,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      1.7
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 396,
+     "n": 500,
+     "pct": 79.2,
+     "ci95": [
+      75.4,
+      82.5
+     ]
+    }
+   },
+   "vacuum": {
+    "name": "Vacuum cleaner",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 10,
+     "n": 4000,
+     "pct": 0.2,
+     "ci95": [
+      0.1,
+      0.5
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 416,
+     "n": 416,
+     "pct": 100.0,
+     "ci95": [
+      99.1,
+      100.0
+     ],
+     "related": [
+      "vacuum_cleaner"
+     ]
+    },
+    "esc50_hit": {
+     "k": 11,
+     "n": 16,
+     "pct": 68.8,
+     "ci95": [
+      44.4,
+      85.8
+     ],
+     "categories": [
+      "vacuum_cleaner"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 1,
+     "n": 208,
+     "pct": 0.5,
+     "ci95": [
+      0.1,
+      2.7
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 416,
+     "n": 416,
+     "pct": 100.0,
+     "ci95": [
+      99.1,
+      100.0
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 11,
+     "n": 16,
+     "pct": 68.8,
+     "ci95": [
+      44.4,
+      85.8
+     ]
+    }
+   },
+   "typing": {
+    "name": "Typing",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 5,
+     "n": 2573,
+     "pct": 0.2,
+     "ci95": [
+      0.1,
+      0.5
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "heard_in_related_dev_test": {
+     "k": 130,
+     "n": 512,
+     "pct": 25.4,
+     "ci95": [
+      21.8,
+      29.3
+     ],
+     "related": [
+      "working"
+     ]
+    },
+    "esc50_hit": {
+     "k": 16,
+     "n": 16,
+     "pct": 100.0,
+     "ci95": [
+      80.6,
+      100
+     ],
+     "categories": [
+      "keyboard_typing"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 0,
+     "n": 208,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      1.8
+     ]
+    },
+    "heard_in_related_dev_test_after_veto": {
+     "k": 129,
+     "n": 512,
+     "pct": 25.2,
+     "ci95": [
+      21.6,
+      29.1
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 16,
+     "n": 16,
+     "pct": 100.0,
+     "ci95": [
+      80.6,
+      100
+     ]
+    }
+   },
+   "footsteps": {
+    "name": "Footsteps",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 884,
+     "pct": 0.0,
+     "ci95": [
+      0.0,
+      0.4
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "esc50_hit": {
+     "k": 14,
+     "n": 16,
+     "pct": 87.5,
+     "ci95": [
+      64.0,
+      96.5
+     ],
+     "categories": [
+      "footsteps"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 0,
+     "n": 208,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      1.8
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 14,
+     "n": 16,
+     "pct": 87.5,
+     "ci95": [
+      64.0,
+      96.5
+     ]
+    }
+   },
+   "glass": {
+    "name": "Glass breaking",
+    "tau": 0.05,
+    "false_fire_dev_test": {
+     "k": 0,
+     "n": 884,
+     "pct": 0.0,
+     "ci95": [
+      0.0,
+      0.4
+     ]
+    },
+    "false_fire_quiet_dev_test": {
+     "k": 0,
+     "n": 468,
+     "pct": 0.0,
+     "ci95": [
+      0,
+      0.8
+     ]
+    },
+    "esc50_hit": {
+     "k": 16,
+     "n": 16,
+     "pct": 100.0,
+     "ci95": [
+      80.6,
+      100
+     ],
+     "categories": [
+      "glass_breaking"
+     ]
+    },
+    "esc50_false_fire_other_household": {
+     "k": 3,
+     "n": 208,
+     "pct": 1.4,
+     "ci95": [
+      0.5,
+      4.2
+     ]
+    },
+    "esc50_hit_after_veto": {
+     "k": 16,
+     "n": 16,
+     "pct": 100.0,
+     "ci95": [
+      80.6,
+      100
+     ]
+    }
+   }
+  },
+  "sensitive_any_name": {
+   "k": 6,
+   "n": 128,
+   "pct": 4.7,
+   "ci95": [
+    2.2,
+    9.8
+   ]
+  },
+  "sensitive_by_category": {
+   "breathing": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "brushing_teeth": {
+    "k": 1,
+    "n": 16,
+    "pct": 6.2,
+    "ci95": [
+     1.1,
+     28.3
+    ],
+    "named_as": [
+     "typing"
+    ]
+   },
+   "coughing": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "crying_baby": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "laughing": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "sneezing": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "snoring": {
+    "k": 0,
+    "n": 16,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     19.4
+    ],
+    "named_as": []
+   },
+   "toilet_flush": {
+    "k": 5,
+    "n": 16,
+    "pct": 31.2,
+    "ci95": [
+     14.2,
+     55.6
+    ],
+    "named_as": [
+     "kettle",
+     "tap"
+    ]
+   }
+  },
+  "taus": {
+   "kettle": 0.071,
+   "frying": 0.05,
+   "chopping": 0.05,
+   "blender": 0.05,
+   "microwave": 0.05,
+   "dishes": 0.077,
+   "tap": 0.05,
+   "cupboard": 0.124,
+   "door": 0.123,
+   "alarm": 0.05,
+   "tv": 0.05,
+   "vacuum": 0.05,
+   "typing": 0.05,
+   "footsteps": 0.05,
+   "glass": 0.05
+  },
+  "veto": {
+   "household_named_before": {
+    "k": 109,
+    "n": 224,
+    "pct": 48.7,
+    "ci95": [
+     42.2,
+     55.2
+    ]
+   },
+   "household_named_after": {
+    "k": 109,
+    "n": 224,
+    "pct": 48.7,
+    "ci95": [
+     42.2,
+     55.2
+    ]
+   },
+   "sensitive_named_before_veto": {
+    "k": 17,
+    "n": 128,
+    "pct": 13.3,
+    "ci95": [
+     8.5,
+     20.2
+    ]
+   }
+  }
+ },
+ "never_named": [
+  "Speech",
+  "Conversation",
+  "Laughter",
+  "Singing",
+  "Crying, sobbing",
+  "Baby cry, infant cry",
+  "Cough",
+  "Sneeze",
+  "Snoring",
+  "Breathing",
+  "Chewing, mastication",
+  "Toilet flush",
+  "Toothbrush",
+  "Bathtub (filling or washing)"
+ ],
+ "novelty": {
+  "frozen_threshold": 28.15,
+  "curve": [
+   {
+    "threshold": 18.22,
+    "dev_accepted_pct": 90.0,
+    "offlist_accepted_pct": 0.0
+   },
+   {
+    "threshold": 20.46,
+    "dev_accepted_pct": 95.0,
+    "offlist_accepted_pct": 0.0
+   },
+   {
+    "threshold": 26.01,
+    "dev_accepted_pct": 99.0,
+    "offlist_accepted_pct": 0.0
+   },
+   {
+    "threshold": 28.16,
+    "dev_accepted_pct": 99.5,
+    "offlist_accepted_pct": 0.0
+   },
+   {
+    "threshold": 32.42,
+    "dev_accepted_pct": 99.9,
+    "offlist_accepted_pct": 1.5
+   }
+  ],
+  "note": "dev distances are in-sample for the frozen head (it was fit on these clips), so dev acceptance is optimistic; no real-kitchen data exists yet to set a better threshold, so the frozen one stays and enrolment relaxes it per kitchen"
+ },
+ "enrolment": {
+  "enrolled": [
+   "absence",
+   "cooking",
+   "dishwashing"
+  ],
+  "alpha": 0.6,
+  "rho": 1.5,
+  "knn": 5,
+  "tuning_folds": [
+   1,
+   2
+  ],
+  "report_folds": [
+   3,
+   4
+  ],
+  "head": "logistic head refit WITHOUT the test microphone (node) and test fold, same recipe as the frozen head",
+  "by_minutes": {
+   "0.5": {
+    "before": {
+     "n_windows": 3954,
+     "macro_f1": 83.8,
+     "kitchen_noticed": {
+      "k": 1074,
+      "n": 1255,
+      "pct": 85.6,
+      "ci95": [
+       83.5,
+       87.4
+      ]
+     },
+     "false_kitchen": {
+      "k": 53,
+      "n": 2699,
+      "pct": 2.0,
+      "ci95": [
+       1.5,
+       2.6
+      ]
+     },
+     "not_sure_share": {
+      "k": 420,
+      "n": 3954,
+      "pct": 10.6,
+      "ci95": [
+       9.7,
+       11.6
+      ]
+     },
+     "recall": {
+      "absence": 77.5,
+      "cooking": 72.7,
+      "dishwashing": 71.1,
+      "eating": 91.5
+     }
+    },
+    "after": {
+     "n_windows": 3954,
+     "macro_f1": 83.8,
+     "kitchen_noticed": {
+      "k": 1074,
+      "n": 1255,
+      "pct": 85.6,
+      "ci95": [
+       83.5,
+       87.4
+      ]
+     },
+     "false_kitchen": {
+      "k": 53,
+      "n": 2699,
+      "pct": 2.0,
+      "ci95": [
+       1.5,
+       2.6
+      ]
+     },
+     "not_sure_share": {
+      "k": 419,
+      "n": 3954,
+      "pct": 10.6,
+      "ci95": [
+       9.7,
+       11.6
+      ]
+     },
+     "recall": {
+      "absence": 77.5,
+      "cooking": 72.7,
+      "dishwashing": 71.1,
+      "eating": 91.5
+     }
+    },
+    "novel_share_before": {
+     "k": 121,
+     "n": 3954,
+     "pct": 3.1,
+     "ci95": [
+      2.6,
+      3.6
+     ]
+    },
+    "novel_share_after": {
+     "k": 93,
+     "n": 3954,
+     "pct": 2.4,
+     "ci95": [
+      1.9,
+      2.9
+     ]
+    }
+   },
+   "1": {
+    "before": {
+     "n_windows": 3935,
+     "macro_f1": 83.7,
+     "kitchen_noticed": {
+      "k": 1074,
+      "n": 1255,
+      "pct": 85.6,
+      "ci95": [
+       83.5,
+       87.4
+      ]
+     },
+     "false_kitchen": {
+      "k": 53,
+      "n": 2680,
+      "pct": 2.0,
+      "ci95": [
+       1.5,
+       2.6
+      ]
+     },
+     "not_sure_share": {
+      "k": 417,
+      "n": 3935,
+      "pct": 10.6,
+      "ci95": [
+       9.7,
+       11.6
+      ]
+     },
+     "recall": {
+      "absence": 77.2,
+      "cooking": 72.7,
+      "dishwashing": 71.1,
+      "eating": 91.5
+     }
+    },
+    "after": {
+     "n_windows": 3935,
+     "macro_f1": 84.3,
+     "kitchen_noticed": {
+      "k": 1088,
+      "n": 1255,
+      "pct": 86.7,
+      "ci95": [
+       84.7,
+       88.5
+      ]
+     },
+     "false_kitchen": {
+      "k": 54,
+      "n": 2680,
+      "pct": 2.0,
+      "ci95": [
+       1.5,
+       2.6
+      ]
+     },
+     "not_sure_share": {
+      "k": 300,
+      "n": 3935,
+      "pct": 7.6,
+      "ci95": [
+       6.8,
+       8.5
+      ]
+     },
+     "recall": {
+      "absence": 91.6,
+      "cooking": 73.6,
+      "dishwashing": 73.0,
+      "eating": 91.5
+     }
+    },
+    "novel_share_before": {
+     "k": 121,
+     "n": 3935,
+     "pct": 3.1,
+     "ci95": [
+      2.6,
+      3.7
+     ]
+    },
+    "novel_share_after": {
+     "k": 111,
+     "n": 3935,
+     "pct": 2.8,
+     "ci95": [
+      2.3,
+      3.4
+     ]
+    }
+   },
+   "3": {
+    "before": {
+     "n_windows": 3783,
+     "macro_f1": 83.4,
+     "kitchen_noticed": {
+      "k": 1029,
+      "n": 1206,
+      "pct": 85.3,
+      "ci95": [
+       83.2,
+       87.2
+      ]
+     },
+     "false_kitchen": {
+      "k": 53,
+      "n": 2577,
+      "pct": 2.1,
+      "ci95": [
+       1.6,
+       2.7
+      ]
+     },
+     "not_sure_share": {
+      "k": 398,
+      "n": 3783,
+      "pct": 10.5,
+      "ci95": [
+       9.6,
+       11.5
+      ]
+     },
+     "recall": {
+      "absence": 76.7,
+      "cooking": 71.6,
+      "dishwashing": 71.1,
+      "eating": 91.5
+     }
+    },
+    "after": {
+     "n_windows": 3783,
+     "macro_f1": 84.0,
+     "kitchen_noticed": {
+      "k": 1052,
+      "n": 1206,
+      "pct": 87.2,
+      "ci95": [
+       85.2,
+       89.0
+      ]
+     },
+     "false_kitchen": {
+      "k": 57,
+      "n": 2577,
+      "pct": 2.2,
+      "ci95": [
+       1.7,
+       2.9
+      ]
+     },
+     "not_sure_share": {
+      "k": 280,
+      "n": 3783,
+      "pct": 7.4,
+      "ci95": [
+       6.6,
+       8.3
+      ]
+     },
+     "recall": {
+      "absence": 92.4,
+      "cooking": 72.3,
+      "dishwashing": 75.2,
+      "eating": 91.5
+     }
+    },
+    "novel_share_before": {
+     "k": 120,
+     "n": 3783,
+     "pct": 3.2,
+     "ci95": [
+      2.7,
+      3.8
+     ]
+    },
+    "novel_share_after": {
+     "k": 119,
+     "n": 3783,
+     "pct": 3.1,
+     "ci95": [
+      2.6,
+      3.8
+     ]
+    }
+   }
+  }
+ }
+}

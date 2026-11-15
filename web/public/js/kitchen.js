@@ -1,7 +1,8 @@
 // Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this device, sends only labels.
-import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL } from "./core.js";
+import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, HIDEABLE } from "./core.js";
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
-import { loadModel, startMic, HOP_S } from "./listen.js";
+import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
+import { buildEnrolment } from "./sense.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
 // can be a spare phone or tablet on a charger as well as a laptop.
@@ -19,6 +20,57 @@ const bar = dayBar($("#bar"), { big: true });
 const QKEY = link ? `kettle.queue.${link.id}` : null;
 try { queue = QKEY ? JSON.parse(localStorage.getItem(QKEY)) || [] : []; } catch { queue = []; }
 const saveQueue = () => { try { localStorage.setItem(QKEY, JSON.stringify(queue.slice(-2000))); } catch {} };
+
+// ---------------------------------------------------------------- teach Kettle this kitchen (plan A3 + E3 microphone check)
+// The setup windows' embeddings stay in this browser's storage; nothing about them is sent.
+const EKEY = link ? `kettle.enrol.${link.id}` : null;
+let enrolment = null;
+try { enrolment = EKEY ? JSON.parse(localStorage.getItem(EKEY)) : null; } catch { enrolment = null; }
+const TEACH = [
+  { c: "absence", head: "Step 1 of 3: keep the kitchen quiet", body: "Stay still for about 40 seconds. Kettle is learning what quiet sounds like here.", s: 40 },
+  { c: "dishwashing", head: "Step 2 of 3: wash up or run the tap", body: "Rinse a few dishes for about a minute, the way you usually do.", s: 60 },
+  { c: "cooking", head: "Step 3 of 3: cook, or pretend to", body: "Stir a pan, chop something or fry for about a minute. Real kitchen sounds work best.", s: 60 },
+];
+const teach = { step: -1, t0: 0, samples: [], quietDbs: [], activeDbs: [], stepDbs: [], lastSent: 0, failed: false, level: 0 };
+const WARM_S = 10;                                // the 10-s window must be filled with this step's sound first
+function startTeach() {
+  if (!mic) return;
+  Object.assign(teach, { step: 0, t0: now(), samples: [], quietDbs: [], activeDbs: [], stepDbs: [], failed: false });
+  mic.setHop(2); draw();
+}
+function teachTick() {
+  if (teach.step < 0) return;
+  const st = TEACH[teach.step];
+  if (now() - teach.t0 < st.s + WARM_S) { draw(); return; }
+  if (st.c !== "absence") {                       // microphone check: the activity must be clearly louder than quiet
+    const q = median(teach.quietDbs), a = median(teach.stepDbs);
+    if (!(a >= q + 6)) { teach.failed = true; draw(); return; }
+    teach.activeDbs.push(...teach.stepDbs);
+  }
+  teach.stepDbs = [];
+  if (teach.step + 1 < TEACH.length) { teach.step++; teach.t0 = now(); draw(); return; }
+  enrolment = buildEnrolment(modelHead(), teach.samples, teach.quietDbs, teach.activeDbs);
+  try { localStorage.setItem(EKEY, JSON.stringify(enrolment)); } catch {}
+  teach.step = -1; mic && mic.setHop(HOP_S);
+  ui.taughtAt = Date.now(); draw();
+}
+function stopTeach() { teach.step = -1; teach.failed = false; mic && mic.setHop(HOP_S); draw(); }
+function forgetTeach() { enrolment = null; try { localStorage.removeItem(EKEY); } catch {} ; toast("Kettle forgot what it learned in this kitchen."); draw(); }
+function median(xs) { const v = xs.filter(Number.isFinite).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : -Infinity; }
+setInterval(teachTick, 1000);
+
+// ---------------------------------------------------------------- larger text and dim screen (plan F5, E9)
+try { if (localStorage.getItem("kettle.bigText") === "1") document.documentElement.classList.add("big-text"); } catch {}
+function toggleText() {
+  const on = document.documentElement.classList.toggle("big-text");
+  try { localStorage.setItem("kettle.bigText", on ? "1" : "0"); } catch {}
+  draw();
+}
+function dimScreen() {
+  const cover = el("button", { class: "dim-cover", type: "button", text: "Kettle is still listening. Touch the screen to wake it.", onclick: () => cover.remove() });
+  document.body.append(cover);
+}
+
 
 function button(text, onclick, cls = "") { return el("button", { class: `btn kbtn ${cls}`, type: "button", text, onclick }); }
 function speak(lines) { if (!("speechSynthesis" in window)) return; speechSynthesis.cancel(); for (const l of lines) speechSynthesis.speak(new SpeechSynthesisUtterance(l)); }
@@ -101,14 +153,24 @@ async function startListening() {
   try {
     mic = await startMic({
       clockNow: now,
-      onLevel: (v) => meter(v),
+      onLevel: (v) => { meter(v); teach.level = v; },
+      context: () => ({ enrolment, kindsOff: (srv && srv.kinds_off) || [], teaching: teach.step >= 0 }),
       onWindow: (w) => {
         if (dev.ms == null) { dev.ms = w.ms; reportDevice(); }
         // A muted or switched-off microphone delivers exact silence. That is "not listening", never "Quiet": tell the family.
         silentRun = w.peak < 1e-4 ? silentRun + 1 : 0;
         if (silentRun >= 3) { if (silentRun === 3) act("mic", { state: "blocked" }); return; }
         if (silentRun === 0 && srv && srv.mic === "blocked") act("mic", { state: "ok" });
-        const ev = { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds };
+        if (teach.step >= 0) {                           // teaching: keep this kitchen's windows on the device
+          const st = TEACH[teach.step];
+          if (w.end - teach.t0 >= WARM_S && w.end - teach.t0 <= st.s + WARM_S) {
+            if (w.emb) teach.samples.push({ c: st.c, emb: Float32Array.from(w.emb) });
+            (st.c === "absence" ? teach.quietDbs : teach.stepDbs).push(w.db);
+          }
+          if (w.end - teach.lastSent < HOP_S - 0.5) return;    // still one window per 10 s to the family while teaching
+          teach.lastSent = w.end;
+        }
+        const ev = shareable(w);
         events.push(ev); queue.push(ev); saveQueue(); flush();
         if (ui.setup === "check" && !ui.check) ui.check = { label: rawLabel(ev, 0.66) };
         if (srv) srv.last_window_t = ev.end;
@@ -122,6 +184,14 @@ async function startListening() {
     act("mic", { state: ui.mic === "none" ? "none" : "blocked" });
   }
   draw();
+}
+/** What may leave this device for one window: labels the parent chose to keep private become just "Private" (plan D2). */
+function shareable(w) {
+  const hide = (srv && srv.hide) || [];
+  const top = Object.keys(w.probs).sort((a, b) => w.probs[b] - w.probs[a]);
+  const voices = top.slice(0, 2).every((c) => HIDEABLE.includes(c)) && top.slice(0, 2).some((c) => hide.includes(c));
+  if (hide.includes(w.label) || voices) return { start: w.start, end: w.end, label: "private", conf: 0, probs: Object.fromEntries(Object.keys(w.probs).map((c) => [c, 0])), novel: false, private: true, sounds: [], kinds: [] };
+  return { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds, kinds: w.kinds, taught: w.taught };
 }
 function stopListening() { if (mic) { mic.stop(); mic = null; } if (wake) { wake.release().catch(() => {}); wake = null; } if (ui.mic === "on") ui.mic = "idle"; }
 // ---------------------------------------------------------------- device report: kind, plugged in or not, and how fast it labels
@@ -167,11 +237,14 @@ function screen(t) {
     controls: [button("Try again", () => poll(), "primary")], bar: true, chip: true };
   if (!k.consent) {
     if (ui.step === "teachback") return { state: "never", stepK: 1, head: `Is it OK for ${n.caregiver} to see this?`, body: [`${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`],
-      controls: [button(`Yes, ${n.caregiver} can see this`, () => act("consent"), "primary"), button("No, not now", () => { ui.step = "declined"; draw(); })] };
+      controls: [button(`Yes, ${n.caregiver} can see this`, () => act("consent"), "primary"), button("No, not now", () => { ui.step = "declined"; draw(); }),
+        button("Read this to me", () => speak([`Is it OK for ${n.caregiver} to see this?`, `${n.caregiver} will see the kinds of sound and when they happened. Nothing else.`]), "quiet-k")] };
     if (ui.step === "declined") return { state: "off", head: "Kettle is off.", body: [`This ${DEVICE} isn't listening. Press Start when you want it on.`],
       controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
     const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
-      `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`];
+      `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`,
+      `${n.caregiver} will also see when people were talking (that shows a visit, never what was said), when the TV was on, and everyday sounds like the kettle or running water. You can hide any of these.`,
+      "Kettle never names voices, coughs, crying or bathroom sounds. If a guest or carer comes, you can pause it for them."];
     return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
         button("Read this to me", () => speak([`This ${DEVICE} listens for kitchen sounds.`, ...lines]), "quiet-k")] };
@@ -199,14 +272,25 @@ function screen(t) {
       controls: [button("Try again", () => { ui.mic = "idle"; sync(); }, "primary")] };
   }
   if (ui.setup === "check" && ui.mic === "on") return checkScreen(n);
+  if (teach.step >= 0) {
+    const st = TEACH[teach.step];
+    if (teach.failed) return { state: "error-soft", head: "Kettle could hardly hear that.", body: ["Move the laptop closer to the sink and the stove, with nothing covering it, then try this step again."],
+      controls: [button("Try this step again", () => { teach.failed = false; teach.stepDbs = []; teach.t0 = now(); draw(); }, "primary"), button("Stop teaching", stopTeach, "quiet-k")] };
+    const left = Math.max(0, Math.ceil(st.s + WARM_S - (now() - teach.t0)));
+    return { state: "listening", head: st.head, body: [st.body, `${left} seconds left.`], teachMeter: true,
+      controls: [button("Stop teaching", stopTeach, "quiet-k")] };
+  }
   const today = new Date(now() * 1000).toLocaleDateString("en-US", { weekday: "long", timeZone: srv.tz });
   const since = k.consent_day === today ? `Listening since ${k.consent_text} today.` : `Listening since ${k.consent_day}.`;
-  const base = { bar: true, chip: true, checks: t.rules.map((r) => r.title),
+  const base = { bar: true, chip: true, checks: t.rules.map((r) => r.title), tools: true, share: true,
     controls: [button("Pause", () => { ui.pauseMenu = true; draw(); }, "primary pause"), button("Turn it off", () => act("off"))] };
+  if (Date.now() - (ui.taughtAt || 0) < 15000) return { ...base, state: "listening", head: "Thank you. Kettle learned this kitchen.",
+    body: [`What it learned stays on this ${DEVICE}. It helps Kettle with sounds it wasn't sure about; it never overrules a sound it already knows.`] };
   if (Date.now() - ui.resumedAt < 10000 && ui.resumedText) return { ...base, state: "listening", head: "Kettle is listening again.", body: [ui.resumedText] };
   if (hb.state === "starting") return { ...base, state: "starting", head: "Listening…", body: ["The first sound label appears in about 10 seconds."] };
   return { ...base, state: hb.state === "listening" ? "listening" : "starting", head: "Listening for kitchen sounds",
-    body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines()] };
+    body: [`${since} ${n.caregiver} sees the kinds of sounds, not recordings or words.`, ...deviceLines(),
+      enrolment ? "" : "Teaching Kettle this kitchen takes about 3 minutes and helps it with sounds it isn't sure about."] };
 }
 
 // ---------------------------------------------------------------- first-time setup: placement, then a live sound check
@@ -259,6 +343,28 @@ function exampleBar() {
   return (exampleNode = box);
 }
 
+function tools() {
+  const big = document.documentElement.classList.contains("big-text");
+  return el("div", { class: "k-tools" },
+    button(enrolment ? "Teach Kettle this kitchen again" : "Teach Kettle this kitchen (3 minutes)", startTeach, enrolment ? "quiet-k" : ""),
+    enrolment ? button("Forget what it learned", forgetTeach, "quiet-k") : null,
+    button(big ? "Smaller text" : "Larger text", toggleText, "quiet-k"),
+    button("Dim the screen", dimScreen, "quiet-k"));
+}
+/** Plan D2: the parent decides which labels and named sounds the family sees. */
+function sharePanel(t) {
+  const hide = new Set((srv && srv.hide) || []), off = new Set((srv && srv.kinds_off) || []);
+  const save = () => act("privacy", { hide: [...hide], kindsOff: [...off] });
+  const box = (label, on, flip) => el("label", {}, el("input", { type: "checkbox", checked: on || null, onchange: (e) => { flip(e.target.checked); save(); } }), el("span", { text: label }));
+  const acts = HIDEABLE.map((c) => box(c === "social_activity" ? "Conversation (shows a visit, never words)" : DISPLAY[c], !hide.has(c), (v) => (v ? hide.delete(c) : hide.add(c))));
+  const kinds = Object.entries(KIND_NAMES).map(([id, name]) => box(name, !off.has(id), (v) => (v ? off.delete(id) : off.add(id))));
+  const open = ui.shareOpen ? { open: "" } : {};
+  const d = el("details", { class: "k-share", ...open, ontoggle: (e) => { ui.shareOpen = e.target.open; } }, el("summary", { text: `What ${t.names.caregiver} can see` }),
+    el("fieldset", {}, el("legend", { text: "Activities (ticked = shared)" }), ...acts),
+    el("fieldset", {}, el("legend", { text: "Everyday sounds Kettle can name (ticked = shared)" }), ...kinds));
+  return d;
+}
+
 let prevChip = null;
 function sync() {
   if (!srv) return;
@@ -292,18 +398,31 @@ function draw(fresh = false) {
   const body = $("#body"); body.textContent = "";
   for (const line of s.body.filter(Boolean)) body.append(el("p", { class: "k-body", text: line }));
   if (s.progress) body.append(el("div", { class: "progress", role: "progressbar", "aria-valuenow": Math.round(ui.model * 100) }, el("i", { style: `width:${Math.round(ui.model * 100)}%` })));
-  const extra = $("#extra"); extra.textContent = "";
-  if (s.checks && s.checks.length && !ui.pauseMenu) {
+  const extra = $("#extra");
+  // rebuilt only when something in it changes, so a tap on a checkbox is never lost to the 1-s redraw
+  const extraKey = JSON.stringify([s.checks, !!s.tools, !!s.share, ui.pauseMenu, srv.hide, srv.kinds_off, !!enrolment,
+    document.documentElement.classList.contains("big-text"), t.names.caregiver]);
+  const rebuild = extraKey !== ui.extraKey;
+  ui.extraKey = extraKey;
+  if (rebuild) extra.textContent = "";
+  if (rebuild && s.checks && s.checks.length && !ui.pauseMenu) {
     extra.append(el("div", { class: "k-checks" }, el("p", { text: `Checks ${t.names.caregiver} set. They only read the timeline; Kettle tells ${t.names.caregiver} nothing else.` }),
       el("ul", {}, s.checks.map((c) => el("li", { text: c })))));
   }
   if (s.example) body.append(exampleBar());
+  if (s.teachMeter) {
+    const lvl = el("span", { class: "lvl", "aria-hidden": "true" }, el("i", { style: `width:${Math.round(Math.min(1, Math.sqrt(teach.level) * 1.6) * 100)}%` }));
+    body.append(el("div", { class: "teach-meter" }, el("span", { text: "Sound level" }), lvl));
+  }
+  if (rebuild && s.tools && !ui.pauseMenu) extra.append(tools());
+  if (rebuild && s.share && !ui.pauseMenu) extra.append(sharePanel(t));
   if (s.guide) body.append(s.guide);
   if (s.helper) body.append(el("details", { class: "helper" }, el("summary", { text: s.helper[0] }), el("p", { text: s.helper[1] })));
   const ctr = $("#controls"); ctr.textContent = "";
   if (ui.pauseMenu) {
     $("#status").dataset.state = "never";
-    ctr.append(el("div", { class: "pause-menu" }, button("Pause for 15 minutes", () => act("pause", { minutes: 15 })), button("Pause for 1 hour", () => act("pause", { minutes: 60 })),
+    ctr.append(el("div", { class: "pause-menu" }, button("A guest or carer is here (2 hours)", () => act("pause", { minutes: 120, reason: "guest" })),
+      button("Pause for 15 minutes", () => act("pause", { minutes: 15 })), button("Pause for 1 hour", () => act("pause", { minutes: 60 })),
       button("Pause until tomorrow morning", () => act("pause", { minutes: null })), button("Cancel", () => { ui.pauseMenu = false; draw(); }, "quiet-k")));
   } else for (const c of s.controls) ctr.append(c);
   const wrap = $("#chip-wrap"); wrap.textContent = "";

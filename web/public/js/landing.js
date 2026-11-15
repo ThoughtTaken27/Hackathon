@@ -116,7 +116,7 @@ async function startStage(sid) {
 }
 document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.addEventListener("click", () => startStage(b.dataset.sid)));
 new IntersectionObserver((es) => es.forEach((x) => {
-  if (x.isIntersecting && !stageOn) { stageOn = true; startStage("usual"); }
+  if (x.isIntersecting && !stageOn) { stageOn = true; startStage("nobreakfast"); }
   if (!x.isIntersecting && stageOn) { stageOn = false; stage && stage.stop(); }
 }), { threshold: 0.2 }).observe($("#stage"));
 function fit() {

@@ -24,6 +24,7 @@ export async function play(sid, onFrame, { seconds = 16, names = { parent: "Dad"
       const e = d.events[i];
       evs.push({ ...e, start: day0 + e.start, end: day0 + e.end });
       s.last_window_t = day0 + e.end;
+      s.pauses = (d.pauses || []).filter((p) => p[1] <= e.end).map((p) => [day0 + p[0], day0 + p[1]]);   // "Dad paused it"
       const t = computeToday(s, evs, day0 + e.end + 1, { theta: 0.66, off, day0, hop: 2, names });
       t.sample = { id: sid, title: d.title, i: i + 1, n: d.events.length };
       onFrame(t);

@@ -3,6 +3,7 @@ Chromium's fake microphone, and see the labels arrive on the family view. Run ag
 
     python web/test/e2e.py http://localhost:8787 path/to/fake.wav out_dir
 """
+import os
 import json
 import sys
 import time
@@ -15,7 +16,7 @@ BASE, WAV, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 def main() -> int:
     errors, log = [], []
     with sync_playwright() as p:
-        br = p.chromium.launch(args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", f"--use-file-for-fake-audio-capture={WAV}",
+        br = p.chromium.launch(executable_path=os.environ.get("KETTLE_CHROME") or None, args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", f"--use-file-for-fake-audio-capture={WAV}",
                                      "--autoplay-policy=no-user-gesture-required"])
         fam_ctx = br.new_context(viewport={"width": 393, "height": 852})
         kit_ctx = br.new_context(viewport={"width": 1280, "height": 800}, permissions=["microphone"])
@@ -38,12 +39,17 @@ def main() -> int:
 
         # 2. kitchen pairs with the code
         kit.goto(BASE + "/kitchen")
-        kit.get_by_label("Six-letter code").fill(code)
-        kit.get_by_role("button", name="Connect").click()
-        kit.wait_for_selector("text=This laptop listens for kitchen sounds.", timeout=15000)
+        kit.get_by_label("Six-letter code").first.fill(code)       # the six-box code submits itself when complete
+        kit.wait_for_timeout(800)
+        if kit.get_by_role("button", name="Connect").count() and "/kitchen" in kit.url and not kit.locator("text=listens for kitchen sounds").count():
+            kit.get_by_role("button", name="Connect").click()
+        kit.wait_for_selector("text=listens for kitchen sounds.", timeout=15000)
         kit.screenshot(path=f"{OUT}/e2e-2-kitchen-consent.png")
         kit.get_by_role("button", name="Next").click()
         kit.get_by_role("button", name="Yes, Asha can see this").click()
+        kit.wait_for_timeout(1000)
+        if kit.get_by_role("button", name="Skip setup").count():         # first-time placement guide
+            kit.get_by_role("button", name="Skip setup").click()
 
         # 3. model loads, fake mic plays, labels appear on the kitchen screen
         t0 = time.time()
@@ -55,6 +61,8 @@ def main() -> int:
             print("errors:", json.dumps(errors, indent=1))
             raise
         log.append(f"listening after {time.time() - t0:.1f}s")
+        if kit.get_by_role("button", name="Skip the sound check").count():
+            kit.get_by_role("button", name="Skip the sound check").click()
         kit.wait_for_function("() => !document.querySelector('.chip .txt') || !/Waiting/.test(document.querySelector('.chip .txt').textContent)", timeout=60000)
         log.append(f"first label after {time.time() - t0:.1f}s: {kit.locator('.chip .txt').inner_text()}")
         kit.wait_for_timeout(22000)

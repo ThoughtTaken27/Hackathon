@@ -17,6 +17,22 @@ On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments
 
 > **Setting this up (people or agents):** follow [`SETUP.md`](SETUP.md) top to bottom: Python app, web app, every test, and the Cloudflare deploy. **Try it live:** https://kettle.parth-dev.workers.dev
 
+## Improvement round (Sat Nov 14, evening): beyond the research home
+
+A live test in other kitchens found Kettle usually had the right activity on top but marked most windows "unlike
+anything it learned", called a vacuum "Cooking", and sent general sound tags (Speech, Chewing) the consent screen didn't
+promise. What changed, each measured before shipping (`python -m eval.beyond`, `python -m eval.stress`; numbers on the
+How sure page under "Beyond the research home", from `results/beyond.json` and `results/stress.json`):
+
+- **Teach Kettle this kitchen:** a 3-minute setup (quiet, washing up, cooking) with a microphone check. The windows stay on the laptop and help only sounds the model couldn't name.
+- **15 named everyday sounds** (kettle, running water, alarm, glass breaking, ...), read zero-shot from the sound model; a **privacy veto** names nothing when a cough, crying or bathroom sound is loudest. The server stores only allow-listed names (no pets, phone or doorbell, matching the sound-name allow-list).
+- **Plain reasons for Not sure**, a **coverage line** ("Kettle could tell what was happening for N% of the time it listened today"), a **week view**, a **"Kettle or a hot drink by 9 AM" check**, **guest pause**, **private labels** chosen by the parent, larger text, dim screen.
+- **Teach-this-kitchen under stress:** `python -m eval.stress_teach` (quieter, echo, laptop mic, before/after setup).
+- **Four new sample days:** Breakfast didn't happen, A visitor came, Dad paused it, Laptop closed.
+- Pre-registered real-kitchen protocol: `docs/REAL-KITCHEN-PROTOCOL.md`. Threat model: `docs/THREAT-MODEL.md`.
+
+The benchmark numbers below are unchanged: the head, θ and the novelty threshold are frozen.
+
 ## Results (every number from `results/metrics.json`; reproduce with `notebooks/kettle_reproduce.ipynb`)
 <!-- results:start -->
 **Held-out test (official DCASE 2018 eval sample, run once, all 7 microphones; macro F1, 95% session-bootstrap CI):**

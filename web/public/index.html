@@ -185,7 +185,11 @@
     </div>
     <div class="stage-bar">
       <div class="lx-seg" role="group" aria-label="Sample days">
-        <button type="button" data-sid="usual" aria-pressed="true">A usual morning</button>
+        <button type="button" data-sid="nobreakfast" aria-pressed="true">Breakfast didn't happen</button>
+        <button type="button" data-sid="usual">A usual morning</button>
+        <button type="button" data-sid="visitor">A visitor came</button>
+        <button type="button" data-sid="paused">Dad paused it</button>
+        <button type="button" data-sid="closed">Laptop closed</button>
         <button type="button" data-sid="quiet">A quiet morning</button>
         <button type="button" data-sid="tv">A TV-only afternoon</button>
       </div>
@@ -199,7 +203,7 @@
       <p class="lx-sub">Every number comes from one script and carries its error bars. Where Kettle is weak, the page says so.</p>
     </div>
     <dl class="lx-numbers">
-      <div><dt class="num"><span data-k="f1">84.1</span></dt><dd>macro F1 on held-out clips, scored once. Level with the official 2018 baseline, below the best entry.</dd></div>
+      <div><dt class="num"><span data-k="f1">84.1</span></dt><dd>macro F1 on held-out clips, scored once. Close to the official 2018 baseline, below the best entry, but not directly comparable (one microphone, a sample of the test set).</dd></div>
       <div><dt class="num"><span data-k="caught">89</span><span class="dim">%</span></dt><dd>of kitchen-activity moments caught on clips it never heard</dd></div>
       <div><dt class="num"><span data-k="fa">0.5</span><span class="dim">%</span></dt><dd>of other moments wrongly called kitchen activity</dd></div>
       <div><dt class="num"><span data-k="ns">0.4</span><span class="dim">%</span></dt><dd>of off-list sounds, like dogs or sirens, given a confident label</dd></div>
@@ -215,7 +219,7 @@
         <details><summary>What do we need?</summary><p>A spare phone, tablet or laptop that can stay in the kitchen, plugged in, with the screen on and Kettle open in Chrome, Edge or Safari. And your own phone or computer. No app to install, no account to create.</p></details>
         <details><summary>Does it send alerts if something is wrong?</summary><p>No. Kettle is not an emergency device and can't detect falls. It shows a calm timeline and answers the checks you set. You look when you wonder.</p></details>
         <details><summary>What if the screen locks or the Wi-Fi drops?</summary><p>Kettle keeps the screen awake while it listens; phones stop the microphone if the screen locks, so it shows how to set that up. If the internet drops, it keeps labelling and sends everything when the connection is back. If the device is closed or asleep, your view says "Not listening", never a quiet day.</p></details>
-        <details><summary>How accurate is it?</summary><p>84.1 macro F1 on public benchmark clips it had never heard, scored once. It hasn't been measured in a real kitchen yet, and it most often mixes up moving about with typing. The "How sure" page lists every miss rate.</p></details>
+        <details><summary>How accurate is it?</summary><p>84.1 macro F1 on public benchmark clips it had never heard, scored once. It hasn't been measured in a real kitchen yet, and it most often mixes up "some activity" with typing. The "How sure" page lists every miss rate.</p></details>
         <details><summary>Can we delete everything?</summary><p>Yes. Settings, then Delete this home, removes every label and setting from Kettle's server for good. Labels older than eight days are deleted on their own.</p></details>
       </div>
     </div>

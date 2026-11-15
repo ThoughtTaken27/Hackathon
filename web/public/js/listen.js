@@ -3,9 +3,12 @@
 // Audio stays in this tab's memory: one 10-second array, overwritten as sound comes in, dropped on pause.
 // Only the label, its scores, a few sound names and the time are handed to the caller.
 import { prepare, decide } from "./head.js";
+import { prepareSense, refine, levelDb } from "./sense.js";
 
 export const SR = 16000, WIN_S = 10, HOP_S = 10;
 let ortReady = null, model = null;
+/** The frozen head (head.json) once loaded: setup standardises embeddings with its mean and std. */
+export function modelHead() { return model ? model.head.head : null; }
 
 function loadScript(src) {
   return new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => bad(new Error("script")); document.head.append(s); });
@@ -19,7 +22,8 @@ export async function loadModel(onProgress = () => {}) {
   const ort = window.ort;
   ort.env.wasm.wasmPaths = "/vendor/ort/";
   ort.env.wasm.numThreads = 1;
-  const [head, ev, wit] = await Promise.all(["head", "evidence", "witness"].map((n) => fetch(`/model/${n}.json`).then((r) => r.json())));
+  const [head, ev, wit, kinds, enrolCfg] = await Promise.all(["head", "evidence", "witness", "kinds", "enrol"]
+    .map((n) => fetch(`/model/${n}.json`).then((r) => { if (!r.ok) throw new Error("model download failed"); return r.json(); })));
   const front = await ort.InferenceSession.create(new Uint8Array(await (await fetch("/model/logmel.onnx")).arrayBuffer()), { executionProviders: ["wasm"] });
   const res = await fetch("/model/ced-tiny.onnx");
   if (!res.ok) throw new Error("model download failed");
@@ -35,16 +39,20 @@ export async function loadModel(onProgress = () => {}) {
   for (const p of parts) { buf.set(p, o); o += p.length; }
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
-  model = { ort, front, session, head: prepare(head, ev, wit) };
+  model = { ort, front, session, head: prepare(head, ev, wit), sense: prepareSense(kinds, enrolCfg) };
   return model;
 }
 
 /** float32 [160000] at 16 kHz -> { label, conf, probs, novel, w, sounds, ms } */
-export async function classify(wave) {
+export async function classify(wave, ctx = null) {
   const m = model, t0 = performance.now();
   const f = await m.front.run({ wave: new m.ort.Tensor("float32", wave, [1, wave.length]) });
   const out = await m.session.run({ feats: f.feats });
-  return { ...decide(m.head, out.emb.data, out.audioset.data), ms: Math.round(performance.now() - t0) };
+  const r = decide(m.head, out.emb.data, out.audioset.data);
+  if (!ctx) return { ...r, ms: Math.round(performance.now() - t0) };          // the raw frozen head (parity tests)
+  // on the kitchen device: this kitchen's setup windows and the named sound types (sense.js). emb and db never leave it.
+  return { ...refine(m.sense, { head: m.head.head, ...ctx }, out.emb.data, out.audioset.data, r), emb: out.emb.data, db: levelDb(wave),
+    ms: Math.round(performance.now() - t0) };
 }
 
 /** Decode any audio file to 16 kHz mono, first 10 s (zero-padded), for "Try your own sound". */
@@ -85,7 +93,7 @@ async function micStream() {
   return dest.stream;
 }
 
-export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
+export async function startMic({ onWindow, onLevel = () => {}, clockNow, context = () => ({}) }) {
   const stream = await micStream();
   let ctx;
   try { ctx = new AudioContext({ sampleRate: SR }); } catch { ctx = new AudioContext(); }
@@ -96,7 +104,7 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
   src.connect(tap); tap.connect(mute); mute.connect(ctx.destination);
   const ratio = ctx.sampleRate / SR;
   const ring = new Float32Array(SR * WIN_S);
-  let filled = 0, sinceHop = 0, prevEnd = null, busy = false, stopped = false, frac = 0;
+  let filled = 0, sinceHop = 0, prevEnd = null, busy = false, stopped = false, frac = 0, hop = HOP_S;
   tap.port.onmessage = async ({ data }) => {
     if (stopped) return;
     // resample to 16 kHz if the browser kept its own rate (simple linear: enough for a 10-s activity label)
@@ -112,20 +120,22 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
     onLevel(peak);
     ring.copyWithin(0, x.length); ring.set(x, ring.length - x.length);
     filled = Math.min(ring.length, filled + x.length); sinceHop += x.length;
-    if (filled < ring.length || sinceHop < HOP_S * SR || busy) return;
+    if (filled < ring.length || sinceHop < hop * SR || busy) return;
     sinceHop = 0; busy = true;
     try {
       const snap = ring.slice();
       let winPeak = 0; for (let i = 0; i < snap.length; i += 4) { const a = Math.abs(snap[i]); if (a > winPeak) winPeak = a; }
-      const r = { ...(await classify(snap)), peak: winPeak };
+      const r = { ...(await classify(snap, context())), peak: winPeak };
       const end = clockNow();
-      const start = prevEnd && end - prevEnd < 3 * HOP_S ? prevEnd : end - WIN_S;
+      const start = prevEnd && end - prevEnd < 3 * HOP_S ? Math.max(prevEnd, end - WIN_S) : end - WIN_S;
       prevEnd = end;
       if (!stopped) onWindow({ start, end, ...r });
     } finally { busy = false; }
   };
   return {
     sampleRate: ctx.sampleRate,
+    /** seconds between windows: 10 normally, 2 while teaching Kettle this kitchen */
+    setHop(sec) { hop = sec; sinceHop = Math.min(sinceHop, sec * SR); },
     stop() { stopped = true; ring.fill(0); tap.port.onmessage = null; stream.getTracks().forEach((t) => t.stop()); ctx.close(); },
   };
 }

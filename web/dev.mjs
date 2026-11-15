@@ -17,6 +17,7 @@ const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", "
   ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2", ".wasm": "application/wasm",
   ".onnx": "application/octet-stream", ".flac": "audio/flac", ".wav": "audio/wav", ".txt": "text/plain", ".ico": "image/x-icon" };
 
+let missLog = [];                       // wrong pairing codes per address (memory only)
 const db = existsSync(DATA) ? JSON.parse(readFileSync(DATA, "utf8")) : { households: {}, codes: {} };
 let saveTimer = null;
 const save = () => { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { await mkdir(join(ROOT, ".data"), { recursive: true }); await writeFile(DATA, JSON.stringify(db)); }, 300); };
@@ -40,6 +41,8 @@ const env = {
   codes: {
     put: async (code, value, ttl) => { db.codes[code] = { v: value, exp: Date.now() / 1000 + ttl }; save(); },
     get: async (code) => { const c = db.codes[code]; return c && c.exp > Date.now() / 1000 ? c.v : null; },
+    miss: async (who, t) => { missLog.push([who, t]); missLog = missLog.filter(([, x]) => x > t - 3600); },
+    misses: async (who, since) => missLog.filter(([w, x]) => w === who && x > since).length,
   },
 };
 
