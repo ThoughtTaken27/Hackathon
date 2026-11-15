@@ -23,7 +23,7 @@ test("named sound types: strongest first; switched-off types are not named (devi
 
 test("handover 3.1: only sounds that passed the pre-registered bar are sent; core.KINDS_SHOWN matches kinds.json", () => {
   assert.deepEqual(new Set(kinds.kinds.filter((k) => k.shown).map((k) => k.id)), core.KINDS_SHOWN);
-  assert.deepEqual(kindsOf(S, AS({ 456: 0.5, 524: 0.6 })).map((k) => k.id), ["tv"]);            // the kettle is computed but hidden
+  assert.deepEqual(kindsOf(S, AS({ 367: 0.5, 524: 0.6 })).map((k) => k.id), ["tv"]);            // frying is computed but hidden
 });
 
 test("handover 3.1 context: frying with a hiss is not a kettle or a tap; a kettle louder than everything is", () => {
@@ -66,13 +66,13 @@ const day = (labels, t0 = 8 * 3600, step = 10, extra = () => ({})) =>
   labels.map((l, i) => ({ start: t0 + i * step, end: t0 + (i + 1) * step, label: l, conf: 0.9, probs: probs(l), novel: false, sounds: [], ...extra(i) }));
 
 test("coverage line and named sounds today (plans F1, A6)", () => {
-  const evs = [...day(Array(60).fill("cooking"), 8 * 3600, 10, (i) => ({ kinds: i === 3 ? ["kettle"] : i > 50 ? ["tv"] : [] })),
+  const evs = [...day(Array(60).fill("cooking"), 8 * 3600, 10, (i) => ({ kinds: i === 3 ? ["frying"] : i > 50 ? ["tv"] : [] })),
     ...day(Array(30).fill("other"), 8 * 3600 + 600, 10, () => ({ novel: true }))];
   const s = core.newState(); core.actions.consent(s, 8 * 3600 - 60); s.last_window_t = evs.at(-1).end;
   const t = core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 });
   assert.equal(t.coverage.pct, 67);
   assert.match(t.coverage.text, /67% of the time it listened/);
-  assert.deepEqual(t.heard.map((h) => [h.id, h.text]), [["tv", "at 8:08 AM"]]);          // the kettle missed the bar: never listed
+  assert.deepEqual(t.heard.map((h) => [h.id, h.text]), [["tv", "at 8:08 AM"]]);          // frying missed the bar: never listed
   const ns = t.blocks.find((b) => b.state === "not_sure");
   assert.match(ns.card, /a sound unlike anything it learned/);
 });
@@ -81,13 +81,13 @@ test("a 'sound heard by' check (plan A6/F9): met for a shown sound, Can't tell f
   const rules = core.validateRules([{ type: "kind_by", kind: "tv", time: "9:00" }]);
   assert.throws(() => core.validateRules([{ type: "kind_by", kind: "speech", time: "9:00" }]));
   const s = core.newState(); core.actions.consent(s, 6 * 3600); s.rules = rules;
-  const evs = day(Array(12).fill("cooking"), 7 * 3600, 10, (i) => ({ kinds: i === 5 ? ["tv", "kettle"] : [] }));
+  const evs = day(Array(12).fill("cooking"), 7 * 3600, 10, (i) => ({ kinds: i === 5 ? ["tv", "frying"] : [] }));
   s.last_window_t = evs.at(-1).end;
   let t = core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 });
-  assert.equal(t.rules[0].title, "TV or radio by 9:00 AM");
+  assert.equal(t.rules[0].title, "Talking / TV by 9:00 AM");
   assert.equal(t.rules[0].state, "met");
-  assert.match(t.rules[0].detail, /Met at 7:00 AM \(tv or radio heard\)/);
-  s.rules = core.validateRules([{ type: "kind_by", kind: "kettle", time: "9:00" }]);
+  assert.match(t.rules[0].detail, /Met at 7:00 AM \(talking \/ TV heard\)/);
+  s.rules = core.validateRules([{ type: "kind_by", kind: "frying", time: "9:00" }]);
   assert.equal(core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 }).rules[0].state, "cant_tell");
   const none = day(Array(400).fill("absence"), 6 * 3600, 10);
   s.last_window_t = 9 * 3600 + 30;

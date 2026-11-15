@@ -8,7 +8,7 @@ const ACT_COLOUR = {
 };
 const ACT_NAME = {
   absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing",
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "Talking / TV", working: "Typing",
 };
 
 async function api(path, body) {
@@ -216,7 +216,7 @@ function makeLegend(root) {
     last = key;
     lg.textContent = "";
     for (const a of acts) lg.append(el("span", {}, el("i", { style: `background:var(${ACT_COLOUR[a]})` }), ACT_NAME[a]));
-    if (states.has("talk_or_tv")) lg.append(el("span", {}, el("i", { class: "blk talk_or_tv", style: "position:static" }), "Talking or TV"));
+    if (states.has("talk_or_tv")) lg.append(el("span", {}, el("i", { class: "blk talk_or_tv", style: "position:static" }), "Talking / TV"));
     if (states.has("not_sure")) lg.append(el("span", {}, el("i", { class: "blk not_sure", style: "position:static" }), "Not sure"));
     if (states.has("not_listening")) lg.append(el("span", {}, el("i", { class: "blk not_listening", style: "position:static" }), "Not listening"));
     if (states.has("paused")) lg.append(el("span", {}, el("i", { class: "blk paused", style: "position:static" }), "Paused"));

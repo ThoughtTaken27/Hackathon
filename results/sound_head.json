@@ -1,0 +1,1026 @@
+{
+ "about": "A trained sound head for named everyday sounds: one small logistic regression per sound (pre-registered v2).",
+ "prereg": "eval/PREREGISTER-SOUNDS-V2.md",
+ "bar": {
+  "precision": 90.0,
+  "recall": 40.0
+ },
+ "tune_precision_target": 92.0,
+ "process": "Every choice (inputs, C, threshold) from grouped 5-fold CV on the tune halves. The test halves were scored once before with v1's rules (results/sounds.json); this is their second use, by a head that never saw them.",
+ "n_test_windows": 6815,
+ "choices": {
+  "kettle": {
+   "feat": "emb",
+   "C": 0.1,
+   "tune_ap": 0.9157,
+   "threshold": 0.986002753798531,
+   "tune_precision": 93.3,
+   "tune_recall": 58.3,
+   "n_pos_tune": 24,
+   "passes_tune": true
+  },
+  "frying": {
+   "feat": "emb+logit",
+   "C": 0.1,
+   "tune_ap": 0.9832,
+   "threshold": 0.9595571202318697,
+   "tune_precision": 95.5,
+   "tune_recall": 87.5,
+   "n_pos_tune": 24,
+   "passes_tune": true
+  },
+  "chopping": {
+   "feat": "emb+logit",
+   "C": 1.0,
+   "tune_ap": 0.8514,
+   "threshold": 0.8677074106734793,
+   "tune_precision": 93.8,
+   "tune_recall": 65.2,
+   "n_pos_tune": 23,
+   "passes_tune": true
+  },
+  "blender": {
+   "feat": "emb",
+   "C": 0.1,
+   "tune_ap": 0.7905,
+   "threshold": 0.9995590217773944,
+   "tune_precision": 100.0,
+   "tune_recall": 7.7,
+   "n_pos_tune": 26,
+   "passes_tune": false
+  },
+  "microwave": {
+   "feat": "emb",
+   "C": 1.0,
+   "tune_ap": 0.9946,
+   "threshold": 0.6800975923761121,
+   "tune_precision": 93.8,
+   "tune_recall": 100.0,
+   "n_pos_tune": 30,
+   "passes_tune": true
+  },
+  "dishes": {
+   "feat": "emb",
+   "C": 0.1,
+   "tune_ap": 0.9749,
+   "threshold": 0.7578014445386342,
+   "tune_precision": 92.9,
+   "tune_recall": 92.9,
+   "n_pos_tune": 85,
+   "passes_tune": true
+  },
+  "tap": {
+   "feat": "emb+logit",
+   "C": 0.01,
+   "tune_ap": 0.8212,
+   "threshold": 0.9776487576424076,
+   "tune_precision": 92.0,
+   "tune_recall": 59.0,
+   "n_pos_tune": 39,
+   "passes_tune": true
+  },
+  "cupboard": {
+   "feat": "emb",
+   "C": 1.0,
+   "tune_ap": 0.9193,
+   "threshold": 0.9778228355579753,
+   "tune_precision": 92.1,
+   "tune_recall": 74.5,
+   "n_pos_tune": 47,
+   "passes_tune": true
+  },
+  "door": {
+   "feat": "emb",
+   "C": 1.0,
+   "tune_ap": 0.8831,
+   "threshold": 0.996139687057155,
+   "tune_precision": 100.0,
+   "tune_recall": 42.9,
+   "n_pos_tune": 14,
+   "passes_tune": true
+  },
+  "alarm": {
+   "feat": "emb+logit",
+   "C": 0.1,
+   "tune_ap": 0.9835,
+   "threshold": 0.7894788100445501,
+   "tune_precision": 92.5,
+   "tune_recall": 93.8,
+   "n_pos_tune": 144,
+   "passes_tune": true
+  },
+  "tv": {
+   "feat": "emb+logit",
+   "C": 0.1,
+   "tune_ap": 0.9987,
+   "threshold": 0.027747165632105292,
+   "tune_precision": 92.0,
+   "tune_recall": 99.4,
+   "n_pos_tune": 500,
+   "passes_tune": true
+  },
+  "vacuum": {
+   "feat": "emb",
+   "C": 0.1,
+   "tune_ap": 0.9994,
+   "threshold": 0.04054465457757473,
+   "tune_precision": 92.0,
+   "tune_recall": 100.0,
+   "n_pos_tune": 521,
+   "passes_tune": true
+  },
+  "typing": {
+   "feat": "emb",
+   "C": 0.1,
+   "tune_ap": 0.7955,
+   "threshold": 0.972350232451943,
+   "tune_precision": 92.3,
+   "tune_recall": 49.5,
+   "n_pos_tune": 505,
+   "passes_tune": true
+  },
+  "footsteps": {
+   "feat": "emb",
+   "C": 0.01,
+   "tune_ap": 0.8779,
+   "threshold": 0.8716929159838881,
+   "tune_precision": 93.8,
+   "tune_recall": 83.3,
+   "n_pos_tune": 18,
+   "passes_tune": true
+  },
+  "glass": {
+   "feat": "emb",
+   "C": 0.01,
+   "tune_ap": 1.0,
+   "threshold": 0.6172558195036765,
+   "tune_precision": 92.6,
+   "tune_recall": 100.0,
+   "n_pos_tune": 25,
+   "passes_tune": true
+  }
+ },
+ "v1_rules": {
+  "kettle": {
+   "recall": {
+    "k": 11,
+    "n": 22,
+    "pct": 50.0,
+    "ci95": [
+     30.7,
+     69.3
+    ]
+   },
+   "false_per_1000": 3.02,
+   "false_k": 14,
+   "neg_n": 4631,
+   "precision": {
+    "k": 11,
+    "n": 25,
+    "pct": 44.0,
+    "ci95": [
+     26.7,
+     62.9
+    ]
+   },
+   "top_false": {
+    "syn:timer": 7,
+    "sins:working": 3,
+    "ns7k:screaming": 2,
+    "esc:vacuum_cleaner": 1,
+    "syn:none": 1
+   }
+  },
+  "frying": {
+   "recall": {
+    "k": 41,
+    "n": 44,
+    "pct": 93.2,
+    "ci95": [
+     81.8,
+     97.7
+    ]
+   },
+   "false_per_1000": 3.28,
+   "false_k": 15,
+   "neg_n": 4579,
+   "precision": {
+    "k": 41,
+    "n": 56,
+    "pct": 73.2,
+    "ci95": [
+     60.4,
+     83.0
+    ]
+   },
+   "top_false": {
+    "k20:clean-dishes": 9,
+    "k20:water-flowing": 3,
+    "esc:crackling_fire": 2,
+    "sins:working": 1
+   }
+  },
+  "chopping": {
+   "recall": {
+    "k": 17,
+    "n": 22,
+    "pct": 77.3,
+    "ci95": [
+     56.6,
+     89.9
+    ]
+   },
+   "false_per_1000": 2.82,
+   "false_k": 13,
+   "neg_n": 4613,
+   "precision": {
+    "k": 17,
+    "n": 30,
+    "pct": 56.7,
+    "ci95": [
+     39.2,
+     72.6
+    ]
+   },
+   "top_false": {
+    "k20:cupboard": 4,
+    "esc:crackling_fire": 2,
+    "k20:book": 2,
+    "k20:sweep": 2,
+    "esc:door_wood_knock": 1
+   }
+  },
+  "blender": {
+   "recall": {
+    "k": 16,
+    "n": 21,
+    "pct": 76.2,
+    "ci95": [
+     54.9,
+     89.4
+    ]
+   },
+   "false_per_1000": 1.92,
+   "false_k": 13,
+   "neg_n": 6768,
+   "precision": {
+    "k": 16,
+    "n": 29,
+    "pct": 55.2,
+    "ci95": [
+     37.5,
+     71.6
+    ]
+   },
+   "top_false": {
+    "esc:vacuum_cleaner": 4,
+    "syn:none": 3,
+    "esc:chainsaw": 2,
+    "esc:washing_machine": 1,
+    "k20:clean-dishes": 1
+   }
+  },
+  "microwave": {
+   "recall": {
+    "k": 6,
+    "n": 21,
+    "pct": 28.6,
+    "ci95": [
+     13.8,
+     50.0
+    ]
+   },
+   "false_per_1000": 0.74,
+   "false_k": 5,
+   "neg_n": 6794,
+   "precision": {
+    "k": 6,
+    "n": 11,
+    "pct": 54.5,
+    "ci95": [
+     28.0,
+     78.7
+    ]
+   },
+   "top_false": {
+    "syn:timer": 3,
+    "k20:stove-fan": 1,
+    "sins:cooking": 1
+   }
+  },
+  "dishes": {
+   "recall": {
+    "k": 65,
+    "n": 107,
+    "pct": 60.7,
+    "ci95": [
+     51.3,
+     69.5
+    ]
+   },
+   "false_per_1000": 11.06,
+   "false_k": 49,
+   "neg_n": 4432,
+   "precision": {
+    "k": 65,
+    "n": 114,
+    "pct": 57.0,
+    "ci95": [
+     47.8,
+     65.7
+    ]
+   },
+   "top_false": {
+    "esc:glass_breaking": 15,
+    "sins:watching_tv": 11,
+    "sins:social_activity": 8,
+    "esc:engine": 5,
+    "sins:working": 4
+   }
+  },
+  "tap": {
+   "recall": {
+    "k": 55,
+    "n": 71,
+    "pct": 77.5,
+    "ci95": [
+     66.5,
+     85.6
+    ]
+   },
+   "false_per_1000": 5.97,
+   "false_k": 27,
+   "neg_n": 4525,
+   "precision": {
+    "k": 55,
+    "n": 82,
+    "pct": 67.1,
+    "ci95": [
+     56.3,
+     76.3
+    ]
+   },
+   "top_false": {
+    "syn:none": 9,
+    "syn:t3": 8,
+    "syn:t4": 3,
+    "esc:toilet_flush": 2,
+    "syn:timer": 2
+   }
+  },
+  "cupboard": {
+   "recall": {
+    "k": 0,
+    "n": 56,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     6.4
+    ]
+   },
+   "false_per_1000": 10.03,
+   "false_k": 46,
+   "neg_n": 4586,
+   "precision": {
+    "k": 0,
+    "n": 46,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     7.7
+    ]
+   },
+   "top_false": {
+    "sins:working": 21,
+    "sins:social_activity": 16,
+    "sins:absence": 8,
+    "sins:watching_tv": 1
+   }
+  },
+  "door": {
+   "recall": {
+    "k": 2,
+    "n": 26,
+    "pct": 7.7,
+    "ci95": [
+     2.1,
+     24.1
+    ]
+   },
+   "false_per_1000": 11.45,
+   "false_k": 52,
+   "neg_n": 4541,
+   "precision": {
+    "k": 2,
+    "n": 54,
+    "pct": 3.7,
+    "ci95": [
+     1.0,
+     12.5
+    ]
+   },
+   "top_false": {
+    "sins:working": 20,
+    "sins:social_activity": 16,
+    "sins:absence": 11,
+    "k20:book": 2,
+    "sins:watching_tv": 2
+   }
+  },
+  "alarm": {
+   "recall": {
+    "k": 116,
+    "n": 136,
+    "pct": 85.3,
+    "ci95": [
+     78.4,
+     90.3
+    ]
+   },
+   "false_per_1000": 33.92,
+   "false_k": 225,
+   "neg_n": 6634,
+   "precision": {
+    "k": 116,
+    "n": 341,
+    "pct": 34.0,
+    "ci95": [
+     29.2,
+     39.2
+    ]
+   },
+   "top_false": {
+    "syn:t3": 112,
+    "syn:t4": 97,
+    "k20:stove-fan": 4,
+    "esc:crickets": 3,
+    "ns7k:laugh": 2
+   }
+  },
+  "tv": {
+   "recall": {
+    "k": 396,
+    "n": 500,
+    "pct": 79.2,
+    "ci95": [
+     75.4,
+     82.5
+    ]
+   },
+   "false_per_1000": 1.51,
+   "false_k": 9,
+   "neg_n": 5945,
+   "precision": {
+    "k": 396,
+    "n": 405,
+    "pct": 97.8,
+    "ci95": [
+     95.8,
+     98.8
+    ]
+   },
+   "top_false": {
+    "syn:timer": 5,
+    "syn:none": 3,
+    "sins:working": 1
+   }
+  },
+  "vacuum": {
+   "recall": {
+    "k": 434,
+    "n": 439,
+    "pct": 98.9,
+    "ci95": [
+     97.4,
+     99.5
+    ]
+   },
+   "false_per_1000": 10.66,
+   "false_k": 68,
+   "neg_n": 6376,
+   "precision": {
+    "k": 434,
+    "n": 502,
+    "pct": 86.5,
+    "ci95": [
+     83.2,
+     89.2
+    ]
+   },
+   "top_false": {
+    "syn:none": 29,
+    "syn:t3": 11,
+    "sins:dishwashing": 8,
+    "syn:t4": 8,
+    "syn:timer": 5
+   }
+  },
+  "typing": {
+   "recall": {
+    "k": 152,
+    "n": 535,
+    "pct": 28.4,
+    "ci95": [
+     24.8,
+     32.4
+    ]
+   },
+   "false_per_1000": 8.46,
+   "false_k": 53,
+   "neg_n": 6262,
+   "precision": {
+    "k": 152,
+    "n": 205,
+    "pct": 74.1,
+    "ci95": [
+     67.7,
+     79.7
+    ]
+   },
+   "top_false": {
+    "syn:t3": 8,
+    "sins:social_activity": 6,
+    "syn:t4": 6,
+    "syn:timer": 6,
+    "sins:cooking": 4
+   }
+  },
+  "footsteps": {
+   "recall": {
+    "k": 13,
+    "n": 22,
+    "pct": 59.1,
+    "ci95": [
+     38.7,
+     76.7
+    ]
+   },
+   "false_per_1000": 2.07,
+   "false_k": 13,
+   "neg_n": 6287,
+   "precision": {
+    "k": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "top_false": {
+    "k20:book": 4,
+    "sins:cooking": 4,
+    "k20:chopping": 2,
+    "k20:eat": 2,
+    "syn:none": 1
+   }
+  },
+  "glass": {
+   "recall": {
+    "k": 14,
+    "n": 15,
+    "pct": 93.3,
+    "ci95": [
+     70.2,
+     98.8
+    ]
+   },
+   "false_per_1000": 1.48,
+   "false_k": 10,
+   "neg_n": 6779,
+   "precision": {
+    "k": 14,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "top_false": {
+    "k20:cutlery": 8,
+    "esc:can_opening": 1,
+    "k20:drawer": 1
+   }
+  }
+ },
+ "v2_head": {
+  "kettle": {
+   "recall": {
+    "k": 9,
+    "n": 22,
+    "pct": 40.9,
+    "ci95": [
+     23.3,
+     61.3
+    ]
+   },
+   "false_per_1000": 0.0,
+   "false_k": 0,
+   "neg_n": 4631,
+   "precision": {
+    "k": 9,
+    "n": 9,
+    "pct": 100.0,
+    "ci95": [
+     70.1,
+     100
+    ]
+   },
+   "top_false": {},
+   "shown": true
+  },
+  "frying": {
+   "recall": {
+    "k": 41,
+    "n": 44,
+    "pct": 93.2,
+    "ci95": [
+     81.8,
+     97.7
+    ]
+   },
+   "false_per_1000": 1.31,
+   "false_k": 6,
+   "neg_n": 4579,
+   "precision": {
+    "k": 41,
+    "n": 47,
+    "pct": 87.2,
+    "ci95": [
+     74.8,
+     94.0
+    ]
+   },
+   "top_false": {
+    "esc:crackling_fire": 2,
+    "k20:clean-dishes": 2,
+    "k20:water-flowing": 2
+   },
+   "shown": false
+  },
+  "chopping": {
+   "recall": {
+    "k": 12,
+    "n": 22,
+    "pct": 54.5,
+    "ci95": [
+     34.7,
+     73.1
+    ]
+   },
+   "false_per_1000": 0.0,
+   "false_k": 0,
+   "neg_n": 4613,
+   "precision": {
+    "k": 12,
+    "n": 12,
+    "pct": 100.0,
+    "ci95": [
+     75.7,
+     100
+    ]
+   },
+   "top_false": {},
+   "shown": true
+  },
+  "blender": {
+   "recall": {
+    "k": 0,
+    "n": 21,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     15.5
+    ]
+   },
+   "false_per_1000": 0.0,
+   "false_k": 0,
+   "neg_n": 6768,
+   "precision": {
+    "k": 0,
+    "n": 0,
+    "pct": null,
+    "ci95": null
+   },
+   "top_false": {},
+   "shown": false
+  },
+  "microwave": {
+   "recall": {
+    "k": 19,
+    "n": 21,
+    "pct": 90.5,
+    "ci95": [
+     71.1,
+     97.3
+    ]
+   },
+   "false_per_1000": 0.59,
+   "false_k": 4,
+   "neg_n": 6794,
+   "precision": {
+    "k": 19,
+    "n": 23,
+    "pct": 82.6,
+    "ci95": [
+     62.9,
+     93.0
+    ]
+   },
+   "top_false": {
+    "k20:stove-fan": 2,
+    "esc:washing_machine": 1,
+    "k20:juicer": 1
+   },
+   "shown": false
+  },
+  "dishes": {
+   "recall": {
+    "k": 94,
+    "n": 107,
+    "pct": 87.9,
+    "ci95": [
+     80.3,
+     92.8
+    ]
+   },
+   "false_per_1000": 2.93,
+   "false_k": 13,
+   "neg_n": 4432,
+   "precision": {
+    "k": 94,
+    "n": 107,
+    "pct": 87.9,
+    "ci95": [
+     80.3,
+     92.8
+    ]
+   },
+   "top_false": {
+    "k20:drawer": 4,
+    "k20:water-flowing": 3,
+    "esc:drinking_sipping": 1,
+    "esc:glass_breaking": 1,
+    "esc:hand_saw": 1
+   },
+   "shown": false
+  },
+  "tap": {
+   "recall": {
+    "k": 44,
+    "n": 71,
+    "pct": 62.0,
+    "ci95": [
+     50.3,
+     72.4
+    ]
+   },
+   "false_per_1000": 0.44,
+   "false_k": 2,
+   "neg_n": 4525,
+   "precision": {
+    "k": 44,
+    "n": 46,
+    "pct": 95.7,
+    "ci95": [
+     85.5,
+     98.8
+    ]
+   },
+   "top_false": {
+    "k20:frying-pan": 2
+   },
+   "shown": true
+  },
+  "cupboard": {
+   "recall": {
+    "k": 46,
+    "n": 56,
+    "pct": 82.1,
+    "ci95": [
+     70.2,
+     90.0
+    ]
+   },
+   "false_per_1000": 0.22,
+   "false_k": 1,
+   "neg_n": 4586,
+   "precision": {
+    "k": 46,
+    "n": 47,
+    "pct": 97.9,
+    "ci95": [
+     88.9,
+     99.6
+    ]
+   },
+   "top_false": {
+    "k20:dishwasher": 1
+   },
+   "shown": true
+  },
+  "door": {
+   "recall": {
+    "k": 2,
+    "n": 26,
+    "pct": 7.7,
+    "ci95": [
+     2.1,
+     24.1
+    ]
+   },
+   "false_per_1000": 0.0,
+   "false_k": 0,
+   "neg_n": 4541,
+   "precision": {
+    "k": 2,
+    "n": 2,
+    "pct": 100.0,
+    "ci95": [
+     34.2,
+     100
+    ]
+   },
+   "top_false": {},
+   "shown": false
+  },
+  "alarm": {
+   "recall": {
+    "k": 126,
+    "n": 136,
+    "pct": 92.6,
+    "ci95": [
+     87.0,
+     96.0
+    ]
+   },
+   "false_per_1000": 1.36,
+   "false_k": 9,
+   "neg_n": 6634,
+   "precision": {
+    "k": 126,
+    "n": 135,
+    "pct": 93.3,
+    "ci95": [
+     87.8,
+     96.5
+    ]
+   },
+   "top_false": {
+    "syn:t4": 4,
+    "syn:t3": 3,
+    "esc:rooster": 1,
+    "k20:stove-fan": 1
+   },
+   "shown": true
+  },
+  "tv": {
+   "recall": {
+    "k": 458,
+    "n": 500,
+    "pct": 91.6,
+    "ci95": [
+     88.8,
+     93.7
+    ]
+   },
+   "false_per_1000": 4.04,
+   "false_k": 24,
+   "neg_n": 5945,
+   "precision": {
+    "k": 458,
+    "n": 482,
+    "pct": 95.0,
+    "ci95": [
+     92.7,
+     96.6
+    ]
+   },
+   "top_false": {
+    "syn:timer": 4,
+    "esc:clapping": 3,
+    "sins:working": 3,
+    "syn:t4": 3,
+    "ns7k:laugh": 2
+   },
+   "shown": true
+  },
+  "vacuum": {
+   "recall": {
+    "k": 439,
+    "n": 439,
+    "pct": 100.0,
+    "ci95": [
+     99.1,
+     100.0
+    ]
+   },
+   "false_per_1000": 8.63,
+   "false_k": 55,
+   "neg_n": 6376,
+   "precision": {
+    "k": 439,
+    "n": 494,
+    "pct": 88.9,
+    "ci95": [
+     85.8,
+     91.3
+    ]
+   },
+   "top_false": {
+    "syn:none": 29,
+    "syn:t4": 4,
+    "esc:chainsaw": 3,
+    "k20:blender": 3,
+    "esc:rooster": 2
+   },
+   "shown": false
+  },
+  "typing": {
+   "recall": {
+    "k": 235,
+    "n": 535,
+    "pct": 43.9,
+    "ci95": [
+     39.8,
+     48.2
+    ]
+   },
+   "false_per_1000": 1.92,
+   "false_k": 12,
+   "neg_n": 6262,
+   "precision": {
+    "k": 235,
+    "n": 247,
+    "pct": 95.1,
+    "ci95": [
+     91.7,
+     97.2
+    ]
+   },
+   "top_false": {
+    "sins:other": 8,
+    "sins:social_activity": 2,
+    "sins:dishwashing": 1,
+    "sins:watching_tv": 1
+   },
+   "shown": true
+  },
+  "footsteps": {
+   "recall": {
+    "k": 16,
+    "n": 22,
+    "pct": 72.7,
+    "ci95": [
+     51.8,
+     86.8
+    ]
+   },
+   "false_per_1000": 0.16,
+   "false_k": 1,
+   "neg_n": 6287,
+   "precision": {
+    "k": 16,
+    "n": 17,
+    "pct": 94.1,
+    "ci95": [
+     73.0,
+     99.0
+    ]
+   },
+   "top_false": {
+    "k20:book": 1
+   },
+   "shown": true
+  },
+  "glass": {
+   "recall": {
+    "k": 15,
+    "n": 15,
+    "pct": 100.0,
+    "ci95": [
+     79.6,
+     100
+    ]
+   },
+   "false_per_1000": 0.59,
+   "false_k": 4,
+   "neg_n": 6779,
+   "precision": {
+    "k": 15,
+    "n": 19,
+    "pct": 78.9,
+    "ci95": [
+     56.7,
+     91.5
+    ]
+   },
+   "top_false": {
+    "k20:cutlery": 3,
+    "esc:can_opening": 1
+   },
+   "shown": false
+  }
+ }
+}

@@ -54,7 +54,7 @@ KINDS = {
     "cupboard":  ("Cupboards and drawers", [362, 363], [], ["absence", "watching_tv", "vacuum_cleaner"], []),
     "door":      ("A door", [354, 357], [], ["absence", "watching_tv", "vacuum_cleaner"], ["door_wood_creaks"]),
     "alarm":     ("Timer or appliance beep", [481, 398, 395], [], ["absence", "vacuum_cleaner"], ["clock_alarm"]),
-    "tv":        ("TV or radio", [524, 525], ["watching_tv"], ["absence", "vacuum_cleaner", "dishwashing"], []),
+    "tv":        ("Talking / TV", [524, 525], ["watching_tv"], ["absence", "vacuum_cleaner", "dishwashing"], []),
     "vacuum":    ("Vacuum cleaner", [377], ["vacuum_cleaner"], [c for c in CLASSES if c != "vacuum_cleaner"], ["vacuum_cleaner"]),
     "typing":    ("Typing", [384, 386], ["working"], ["absence", "cooking", "dishwashing", "vacuum_cleaner", "watching_tv"], ["keyboard_typing"]),
     "footsteps": ("Footsteps", [53], [], ["absence", "vacuum_cleaner"], ["footsteps"]),
@@ -67,11 +67,14 @@ CONTEXT = {
     "tap":       {"beat": [367, 490]},                                   # frying hiss reads as water
     "microwave": {"min": 0.5, "beat": [377, 412, 413, 343]},             # vacuum, fan, air conditioning, engine hum
 }
-SHOWN_FILE = ROOT / "results" / "sounds.json"      # eval/sounds.py: which names passed the pre-registered bar
+SHOWN_FILE = ROOT / "results" / "sounds.json"      # eval/sounds.py: which names passed the pre-registered bar (v1 rules)
+SHOWN_V2 = ROOT / "results" / "sound_head.json"    # eval/sound_head.py: the trained head (v2), which replaced v1 where it exists
 
 
 def shown_ids() -> dict:
-    """Pass/fail per sound from the last eval/sounds.py run (all shown until it has run)."""
+    """Pass/fail per sound from the last eval/sound_head.py run, else eval/sounds.py (all shown until either has run)."""
+    if SHOWN_V2.exists():
+        return {k: v["shown"] for k, v in json.loads(SHOWN_V2.read_text())["v2_head"].items()}
     if not SHOWN_FILE.exists():
         return {}
     return {k: v["shown"] for k, v in json.loads(SHOWN_FILE.read_text())["after"].items()}

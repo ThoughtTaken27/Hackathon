@@ -176,7 +176,7 @@ export function legend(root) {
     if (k === key) return; key = k;
     lg.textContent = "";
     for (const a of acts) lg.append(el("span", {}, el("i", { style: `background:var(${COLOUR[a]})` }), DISPLAY[a]));
-    for (const [st, name] of [["talk_or_tv", "Talking or TV"], ["not_sure", "Not sure"], ["not_listening", "Not listening"], ["paused", "Paused"], ["private", "Private"]])
+    for (const [st, name] of [["talk_or_tv", "Talking / TV"], ["not_sure", "Not sure"], ["not_listening", "Not listening"], ["paused", "Paused"], ["private", "Private"]])
       if (states.has(st)) lg.append(el("span", {}, el("i", { class: `blk ${st}`, style: "position:static;display:inline-block" }), name));
     if (states.has("empty")) lg.append(el("span", {}, el("i", { style: "height:2px;background:var(--act-empty);vertical-align:3px" }), "Quiet"));
     lg.hidden = !lg.children.length;

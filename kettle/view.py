@@ -88,7 +88,7 @@ def block_view(b: dict, now: float) -> dict:
         why = timeline.WHY_TEXT[b.get("why", "low")]
         out["card"] = f"Not sure · {rng} · Kettle heard something but couldn't tell what: {why}. Closest guesses: {g}."
     elif b["state"] == "talk_or_tv":
-        out["card"] = (f"Talking or TV · {rng} · Kettle heard voices and can't tell talking from the TV here. "
+        out["card"] = (f"Talking / TV · {rng} · Kettle heard voices and can't tell people talking from the TV or radio here. "
                        "It never keeps words.")
     elif b["state"] == "not_listening":
         out["card"] = f"Not listening · {rng} · Kettle can't say what happened here."
@@ -134,7 +134,7 @@ def today(s: dict, now: float, theta: float, demo: dict | None = None) -> dict:
         lab = timeline.raw_label(chip, theta)            # the same rule as the day bar, so the chip never disagrees with it
         if lab == "kitchen":
             lab = witness.name_kitchen([chip])           # rule 2c on this one window
-        chip_text = {"not_sure": "Not sure what that is", "absence": "Quiet", "talk_or_tv": "Sounds like talking or TV"}.get(lab) \
+        chip_text = {"not_sure": "Not sure what that is", "absence": "Quiet", "talk_or_tv": "Sounds like talking / TV"}.get(lab) \
             or f"Sounds like {PHRASE[lab]}"
     return {
         "now": now, "now_text": clock(now, now), "day0": day0, "tz_offset": tz,

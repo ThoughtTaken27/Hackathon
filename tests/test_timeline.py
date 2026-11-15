@@ -60,7 +60,7 @@ def test_summary_facts_equal_blocks():
     b = timeline.blocks(events, TH)
     s = timeline.summary(b, tz)
     assert s.startswith("So far today: cooking around 8:00–8:30 AM")
-    assert "washing up around 8:30–8:40 AM" in s and "TV from about 9:00 AM" in s      # the block is 8:30-8:40; the summary says the same
+    assert "washing up around 8:30–8:40 AM" in s and "talking / TV from about 9:00 AM" in s      # the block is 8:30-8:40; the summary says the same
     for word in ("ate", "eating", "fine", "normal", "safe"):
         assert word not in s.lower()
 

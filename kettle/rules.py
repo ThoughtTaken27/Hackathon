@@ -88,7 +88,7 @@ def _one(r: dict, blocks: list[dict], now: float, day0: float, tz: int, ctx: dic
     first = next((b for b in sorted(blocks, key=lambda b: b["start"])
                   if _counts(r, b) and b["end"] > start and b["start"] < deadline and b["start"] <= now), None)
     if first:
-        what = PHRASE[first["activity"]] if first["activity"] else "talking or TV"
+        what = PHRASE[first["activity"]] if first["activity"] else "talking / TV"
         sure = "high" if (first.get("conf") or 0) >= 0.8 else "medium"
         return {"state": "met", "at": first["start"], "detail": f"Met at {_clock(first['start'], tz)} ({what}, how sure: {sure})",
                 "note": None}

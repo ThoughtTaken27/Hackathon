@@ -207,6 +207,8 @@ def main() -> None:
          "v1_rules": before, "v2_head": after}
     OUT.write_text(json.dumps(R, indent=1))
     MODEL.write_text(json.dumps(export(H, shown)))
+    cfg["kinds"] = [{**k, "shown": bool(shown.get(k["id"], False))} for k in cfg["kinds"]]   # what eval/beyond.py shown_ids() also reads
+    VETO_FROM.write_text(json.dumps(cfg))
     print("\nTEST (once)")
     for k in POS:
         b, a = before[k], after[k]

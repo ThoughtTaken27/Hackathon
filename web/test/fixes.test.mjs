@@ -175,10 +175,14 @@ test("handover 3.5: no voice tag is on the sound-name allow-list, so the server 
 
 test("handover 3.1: a check on a hidden sound says Can't tell, never missed; a kettle needs 2 windows", async () => {
   const { evaluateRules: ev2, KINDS_SHOWN, KIND_MIN_WINDOWS } = await import("../public/js/core.js");
-  assert.ok(!KINDS_SHOWN.has("kettle") && KIND_MIN_WINDOWS.kettle === 2);
+  assert.ok(!KINDS_SHOWN.has("frying") && KIND_MIN_WINDOWS.kettle === 2);
   const day0 = 1_800_000_000 - (1_800_000_000 % 86400);
   const blk = (kinds) => ({ start: day0 + 7 * 3600, end: day0 + 7 * 3600 + 60, state: "activity", activity: "cooking", conf: 0.9, kinds });
-  const r = [{ id: "r1", type: "kind_by", kind: "kettle", time: "09:00" }];
-  const out = ev2(r, [blk({ kettle: { n: 3, at: day0 + 7 * 3600 } })], day0 + 10 * 3600, day0, 0);
+  const r = [{ id: "r1", type: "kind_by", kind: "frying", time: "09:00" }];
+  const out = ev2(r, [blk({ frying: { n: 3, at: day0 + 7 * 3600 } })], day0 + 10 * 3600, day0, 0);
   assert.equal(out[0].state, "cant_tell");
+  // the kettle passed the v2 bar (results/sound_head.json): one stray window is not enough, two are
+  const k = [{ id: "r2", type: "kind_by", kind: "kettle", time: "09:00" }];
+  assert.notEqual(ev2(k, [blk({ kettle: { n: 1, at: day0 + 7 * 3600 } })], day0 + 7.5 * 3600, day0, 0)[0].state, "met");
+  assert.equal(ev2(k, [blk({ kettle: { n: 2, at: day0 + 7 * 3600 } })], day0 + 7.5 * 3600, day0, 0)[0].state, "met");
 });

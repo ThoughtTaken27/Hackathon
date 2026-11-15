@@ -25,7 +25,7 @@ DISPLAY: dict[str, str] = {
     "other": "Some activity",
     "social_activity": "Conversation",
     "vacuum_cleaner": "Vacuuming",
-    "watching_tv": "TV",
+    "watching_tv": "Talking / TV",
     "working": "Typing",
     "kitchen": "Kitchen activity",      # not a head class: a stretch the general tags heard as kitchen, without saying which
 }
@@ -39,7 +39,7 @@ PHRASE: dict[str, str] = {
     "other": "some activity",
     "social_activity": "conversation",
     "vacuum_cleaner": "vacuuming",
-    "watching_tv": "TV",
+    "watching_tv": "talking / TV",
     "working": "typing",
     "kitchen": "kitchen activity",
 }
@@ -64,5 +64,5 @@ MEAL: set[str] = {"cooking", "dishwashing", "eating", "kitchen"}
 # Anything that is not "Quiet" counts as "some sound of activity".
 ACTIVE: set[str] = (set(CLASSES) | {"kitchen"}) - {"absence"}
 
-# When TV and Conversation are this close, the screen says "Talking or TV" instead of guessing.
+# When TV and Conversation are this close, the screen says "Talking / TV" instead of guessing.
 TALK_OR_TV_MARGIN: float = 0.15

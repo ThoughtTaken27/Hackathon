@@ -72,7 +72,7 @@ def test_sound_context_rules_python_twin():
     """Handover 3.1: kettle/kinds.py named() applies the same context rules and hides sounds that missed the bar."""
     from kettle import kinds
     a = np.zeros(527)
-    a[456], a[524] = 0.5, 0.6                      # boiling + television: kettle hidden, TV shown
+    a[367], a[524] = 0.5, 0.6                      # frying + television: frying hidden (missed the bar), TV shown
     assert [k["id"] for k in kinds.named(a)] == ["tv"]
     b = np.zeros(527)
     b[367], b[456], b[370] = 0.6, 0.3, 0.2         # frying louder than boiling and the tap

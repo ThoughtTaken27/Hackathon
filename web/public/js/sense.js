@@ -12,9 +12,24 @@ import { CLASSES } from "./core.js";
 
 export const THETA = 0.66;
 
-/** kinds.json + enrol.json -> the constants refine() needs. */
-export function prepareSense(kinds, enrolCfg) {
-  return { ...kinds, enrol: enrolCfg, byId: Object.fromEntries(kinds.kinds.map((k) => [k.id, k])) };
+/** kinds.json + enrol.json (+ sound_head.json) -> the constants refine() needs. */
+export function prepareSense(kinds, enrolCfg, soundHead = null) {
+  const heads = soundHead && soundHead.heads ? soundHead.heads : {};
+  return { ...kinds, enrol: enrolCfg, heads, byId: Object.fromEntries(kinds.kinds.map((k) => [k.id, k])) };
+}
+
+/** The trained sound head's probability for one sound (eval/sound_head.py, pre-registered v2): logistic regression on the
+ *  embedding [192], or the embedding plus the log-odds of the 527 AudioSet scores. */
+export function headProb(h, emb, as) {
+  let z = h.b;
+  const n = emb.length;
+  for (let i = 0; i < h.w.length; i++) {
+    let x;
+    if (i < n) x = emb[i];
+    else { const p = Math.min(1 - 1e-4, Math.max(1e-4, as[i - n])); x = Math.log(p / (1 - p)); }
+    z += h.w[i] * ((x - h.mean[i]) / h.std[i]);
+  }
+  return 1 / (1 + Math.exp(-z));
 }
 
 /** RMS level of a window in dBFS (digital silence = -Infinity). */
@@ -24,13 +39,23 @@ export function levelDb(wave) {
   return 10 * Math.log10(s / Math.max(1, wave.length));
 }
 
-/** The named sound types a window contains: [{id, name, score}] strongest first (score / its threshold). */
-export function kindsOf(sense, as, off = [], withHidden = false) {
+/** The named sound types a window contains: [{id, name, score}] strongest first.
+ *  With the embedding and a trained head for a sound (sound_head.json), the head decides; otherwise the v1 threshold +
+ *  context rules do. Either way the privacy veto compares AudioSet scores, as before. */
+export function kindsOf(sense, as, off = [], withHidden = false, emb = null) {
   const out = [];
   let top = 0;
   for (const k of sense.kinds) {
     let s = 0;
     for (const i of k.index) s = Math.max(s, as[i]);
+    const h = emb && sense.heads ? sense.heads[k.id] : null;
+    if (h) {
+      const p = headProb(h, emb, as);
+      if (p < h.threshold) continue;
+      top = Math.max(top, s);
+      if (!off.includes(k.id) && (withHidden || h.shown)) out.push({ id: k.id, name: k.name, score: Math.round(p * 1000) / 1000, r: 1 + p });
+      continue;
+    }
     if (s < k.tau || s < (k.min || 0)) continue;
     let rival = 0;                                           // context: e.g. a kettle must be louder than frying, tap and dishes
     for (const i of k.beat || []) rival = Math.max(rival, as[i]);
@@ -127,8 +152,8 @@ export function roomRules(sense, ctx, as, db, r) {
  */
 export function refine(sense, ctx, emb, as, r, db = NaN) {
   const out = roomRules(sense, ctx, as, db, applyEnrolment(sense, ctx.head, ctx.enrolment, emb, r));
-  const named = kindsOf(sense, as, ctx.kindsOff || []);
+  const named = kindsOf(sense, as, ctx.kindsOff || [], false, emb);
   // every name the device computed, including ones hidden for missing the accuracy bar: for on-device safety concerns only, never sent
-  const device = kindsOf(sense, as, [], true).map((k) => k.id);
+  const device = kindsOf(sense, as, [], true, emb).map((k) => k.id);
   return { ...out, novel: !!out.novel, taught: !!out.taught, kinds: named.map((k) => k.id), kindsDevice: device };
 }

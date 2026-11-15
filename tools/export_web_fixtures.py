@@ -57,8 +57,8 @@ def main() -> int:
         s = d["state"]
         evs = [{k: e[k] for k in ("start", "end", "label", "conf", "probs", "novel", "w", "sounds")} for e in s["events"]]
         for e, src in zip(evs, s["events"]):        # the named sound types a kitchen device would add (web/public/js/sense.js)
-            _, scores = encoders.embed(enc, demo.read_clip(src["clip"])[None, :])
-            e["kinds"] = [x["id"] for x in kinds.named(scores[0])]
+            emb, scores = encoders.embed(enc, demo.read_clip(src["clip"])[None, :])
+            e["kinds"] = [x["id"] for x in kinds.named(scores[0], emb=emb[0])]
         pauses = [[demo.at(day0, g["from"]) - day0, demo.at(day0, g["to"]) - day0] for g in sc["segments"] if g.get("pause")]
         days[sid] = {"title": d["title"], "started": demo.at(day0, sc["started"]) - day0,
                      "events": [{**e, "start": round(e["start"] - day0, 1), "end": round(e["end"] - day0, 1)} for e in evs],

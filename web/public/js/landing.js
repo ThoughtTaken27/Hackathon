@@ -34,7 +34,7 @@ function runSteps() {
 // One row of "What Kettle heard": time, colour, label, the named everyday sound (the same allow-list the family sees), confidence.
 function heardRow(x, t) {
   const lab = rawLabel(x, 0.66), ns = lab === "not_sure";       // the same rule the day bar uses
-  const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking or TV" : DISPLAY[lab];
+  const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking / TV" : DISPLAY[lab];
   const sound = (x.kinds || []).map((k) => KIND_NAMES[k]).filter(Boolean)[0] || "";
   return el("li", { class: (ns ? "ns " : "") + "enter", "data-k": String(x.end) },
     el("span", { class: "t num", text: clock(x.end, t.tz_offset) }),
@@ -88,7 +88,7 @@ const views = [
     el("span", { class: "su-chip" }, "Sounds like cooking", meter()),
     el("div", { class: "su-list" }, el("p", {}, el("span", { text: "Sound, 10 seconds" }), el("b", { text: "dropped" })), el("p", {}, el("span", { text: "Label sent to the family" }), el("b", { text: "Cooking, 8:05 AM" })))],
   () => { const box = el("div"); const holder = [el("p", { class: "su-k", text: "Your phone" }), el("p", { class: "su-h", text: "The kitchen today" }),
-    el("p", { class: "su-p", id: "su-sum", text: "So far today: cooking around 8:05 AM, eating around 8:30 AM and TV from about 9:30 AM." }), box, el("div", { class: "lp-rules", id: "su-rules", style: "grid-template-columns:1fr" })];
+    el("p", { class: "su-p", id: "su-sum", text: "So far today: cooking around 8:05 AM, eating around 8:30 AM and talking / TV from about 9:30 AM." }), box, el("div", { class: "lp-rules", id: "su-rules", style: "grid-template-columns:1fr" })];
     flowBar = dayBar(box); return holder; },
 ];
 let flowFrames = null;

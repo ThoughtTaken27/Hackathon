@@ -307,7 +307,7 @@ def _span(b: dict, tz: int) -> str:
     a, z = _round5(b["start"]), _round5(b["end"])
     name = PHRASE[b["activity"]]
     if b["activity"] == "watching_tv" and z - a >= 3600:
-        return f"TV from about {_clock(a, tz)}"
+        return f"talking / TV from about {_clock(a, tz)}"
     if z - a < 600:
         return f"{name} around {_clock(a, tz)}"
     return f"{name} around {clock_range(a, z, tz)}"
@@ -317,7 +317,7 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
     """The calm one-line summary built only from the blocks (never invents an activity).
 
     "So far today: cooking around 8:00–8:30, washing up around 8:45, TV from about 9:15."
-    Only activity blocks count; Quiet, Not sure, Talking or TV, gaps and pauses are left out.
+    Only activity blocks count; Quiet, Not sure, Talking / TV, gaps and pauses are left out.
     Same activity within 15 minutes is merged; at most the 3 most recent items are listed.
     """
     acts = [b for b in blks if b["state"] == "activity"]
@@ -350,10 +350,10 @@ def summary(blks: list[dict], tz_offset_s: int, listening_since: float | None = 
 
 def label_name(label: str) -> str:
     """A window label in words: an activity name, 'Not sure' or 'Talking or TV'."""
-    return {"not_sure": "Not sure", "talk_or_tv": "Talking or TV"}.get(label) or DISPLAY[label]
+    return {"not_sure": "Not sure", "talk_or_tv": "Talking / TV"}.get(label) or DISPLAY[label]
 
 
 def display_name(b: dict) -> str:
     """The label drawn on a block."""
-    return {"not_sure": "Not sure", "talk_or_tv": "Talking or TV", "not_listening": "Not listening", "private": "Private",
+    return {"not_sure": "Not sure", "talk_or_tv": "Talking / TV", "not_listening": "Not listening", "private": "Private",
             "paused": "Paused"}.get(b["state"]) or DISPLAY[b["activity"]]

@@ -5,9 +5,9 @@
 // ---------------------------------------------------------------- labels
 export const CLASSES = ["absence", "cooking", "dishwashing", "eating", "other", "social_activity", "vacuum_cleaner", "watching_tv", "working"];
 export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing", kitchen: "Kitchen activity" };
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "Talking / TV", working: "Typing", kitchen: "Kitchen activity" };
 export const PHRASE = { absence: "quiet", cooking: "cooking", dishwashing: "washing up", eating: "eating", other: "some activity",
-  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing", kitchen: "kitchen activity" };
+  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "talking / TV", working: "typing", kitchen: "kitchen activity" };
 export const COLOUR = { absence: "--act-empty", cooking: "--act-cooking", dishwashing: "--act-washing", eating: "--act-eating",
   other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working", kitchen: "--act-kitchen" };
 export const MEAL = new Set(["cooking", "dishwashing", "eating", "kitchen"]);   // "kitchen": a stretch heard as kitchen, not which activity
@@ -17,12 +17,12 @@ const TALK_OR_TV_MARGIN = 0.15;
 // No pets, phone or doorbell: the same choice as the sound-name allow-list (kettle/evidence_labels.json).
 // Named sounds that passed the pre-registered bar (eval/PREREGISTER-SOUNDS.md -> results/sounds.json; kinds.json "shown").
 // The others are never sent; a check on one says "Can't tell". web/test/fixes.test.mjs keeps this equal to kinds.json.
-export const KINDS_SHOWN = new Set(["tv"]);
+export const KINDS_SHOWN = new Set(["kettle", "chopping", "tap", "cupboard", "alarm", "tv", "typing", "footsteps"]);
 // A kettle check needs the kettle in 2 or more windows of one block (about 20 s), not one stray window (handover v3.2, 3.1).
 export const KIND_MIN_WINDOWS = { kettle: 2 };
 export const KIND_NAMES = { kettle: "Kettle or a hot drink", frying: "Frying or sizzling", chopping: "Chopping", blender: "Blender",
   microwave: "Microwave", dishes: "Dishes and cutlery", tap: "Running water", cupboard: "Cupboards and drawers", door: "A door",
-  alarm: "Timer or appliance beep", tv: "TV or radio", vacuum: "Vacuum cleaner", typing: "Typing", footsteps: "Footsteps", glass: "Glass breaking" };
+  alarm: "Timer or appliance beep", tv: "Talking / TV", vacuum: "Vacuum cleaner", typing: "Typing", footsteps: "Footsteps", glass: "Glass breaking" };
 // Labels the parent may keep private (plan D2): they reveal visits and TV habits.
 export const HIDEABLE = ["social_activity", "watching_tv"];
 export const WHY_TEXT = { veto: "a machine or bathroom sound was louder than any kitchen sound", novel: "a sound unlike anything it learned",
@@ -282,7 +282,7 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
 const round5 = (t) => pyRound(t / 300) * 300;      // 5 minutes, so the summary agrees with the bar and the checks
 function span(b, off) {
   const a = round5(b.start), z = round5(b.end), name = PHRASE[b.activity];
-  if (b.activity === "watching_tv" && z - a >= 3600) return `TV from about ${clock(a, off)}`;
+  if (b.activity === "watching_tv" && z - a >= 3600) return `talking / TV from about ${clock(a, off)}`;
   if (z - a < 600) return `${name} around ${clock(a, off)}`;
   return `${name} around ${clockRange(a, z, off)}`;
 }
@@ -311,7 +311,7 @@ export function summary(blks, off, listeningSince = null) {
   return text;
 }
 export function displayName(b) {
-  return { not_sure: "Not sure", talk_or_tv: "Talking or TV", not_listening: "Not listening", paused: "Paused", private: "Private" }[b.state] || DISPLAY[b.activity];
+  return { not_sure: "Not sure", talk_or_tv: "Talking / TV", not_listening: "Not listening", paused: "Paused", private: "Private" }[b.state] || DISPLAY[b.activity];
 }
 
 // ---------------------------------------------------------------- rules (kettle/rules.py)
@@ -343,21 +343,22 @@ function dur(seconds) {
   return h && m ? `${h} h ${m} min` : h ? `${h} h` : `${m} min`;
 }
 const byStart = (blks) => blks.slice().sort((a, b) => a.start - b.start);
+const lcFirst = (s) => s.charAt(0).toLowerCase() + s.slice(1);     // "Talking / TV" -> "talking / TV"
 function ruleOne(r, blks, now, day0, off, hidden = [], ctx = {}) {
   if (r.type === "concern") return concernOne(r, blks, now, day0, off, hidden, ctx);
   if (r.type === "tv_over") return ruleTv(r, blks, now, day0, off, hidden);
   if (r.type === "kind_by" && !KINDS_SHOWN.has(r.kind))
-    return { state: "cant_tell", at: null, detail: `Can't tell: Kettle can't name "${(KIND_NAMES[r.kind] || r.kind).toLowerCase()}" reliably yet (it missed our accuracy bar), so this check is paused.`, note: null };
+    return { state: "cant_tell", at: null, detail: `Can't tell: Kettle can't name "${lcFirst(KIND_NAMES[r.kind] || r.kind)}" reliably yet (it missed our accuracy bar), so this check is paused.`, note: null };
   const [h, m] = r.time.split(":").map(Number);
   const deadline = day0 + h * 3600 + m * 60;
   const start = Math.min(day0 + WINDOW_START_H * 3600, deadline - 3600);
   const first = byStart(blks).find((b) => counts(r, b) && b.end > start && b.start < deadline && b.start <= now);
   if (first && r.type === "kind_by") {
     const at = Math.max(first.kinds[r.kind].at, first.start);
-    return { state: "met", at, detail: `Met at ${clock(at, off)} (${KIND_NAMES[r.kind].toLowerCase()} heard)`, note: null };
+    return { state: "met", at, detail: `Met at ${clock(at, off)} (${lcFirst(KIND_NAMES[r.kind])} heard)`, note: null };
   }
   if (first) {
-    const what = first.activity ? PHRASE[first.activity] : "talking or TV";
+    const what = first.activity ? PHRASE[first.activity] : "talking / TV";
     const sure = (first.conf || 0) >= 0.8 ? "high" : "medium";
     return { state: "met", at: first.start, detail: `Met at ${clock(first.start, off)} (${what}, how sure: ${sure})`, note: null };
   }
@@ -719,7 +720,7 @@ export function blockView(b, off, names) {
   } else if (b.state === "not_sure") {
     const g = b.guesses.map((x) => `${DISPLAY[x.activity]} ${fmt2(x.p)}`).join(" · ");
     out.card = `Not sure · ${rng} · Kettle heard something but couldn't tell what: ${WHY_TEXT[b.why || "low"]}. Closest guesses: ${g}.`;
-  } else if (b.state === "talk_or_tv") out.card = `Talking or TV · ${rng} · Kettle heard voices and can't tell talking from the TV here. It never keeps words.`;
+  } else if (b.state === "talk_or_tv") out.card = `Talking / TV · ${rng} · Kettle heard voices and can't tell people talking from the TV or radio here. It never keeps words.`;
   else if (b.state === "not_listening") out.card = `Not listening · ${rng} · Kettle can't say what happened here.`;
   else if (b.state === "private") out.card = `Private · ${rng} · ${names.parent} chose not to share this kind of sound.`;
   else if (b.state === "paused") {
@@ -733,7 +734,7 @@ export function chipText(ev, theta, now, live) {
   if (!ev || !live || now - ev.end > 15) return null;
   let lab = rawLabel(ev, theta);               // the same rule as the day bar, so the chip never disagrees with it
   if (lab === "kitchen") lab = nameKitchen([ev]);   // rule 2c on this one window
-  return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking or TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
+  return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking / TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
 }
 
 /**

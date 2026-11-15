@@ -23,7 +23,7 @@ export async function loadModel(onProgress = () => {}) {
   const ort = window.ort;
   ort.env.wasm.wasmPaths = "/vendor/ort/";
   ort.env.wasm.numThreads = 1;
-  const [head, ev, wit, kinds, enrolCfg, safetyCfg] = await Promise.all(["head", "evidence", "witness", "kinds", "enrol", "safety"]
+  const [head, ev, wit, kinds, enrolCfg, safetyCfg, soundHead] = await Promise.all(["head", "evidence", "witness", "kinds", "enrol", "safety", "sound_head"]
     .map((n) => fetch(`/model/${n}.json`).then((r) => { if (!r.ok) throw new Error("model download failed"); return r.json(); })));
   const front = await ort.InferenceSession.create(new Uint8Array(await (await fetch("/model/logmel.onnx")).arrayBuffer()), { executionProviders: ["wasm"] });
   const res = await fetch("/model/ced-tiny.onnx");
@@ -40,7 +40,7 @@ export async function loadModel(onProgress = () => {}) {
   for (const p of parts) { buf.set(p, o); o += p.length; }
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
-  const sense = prepareSense(kinds, enrolCfg);
+  const sense = prepareSense(kinds, enrolCfg, soundHead);
   // AudioSet classes 0 Speech, 4 Conversation, 5 Narration/monologue, 70 Hubbub: used on this device only, never sent,
   // so the voices rule keeps working if voice names leave the shown-sounds allow-list (handover v3.2, 3.5).
   sense.speech = [0, 4, 5, 70];

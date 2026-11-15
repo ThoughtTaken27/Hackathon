@@ -427,7 +427,7 @@ function checkScreen(n) {
   if (!c) return { state: "listening", stepK: 3, head: "Quick sound check", body: ["Run the tap, or clink two plates together, for about 10 seconds.", "Kettle will say what it heard."],
     guide: el("div", { class: "k-check" }, meterEl, el("p", { class: "g-s", text: "Listening. The answer appears within 10 seconds." })),
     controls: [button("Skip the sound check", toTeachOffer, "quiet-k")] };
-  const name = c.label === "not_sure" ? "something it couldn't name" : c.label === "talk_or_tv" ? "talking or TV" : (DISPLAY[c.label] || c.label).toLowerCase();
+  const name = c.label === "not_sure" ? "something it couldn't name" : c.label === "talk_or_tv" ? "talking / TV" : (DISPLAY[c.label] || c.label).toLowerCase();
   if (MEAL.has(c.label)) return { state: "listening", stepK: 3, done: true, head: `Kettle heard ${name}.`,
     body: [`This spot works. ${n.caregiver} will see moments like this on the timeline, never the sound itself.`],
     controls: [button("Next", toTeachOffer, "primary")] };
@@ -452,7 +452,7 @@ function exampleBar() {
     { start: 6 * 3600, end: 7.6 * 3600, state: "empty", activity: "absence", label: "Quiet", range: "" },
     { start: 8 * 3600, end: 8.4 * 3600, state: "activity", activity: "cooking", label: "Cooking", range: "", how_sure: "high" },
     { start: 8.45 * 3600, end: 8.75 * 3600, state: "activity", activity: "dishwashing", label: "Washing up", range: "", how_sure: "high" },
-    { start: 9.2 * 3600, end: 10.6 * 3600, state: "activity", activity: "watching_tv", label: "TV", range: "", how_sure: "high" }] };
+    { start: 9.2 * 3600, end: 10.6 * 3600, state: "activity", activity: "watching_tv", label: "Talking / TV", range: "", how_sure: "high" }] };
   const box = el("div", { class: "example", "aria-label": "Example of the day timeline (not real)" }, el("span", { class: "tag", text: "Example, not real" }), el("div"));
   setTimeout(() => dayBar(box.lastChild).render(fake), 0);
   return (exampleNode = box);
