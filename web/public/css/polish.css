@@ -5,8 +5,8 @@
 
 /* ---------- 1. speed ---------- */
 .lx main *, .lx main *::before, .lx main *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-.lx-panel-wrap { background: rgba(26,27,31,.92); }
-.lx-seg { background: rgba(20,21,25,.96); }
+.lx-panel-wrap { background: rgba(255,255,255,.92); }
+.lx-seg { background:#EFEEEC; }
 .lx-sec .lx-sec-head, .lx-flow, .lx-cards, .lx-stage, .lx-numbers, .lx-faq-grid, .lx-why-in { filter: none !important; }
 .lx-h1 .w { will-change: auto; }
 .lx-hero-in { will-change: opacity, transform; }
@@ -25,7 +25,7 @@
 
 /* ---------- 2. hero demo ---------- */
 .lx-panel { padding: 16px; }
-.lp-top { padding: 2px 4px 14px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.lp-top { padding: 2px 4px 14px; margin-bottom: 14px; border-bottom: 1px solid rgba(28,25,23,0.074); }
 .lp-grid { gap: 12px; align-items: stretch; }
 .lp-card { min-height: 0; padding: 16px; border-radius: 16px; }
 .lp-card-h { margin-bottom: 12px; min-height: 20px; }
@@ -38,8 +38,8 @@
   .lp-heard .conf i { width: 32px; }
 }
 .lp-fam { display: flex; flex-direction: column; }
-.lp-fam .lp-sum { font-size: 15px; line-height: 22px; min-height: 44px; margin: 0 0 12px; color: rgba(255,255,255,.9); }
-.lp-fam .lp-day { border-radius: 16px; background: #141519; box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); padding: 0 14px 6px; }
+.lp-fam .lp-sum { font-size: 15px; line-height: 22px; min-height: 44px; margin: 0 0 12px; color: var(--ink); }
+.lp-fam .lp-day { border-radius: 16px; background: #FFFFFF; box-shadow: inset 0 0 0 1px rgba(28,25,23,0.063); padding: 0 14px 6px; }
 .lp-fam .readout { height: 48px; margin: 0 -8px; grid-template-columns: 36px 1fr 36px; }
 .lp-fam .ro-step { width: 36px; height: 36px; }
 .lp-fam .ro-line { font-size: 15px; } .lp-fam .ro-time { font-size: 13px; } .lp-fam .ro-hint { font-size: 13px; }
@@ -73,7 +73,7 @@
 .f-mini.fam .rule .state { font-size: 14px; line-height: 20px; }
 .f-mini.fam .legend { display: none; }
 
-.lp-card-h .num, #lp-count { font-size: 12.5px; line-height: 16px; color: rgba(255,255,255,.5); }
+.lp-card-h .num, #lp-count { font-size: 12.5px; line-height: 16px; color: var(--muted); }
 .fam .ro-hint, .fam .ro-hint > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .fam .ro-body { overflow: hidden; }
 @media (max-width: 600px) {
@@ -96,4 +96,20 @@
   .lx-seg::-webkit-scrollbar { display: none; }
   .lx-seg button { flex: none; scroll-snap-align: center; white-space: nowrap; }
 }
-.f-mini.fam .fam-date { color: rgba(255,255,255,.72); }
+.f-mini.fam .fam-date { color: var(--text); }
+
+/* light theme (Nov 15): the small outlined labels over each section heading read as template chrome; the headings carry the page */
+.lx-label { display: none; }
+/* light theme: secondary pills and the floating setup card sit on scenery, so they get an opaque white body */
+.lx-ghost { background: rgba(255,255,255,.78); box-shadow: inset 0 0 0 1px rgba(28,25,23,.12); color: var(--ink) !important; }
+@media (hover: hover) { .lx-ghost:hover { background: #fff; } }
+.lx-scene-ui { background: rgba(255,255,255,.96); }
+
+/* the main action wears the one warm accent (theme.css --accent); dark ink stays for text */
+.lx-pill, .su-btn, .big-pause { background: var(--accent); color: #fff !important; }
+@media (hover: hover) { .lx-pill:hover { background: var(--accent-press); } }
+.lx-pill { box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 8px 22px -12px rgba(159,63,30,.45); }
+/* small print in the privacy diagram and the not-sure/not-listening marks need more ink on white */
+.viz-flow small { color: var(--muted); font-size: 12px; }
+.lx-stage.scene-day { background-image: url("/img/scene-home.svg"); background-position: center 30%; }
+.stage-caps p { color: rgba(255,255,255,.86); } .stage-caps strong { color: #fff; }   /* captions sit on the low green hills */

@@ -1,6 +1,6 @@
 // Setting up Kettle: three short steps. Who's here -> names -> connect the other screen (code, link, QR).
 import { $, el, api, saveHome, linkFor, qr, copy, reduceMotion } from "./ui.js";
-import { RELATION_LABELS, NAME_CHIPS, ROOMS, place, personName, caregiverName } from "./people.js";
+import { RELATIONS, RELATION_LABELS, ROOMS, place, personName, caregiverName } from "./people.js";
 
 const W = $("#wizard");
 const st = { as: null, relation: null, parent: "", caregiver: "", room: "", roomName: "" };
@@ -42,10 +42,10 @@ function chipGroup(items, onPick, selected) {
 function step2() {
   const err = el("p", { class: "err", role: "alert" });
   const nameField = el("div", { class: "field2" }), careField = el("div", { class: "field2" });
-  const pIn = el("input", { class: "input", value: st.parent, maxlength: 24, autocomplete: "off", id: "p", placeholder: "For example Mom, Dad, Nani, Abuela, or their first name" });
+  const pIn = el("input", { class: "input", value: st.parent, maxlength: 24, autocomplete: "off", id: "p", placeholder: "Their first name, or what you call them" });
   pIn.addEventListener("input", () => { st.parent = pIn.value; });
-  const nameChips = el("div", { class: "row", style: "margin-top:4px" }, NAME_CHIPS.map((v) => el("button", { class: "btn", type: "button", text: v, onclick: () => { pIn.value = v; st.parent = v; } })));
-  nameField.append(el("label", { for: "p", text: "What do you call them?" }), pIn, nameChips, el("p", { class: "hint", text: "Use their first name if you like. Leave it empty and Kettle says \"your parent\" or similar." }));
+  const nameHint = el("p", { class: "hint" });
+  nameField.append(el("label", { for: "p", text: "What do you call them? (optional)" }), pIn, nameHint);
   const cIn = el("input", { class: "input", value: st.caregiver, maxlength: 24, autocomplete: "given-name", id: "c", placeholder: "Your first name" });
   const careLabel = el("label", { for: "c" }), careHint = el("p", { class: "hint" });
   careField.append(careLabel, cIn, careHint);
@@ -57,6 +57,7 @@ function step2() {
   function layout() {
     const self = st.relation === "self";
     nameField.style.display = self ? "none" : "";
+    nameHint.textContent = RELATIONS[st.relation] ? `Leave it empty and Kettle says "${RELATIONS[st.relation].replace(/^Your /, "your ")}".` : "Leave it empty and Kettle uses who they are to you.";
     careLabel.textContent = self ? "Who should Kettle tell if something seems wrong?" : "Your first name";
     cIn.placeholder = self ? "A friend, relative or neighbour's first name" : "Your first name";
     careHint.textContent = self ? "Kettle shows this name on your screen, so you know who can see the timeline." : "They see your name on their screen, so they know exactly who can see the timeline.";

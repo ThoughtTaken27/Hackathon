@@ -63,12 +63,14 @@ function draw() {
   t = computeToday(srv, events, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
   lastDraw = Date.now();
   const n = t.names;
-  document.title = `${n.place} today · Kettle`;
-  const ttl = $("#title"), ttlText = n.place;
+  // titles name the room, never a relationship ("The kitchen today", not "Dad's kitchen"); the name they gave appears only in sentences
+  const ttlText = n.self ? `Your ${n.room}` : n.roomType === "home" ? "At home" : `The ${n.room}`;
+  document.title = `${ttlText} today · Kettle`;
+  const ttl = $("#title");
   if (ttl.dataset.t !== ttlText) { ttl.dataset.t = ttlText; ttl.textContent = `${ttlText} `; ttl.append(el("span", { class: "dim", text: "today" })); }
   const hm = /^(\d+):\d+ (AM|PM)$/.exec(t.now_text || "");
   if (hm && window.kettleSky) window.kettleSky((+hm[1] % 12) + (hm[2] === "PM" ? 12 : 0));
-  setText($("#date"), n.self ? `${t.date_text} · ${t.now_text}` : `${t.date_text} · ${t.now_text}, ${n.parent}'s time`);
+  setText($("#date"), n.self ? `${t.date_text} · ${t.now_text}` : `${t.date_text} · ${t.now_text} there`);
   $("#hb").dataset.state = t.heartbeat.state;
   const hbText = t.heartbeat.text.replace(/ Nothing is known after that\.$/, "");        // the summary already says what isn't known
   setText($("#hb .text"), t.heartbeat.battery ? `${hbText} · ${t.heartbeat.battery}` : hbText);
@@ -188,10 +190,10 @@ $("#menu-btn")?.addEventListener("click", async () => {
   if (!srv) return;
   const body = $("#settings-body"); body.textContent = "";
   const n = srv.names;
-  const pIn = el("input", { class: "input", value: n.parent || "", maxlength: 24, placeholder: "For example Mom, Dad, Nani, or a first name", "aria-label": "What you call your parent" });
+  const pIn = el("input", { class: "input", value: n.parent || "", maxlength: 24, placeholder: "Their first name, or what you call them", "aria-label": "What you call them" });
   const cIn = el("input", { class: "input", value: n.caregiver || "", maxlength: 24, "aria-label": "Your name" });
   body.append(
-    el("div", { class: "field2" }, el("label", { text: "What you call your parent" }), pIn),
+    el("div", { class: "field2" }, el("label", { text: "What you call them" }), pIn),
     el("div", { class: "field2" }, el("label", { text: "Your name, as the room screen shows it" }), cIn),
     el("div", { class: "actions", style: "margin-top:16px" }, el("button", { class: "btn primary", type: "button", text: "Save names", onclick: async () => {
       try { const r = await api(`/api/h/${link.id}/names`, { method: "POST", key: link.key, body: { parent: pIn.value, caregiver: cIn.value } }); srv = r.state; draw(); toast("Saved"); } catch (e) { toast(e.message); }

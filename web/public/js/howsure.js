@@ -131,7 +131,7 @@ function renderResults(box, r) {
   // the caregiver's metric
   const ma = (ev && ev.meal_activity) || d.meal_activity;
   if (ma) {
-    box.append(section("What Meera's check uses: any kitchen activity (cooking, washing up or eating)", "meal",
+    box.append(section("What the morning check uses: any kitchen activity (cooking, washing up or eating)", "meal",
       el("div", { class: "stat-row" },
         el("div", { class: "stat" }, el("p", { class: "stat-n num", text: pct(ma.caught) }), el("p", { class: "meta", text: "of kitchen-activity windows caught" }),
           el("p", { class: "meta muted", text: `missed ${ma.missed} of ${ma.n_meal} · CI ${ci(ma.caught)}` })),

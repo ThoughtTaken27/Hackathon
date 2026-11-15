@@ -6,14 +6,14 @@ import { place } from "./people.js";
 import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
 
 const RM = reduceMotion();
-const NAMES = { parent: "your parent", caregiver: "You" };      // the landing names nobody: any parent, any family
+const NAMES = { parent: "someone at home", caregiver: "You" };   // the landing names nobody and assumes no relationship
 
 // ---------- nav frosts once you scroll
 const nav = $("#nav");
 const onScroll = () => nav.classList.toggle("solid", scrollY > 24);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 const mine = Object.values(homes()).sort((a, b) => b.saved - a.saved)[0];
-if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? place({ parent: mine.parent, relation: mine.relation }, mine.room, "family") : "Room screen"; }
+if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? "Open your timeline" : "Room screen"; }
 
 // ---------- invented-example switcher: only changes the title text
 document.querySelectorAll(".lp-sw").forEach((b) => b.addEventListener("click", () => {
@@ -125,7 +125,7 @@ F.append(el("div", { class: "f-mini fam" },
   el("div", { class: "notch" }), el("div", { class: "sbar" }, el("span", { class: "num", id: "f-clock", text: "9:41" }), el("span", { text: "●●●" })),
   el("header", { class: "fam-head" },
     el("p", { class: "fam-date num", id: "f-date", text: "Today" }),
-    el("h1", { class: "fam-title" }, "Your parent's kitchen ", el("span", { class: "dim", text: "today" })),
+    el("h1", { class: "fam-title" }, "The kitchen ", el("span", { class: "dim", text: "today" })),
     el("p", { class: "hb", "data-state": "listening" }, el("span", { class: "dot" }), el("span", { class: "text", text: "Listening · last heard just now" }))),
   el("p", { class: "fam-summary summary", id: "f-sum" }),
   el("section", { class: "day-card" }, el("div", { id: "f-ro" }), el("div", { id: "f-bar" })),

@@ -259,7 +259,7 @@ html.embed .nav, html.embed .foot, html.embed .k-foot { display: none !important
 .field select, .field input { font: inherit; font-size: 16px; min-height: 44px; border-radius: 12px; border: 0; box-shadow: inset 0 0 0 1px var(--line-strong);
   background: var(--card); color: var(--ink); padding: 0 12px; }
 
-/* ---------- kitchen screen (Dad's laptop) ---------- */
+/* ---------- kitchen screen (the room device) ---------- */
 .kitchen { max-width: 1040px; margin: 0 auto; padding: 40px 40px 40px; min-height: calc(100vh - 61px); display: flex; flex-direction: column; }
 html.embed .kitchen { min-height: 100vh; }
 .kitchen .k-head { font-size: var(--fs-khead); line-height: var(--lh-khead); color: var(--ink); font-weight: 500; letter-spacing: -0.045em; text-wrap: balance; }
@@ -477,7 +477,7 @@ a.btn { text-decoration: none; }
 .banner p { font-size: 15px; color: var(--text); }
 .banner strong { color: var(--ink); font-weight: 560; }
 
-/* kitchen listening: a quiet level meter so Dad can see it hears */
+/* kitchen listening: a quiet level meter so the person at home can see it hears */
 .meter { display: inline-flex; gap: 3px; align-items: center; height: 22px; margin-left: 4px; vertical-align: middle; }
 .meter i { width: 4px; height: 100%; border-radius: 99px; background: var(--ok); transform: scaleY(var(--v, .15)); transform-origin: center; transition: transform 120ms ease-out; opacity: .85; }
 .tiny { font-size: 13px; color: var(--muted); }

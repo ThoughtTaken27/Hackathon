@@ -11,19 +11,15 @@
   --f22: 22px; --l22: 30px;
   --f24: 24px; --l24: 34px;
   --f28: 28px; --l28: 38px;
-  --tr-s: 0em; --tr-b: -0.006em; --tr-m: -0.011em; --tr-l: -0.018em; --tr-xl: -0.03em; --tr-d: -0.045em; --tr-h: -0.05em;
+  --tr-s: 0em; --tr-b: -0.006em; --tr-m: -0.011em; --tr-l: -0.018em; --tr-xl: -0.03em; --tr-d: -0.034em; --tr-h: -0.038em;   /* a touch looser than the dark theme: friendlier, less "tech" */
 }
 
-/* ---------- serif accents: same optical size everywhere, and they never push their line down ----------
-   An inline box at 1.08em with an inherited unitless line-height is 8% taller than its line; giving it lh = parent / 1.08 keeps every line equal. */
-.lx-h1 em, .lx-h2 em, .h1 em, .top h1 em, .f-mini h1 em, em.s { font-size: 1.08em; letter-spacing: -0.015em; }
-.lx-h1 { line-height: 0.98; } .lx-h1 em { line-height: 0.907; }
-.lx-h2 { line-height: 1.04; } .lx-h2 em { line-height: 0.963; }
-.h1, .top h1 { line-height: 1.02; } .h1 em, .top h1 em { line-height: 0.944; }
-.f-mini h1 em { line-height: 1.0; }
+/* ---------- heading accents: plain, same size and line as the heading (serif italics removed with the light theme, Nov 15) ---------- */
+.lx-h1 em, .lx-h2 em, .h1 em, .top h1 em, .f-mini h1 em, em.s { font-size: 1em; line-height: inherit; letter-spacing: inherit; font-style: normal; font-family: inherit; }
+.lx-h1 { line-height: 1.02; } .lx-h2 { line-height: 1.06; } .h1, .top h1 { line-height: 1.04; }
 
 /* ---------- display ---------- */
-.lx-h1 { letter-spacing: -0.055em; font-weight: 500; }
+.lx-h1 { letter-spacing: -0.042em; font-weight: 500; }
 .lx-h2 { font-size: clamp(36px, 4.2vw, 52px); letter-spacing: var(--tr-d); font-weight: 500; }
 .h1, .top h1 { font-size: clamp(40px, 5vw, 64px); letter-spacing: var(--tr-h); font-weight: 500; }
 .lx-stats dt, .lx-numbers dt { font-size: clamp(48px, 4.6vw, 64px); line-height: 1; letter-spacing: var(--tr-h); font-weight: 450; }
@@ -131,8 +127,8 @@ strong, b, .meta strong, td.strong, tr.row-shipped td, .dc-row.ours .dc-label, .
 }
 
 /* small print must still pass contrast: --tx4 (#5A5D66, ~2.9:1 on the canvas) is for rules and icons only, never text */
-.lx-fine, .lx-built-k, .lx-note, .lx-foot p, .acc-n { color: #80838C; }
-.lx-stats .dim, .lx-numbers .dim { color: #5A5D66; }   /* the % sign is decoration next to a 64px figure: large-text 3:1 holds */
+.lx-fine, .lx-built-k, .lx-note, .lx-foot p, .acc-n { color: var(--muted); }
+.lx-stats .dim, .lx-numbers .dim { color: var(--faint); }   /* the % sign is decoration next to a 64px figure: large-text 3:1 holds */
 .kbtn { line-height: 1.2; }
 .ev-bars em { font-size: var(--f12); }
 
@@ -214,15 +210,15 @@ html.big-text .chip.big { font-size: 52px; line-height: 58px; }
 }
 /* "First, teach Kettle this kitchen": the next thing to do, at the top of the listening screen */
 .k-teach-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 0 0 16px; padding: 16px 18px; border-radius: 18px;
-  background: rgba(76,195,134,.10); box-shadow: inset 0 0 0 1.5px rgba(76,195,134,.45); max-width: 760px; }
+  background: rgba(35,163,95,.10); box-shadow: inset 0 0 0 1.5px rgba(35,163,95,.45); max-width: 760px; }
 .k-teach-cta > div { flex: 1 1 280px; }
-.k-teach-cta .t { font-size: 22px; line-height: 28px; color: #fff; font-weight: 520; letter-spacing: -0.015em; }
-.k-teach-cta .s { font-size: 17px; line-height: 24px; color: rgba(255,255,255,.74); margin-top: 2px; }
+.k-teach-cta .t { font-size: 22px; line-height: 28px; color: var(--ink); font-weight: 520; letter-spacing: -0.015em; }
+.k-teach-cta .s { font-size: 17px; line-height: 24px; color: var(--text); margin-top: 2px; }
 .k-teach-cta .btn.kbtn { min-width: 0; }
 .k-checks { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
 .k-checks ul { margin: 0; display: flex; flex-wrap: wrap; gap: 2px 12px; }
 .k-checks li { margin: 0; }
-.k-checks li::before { content: "·"; margin-right: 8px; color: rgba(255,255,255,.4); }
+.k-checks li::before { content: "·"; margin-right: 8px; color: var(--faint); }
 
 /* Urgent safety banner (family view) and the kitchen's "I need help" button (handover v3.2, 3.6) */
 .urgent { margin: 12px 0 16px; padding: 14px 16px; border-radius: 16px; background: rgba(198,40,40,.14); box-shadow: inset 0 0 0 1.5px var(--danger); }

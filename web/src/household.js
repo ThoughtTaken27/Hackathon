@@ -1,5 +1,5 @@
 // One household's sync logic, independent of where it runs (Cloudflare Durable Object or the local dev server).
-// It stores only what the Python app stores: the parent's choices (consent, pause, off), Meera's checks, and window
+// It stores only what the Python app stores: the parent's choices (consent, pause, off), the family's checks, and window
 // labels with times and scores. No audio ever reaches it; the kitchen page labels sound on the parent's own device.
 import { CLASSES, HIDEABLE, KIND_NAMES, MEAL, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
 import { SHOWN_SOUNDS } from "../public/js/sounds.js";

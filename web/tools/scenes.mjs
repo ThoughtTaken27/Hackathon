@@ -45,9 +45,11 @@ const S = {
   // hero: blue hour before dawn, the house still asleep
   hero: { seed: 11, sky: ["#1c2230", "#3d4757", "#7b8493", "#a7adb5"], far: "#8a929e", near: "#0c0e12", fog: "#b9c0c8", sun: { x: ".62", y: ".55", r: ".45", c: "#d9d2c8" }, layers: 5, base: 0.5, spread: 0.46, amp: 0.2 },
   // morning: first light, warm sky over teal hills
-  morning: { seed: 23, sky: ["#efc0ae", "#f4d3c0", "#efe2d6"], far: "#a9c2bf", near: "#123236", fog: "#f6e5da", sun: { x: ".3", y: ".42", r: ".5", c: "#fff1e4" }, layers: 5, base: 0.36, spread: 0.6, amp: 0.24 },
+  morning: { seed: 23, sky: ["#efc0ae", "#f4d3c0", "#efe2d6"], far: "#b3c9c5", near: "#4e6f69", fog: "#f6e5da", sun: { x: ".3", y: ".42", r: ".5", c: "#fff1e4" }, layers: 5, base: 0.36, spread: 0.6, amp: 0.24 },
   // day: cool, clear, misty teal
-  day: { seed: 37, sky: ["#d9dfdc", "#c6d3d0", "#b5c7c4"], far: "#9fb8b5", near: "#163a3d", fog: "#e2ebe8", sun: { x: ".75", y: ".3", r: ".5", c: "#ffffff" }, layers: 5, base: 0.32, spread: 0.62, amp: 0.26 },
+  day: { seed: 37, sky: ["#d9dfdc", "#c6d3d0", "#b5c7c4"], far: "#a9c0bd", near: "#507069", fog: "#e2ebe8", sun: { x: ".75", y: ".3", r: ".5", c: "#ffffff" }, layers: 5, base: 0.32, spread: 0.62, amp: 0.26 },
+  // home: a clear, soft morning; pale sky so dark text reads on it, sage hills low in the frame (light theme, Nov 15)
+  home: { seed: 29, sky: ["#e9eff1", "#f1f2ef", "#f6f1ea"], far: "#cbd8d2", near: "#56766c", fog: "#f5f2ec", sun: { x: ".7", y: ".5", r: ".5", c: "#fff7ec" }, layers: 5, base: 0.56, spread: 0.4, amp: 0.16 },
   // dusk: the kitchen light on, the day done
   dusk: { seed: 53, sky: ["#14161d", "#2c2a38", "#5d4f5b", "#9a7b74"], far: "#6c6170", near: "#0a0b0e", fog: "#a68d84", sun: { x: ".5", y: ".62", r: ".4", c: "#f2b88c" }, layers: 5, base: 0.56, spread: 0.4, amp: 0.18 },
 };

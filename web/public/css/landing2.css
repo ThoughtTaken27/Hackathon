@@ -4,19 +4,19 @@
    React Bits ScrollReveal idea (dim words .16 -> 1 as you read). */
 
 /* ---------- headline words blur up one after another ---------- */
-.words-in .w { display: inline-block; opacity: 0; transform: translateY(20px); filter: blur(10px);
+.words-in .w { display: inline-block; opacity: 0; transform: translateY(16px);
   animation: w-up 900ms cubic-bezier(.22,1,.36,1) forwards; animation-delay: calc(var(--i) * 55ms + 120ms); }
 .lx-h1 .w { will-change: transform, opacity, filter; }
 .lx-final .lx-h1:not(.words-in) .w { opacity: 0; }
-@keyframes w-up { to { opacity: 1; transform: none; filter: none; } }
+@keyframes w-up { to { opacity: 1; transform: none; } }   /* no blur: it smudged dark letters on the light sky and cost frames */
 .lx-hero-in { will-change: transform, opacity; }
 .lx-hero-bg { will-change: transform; transform-origin: 50% 0; }
 .lx-panel-wrap { transform-origin: 50% 0%; will-change: transform; }
 .lx-panel-wrap.rise { animation-name: lx-rise-panel; }
-@keyframes lx-rise-panel { from { opacity: 0; filter: blur(10px); } to { opacity: 1; filter: none; } }
+@keyframes lx-rise-panel { from { opacity: 0; } to { opacity: 1; } }
 
 /* ---------- why: words brighten as you read ---------- */
-.lx-scrub .lx-statement { color: #fff; }
+.lx-scrub .lx-statement { color: var(--ink); }
 .lx-scrub .sw { transition: opacity 120ms linear; }
 
 /* ---------- built on: an endless slow strip with soft edges ---------- */
@@ -29,18 +29,18 @@
 
 /* ---------- how it works: numbered, unfolds by grid rows ---------- */
 .acc-n { display: inline-block; width: 26px; color: var(--tx4); font-size: 15px; font-weight: 500; letter-spacing: 0; transition: color 260ms ease; vertical-align: 2px; }
-.acc[aria-selected="true"] .acc-n { color: #fff; }
+.acc[aria-selected="true"] .acc-n { color: var(--ink); }
 .acc-b { display: grid; grid-template-rows: 0fr; max-height: none !important; margin-top: 0 !important; padding-left: 26px;
   transition: grid-template-rows 460ms cubic-bezier(.22,1,.36,1), opacity 300ms ease !important; }
 .acc-b > span { overflow: hidden; min-height: 0; }
 .acc[aria-selected="true"] .acc-b { grid-template-rows: 1fr; }
 .acc[aria-selected="true"] .acc-b > span { padding-top: 10px; }
-.acc-p i { background: linear-gradient(90deg, rgba(255,255,255,.35), #fff); }
-@media (hover: hover) and (pointer: fine) { .acc:hover .acc-h { color: rgba(255,255,255,.86); } }
+.acc-p i { background: linear-gradient(90deg, rgba(28,25,23,.2), #1C1917); }
+@media (hover: hover) and (pointer: fine) { .acc:hover .acc-h { color: var(--ink); } }
 
 /* ---------- privacy: the sound stops at the device, only the label travels on ---------- */
 .viz-flow .wire i { animation: none; }
-.viz-flow .wire i { left: 0; width: 34%; transform: translateX(-110%); background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent); }
+.viz-flow .wire i { left: 0; width: 34%; transform: translateX(-110%); background: linear-gradient(90deg, transparent, rgba(28,25,23,0.45), transparent); }
 .viz-flow .wire:nth-of-type(n+2) i { background: linear-gradient(90deg, transparent, #eb6834, transparent); }
 @media (prefers-reduced-motion: no-preference) {
   .viz-flow .wire i { animation: beam 4.8s cubic-bezier(.16,1,.3,1) infinite; }
@@ -59,18 +59,18 @@
 /* ---------- cards: a light that follows the pointer along the hairline ---------- */
 .lx-card { position: relative; }
 .lx-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; opacity: 0; transition: opacity 300ms ease;
-  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgba(255,255,255,.2), transparent 60%);
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 0%), rgba(28,25,23,0.1), transparent 60%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
 @media (hover: hover) and (pointer: fine) { .lx-card:hover::before { opacity: 1; } }
 
 /* ---------- two screens: the real app, now in its dark sky ---------- */
-.glass, .canvas { background: #0B0C0E; }
-.k-mini, .f-mini { background: linear-gradient(180deg, rgba(11,12,14,.55) 0%, rgba(11,12,14,.35) 22%, rgba(11,12,14,.92) 55%, #0B0C0E 75%), url("/img/scene-hero.svg") center top / cover no-repeat, #0B0C0E; color: #B9BBC2; }
+.glass, .canvas { background: #FAFAF9; }
+.k-mini, .f-mini { background: linear-gradient(180deg, rgba(250,250,249,.55) 0%, rgba(250,250,249,.35) 22%, rgba(250,250,249,.92) 55%, #FAFAF9 75%), url("/img/scene-home.svg") center top / cover no-repeat, #FAFAF9; color: var(--text); }
 .k-mini .k-status .dot { background: #4CC386; box-shadow: 0 0 0 6px rgba(76,195,134,.14); }
-.k-mini .k-head { color: #fff; }
-.f-mini .sbar { color: #fff; }
+.k-mini .k-head { color: var(--ink); }
+.f-mini .sbar { color: var(--ink); }
 .f-mini .notch { background: #000; }
-.f-mini h1 { color: #fff; }
+.f-mini h1 { color: var(--ink); }
 .f-mini .eyebrow { margin-bottom: 0; justify-self: start; }
 .laptop .lid { background: #232327; }
 .laptop .base { background: linear-gradient(#5c5f63, #3a3c40); }
@@ -87,12 +87,12 @@
 .lx-faq details[open] p { animation: none; }
 .lx-faq details.shown summary::after { transform: translateY(2px) rotate(-135deg); }
 .lx-faq details:not(.shown) summary::after { transform: translateY(-3px) rotate(45deg); }
-@media (hover: hover) and (pointer: fine) { .lx-faq summary { transition: color 160ms ease; } .lx-faq summary:hover { color: rgba(255,255,255,.8); } }
+@media (hover: hover) and (pointer: fine) { .lx-faq summary { transition: color 160ms ease; } .lx-faq summary:hover { color: var(--text); } }
 
 /* ---------- nav: the section you're in ---------- */
 .lx-links a { position: relative; }
-.lx-links a.on { color: #fff; }
-.lx-links a::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 4px; height: 4px; margin-left: -2px; border-radius: 99px; background: #fff;
+.lx-links a.on { color: var(--ink); }
+.lx-links a::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 4px; height: 4px; margin-left: -2px; border-radius: 99px; background: #1C1917;
   opacity: 0; transform: scale(.4); transition: opacity 260ms ease, transform 260ms cubic-bezier(.34,1.35,.64,1); }
 .lx-links a.on::after { opacity: 1; transform: none; }
 
@@ -110,26 +110,26 @@
 main > section:not(.lx-hero), .lx-foot { position: relative; z-index: 1; }
 .lx-hero { z-index: 0; }
 .k-mini.kitchen { max-width: none; margin: 0; }
-.f-mini h1 em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; font-size: 1.06em; }
+
 .lx-nav .lx-pill, .lx-nav .lx-ghost { white-space: nowrap; }
 @media (max-width: 640px) { .lx-nav .hide-sm { display: none; } .lx-nav-in { gap: 16px; } }
 
 /* sample-day switch: one white pill slides to the choice (transitions.dev "Tabs sliding" pattern, 380ms out-curve) */
 .lx-seg { position: relative; isolation: isolate; }
-.lx-seg .ind { position: absolute; z-index: -1; top: 0; left: 0; height: 44px; border-radius: 999px; background: #F4F4F5;
-  box-shadow: 0 6px 18px -8px rgba(0,0,0,.7); transition: transform 380ms cubic-bezier(.22,1,.36,1), width 380ms cubic-bezier(.22,1,.36,1), height 380ms cubic-bezier(.22,1,.36,1); }
-.lx-seg.has-ind button[aria-pressed="true"] { background: transparent; color: #0B0C0E; }
+.lx-seg .ind { position: absolute; z-index: -1; top: 0; left: 0; height: 44px; border-radius: 999px; background: #fff;
+  box-shadow: 0 6px 18px -8px rgba(28,25,23,0.14); transition: transform 380ms cubic-bezier(.22,1,.36,1), width 380ms cubic-bezier(.22,1,.36,1), height 380ms cubic-bezier(.22,1,.36,1); }
+.lx-seg.has-ind button[aria-pressed="true"] { background: transparent; color: var(--ink); }
 .lx-seg button { transition: color 240ms ease; }
 .lx-seg button:active { transform: scale(.97); }
 
 /* primary pills: a single soft light passes across on hover (fine pointers only) */
 .lx-pill { position: relative; overflow: hidden; isolation: isolate; }
 .lx-pill::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.95) 50%, transparent 70%); transform: translateX(-120%); }
+  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.16) 50%, transparent 70%); transform: translateX(-120%); }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .lx-pill:hover::after { transform: translateX(120%); transition: transform 700ms cubic-bezier(.22,1,.36,1); }
 }
-.lx-hero .lx-lede { color: rgba(255,255,255,.8); }
+.lx-hero .lx-lede { color: var(--text); }
 
 /* Hero and device frames: blocks glide to their new place when the day grows, instead of jumping (Nov 15) */
 .lx-panel .blk, .lx-scene-ui .blk, .dev .blk { transition: left 600ms cubic-bezier(.22,1,.36,1), width 600ms cubic-bezier(.22,1,.36,1); }

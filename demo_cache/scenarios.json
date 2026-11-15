@@ -1,5 +1,5 @@
 {
- "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard. Added Nov 15: 'Breakfast didn't happen' (no kitchen sound before the 10 AM check), 'A visitor came' (conversation), 'Dad paused it' (a 1-hour pause drawn as Paused) and 'Laptop closed' (a gap drawn as Not listening, so the check says Can't tell). Changed Nov 15: every segment now uses only clips the frozen model labels as that session's recorded activity (at or above \u03b8, not 'unlike anything it learned'), so the sample days show the screens working as designed; some clips repeat within a day. The washing-up session has one such clip of ten (the model hears its dish clatter as cooking), so washing up is that one clip, played twice to make a short block. How often Kettle is wrong is measured on the held-out test and shown on How sure, not here. 'A usual morning' (Nov 15, second pass) opens with one quiet clip, then cooking, eating, washing up, a short chat and TV.",
+ "_about": "Three sample days built from real SINS development clips (DevNode1, channel 0) from 9 sessions held out of training. The model's labels are real; the clock times are staged (SINS clips carry no clock times) and every screen says 'Sample day'. The TV-only afternoon starts with the laptop asleep until 12:30, so the morning check says Can't tell and the TV check can only say Can't tell unless more than 4 hours of TV are heard. Added Nov 15: 'Breakfast didn't happen' (no kitchen sound before the 10 AM check), 'A visitor came' (conversation), 'Paused for a while' (a 1-hour pause drawn as Paused) and 'Laptop closed' (a gap drawn as Not listening, so the check says Can't tell). Changed Nov 15: every segment now uses only clips the frozen model labels as that session's recorded activity (at or above \u03b8, not 'unlike anything it learned'), so the sample days show the screens working as designed; some clips repeat within a day. The washing-up session has one such clip of ten (the model hears its dish clatter as cooking), so washing up is that one clip, played twice to make a short block. How often Kettle is wrong is measured on the held-out test and shown on How sure, not here. 'A usual morning' (Nov 15, second pass) opens with one quiet clip, then cooking, eating, washing up, a short chat and TV.",
  "usual": {
   "title": "A usual morning",
   "started": "06:00",
@@ -223,7 +223,7 @@
   ]
  },
  "paused": {
-  "title": "Dad paused it",
+  "title": "Paused for a while",
   "started": "06:00",
   "segments": [
    {
