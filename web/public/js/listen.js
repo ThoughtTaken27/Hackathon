@@ -7,6 +7,8 @@ import { prepareSense, refine, levelDb, quietWindow } from "./sense.js";
 
 export const SR = 16000, WIN_S = 10, HOP_S = 10;
 let ortReady = null, model = null;
+/** The frozen head (head.json) once loaded: setup standardises embeddings with its mean and std. */
+export function modelHead() { return model ? model.head.head : null; }
 
 function loadScript(src) {
   return new Promise((ok, bad) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => bad(new Error("script")); document.head.append(s); });
@@ -58,7 +60,7 @@ export async function classify(wave, ctx = {}) {
   const m = model, t0 = performance.now();
   const db = levelDb(wave);
   const floor = ctx.enrolment && Number.isFinite(ctx.enrolment.floor) ? ctx.enrolment.floor : m.sense.quiet_floor_dbfs;
-  if (!(db >= floor)) return { ...quietWindow(db), db, emb: null, ms: Math.round(performance.now() - t0) };
+  if (!ctx.teaching && !(db >= floor)) return { ...quietWindow(db), db, emb: null, ms: Math.round(performance.now() - t0) };
   const { emb, as, r } = await classifyRaw(wave);
   return { ...refine(m.sense, { head: m.head.head, ...ctx }, emb, as, r), db, emb, ms: Math.round(performance.now() - t0) };
 }

@@ -9,7 +9,7 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/img/icon-192.png">
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/css/app.css?v=w2">
+<link rel="stylesheet" href="/css/app.css?v=w3">
 </head>
 <body>
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
@@ -31,6 +31,8 @@
   </div>
   <div id="invite"></div>
   <p class="summary" id="summary"></p>
+  <p class="coverage" id="coverage"></p>
+  <p class="coverage" id="hidden-note" hidden></p>
   <section class="card" aria-label="Day timeline">
     <div id="bar"></div>
     <div class="fold" id="fold"><div id="evidence"></div></div>
@@ -43,12 +45,26 @@
       <p class="rules-foot" id="rules-foot">Rules you set. Kettle doesn't learn the routine and doesn't send alerts.</p>
       <div class="row" style="margin-top:14px"><button class="btn" id="edit-rules" type="button">Change checks</button></div>
     </section>
+    <section aria-labelledby="heard-h" id="heard-sec" hidden>
+      <h2 class="section-title" id="heard-h">Sounds Kettle named today</h2>
+      <ul class="heard-list" id="heard"></ul>
+      <p class="rules-foot">Everyday household sounds only. Kettle never names voices, coughs, crying or bathroom sounds.</p>
+    </section>
+    <section aria-labelledby="week-h" id="week-sec" hidden>
+      <h2 class="section-title" id="week-h">This week</h2>
+      <p class="meta" id="week-text"></p>
+      <div class="week" id="week"></div>
+      <p class="rules-foot">A description, not an alarm. Counted from single 10-second labels. Bring it to a doctor's visit if it helps; it is not a diagnosis.</p>
+      <div class="row no-print" style="margin-top:12px"><button class="btn" type="button" id="print">Print this page</button></div>
+    </section>
     <section aria-labelledby="about-h">
       <h2 class="section-title" id="about-h">How to read this</h2>
       <div class="card stack">
         <p class="meta"><strong style="color:var(--ink);font-weight:560">Coloured blocks</strong> are what Kettle heard. Tap one to see why, and how sure it was.</p>
         <p class="meta"><strong style="color:var(--ink);font-weight:560">Not sure</strong> means it heard something but wouldn't guess. <strong style="color:var(--ink);font-weight:560">Not listening</strong> means the laptop was asleep, closed or off, so nothing is known.</p>
-        <p class="meta"><strong style="color:var(--ink);font-weight:560">Paused</strong> is the parent's choice. Kettle never says why.</p>
+        <p class="meta"><strong style="color:var(--ink);font-weight:560">Quiet</strong> means no activity was heard. It doesn't mean all is well.</p>
+        <p class="meta"><strong style="color:var(--ink);font-weight:560">Paused</strong> and <strong style="color:var(--ink);font-weight:560">Private</strong> are the parent's choice. Kettle never says why.</p>
+        <p class="meta">Labels are deleted after 8 days. Deleting the home removes everything at once.</p>
       </div>
     </section>
   </div>
@@ -76,6 +92,6 @@
   <h2 id="settings-h">Settings</h2>
   <div id="settings-body"></div>
 </div>
-<script type="module" src="/js/family.js?v=w2"></script>
+<script type="module" src="/js/family.js?v=w3"></script>
 </body>
 </html>

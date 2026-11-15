@@ -63,6 +63,27 @@ export function cleanEvent(e, now) {
 }
 
 /**
+ * Plan B3: a tiny per-day tally kept as windows arrive, so the family's week view needs no scan of 8 days of labels.
+ * Per local day: windows heard, windows Kettle could name, first kitchen-activity window, first kettle sound,
+ * TV windows. Single windows, before the timeline's smoothing; 9 days kept.
+ */
+export function tallyDays(s, evs) {
+  const days = s.days || (s.days = {});
+  for (const e of evs) {
+    const off = tzOffset(s.tz || "UTC", e.end);
+    const key = new Date((e.start + off) * 1000).toISOString().slice(0, 10);
+    const d = days[key] || (days[key] = { n: 0, told: 0, meal: null, kettle: null, tv: 0, off });
+    d.n++;
+    const sure = !e.private && !e.novel && !e.hold && e.conf >= 0.66;
+    if (sure) d.told++;
+    if (sure && ["cooking", "dishwashing", "eating"].includes(e.label) && (d.meal == null || e.start < d.meal)) d.meal = e.start;
+    if ((e.kinds || []).includes("kettle") && (d.kettle == null || e.start < d.kettle)) d.kettle = e.start;
+    if (sure && e.label === "watching_tv") d.tv++;
+  }
+  for (const k of Object.keys(days).sort().slice(0, -9)) delete days[k];
+}
+
+/**
  * Handle one request for this household.
  * store: { getState(), putState(s), addEvents(evs), eventsSince(t), prune(before), wipe() }
  * Returns { status, body }.
@@ -90,6 +111,7 @@ export async function handle(store, { method, route, key, body, now }) {
     const evs = (Array.isArray(body?.events) ? body.events : []).slice(0, MAX_EVENTS_PER_POST).map((e) => cleanEvent(e, now)).filter(Boolean);
     if (evs.length) {
       await store.addEvents(evs);
+      tallyDays(s, evs);
       s.last_window_t = Math.max(s.last_window_t || 0, ...evs.map((e) => e.end));
       if (s.mic !== "ok") { s.mic = "ok"; s.mic_at = now; }
       changed = true;

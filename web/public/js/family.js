@@ -1,5 +1,5 @@
 // Meera's view (Kettle web): reads the household's labels and draws the same day the kitchen screen shows.
-import { today as computeToday, ruleTitle } from "./core.js";
+import { today as computeToday, ruleTitle, week, DISPLAY, KIND_NAMES } from "./core.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 
@@ -59,10 +59,31 @@ function draw() {
   $("#hb").dataset.state = t.heartbeat.state;
   setText($("#hb .text"), t.heartbeat.text);
   setText($("#summary"), t.summary || (t.heartbeat.state === "never" ? "" : "Nothing heard yet today."));
+  setText($("#coverage"), t.coverage ? t.coverage.text : "");
+  const hid = [...(t.kitchen.hide || []).map((c) => DISPLAY[c]), ...(t.kitchen.kinds_off || []).map((k) => KIND_NAMES[k])];
+  $("#hidden-note").hidden = !hid.length;
+  setText($("#hidden-note"), hid.length ? `${n.parent} chose not to share: ${hid.join(", ")}.` : "");
+  const heard = $("#heard"); heard.textContent = "";
+  for (const h of t.heard) heard.append(el("li", { text: `${h.name}: ${h.text}${h.n > 1 ? ` (${h.n}×)` : ""}` }));
+  $("#heard-sec").hidden = !t.heard.length;
+  drawWeek();
   $("#foot-who").textContent = `${n.parent} sees the same day on the kitchen screen and can pause Kettle any time.`;
   bar.render(t); drawLegend(t);
   rulesList($("#rules"), t.rules);
   drawInvite();
+}
+
+function drawWeek() {
+  const w = week(srv, now(), { tz: srv.tz, hop: HOP_S });
+  const known = w.rows.some((r) => r.state !== "unknown");
+  $("#week-sec").hidden = !known;
+  if (!known) return;
+  setText($("#week-text"), w.text);
+  const box = $("#week"); box.textContent = "";
+  for (const r of w.rows) box.append(el("div", { class: "wday", "data-state": r.state, title: r.key },
+    el("span", { class: "d", text: r.day }),
+    el("span", { class: "v", text: r.state === "yes" ? `✓ ${r.at}` : r.state === "no" ? "Not heard" : "Can't tell" }),
+    el("span", { class: "k", text: r.kettle ? `Kettle ${r.kettle}` : "" })));
 }
 
 // before Dad's laptop has said yes: show how to connect it (only on the device that holds the kitchen key)
@@ -97,6 +118,7 @@ function openSheet(which) { which.classList.add("open"); scrim.classList.add("op
 function closeSheets() { for (const s of document.querySelectorAll(".sheet")) s.classList.remove("open"); scrim.classList.remove("open"); }
 scrim.addEventListener("click", closeSheets);
 addEventListener("keydown", (e) => e.key === "Escape" && closeSheets());
+$("#print").addEventListener("click", () => window.print());
 $("#edit-rules").addEventListener("click", () => { draft = srv.rules.map((r) => ({ ...r })); fields(); openSheet(sheet); });
 $("#cancel-rules").addEventListener("click", closeSheets);
 $("#add-rule").addEventListener("click", () => { if (draft.length < 3) { draft.push({ type: "kitchen_by", time: "10:00" }); fields(); } });
@@ -108,14 +130,20 @@ function fields() {
   const box = $("#sheet-fields"); box.textContent = "";
   draft.forEach((r, i) => {
     const type = el("select", { "aria-label": "Kind of check" },
-      ["kitchen_by", "any_by", "tv_over"].map((v) => el("option", { value: v, selected: r.type === v, text: v === "kitchen_by" ? "Kitchen activity by" : v === "any_by" ? "Some sound of activity by" : "TV on for more than (hours)" })));
+      ["kitchen_by", "any_by", "kind_by", "tv_over"].map((v) => el("option", { value: v, selected: r.type === v, text: { kitchen_by: "Kitchen activity by", any_by: "Some sound of activity by", kind_by: "A sound heard by", tv_over: "TV on for more than (hours)" }[v] })));
+    const kind = r.type === "kind_by" ? el("select", { "aria-label": "Which sound", onchange: (e) => { r.kind = e.target.value; } },
+      Object.entries(KIND_NAMES).map(([id, name]) => el("option", { value: id, selected: r.kind === id, text: name }))) : null;
     const val = r.type === "tv_over" ? el("input", { type: "number", min: 0.5, max: 16, step: 0.5, value: r.hours ?? 4, "aria-label": "Hours" })
       : el("input", { type: "time", value: r.time || "10:00", "aria-label": "Time" });
-    type.addEventListener("change", () => { draft[i] = type.value === "tv_over" ? { type: "tv_over", hours: 4 } : { type: type.value, time: "10:00" }; fields(); });
+    type.addEventListener("change", () => { draft[i] = type.value === "tv_over" ? { type: "tv_over", hours: 4 } : type.value === "kind_by" ? { type: "kind_by", kind: "kettle", time: "09:00" } : { type: type.value, time: "10:00" }; fields(); });
     val.addEventListener("change", () => { if (r.type === "tv_over") r.hours = +val.value; else r.time = val.value; });
-    box.append(el("div", { class: "field" }, type, val, el("button", { class: "btn quiet", type: "button", text: "Remove", onclick: () => { draft.splice(i, 1); fields(); } })));
+    box.append(el("div", { class: "field" }, type, kind, val, el("button", { class: "btn quiet", type: "button", text: "Remove", onclick: () => { draft.splice(i, 1); fields(); } })));
   });
   $("#add-rule").disabled = draft.length >= 3;
+  const presets = [["Breakfast by 10", { type: "kitchen_by", time: "10:00" }], ["Lunch by 2", { type: "kitchen_by", time: "14:00" }],
+    ["Evening meal by 8", { type: "kitchen_by", time: "20:00" }], ["Morning drink by 9", { type: "kind_by", kind: "kettle", time: "09:00" }]];
+  box.append(el("div", { class: "row presets", style: "margin-top:10px;flex-wrap:wrap;gap:8px" }, el("span", { class: "meta muted", text: "Quick add:" }),
+    ...presets.map(([label, r]) => el("button", { class: "btn quiet", type: "button", text: label, disabled: draft.length >= 3 || null, onclick: () => { if (draft.length < 3) { draft.push({ ...r }); fields(); } } }))));
 }
 
 // ---------------------------------------------------------------- settings: invite, rename, delete

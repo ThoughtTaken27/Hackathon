@@ -163,7 +163,7 @@ export function legend(root) {
     if (k === key) return; key = k;
     lg.textContent = "";
     for (const a of acts) lg.append(el("span", {}, el("i", { style: `background:var(${COLOUR[a]})` }), DISPLAY[a]));
-    for (const [st, name] of [["talk_or_tv", "Talking or TV"], ["not_sure", "Not sure"], ["not_listening", "Not listening"], ["paused", "Paused"]])
+    for (const [st, name] of [["talk_or_tv", "Talking or TV"], ["not_sure", "Not sure"], ["not_listening", "Not listening"], ["paused", "Paused"], ["private", "Private"]])
       if (states.has(st)) lg.append(el("span", {}, el("i", { class: `blk ${st}`, style: "position:static;display:inline-block" }), name));
     if (states.has("empty")) lg.append(el("span", {}, el("i", { style: "height:2px;background:var(--act-empty);vertical-align:3px" }), "Quiet"));
     lg.hidden = !lg.children.length;
@@ -184,12 +184,14 @@ export function evidenceCard(b) {
     el("p", { class: "head" }, sw, el("span", { text: parts[0] }), el("span", { class: "muted t", text: parts[1] || "" })));
   const rest = parts.slice(2).join(" · ");
   if (rest) card.append(el("p", { text: rest }));
-  if (b.sounds && b.sounds.length && ["activity", "empty", "not_sure", "talk_or_tv"].includes(b.state)) {
+  if (b.heard && b.heard.length) card.append(el("p", { text: `Sounds Kettle named here: ${b.heard.join(", ").toLowerCase()}.` }));
+  if (b.taught) card.append(el("p", { class: "why", text: `${b.taught} of these windows were named with help from what Kettle learned in this kitchen.` }));
+  if (b.sounds && b.sounds.length && !(b.heard && b.heard.length) && ["activity", "empty", "not_sure", "talk_or_tv"].includes(b.state)) {
     card.append(el("p", { text: soundsSentence(b.sounds) }));
     const grid = el("div", { class: "scores" });
     for (const s of b.sounds) grid.append(el("span", { text: s.name }), el("span", { class: "num", text: s.score.toFixed(2) }));
     card.append(el("details", {}, el("summary", { text: "Details" }), grid,
-      el("p", { class: "why", text: "Scores from the sound model's own list of everyday sounds. Kettle shows only kitchen and living-room sounds, never words or who is speaking." })));
+      el("p", { class: "why", text: "Scores from the sound model's own list of everyday sounds. Only household sounds on Kettle's allow-list leave the laptop, never words, voices or bathroom sounds." })));
   }
   card.append(el("p", { class: "why", text: "Kettle labels 10-second stretches of sound. It keeps no recording." }));
   return card;

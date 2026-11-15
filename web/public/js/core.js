@@ -457,6 +457,32 @@ export function chipText(ev, theta, now, live) {
   return `Sounds like ${PHRASE[ev.label]}`;
 }
 
+/**
+ * Plan B3: the last 7 days, descriptive only (never an alarm): for each day whether kitchen activity was heard
+ * before the morning check's time, from the server's per-day tally (household.js tallyDays).
+ */
+export function week(s, now, { tz = "UTC", hop = 10 } = {}) {
+  const r = (s.rules || DEFAULT_RULES).find((x) => x.type === "kitchen_by") || { time: "10:00" };
+  const [h, m] = r.time.split(":").map(Number);
+  const rows = [];
+  const off = tzOffset(tz, now);
+  for (let i = 6; i >= 0; i--) {
+    const t = now - i * 86400, key = new Date((t + off) * 1000).toISOString().slice(0, 10);
+    const d = (s.days || {})[key];
+    const day0 = localMidnight(t, off), deadline = day0 + h * 3600 + m * 60;
+    const heardMin = d ? Math.round((d.n * hop) / 60) : 0;
+    let state = "unknown";
+    if (d && d.meal != null && d.meal < deadline) state = "yes";
+    else if (d && heardMin >= 60 && (i > 0 || now >= deadline)) state = "no";
+    rows.push({ key, day: DAYS[local(day0, off).getUTCDay()].slice(0, 3), state, at: d && d.meal != null ? clock(d.meal, off) : null,
+      kettle: d && d.kettle != null ? clock(d.kettle, off) : null, heard_min: heardMin, told_pct: d && d.n ? pyRound((100 * d.told) / d.n) : null });
+  }
+  const known = rows.filter((x) => x.state !== "unknown");
+  const yes = rows.filter((x) => x.state === "yes").length;
+  const text = known.length ? `Kitchen activity before ${hhmm(r.time)} was heard on ${yes} of the last ${known.length} day${known.length === 1 ? "" : "s"} Kettle was listening.` : "";
+  return { rows, text, time: hhmm(r.time) };
+}
+
 /** Plan F1: how much of the listened time Kettle could put a name to, so a day of Not sure never reads as quiet. */
 export function coverage(blks) {
   const heard = ["activity", "empty", "not_sure", "talk_or_tv", "private"];

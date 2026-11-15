@@ -3,6 +3,7 @@ Chromium's fake microphone, and see the labels arrive on the family view. Run ag
 
     python web/test/e2e.py http://localhost:8787 path/to/fake.wav out_dir
 """
+import os
 import json
 import sys
 import time
@@ -15,7 +16,7 @@ BASE, WAV, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 def main() -> int:
     errors, log = [], []
     with sync_playwright() as p:
-        br = p.chromium.launch(args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", f"--use-file-for-fake-audio-capture={WAV}",
+        br = p.chromium.launch(executable_path=os.environ.get("KETTLE_CHROME") or None, args=["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream", f"--use-file-for-fake-audio-capture={WAV}",
                                      "--autoplay-policy=no-user-gesture-required"])
         fam_ctx = br.new_context(viewport={"width": 393, "height": 852})
         kit_ctx = br.new_context(viewport={"width": 1280, "height": 800}, permissions=["microphone"])
