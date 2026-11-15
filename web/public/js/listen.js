@@ -3,6 +3,7 @@
 // Audio stays in this tab's memory: one 10-second array, overwritten as sound comes in, dropped on pause.
 // Only the label, its scores, a few sound names and the time are handed to the caller.
 import { prepare, decide } from "./head.js";
+import { prepareSense, refine, levelDb, quietWindow } from "./sense.js";
 
 export const SR = 16000, WIN_S = 10, HOP_S = 10;
 let ortReady = null, model = null;
@@ -19,7 +20,8 @@ export async function loadModel(onProgress = () => {}) {
   const ort = window.ort;
   ort.env.wasm.wasmPaths = "/vendor/ort/";
   ort.env.wasm.numThreads = 1;
-  const [head, ev] = await Promise.all([fetch("/model/head.json").then((r) => r.json()), fetch("/model/evidence.json").then((r) => r.json())]);
+  const [head, ev, kinds, enrolCfg] = await Promise.all(["/model/head.json", "/model/evidence.json", "/model/kinds.json", "/model/enrol.json"]
+    .map((u) => fetch(u).then((r) => { if (!r.ok) throw new Error("model download failed"); return r.json(); })));
   const front = await ort.InferenceSession.create(new Uint8Array(await (await fetch("/model/logmel.onnx")).arrayBuffer()), { executionProviders: ["wasm"] });
   const res = await fetch("/model/ced-tiny.onnx");
   if (!res.ok) throw new Error("model download failed");
@@ -35,16 +37,30 @@ export async function loadModel(onProgress = () => {}) {
   for (const p of parts) { buf.set(p, o); o += p.length; }
   const session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
   onProgress(1);
-  model = { ort, front, session, head: prepare(head, ev) };
+  model = { ort, front, session, head: prepare(head, ev), sense: prepareSense(kinds, enrolCfg) };
   return model;
 }
 
-/** float32 [160000] at 16 kHz -> { label, conf, probs, novel, sounds, ms } */
-export async function classify(wave) {
-  const m = model, t0 = performance.now();
+/** The raw frozen-head result for a window (what tools/export_onnx.py and parity-web.mjs compare with Python). */
+export async function classifyRaw(wave) {
+  const m = model;
   const f = await m.front.run({ wave: new m.ort.Tensor("float32", wave, [1, wave.length]) });
   const out = await m.session.run({ feats: f.feats });
-  return { ...decide(m.head, out.emb.data, out.audioset.data), ms: Math.round(performance.now() - t0) };
+  return { emb: out.emb.data, as: out.audioset.data, r: decide(m.head, out.emb.data, out.audioset.data) };
+}
+
+/**
+ * float32 [160000] at 16 kHz -> { label, conf, probs, novel, hold, why, kinds, sounds, db, ms, emb }.
+ * ctx = { enrolment (this kitchen's setup record or null), kindsOff (sound types the parent switched off) }.
+ * emb and db stay on this device (setup uses them); kitchen.js sends only the listed label fields.
+ */
+export async function classify(wave, ctx = {}) {
+  const m = model, t0 = performance.now();
+  const db = levelDb(wave);
+  const floor = ctx.enrolment && Number.isFinite(ctx.enrolment.floor) ? ctx.enrolment.floor : m.sense.quiet_floor_dbfs;
+  if (!(db >= floor)) return { ...quietWindow(db), db, emb: null, ms: Math.round(performance.now() - t0) };
+  const { emb, as, r } = await classifyRaw(wave);
+  return { ...refine(m.sense, { head: m.head.head, ...ctx }, emb, as, r), db, emb, ms: Math.round(performance.now() - t0) };
 }
 
 /** Decode any audio file to 16 kHz mono, first 10 s (zero-padded), for "Try your own sound". */
@@ -61,8 +77,10 @@ export async function decodeFile(file) {
  * Start the microphone. onWindow({ start, end, ...classify() }) every HOP_S seconds once 10 s are buffered.
  * clockNow() gives the shared clock (server-corrected unix seconds). Returns { stop(), level() }.
  */
-export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
+export async function startMic({ onWindow, onLevel = () => {}, onEnded = () => {}, clockNow, context = () => ({}) }) {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+  // the microphone can vanish while listening (unplugged, permission revoked in settings): tell the caller (plan E4)
+  for (const tr of stream.getAudioTracks()) tr.addEventListener("ended", () => { if (!stopped) onEnded(); });
   let ctx;
   try { ctx = new AudioContext({ sampleRate: SR }); } catch { ctx = new AudioContext(); }
   await ctx.audioWorklet.addModule("/js/worklet.js");
@@ -72,7 +90,7 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
   src.connect(tap); tap.connect(mute); mute.connect(ctx.destination);
   const ratio = ctx.sampleRate / SR;
   const ring = new Float32Array(SR * WIN_S);
-  let filled = 0, sinceHop = 0, prevEnd = null, busy = false, stopped = false, frac = 0;
+  let filled = 0, sinceHop = 0, prevEnd = null, busy = false, stopped = false, frac = 0, hop = HOP_S, slow = 0;
   tap.port.onmessage = async ({ data }) => {
     if (stopped) return;
     // resample to 16 kHz if the browser kept its own rate (simple linear: enough for a 10-s activity label)
@@ -88,18 +106,21 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow }) {
     onLevel(peak);
     ring.copyWithin(0, x.length); ring.set(x, ring.length - x.length);
     filled = Math.min(ring.length, filled + x.length); sinceHop += x.length;
-    if (filled < ring.length || sinceHop < HOP_S * SR || busy) return;
+    if (filled < ring.length || sinceHop < hop * SR || busy) return;
     sinceHop = 0; busy = true;
     try {
-      const r = await classify(ring.slice());
+      const r = await classify(ring.slice(), context());
+      slow = r.ms > 0.8 * hop * 1000 ? slow + 1 : 0;           // a device too slow for this pace (plan E10)
       const end = clockNow();
-      const start = prevEnd && end - prevEnd < 3 * HOP_S ? prevEnd : end - WIN_S;
+      const start = prevEnd && end - prevEnd < 3 * Math.max(hop, HOP_S) ? Math.max(prevEnd, end - WIN_S) : end - WIN_S;
       prevEnd = end;
-      if (!stopped) onWindow({ start, end, ...r });
+      if (!stopped) onWindow({ start, end, ...r, slow: slow >= 3 });
     } finally { busy = false; }
   };
   return {
     sampleRate: ctx.sampleRate,
+    /** seconds between windows: 10 normally, 2 while teaching Kettle this kitchen */
+    setHop(s) { hop = s; sinceHop = Math.min(sinceHop, s * SR); },
     stop() { stopped = true; ring.fill(0); tap.port.onmessage = null; stream.getTracks().forEach((t) => t.stop()); ctx.close(); },
   };
 }
