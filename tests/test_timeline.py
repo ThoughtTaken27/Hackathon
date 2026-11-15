@@ -89,3 +89,36 @@ def test_long_gap_different_sides_or_novel_sounds_are_not_bridged():
     assert [x["state"] for x in timeline.blocks(two_sides, TH)] == ["activity", "not_sure", "activity"]
     novel = run_of(0, "cooking", 3) + [dict(e, novel=True) for e in _unsure_gap(30, 2)] + run_of(50, "cooking", 3)
     assert [x["state"] for x in timeline.blocks(novel, TH)] == ["activity", "not_sure", "activity"]
+
+
+def test_rule_2c_names_a_kitchen_stretch_from_evidence():
+    """Parth's own kitchen, Sun Nov 15: pots and cutlery while cooking were shown as washing up and eating."""
+    from kettle.labels import CLASSES as C
+    def win(t, fam, **ev):
+        p = {c: 0.3 if c == "other" else 0.7 / 8 for c in C}
+        return {"start": t, "end": t + 10, "label": "other", "conf": 0.3, "probs": p, "novel": True, "sounds": [],
+                "w": {"k": 0.4, "family": fam, "v": 0, "cook": 0, "water": 0, "mouth": 0, **ev}}
+    acts = lambda evs: [b["activity"] for b in timeline.blocks(evs, 0.66) if b["state"] == "activity"]
+    cooking = [win(i * 10, "dishwashing" if i % 3 else "eating", **({"cook": 0.2} if i in (4, 9) else {})) for i in range(12)]
+    assert acts(cooking) == ["cooking"]
+    assert acts([win(i * 10, "dishwashing") for i in range(6)]) == ["kitchen"]
+    assert acts([win(i * 10, "dishwashing", **({"water": 0.3} if i == 2 else {})) for i in range(6)]) == ["dishwashing"]
+    assert acts([win(i * 10, "eating", **({"mouth": 0.3} if i == 3 else {})) for i in range(6)]) == ["eating"]
+    old = [{**win(i * 10, "eating"), "w": {"k": 0.4, "family": "eating", "v": 0}} for i in range(4)]
+    assert acts(old) == ["eating"]
+
+
+def test_rule_2d_absorbs_a_short_unsupported_washing_up_flip_into_cooking():
+    """The head was 93% sure of washing up on plates between frying, with no tap heard (browser e2e, Sun Nov 15)."""
+    from kettle.labels import CLASSES as C
+    def e(t, lab, conf, **w):
+        p = {c: (1 - conf) / 8 for c in C}
+        p[lab] = conf
+        return {"start": t, "end": t + 10, "label": lab, "conf": conf, "probs": p, "novel": lab == "other", "sounds": [],
+                "w": {"k": 0.5, "family": "cooking", "v": 0, "cook": 0, "water": 0, "mouth": 0, **w}}
+    fry = lambda t: e(t, "other", 0.3, cook=0.4)
+    plate = lambda t: e(t, "dishwashing", 0.93, cook=0.09, water=0.001)
+    tap = lambda t: e(t, "dishwashing", 0.93, water=0.3)
+    acts = lambda evs: [b["activity"] for b in timeline.blocks(evs, 0.66) if b["state"] == "activity"]
+    assert acts([fry(0), fry(10), fry(20), plate(30), plate(40), fry(50), fry(60), fry(70)]) == ["cooking"]
+    assert acts([fry(0), fry(10), fry(20), tap(30), tap(40), fry(50), fry(60), fry(70)]) == ["cooking", "dishwashing", "cooking"]

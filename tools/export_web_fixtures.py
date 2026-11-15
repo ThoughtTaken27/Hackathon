@@ -39,7 +39,9 @@ def main() -> int:
         {"shown": evidence.SHOWN, "index": [int(i) for i in evidence._IDX]}))
 
     (WEB / "public" / "model" / "witness.json").write_text(json.dumps(
-        {"kitchen": witness.KITCHEN_IDX, "veto": witness.VETO_IDX, "tau_k": witness.TAU_K, "tau_v": witness.TAU_V}))
+        {"kitchen": witness.KITCHEN_IDX, "veto": witness.VETO_IDX, "tau_k": witness.TAU_K, "tau_v": witness.TAU_V,
+         "evidence": witness.EVIDENCE_IDX, "tau_cook": witness.TAU_COOK, "tau_water": witness.TAU_WATER,
+         "tau_mouth": witness.TAU_MOUTH, "cook_share": witness.COOK_SHARE}))
     (WEB / "public" / "js" / "sounds.js").write_text(
         "// Made by tools/export_web_fixtures.py from kettle/evidence_labels.json. The only sound names Kettle may send or store.\n"
         f"export const SHOWN_SOUNDS = new Set({json.dumps(evidence.SHOWN)});\n")

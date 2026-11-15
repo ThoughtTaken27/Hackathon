@@ -52,7 +52,11 @@ export function cleanEvent(e, now) {
   // the second opinion: two scores and one of three kitchen words, nothing else
   const w = e.w;
   if (w && typeof w === "object" && MEAL.has(w.family) && w.k >= 0 && w.k <= 1 && w.v >= 0 && w.v <= 1)
+  {
     out.w = { k: Math.round(w.k * 1000) / 1000, family: w.family, v: Math.round(w.v * 1000) / 1000 };
+    // three evidence numbers for naming a kitchen stretch (core.js nameKitchen): cooking, running water, chewing
+    for (const g of ["cook", "water", "mouth"]) if (w[g] != null && +w[g] >= 0 && +w[g] <= 1) out.w[g] = Math.round(+w[g] * 1000) / 1000;
+  }
   // named household sound types: ids from the allow-list only (plan D1, A6); "taught" = helped by this kitchen's setup
   out.kinds = Array.isArray(e.kinds) ? [...new Set(e.kinds.filter((k) => Object.hasOwn(KIND_NAMES, k)))] : [];
   if (e.taught) out.taught = true;

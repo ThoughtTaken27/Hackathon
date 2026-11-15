@@ -63,6 +63,6 @@ def test_opinion_reads_only_the_listed_tags():
     a[witness.NAMES.index("Vacuum cleaner")] = 0.2
     a[witness.NAMES.index("Blender")] = 0.99          # deliberately not kitchen evidence
     a[witness.NAMES.index("Speech")] = 0.99
-    assert witness.opinion(a) == {"k": 0.61, "family": "dishwashing", "v": 0.2}
+    assert witness.opinion(a) == {"k": 0.61, "family": "dishwashing", "v": 0.2, "cook": 0.0, "water": 0.0, "mouth": 0.0}
     k, fam, v = witness.opinions(a[None])
     assert round(float(k[0]), 2) == 0.61 and fam[0] == "dishwashing" and round(float(v[0]), 2) == 0.2

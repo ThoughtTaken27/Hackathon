@@ -12,12 +12,15 @@ export function prepare(head, ev, wit = null) {
     novThr: nov ? nov.threshold : Infinity, T: head.temperature || 1 };
 }
 
-/** 527 AudioSet probabilities -> { k, family, v }: three numbers, no tag names (same as kettle/witness.py opinion()). */
+/** 527 AudioSet probabilities -> { k, family, v, cook, water, mouth }: six numbers, no tag names (same as kettle/witness.py opinion()). */
 export function opinion(wit, as) {
   let k = -1, family = null;
   for (const f of ["cooking", "dishwashing", "eating"]) { let m = 0; for (const i of wit.kitchen[f]) m = Math.max(m, as[i]); if (m > k) { k = m; family = f; } }
   let v = 0; for (const i of wit.veto) v = Math.max(v, as[i]);
-  return { k: Math.round(k * 1000) / 1000, family, v: Math.round(v * 1000) / 1000 };
+  const out = { k: Math.round(k * 1000) / 1000, family, v: Math.round(v * 1000) / 1000 };
+  // cooking, running-water and chewing evidence for naming a kitchen stretch (core.js nameKitchen; kettle/witness.py)
+  if (wit.evidence) for (const g of ["cook", "water", "mouth"]) { let m = 0; for (const i of wit.evidence[g]) m = Math.max(m, as[i]); out[g] = Math.round(m * 1000) / 1000; }
+  return out;
 }
 
 /** embedding [192] + AudioSet probabilities [527] -> { label, conf, probs, novel, w, sounds } */

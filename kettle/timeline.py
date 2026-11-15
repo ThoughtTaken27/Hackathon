@@ -8,6 +8,10 @@ Rules, in order (all transparent, all unit-tested in tests/test_timeline.py):
    or bathroom sound instead.
 2. Smoothing (2 of 3): a window shows the label that at least 2 of {previous, itself, next} share.
    If all three differ it shows "not_sure". The first and last window of a run keep their raw label.
+2c. Naming kitchen stretches (added Sun Nov 15 after a real-kitchen test showed pots while cooking as "washing up" and
+   cutlery as "eating"): windows the general tags rescued say only "kitchen"; after smoothing, each such stretch is named
+   from evidence across all of its windows (kettle/witness.py name_kitchen): cooking sounds -> cooking, running water ->
+   washing up, chewing -> eating, otherwise "kitchen activity". Head-labelled windows are unchanged.
 2b. Bridging: a "Not sure" stretch of at most BRIDGE_S seconds between two windows of the same activity takes that
    activity, so one cooking session reads as one block instead of confetti (the block's "how sure" still averages
    every window in it). Windows flagged as unlike anything Kettle learned are never bridged. Added Sat Nov 14 after
@@ -56,7 +60,9 @@ def raw_label(ev: dict, theta: float) -> str:
     if witness.vetoes(lab, w, MEAL):
         return "not_sure"                      # the head said kitchen; the tags heard a motor or the bathroom
     if witness.rescues(lab, w):
-        return w["family"]                     # the head had no answer; the tags clearly heard kitchen sounds
+        # the head had no answer; the tags clearly heard kitchen sounds. Since Sun Nov 15 (rule 2c) the window says only
+        # "kitchen"; its stretch is named later from evidence across all its windows. Older windows keep the old family.
+        return "kitchen" if "cook" in w else w["family"]
     return lab
 
 
@@ -95,6 +101,56 @@ def bridge(labels: list[str], run: list[dict], max_s: float = BRIDGE_S) -> list[
         if before == after and before not in ("not_sure", "talk_or_tv") and short and not novel:
             out[i:j + 1] = [before] * (j - i + 1)
         i = j + 1
+    return out
+
+
+def name_stretches(labels: list[str], run: list[dict]) -> list[str]:
+    """Rule 2c: each stretch of "kitchen" windows takes one name from evidence across the whole stretch (witness.name_kitchen).
+
+    A stretch named "cooking" next to a head-labelled cooking stretch then joins it into one block (rule 3)."""
+    out = list(labels)
+    i = 0
+    while i < len(out):
+        if out[i] != "kitchen":
+            i += 1
+            continue
+        j = i
+        while j + 1 < len(out) and out[j + 1] == "kitchen":
+            j += 1
+        name = witness.name_kitchen(run[i:j + 1])
+        for k in range(i, j + 1):
+            out[k] = name
+        i = j + 1
+    return _absorb(out, run)
+
+
+def _segments(labels: list[str]) -> list[tuple[int, int]]:
+    segs, i = [], 0
+    while i < len(labels):
+        j = i
+        while j + 1 < len(labels) and labels[j + 1] == labels[i]:
+            j += 1
+        segs.append((i, j))
+        i = j + 1
+    return segs
+
+
+def _absorb(labels: list[str], run: list[dict]) -> list[str]:
+    """Rule 2d (added Sun Nov 15): a washing-up, eating or unnamed kitchen stretch with no evidence of its own
+    (no running water, no chewing) is cooking when it is at most SHORT_FLIP windows long and sits next to cooking.
+    The case: the head was 93% sure of "washing up" on plates and cutlery between frying, with no tap heard.
+    (A wider version, renaming long unsupported washing-up stretches when cooking sounds outvote water, cost 3 of
+    132 research-home sessions on dev and was dropped.)"""
+    out = list(labels)
+    segs = _segments(out)
+    for n, (i, j) in enumerate(segs):
+        lab = out[i]
+        if lab not in ("dishwashing", "eating", "kitchen") or not witness.unsupported(lab, run[i:j + 1]):
+            continue
+        near = [out[segs[m][0]] for m in (n - 1, n + 1) if 0 <= m < len(segs)]
+        if j - i + 1 <= witness.SHORT_FLIP and "cooking" in near:
+            for k in range(i, j + 1):
+                out[k] = "cooking"
     return out
 
 
@@ -193,7 +249,7 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
         labs = smooth([raw_label(e, theta) for e in run])
         if hold_last and r == len(all_runs) - 1:        # rule 5: the newest window isn't settled yet; its neighbour
             labs, run = labs[:-1], run[:-1]             # already used it for 2-of-3, and bridging must not lean on it
-        labs = bridge(labs, run, bridge_s)
+        labs = name_stretches(bridge(labs, run, bridge_s), run)
         n = len(run)
         i = 0
         while i < n:

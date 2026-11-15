@@ -3,11 +3,61 @@
   "_chosen_on": "Sat Nov 14 2026, ~9:45 PM CT, on the TUNE halves only of DESED public eval, Kitchen20 and ESC-50 household clips, plus SINS dev out-of-fold predictions (eval/PREREGISTER-V2.md). The TEST halves had not been scored when this file was committed.",
   "_not_included": "'Blender' and 'Microwave oven' are deliberately not kitchen evidence: on the tune halves the tags could not tell a blender from a vacuum cleaner or electric shaver, or a microwave from a fan. Kettle misses blenders rather than call vacuuming 'cooking'.",
   "kitchen": {
-    "cooking": ["Frying (food)", "Sizzle", "Boiling", "Chopping (food)", "Stir"],
-    "dishwashing": ["Dishes, pots, and pans", "Sink (filling or washing)", "Water tap, faucet"],
-    "eating": ["Cutlery, silverware", "Chewing, mastication", "Biting", "Crunch"]
+    "cooking": [
+      "Frying (food)",
+      "Sizzle",
+      "Boiling",
+      "Chopping (food)",
+      "Stir"
+    ],
+    "dishwashing": [
+      "Dishes, pots, and pans",
+      "Sink (filling or washing)",
+      "Water tap, faucet"
+    ],
+    "eating": [
+      "Cutlery, silverware",
+      "Chewing, mastication",
+      "Biting",
+      "Crunch"
+    ]
   },
-  "veto": ["Vacuum cleaner", "Mechanical fan", "Air conditioning", "Hair dryer", "Electric shaver, electric razor", "Electric toothbrush", "Toothbrush", "Toilet flush", "Bathtub (filling or washing)", "Power tool", "Drill"],
+  "veto": [
+    "Vacuum cleaner",
+    "Mechanical fan",
+    "Air conditioning",
+    "Hair dryer",
+    "Electric shaver, electric razor",
+    "Electric toothbrush",
+    "Toothbrush",
+    "Toilet flush",
+    "Bathtub (filling or washing)",
+    "Power tool",
+    "Drill"
+  ],
   "tau_k": 0.15,
-  "tau_v": 0.3
+  "tau_v": 0.3,
+  "_evidence": "Added Sun Nov 15 2026 after Parth's own kitchen test (pots and cutlery while cooking were shown as washing up and eating). When most of a kitchen stretch was named by the general tags (the head was out of its depth), the second opinion no longer picks cooking, washing up or eating from the single loudest tag in each 10-s window ('Dishes, pots, and pans' meant washing up; 'Cutlery' meant eating). The windows are shown as one 'kitchen activity' stretch, and the stretch is named from evidence across all its windows: cooking only if cooking sounds (frying, sizzle, boiling, chopping, stirring) were heard in at least cook_share of them, washing up only if running water was heard, eating only if chewing or crunching was heard; otherwise it stays 'kitchen activity'. Chosen on SINS dev sessions and the TUNE halves of DESED public eval and Kitchen20 (eval/kitchen_naming.py). Head-labelled stretches are unchanged.",
+  "evidence": {
+    "cook": [
+      "Frying (food)",
+      "Sizzle",
+      "Boiling",
+      "Chopping (food)",
+      "Stir"
+    ],
+    "water": [
+      "Water tap, faucet",
+      "Sink (filling or washing)"
+    ],
+    "mouth": [
+      "Chewing, mastication",
+      "Biting",
+      "Crunch"
+    ]
+  },
+  "tau_cook": 0.05,
+  "tau_water": 0.05,
+  "tau_mouth": 0.1,
+  "cook_share": 0.1
 }

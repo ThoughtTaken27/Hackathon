@@ -5,13 +5,13 @@
 // ---------------------------------------------------------------- labels
 export const CLASSES = ["absence", "cooking", "dishwashing", "eating", "other", "social_activity", "vacuum_cleaner", "watching_tv", "working"];
 export const DISPLAY = { absence: "Quiet", cooking: "Cooking", dishwashing: "Washing up", eating: "Eating", other: "Some activity",
-  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing" };
+  social_activity: "Conversation", vacuum_cleaner: "Vacuuming", watching_tv: "TV", working: "Typing", kitchen: "Kitchen activity" };
 export const PHRASE = { absence: "quiet", cooking: "cooking", dishwashing: "washing up", eating: "eating", other: "some activity",
-  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing" };
+  social_activity: "conversation", vacuum_cleaner: "vacuuming", watching_tv: "TV", working: "typing", kitchen: "kitchen activity" };
 export const COLOUR = { absence: "--act-empty", cooking: "--act-cooking", dishwashing: "--act-washing", eating: "--act-eating",
-  other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working" };
-export const MEAL = new Set(["cooking", "dishwashing", "eating"]);
-export const ACTIVE = new Set(CLASSES.filter((c) => c !== "absence"));
+  other: "--act-moving", social_activity: "--act-talk", vacuum_cleaner: "--act-vacuum", watching_tv: "--act-tv", working: "--act-working", kitchen: "--act-kitchen" };
+export const MEAL = new Set(["cooking", "dishwashing", "eating", "kitchen"]);   // "kitchen": a stretch heard as kitchen, not which activity
+export const ACTIVE = new Set([...CLASSES, "kitchen"].filter((c) => c !== "absence"));
 const TALK_OR_TV_MARGIN = 0.15;
 // The named household sound types (web/public/model/kinds.json, measured by eval/beyond.py). Order = display order.
 // No pets, phone or doorbell: the same choice as the sound-name allow-list (kettle/evidence_labels.json).
@@ -75,6 +75,70 @@ export const BRIDGE_S = 30;
 //   rescue: the head has no answer (unfamiliar sound, or below theta) and k >= TAU_K and k > v  -> show w.family
 //   veto:   the head says a kitchen activity but v >= TAU_V and v > k                           -> show "Not sure"
 export const TAU_K = 0.15, TAU_V = 0.3;
+// Rule 2c (kettle/witness.py name_kitchen; models/witness.json "_evidence"; added Sun Nov 15 after a real-kitchen test showed
+// pots while cooking as "washing up" and cutlery as "eating"). Rescued windows say only "kitchen"; each stretch of them is
+// named from evidence across all its windows: each window votes for the louder of cooking sounds and running water;
+// cooking if its votes are >= COOK_SHARE of the stretch and >= water's; else any water vote -> washing up;
+// chewing -> eating; otherwise "kitchen activity". Windows from before carry no evidence numbers and keep the old family.
+export const TAU_COOK = 0.05, TAU_WATER = 0.05, TAU_MOUTH = 0.1, COOK_SHARE = 0.1;
+const FAMILIES = ["cooking", "dishwashing", "eating"];
+export function nameKitchen(evs) {
+  const ws = evs.map((e) => e.w || {});
+  if (!ws.some((w) => "cook" in w)) {
+    const fams = ws.map((w) => w.family).filter((f) => FAMILIES.includes(f));
+    if (!fams.length) return "kitchen";
+    let best = FAMILIES[0];
+    for (const f of FAMILIES) if (fams.filter((x) => x === f).length > fams.filter((x) => x === best).length) best = f;
+    return best;
+  }
+  // each window votes for the louder of its cooking and running-water evidence (a sink at 0.7 beats a faint "stir")
+  const n = ws.length;
+  const cook = ws.filter((w) => (w.cook || 0) >= TAU_COOK && (w.cook || 0) >= (w.water || 0)).length;
+  const water = ws.filter((w) => (w.water || 0) >= TAU_WATER && (w.water || 0) > (w.cook || 0)).length;
+  if (cook >= Math.max(1, COOK_SHARE * n) && cook >= water) return "cooking";
+  if (water >= 1) return "dishwashing";
+  if (ws.some((w) => (w.mouth || 0) >= TAU_MOUTH)) return "eating";
+  return "kitchen";
+}
+export function nameStretches(labels, run) {
+  const out = labels.slice();
+  let i = 0;
+  while (i < out.length) {
+    if (out[i] !== "kitchen") { i++; continue; }
+    let j = i;
+    while (j + 1 < out.length && out[j + 1] === "kitchen") j++;
+    const name = nameKitchen(run.slice(i, j + 1));
+    for (let k = i; k <= j; k++) out[k] = name;
+    i = j + 1;
+  }
+  return absorb(out, run);
+}
+// Rule 2d (kettle/timeline.py _absorb): a washing-up, eating or unnamed kitchen stretch with no evidence of its own (no running
+// water, no chewing), at most SHORT_FLIP windows long, next to cooking, is cooking. The case: the head was 93% sure of
+// "washing up" on plates and cutlery between frying, with no tap heard.
+export const SHORT_FLIP = 3;
+export function votes(evs) {
+  const ws = evs.map((e) => e.w || {});
+  return { cook: ws.filter((w) => (w.cook || 0) >= TAU_COOK && (w.cook || 0) >= (w.water || 0)).length,
+    water: ws.filter((w) => (w.water || 0) >= TAU_WATER && (w.water || 0) > (w.cook || 0)).length,
+    mouth: ws.filter((w) => (w.mouth || 0) >= TAU_MOUTH).length, has: ws.some((w) => "cook" in w) };
+}
+function unsupported(label, evs) {
+  const v = votes(evs);
+  if (!v.has) return false;
+  return (label === "dishwashing" && v.water === 0) || (label === "eating" && v.mouth === 0) || label === "kitchen";
+}
+function absorb(labels, run) {
+  const out = labels.slice(), segs = [];
+  for (let i = 0; i < out.length;) { let j = i; while (j + 1 < out.length && out[j + 1] === out[i]) j++; segs.push([i, j]); i = j + 1; }
+  segs.forEach(([i, j], n) => {
+    const lab = out[i];
+    if (!["dishwashing", "eating", "kitchen"].includes(lab) || !unsupported(lab, run.slice(i, j + 1))) return;
+    const near = [n - 1, n + 1].filter((m) => m >= 0 && m < segs.length).map((m) => out[segs[m][0]]);
+    if (j - i + 1 <= SHORT_FLIP && near.includes("cooking")) for (let k = i; k <= j; k++) out[k] = "cooking";
+  });
+  return out;
+}
 export function headLabel(ev, theta) {
   if (ev.novel) return "not_sure";
   const p = ev.probs;
@@ -90,7 +154,7 @@ export function rawLabel(ev, theta) {
   if (ev.private) return "private";
   const lab = headLabel(ev, theta);
   if (vetoes(lab, ev.w)) return "not_sure";
-  if (rescues(lab, ev.w)) return ev.w.family;
+  if (rescues(lab, ev.w)) return "cook" in ev.w ? "kitchen" : ev.w.family;
   return lab;
 }
 export const bySounds = (ev, theta) => rescues(headLabel(ev, theta), ev.w);
@@ -190,7 +254,7 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
   allRuns.forEach((full, r) => {
     let labs = smooth(full.map((e) => rawLabel(e, theta))), run = full;
     if (holdLast && r === allRuns.length - 1) { labs = labs.slice(0, -1); run = full.slice(0, -1); }
-    labs = bridge(labs, run, bridgeS);
+    labs = nameStretches(bridge(labs, run, bridgeS), run);
     let i = 0;
     while (i < run.length) {
       let j = i;
@@ -660,7 +724,8 @@ export function blockView(b, off, names) {
 }
 export function chipText(ev, theta, now, live) {
   if (!ev || !live || now - ev.end > 15) return null;
-  const lab = rawLabel(ev, theta);             // the same rule as the day bar, so the chip never disagrees with it
+  let lab = rawLabel(ev, theta);               // the same rule as the day bar, so the chip never disagrees with it
+  if (lab === "kitchen") lab = nameKitchen([ev]);   // rule 2c on this one window
   return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking or TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
 }
 
