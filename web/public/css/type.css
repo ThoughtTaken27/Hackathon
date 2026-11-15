@@ -154,3 +154,27 @@ strong, b, .meta strong, td.strong, tr.row-shipped td, .dc-row.ours .dc-label, .
 .meter i { transform: scaleY(max(var(--v, .4), .4)); }
 @media (max-width: 899px) { .k-status .dot { margin-top: 19px; } }
 @media (max-width: 700px) { .k-status .dot { margin-top: 9px; } }   /* centre on a 40px heading line (36/40) */
+
+/* critique round 2: measure, card rhythm, rags */
+#content p, #content .gap { max-width: 640px; }                       /* how sure: 65-75 characters a line, not 140 */
+#content .stat-row { margin: 24px 0; }
+.summary, .verdict, .lx-statement, .lead, .lx-lede, .lx-sub { text-wrap: pretty; }
+.grid2 .card.stack { padding: 18px 20px; }                         /* same inset as the check cards beside it */
+.grid2 .card.stack > * + * { margin-top: 12px; }
+.grid2 .card.stack .meta { font-size: var(--f14); line-height: 22px; }
+#content .card > p { font-size: var(--f16); line-height: var(--l16); letter-spacing: var(--tr-b); color: var(--text); }
+#content .card > p.meta { font-size: var(--f14); line-height: 22px; letter-spacing: 0; color: var(--muted); }
+#content .card > p + p { margin-top: 12px; }
+#content .card > .section-title + p { margin-top: 0; }
+
+/* status pill: 17px radius is a pill at one line and a soft card at two, never a squashed capsule */
+.hb { border-radius: 17px; padding: 7px 14px 7px 12px; align-items: flex-start; }
+.hb .dot { margin-top: 6px; }
+/* phones: section gaps scale down with the type (160px of air reads as a broken page at 393px) */
+@media (max-width: 600px) {
+  .lx-sec { padding-top: 112px; }
+  .lx-why { padding-top: 104px; }
+  .lx-built { margin-top: 72px; }
+  .lx-final { margin-top: 112px; }
+  .lx-sec-head { margin-bottom: 40px; }
+}
