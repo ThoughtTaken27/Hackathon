@@ -1,5 +1,16 @@
 # Changelog
 
+## Sun Nov 15, ~4:10–4:30 PM CT: sound head v3 (real-home training), measured and not shipped
+- Why: in real homes (`results/real_homes.json`) the v2 sound head almost never named anything.
+- `eval/sound_head_v3.py`, pre-registered in `eval/PREREGISTER-SOUNDS-V3.md` (committed before any test window was scored):
+  v2's method with real-home training audio (TUT-SED 2016 development homes, DESED tune half); tested once on fresh real homes
+  (TUT-SED 2016 evaluation homes, DESED test half) plus v2's test halves.
+- Result (`results/sound_head_v3.json`): more correct names in the new homes (80 → 96; timer beep 6 → 18 of 39, frying
+  34 → 37 of 42, vacuum 38 → 41 of 42) at a similar false-name rate (33.5 → 35.7 per 1,000 windows), but fewer names pass
+  the bar (7 → 5): dishes, tap, cupboards and footsteps failed on the tune side (short events inside 10-s windows). By the
+  adoption rule written first, **v2 stays on the device.** On How sure and in the write-up.
+- Data credited: TUT-SED 2016 evaluation set, DESED public evaluation set.
+
 ## Sun Nov 15, ~4:00–5:00 PM CT: neutral by default, any room; real-home test; merged to main
 - Merged: PR ThoughtTaken27/Hackathon#1 (handover v3.3 branch, incl. the official-template write-up) + v3.4 into `main`.
 - Neutral by default: no screen says "Mom" or "Dad" unless the family typed it. Until setup names someone, screens say

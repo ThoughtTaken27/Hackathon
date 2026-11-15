@@ -68,7 +68,7 @@ def tut(root: Path, hop: float, cache: Path) -> dict:
         for wav in sorted((root / "audio" / "home").glob("*.wav")):
             x, sr = sf.read(wav, dtype="float32", always_2d=True)
             m = to_16k_mono(x.T, sr)
-            ann = [(float(a), float(b), c.strip()) for a, b, c in (l.split("\t")[:3] for l in (root / "meta" / "home" / f"{wav.stem}.ann").read_text().splitlines() if l.strip())]
+            ann = [(float(a.replace(",", ".")), float(b.replace(",", ".")), c.strip()) for a, b, c in (l.split("\t")[:3] for l in (root / "meta" / "home" / f"{wav.stem}.ann").read_text().splitlines() if l.strip())]
             t = 0.0
             while t + 10 <= len(m) / 16000 + 1e-6:
                 waves.append(m[int(t * 16000):int(t * 16000) + 160000])

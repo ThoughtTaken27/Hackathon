@@ -25,6 +25,10 @@ def main() -> None:
            "real_homes": (lambda r: {"source": r["source"], "n_windows": r["n_windows"], "n_recordings": len(r["recordings"]),
                                      "minutes": round(sum(v["minutes"] for v in r["recordings"].values()), 1),
                                      "sounds": r["sounds"], "activity": r["activity"]})(R("real_homes.json")),
+           "sound_head_v3": (lambda r: {"adoption": r["adoption"], "n": r["n"], "annotated": r["annotated_in_real_home_test"],
+                                        "real_home": {v: {k: {"true": r[v]["real_home"][k]["true_k"], "n": r[v]["real_home"][k]["recall"]["n"],
+                                                               "false": r[v]["real_home"][k]["false_k"]} for k in r["annotated_in_real_home_test"]} for v in ("v2", "v3")},
+                                        "pooled_v2": {k: {"precision": r["v2"]["pooled"][k]["precision"], "recall": r["v2"]["pooled"][k]["recall"]} for k in r["v2"]["pooled"]}})(R("sound_head_v3.json")),
            "source": "tools/export_accuracy.py"}
     (ROOT / "web" / "public" / "data" / "accuracy.json").write_text(json.dumps(out))
     print("wrote web/public/data/accuracy.json")
@@ -127,6 +131,15 @@ def fill_writeup(A: dict) -> None:
         "", "So in homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all; the precision-first "
         "thresholds don't carry over. `results/real_homes.json` (`python -m eval.real_homes`).",
     ])
+    V = A["sound_head_v3"]; ad = V["adoption"]
+    real += ("\n\n**Trying to fix that (sound head v3, pre-registered in `eval/PREREGISTER-SOUNDS-V3.md`):** we added real-home audio "
+             f"(those 10 TUT homes and half of DESED) to the sound head's training and tested once on {V['n']['test_real_home']} windows from "
+             "real homes it never heard (TUT-SED 2016 evaluation homes + the other half of DESED). It named more sounds correctly there "
+             f"({ad['real_home_true_names_v2']} → {ad['real_home_true_names_v3']} true names; false names per 1,000 windows "
+             f"{ad['real_home_false_per_1000_v2']} → {ad['real_home_false_per_1000_v3']}), but fewer names passed the bar "
+             f"({ad['shown_v2']} → {ad['shown_v3']}), so by the rule we wrote first it is **not shipped**; v2 stays. "
+             "Per sound in those new homes (v2): " + "; ".join(f"{k} {v['true']} of {v['n']}" for k, v in V["real_home"]["v2"].items()) +
+             ". `results/sound_head_v3.json`.")
     blocks = {"headline": headline, "realhomes": real, "accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
     p = ROOT / "docs" / "WRITEUP.md"
     t = p.read_text()

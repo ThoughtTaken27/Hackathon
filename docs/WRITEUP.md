@@ -138,6 +138,8 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 - Named sounds: tap named in 0 of 46 windows that had it, 0 wrong names; dishes named in 0 of 72 windows that had it, 0 wrong names; cupboard named in 2 of 29 windows that had it, 0 wrong names; footsteps named in 0 of 24 windows that had it, 0 wrong names.
 
 So in homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all; the precision-first thresholds don't carry over. `results/real_homes.json` (`python -m eval.real_homes`).
+
+**Trying to fix that (sound head v3, pre-registered in `eval/PREREGISTER-SOUNDS-V3.md`):** we added real-home audio (those 10 TUT homes and half of DESED) to the sound head's training and tested once on 448 windows from real homes it never heard (TUT-SED 2016 evaluation homes + the other half of DESED). It named more sounds correctly there (80 → 96 true names; false names per 1,000 windows 33.48 → 35.71), but fewer names passed the bar (7 → 5), so by the rule we wrote first it is **not shipped**; v2 stays. Per sound in those new homes (v2): frying 34 of 42; blender 0 of 37; dishes 1 of 92; tap 1 of 79; cupboard 0 of 22; alarm 6 of 39; vacuum 38 of 42; footsteps 0 of 26. `results/sound_head_v3.json`.
 <!-- realhomes:end -->
 
 <!-- tradeoff:start -->

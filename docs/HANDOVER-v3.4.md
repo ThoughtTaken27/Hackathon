@@ -62,3 +62,10 @@ the named-sounds line is now "rules passed one sound; a small trained classifier
   `curl -L -o audio.zip https://zenodo.org/api/records/45759/files/TUT-sound-events-2016-development.audio.zip/content`, same for
   `.meta.zip`, unzip both there). Result in `results/real_homes.json`, on How sure and in the write-up. Scored once; don't rerun
   to tune. Our own kitchen recording (v3.3 §4) is still the best next measurement.
+
+## 7. Sound head v3 (4:10–4:30 PM): measured, not shipped
+Real-home training audio (TUT-SED 2016 dev homes + DESED tune half), one test on fresh real homes (TUT-SED 2016 evaluation +
+DESED test half). More correct names there (80 → 96) but fewer names pass the bar (7 → 5), so by the rule written first v2
+stays. `results/sound_head_v3.json`, How sure section "Trying to fix that". Don't rerun it to tune: both new test sets are used.
+Note for the Q&A: on that bigger test, v2's own running water (30%) and footsteps (33%) recall fall under the 40% bar; we did
+not change what ships after seeing it. Next real step: our own labelled kitchen recording (v3.3 §4).

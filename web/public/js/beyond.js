@@ -84,6 +84,15 @@ async function accuracy(box) {
         ...Object.entries(H.sounds).map(([k, v]) => [`${KIND_NAMES[k] || k}: named when present`, `${v.recall.k} of ${v.windows_with_sound} (${v.false_named_windows} wrong names)`])]),
       h("p", { class: "gap", text: "In homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all: the precision-first thresholds don't carry over. Teaching Kettle the room at setup is meant for this, and isn't measured here." }));
   }
+  const V = A.sound_head_v3;
+  if (V) {
+    const ad = V.adoption;
+    sec.append(h("h3", { text: "Trying to fix that: training on real homes too (not shipped)" }),
+      h("p", { class: "meta", text: `We added real-home audio (those 10 homes and half of DESED's domestic clips) to the sound head's training, then tested once on ${V.n.test_real_home} windows from real homes it never heard.` }),
+      table(["Sound (new homes)", "v2, shipped: named when present", "v3: named when present", "Wrong names v2 → v3"],
+        V.annotated.map((k) => [KIND_NAMES[k] || k, `${V.real_home.v2[k].true} of ${V.real_home.v2[k].n}`, `${V.real_home.v3[k].true} of ${V.real_home.v3[k].n}`, `${V.real_home.v2[k].false} → ${V.real_home.v3[k].false}`])),
+      h("p", { class: "gap", text: `v3 named more sounds correctly (${ad.real_home_true_names_v2} → ${ad.real_home_true_names_v3}) but fewer names passed the bar (${ad.shown_v2} → ${ad.shown_v3}), so by the rule we wrote before the run it isn't shipped. Its real-home labels mark short events (a clink, a drawer) inside 10-second windows, which made dishes, the tap, cupboards and footsteps harder to learn, not easier.` }));
+  }
   const J = A.judge.dev, best = J["0.9"];
   sec.append(h("h3", { text: "Tried and not shipped" }),
     h("p", { class: "gap", text: `A trained judge on the 527 sound tags, across many homes: at its strictest it removed every wrong-activity call (${best.wrong_activity[0]} → ${best.wrong_activity[1]}) but named fewer real meals (${best.right[0]} → ${best.right[1]}), so it failed the gate we wrote before running it. Bridging "unlike anything it learned" gaps and naming TV from its tag didn't move the development numbers. All in results/judge.json and results/confetti.json.` }));
