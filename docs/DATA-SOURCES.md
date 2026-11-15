@@ -18,6 +18,9 @@ Reachability checked from the Claude Code cloud container on **Nov 13, 2026**. C
 | MediaPipe Pose (PyPI `mediapipe`) | ChairCheck pose tracking | No | ✅ PyPI reachable | Pretrained: credit it |
 | [CDC STEADI chair-stand norms](https://www.cdc.gov/steadi/) | ChairCheck thresholds by age/sex | — | — | |
 | Hugging Face | Pretrained models, Spaces hosting | Optional | ✅ 200 | |
+| [ESC-50 full set](https://github.com/karolpiczak/ESC-50) (Piczak 2015; `raw.githubusercontent.com/karolpiczak/ESC-50`) | All 2,000 clips, 50 categories, 5 folds: sound-type calibration and safety-alert evaluation, held out from the frozen head (`eval/esc50_all.py`) | No | ✅ Nov 15, 2026 | CC BY-NC 3.0. Accessed 2026-11-15. Audio git-ignored in `data/clips/esc50_all/`; only CED-tiny embeddings/scores cached |
+| [Nonspeech7k](https://zenodo.org/records/6967442) (Rashid et al., IET Signal Processing 2023), test split only | 725 human non-speech clips (breath, cough, crying, laugh, screaming, sneeze, yawm): sound-type calibration and safety-alert evaluation, held out from the frozen head (`eval/nonspeech7k.py`) | No | ✅ Nov 15, 2026 | Licence per Zenodo metadata: CC-BY-4.0 (cc-by-4.0). Accessed 2026-11-15. Audio git-ignored in `data/clips/nonspeech7k/` |
+| Synthetic alarms (our own code, `eval/synth_alarms.py`) | 960 generated clips: NFPA 72 smoke (t3), CO (t4), kitchen-timer and no-alarm over pink noise / benign ESC-50 backgrounds at 20/10/0/-5 dB SNR: safety-alert evaluation, held out from the frozen head | No | ✅ Nov 15, 2026 | Synthetic, labels known by construction; regenerable from seed, no audio saved. Accessed 2026-11-15. Backgrounds use ESC-50 (CC BY-NC 3.0) |
 
 ## Practices
 

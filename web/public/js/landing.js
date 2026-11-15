@@ -2,6 +2,7 @@
 import { DISPLAY, COLOUR, clock, rawLabel } from "./core.js";
 import { $, el, setText, dayBar, legend, rulesList, homes, reduceMotion } from "./ui.js";
 import { play } from "./sample.js";
+import { place } from "./people.js";
 import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
 
 const RM = reduceMotion();
@@ -11,9 +12,15 @@ const nav = $("#nav");
 const onScroll = () => nav.classList.toggle("solid", scrollY > 24);
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 const mine = Object.values(homes()).sort((a, b) => b.saved - a.saved)[0];
-if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? `${mine.parent || "My"}'s kitchen` : "Kitchen screen"; }
+if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? place({ parent: mine.parent, relation: mine.relation }, mine.room, "family") : "Room screen"; }
 
-// ---------- hero panel: what Kettle heard (Dad's laptop) beside what Meera sees
+// ---------- invented-example switcher: only changes the title text
+document.querySelectorAll(".lp-sw").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".lp-sw").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  $("#lp-title").textContent = `${place({ parent: b.dataset.n, relation: b.dataset.r }, { type: b.dataset.t })}, today`;
+}));
+
+// ---------- hero panel: what Kettle heard (an invented device) beside what Meera sees
 const heardList = $("#lp-heard"), steps = [...document.querySelectorAll(".lp-steps span")];
 const heroBar = dayBar($("#lp-bar"));
 let heard = [], stepT = [];
@@ -56,13 +63,13 @@ const STEP_MS = 6500;
 let cur = 0, timer = null, flowBar = null;
 const meter = () => el("span", { class: "su-meter", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("i"), el("i"));
 const views = [
-  () => [el("p", { class: "su-k", text: "Meera's phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect Dad's laptop" }),
-    el("p", { class: "su-p", text: "On his kitchen laptop, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
+  () => [el("p", { class: "su-k", text: "Meera's phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect the device in Dad's kitchen" }),
+    el("p", { class: "su-p", text: "On the device in Dad's kitchen, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
     el("p", { class: "su-p", text: "The code works for 48 hours." })],
-  () => [el("p", { class: "su-k", text: "Dad's kitchen laptop" }), el("p", { class: "su-h", text: "This laptop listens for kitchen sounds." }),
+  () => [el("p", { class: "su-k", text: "Dad's kitchen device" }), el("p", { class: "su-h", text: "This device listens for the sounds of the room." }),
     el("p", { class: "su-p", text: "It only notes the kind of sound, like dishes or TV. It keeps no recordings and no words. You can pause it or turn it off any time." }),
     el("div", {}, el("span", { class: "su-btn", text: "Yes, Meera can see this" }), el("span", { class: "su-btn ghost", text: "Not now" }))],
-  () => [el("p", { class: "su-k" }, el("i"), "Dad's kitchen laptop, listening"), el("p", { class: "su-h", text: "Listening for kitchen sounds" }),
+  () => [el("p", { class: "su-k" }, el("i"), "Dad's kitchen device, listening"), el("p", { class: "su-h", text: "Listening for the sounds of the room" }),
     el("span", { class: "su-chip" }, "Sounds like cooking", meter()),
     el("div", { class: "su-list" }, el("p", {}, el("span", { text: "Sound, 10 seconds" }), el("b", { text: "dropped" })), el("p", {}, el("span", { text: "Label sent to Meera" }), el("b", { text: "Cooking, 8:05 AM" })))],
   () => { const box = el("div"); const holder = [el("p", { class: "su-k", text: "Meera's phone" }), el("p", { class: "su-h", text: "Dad's kitchen today" }),
@@ -91,7 +98,7 @@ new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting && !fl
 const K = $("#kitchen-canvas"), F = $("#family-canvas");
 K.append(el("div", { class: "kitchen k-mini" },
   el("div", { class: "k-status", "data-state": "listening" }, el("span", { class: "dot" }), el("div", {},
-    el("h1", { class: "k-head", text: "Listening for kitchen sounds" }), el("p", { class: "k-body", text: "Meera sees the kinds of sounds, not recordings or words." }))),
+    el("h1", { class: "k-head", text: "Listening for the sounds of the room" }), el("p", { class: "k-body", text: "Meera sees the kinds of sounds, not recordings or words." }))),
   el("div", { class: "chip big" }, el("span", { class: "txt", id: "k-chip", text: "Waiting for the first sound…" })),
   el("div", { class: "k-controls" }, el("span", { class: "btn kbtn primary pause", text: "Pause" }), el("span", { class: "btn kbtn", text: "Turn it off" })),
   el("div", { id: "k-bar" })));
@@ -204,5 +211,10 @@ document.querySelectorAll(".lx-faq details").forEach((d) => {
 
 // sample-day switch: the sliding pill
 const seg = $(".lx-seg"), ind = el("i", { class: "ind", "aria-hidden": "true" }); seg.prepend(ind); seg.classList.add("has-ind");
-function moveInd() { const b = seg.querySelector('[aria-pressed="true"]'); if (!b) return; ind.style.width = b.offsetWidth + "px"; ind.style.transform = `translateX(${b.offsetLeft}px)`; }
-new ResizeObserver(moveInd).observe(seg); moveInd();
+function moveInd() {   // size and place the pill from the chosen button itself, so it stays centred at any height and on any row
+  const b = seg.querySelector('[aria-pressed="true"]'); if (!b) return;
+  ind.style.width = b.offsetWidth + "px"; ind.style.height = b.offsetHeight + "px";
+  ind.style.transform = `translate(${b.offsetLeft}px, ${b.offsetTop}px)`;
+}
+const segRo = new ResizeObserver(moveInd); segRo.observe(seg); seg.querySelectorAll("button").forEach((b) => segRo.observe(b));
+addEventListener("resize", () => requestAnimationFrame(moveInd)); moveInd();

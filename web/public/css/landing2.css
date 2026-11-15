@@ -116,8 +116,8 @@ main > section:not(.lx-hero), .lx-foot { position: relative; z-index: 1; }
 
 /* sample-day switch: one white pill slides to the choice (transitions.dev "Tabs sliding" pattern, 380ms out-curve) */
 .lx-seg { position: relative; isolation: isolate; }
-.lx-seg .ind { position: absolute; z-index: -1; top: 3px; left: 0; height: 34px; border-radius: 999px; background: #F4F4F5;
-  box-shadow: 0 6px 18px -8px rgba(0,0,0,.7); transition: transform 380ms cubic-bezier(.22,1,.36,1), width 380ms cubic-bezier(.22,1,.36,1); }
+.lx-seg .ind { position: absolute; z-index: -1; top: 0; left: 0; height: 44px; border-radius: 999px; background: #F4F4F5;
+  box-shadow: 0 6px 18px -8px rgba(0,0,0,.7); transition: transform 380ms cubic-bezier(.22,1,.36,1), width 380ms cubic-bezier(.22,1,.36,1), height 380ms cubic-bezier(.22,1,.36,1); }
 .lx-seg.has-ind button[aria-pressed="true"] { background: transparent; color: #0B0C0E; }
 .lx-seg button { transition: color 240ms ease; }
 .lx-seg button:active { transform: scale(.97); }
