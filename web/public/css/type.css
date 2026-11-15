@@ -11,15 +11,19 @@
   --f22: 22px; --l22: 30px;
   --f24: 24px; --l24: 34px;
   --f28: 28px; --l28: 38px;
-  --tr-s: 0em; --tr-b: -0.006em; --tr-m: -0.011em; --tr-l: -0.018em; --tr-xl: -0.03em; --tr-d: -0.034em; --tr-h: -0.038em;   /* a touch looser than the dark theme: friendlier, less "tech" */
+  --tr-s: 0em; --tr-b: -0.006em; --tr-m: -0.011em; --tr-l: -0.018em; --tr-xl: -0.03em; --tr-d: -0.045em; --tr-h: -0.05em;
 }
 
-/* ---------- heading accents: plain, same size and line as the heading (serif italics removed with the light theme, Nov 15) ---------- */
-.lx-h1 em, .lx-h2 em, .h1 em, .top h1 em, .f-mini h1 em, em.s { font-size: 1em; line-height: inherit; letter-spacing: inherit; font-style: normal; font-family: inherit; }
-.lx-h1 { line-height: 1.02; } .lx-h2 { line-height: 1.06; } .h1, .top h1 { line-height: 1.04; }
+/* ---------- serif accents: same optical size everywhere, and they never push their line down ----------
+   An inline box at 1.08em with an inherited unitless line-height is 8% taller than its line; giving it lh = parent / 1.08 keeps every line equal. */
+.lx-h1 em, .lx-h2 em, .h1 em, .top h1 em, .f-mini h1 em, em.s { font-size: 1.08em; letter-spacing: -0.015em; }
+.lx-h1 { line-height: 0.98; } .lx-h1 em { line-height: 0.907; }
+.lx-h2 { line-height: 1.04; } .lx-h2 em { line-height: 0.963; }
+.h1, .top h1 { line-height: 1.02; } .h1 em, .top h1 em { line-height: 0.944; }
+.f-mini h1 em { line-height: 1.0; }
 
 /* ---------- display ---------- */
-.lx-h1 { letter-spacing: -0.042em; font-weight: 500; }
+.lx-h1 { letter-spacing: -0.055em; font-weight: 500; }
 .lx-h2 { font-size: clamp(36px, 4.2vw, 52px); letter-spacing: var(--tr-d); font-weight: 500; }
 .h1, .top h1 { font-size: clamp(40px, 5vw, 64px); letter-spacing: var(--tr-h); font-weight: 500; }
 .lx-stats dt, .lx-numbers dt { font-size: clamp(48px, 4.6vw, 64px); line-height: 1; letter-spacing: var(--tr-h); font-weight: 450; }

@@ -9,7 +9,7 @@ body:has(.fam) .nav-in { max-width: 880px; }
 /* ---------- header: date, title, one status line (no pill) ---------- */
 .fam .fam-head { display: grid; gap: 10px; margin: 0 0 20px; }
 .fam .fam-date { font-size: 13px; line-height: 18px; color: var(--muted); letter-spacing: 0; font-variant-numeric: tabular-nums; }
-.fam .fam-title { font-size: 44px; line-height: 48px; font-weight: 560; letter-spacing: -0.03em; color: var(--ink); text-wrap: balance; margin: 0; }
+.fam .fam-title { font-size: 44px; line-height: 48px; font-weight: 560; letter-spacing: -0.038em; color: var(--ink); text-wrap: balance; margin: 0; }
 .fam .fam-title .dim { color: var(--faint); font-weight: 500; }
 @media (max-width: 520px) { .fam .fam-title { font-size: 34px; line-height: 38px; } }
 
@@ -185,3 +185,6 @@ body:has(.fam) .nav-in { max-width: 880px; }
   .fam .ro-body.swap .ro-sw { animation: ro-sw-in 200ms cubic-bezier(.22,1,.36,1) both; }
   @keyframes ro-sw-in { from { transform: scale(.6); filter: blur(2px); opacity: .3; } to { transform: none; filter: none; opacity: 1; } }
 }
+
+/* the title's "today" is the serif accent (Instrument Serif italic), dimmed: the app speaks in the landing's voice */
+.fam .fam-title .dim { font-family: var(--serif, "Instrument Serif", serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; font-size: 1.1em; }

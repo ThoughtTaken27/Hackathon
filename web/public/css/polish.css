@@ -7,17 +7,15 @@
 .lx main *, .lx main *::before, .lx main *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 .lx-panel-wrap { background: rgba(255,255,255,.92); }
 .lx-seg { background:#EFEEEC; }
-.lx-sec .lx-sec-head, .lx-flow, .lx-cards, .lx-stage, .lx-numbers, .lx-faq-grid, .lx-why-in { filter: none !important; }
 .lx-h1 .w { will-change: auto; }
 .lx-hero-in { will-change: opacity, transform; }
 .lx-panel-wrap { will-change: transform; contain: layout paint; }
 .lx-card, .lx-panel, .dev { contain: layout paint; }
-@keyframes lx-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes lx-rise-panel { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-@keyframes lx-swap { from { opacity: 0; transform: translateY(8px); } }
-@keyframes lx-row { from { opacity: 0; transform: translateY(-6px); } }
-/* headline words: blur only during the one-time entrance on wide screens; phones get opacity + rise */
-@media (max-width: 760px) { .words-in .w { filter: none !important; } }
+/* entrances keep a short blur-in: it plays once per element (never per scroll frame), which is what makes them feel soft and expensive */
+@keyframes lx-rise { from { opacity: 0; transform: translateY(14px); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes lx-rise-panel { from { opacity: 0; transform: translateY(28px) scale(.985); filter: blur(8px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes lx-swap { from { opacity: 0; transform: translateY(8px) scale(.985); filter: blur(6px); } }
+@keyframes lx-row { from { opacity: 0; transform: translateY(-6px); filter: blur(3px); } }
 
 /* ---------- hero: tighter, no chip ---------- */
 .lx-hero-in { padding-top: 24px; }
@@ -132,3 +130,65 @@
 .lx-panel .ro-step svg { stroke-width: 1.5; }
 .lx .lx-panel .lp-rules.rules { border-radius: 6px; }                   /* inside the 9px card */
 .lx .f-mini.fam .day-card .bar { border-radius: 10px; }                /* phone mock: 20 - 10 */
+
+/* ---------- motion, round 3 (Nov 15): grouped reveals become a cascade ----------
+   The card grid, the four numbers and the FAQ rows arrive one after another (80ms apart) instead of as one slab.
+   One-time transitions on transform, opacity and a 6px blur; nothing is tied to scroll position. */
+.lx-cards, .lx-numbers { opacity: 1 !important; transform: none !important; filter: none !important; }
+.lx-cards > *, .lx-numbers > div, .lx-faq details { opacity: 0; transform: translateY(18px); filter: blur(6px);
+  transition: opacity 800ms var(--ease-out), transform 800ms var(--ease-out), filter 800ms var(--ease-out); }
+.seen .lx-cards > *, .seen .lx-numbers > div, .seen .lx-faq details { opacity: 1; transform: none; filter: none; }
+.seen .lx-cards > :nth-child(2), .seen .lx-numbers > div:nth-child(2), .seen .lx-faq details:nth-child(2) { transition-delay: 80ms; }
+.seen .lx-cards > :nth-child(3), .seen .lx-numbers > div:nth-child(3), .seen .lx-faq details:nth-child(3) { transition-delay: 160ms; }
+.seen .lx-cards > :nth-child(4), .seen .lx-numbers > div:nth-child(4), .seen .lx-faq details:nth-child(4) { transition-delay: 240ms; }
+.seen .lx-faq details:nth-child(n+5) { transition-delay: 320ms; }
+/* cards answer the pointer: a 2px lift and a deeper soft shadow (fine pointers only, no tilt) */
+@media (hover: hover) and (pointer: fine) {
+  .seen .lx-cards > .lx-card { transition: opacity 800ms var(--ease-out), transform 300ms var(--ease-out), filter 800ms var(--ease-out), box-shadow 300ms ease; }
+  .seen .lx-cards > .lx-card:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--ln), 0 24px 48px -28px rgba(28,25,23,.22); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lx-cards > *, .lx-numbers > div, .lx-faq details { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+}
+.lx-card p, .lx-sub, .lx-lede { text-wrap: pretty; }   /* no one-word last lines */
+
+/* ---------- hero: "Without a camera." acted out (Nov 15) ----------
+   An eye glances left and right, blinks, becomes a camera, and the camera is struck through. 9 s loop that starts once the
+   headline has landed. Stroke ~1.9 units = about the stem of the serif beside it; the strike uses the one warm accent.
+   Swaps cross-fade through a 3px blur so the eye and the camera read as one thing changing. Transform, opacity and filter on one small SVG. */
+.peek { display: inline-block; width: .74em; height: .74em; margin-right: .16em; vertical-align: -0.04em; opacity: 0; color: var(--ink);
+  animation: pk-in 700ms cubic-bezier(.22,1,.36,1) 1.15s forwards; }
+.peek svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.peek .pk-dot { fill: currentColor; stroke: none; }
+.peek .pk-strike { stroke: var(--accent); stroke-width: 2.1; stroke-dasharray: 25; stroke-dashoffset: 25; }
+.peek g, .peek line { transform-box: fill-box; transform-origin: center; }
+.peek .pk-cam { opacity: 0; }
+@keyframes pk-in { from { opacity: 0; transform: translateY(.2em) scale(.8); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .peek .pk-eye { animation: pk-eye 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
+  .peek .pk-pupil { animation: pk-look 9s cubic-bezier(.45,0,.2,1) 1.9s infinite; }
+  .peek .pk-cam { animation: pk-cam 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
+  .peek .pk-strike { animation: pk-strike 9s cubic-bezier(.65,0,.35,1) 1.9s infinite; }
+}
+@keyframes pk-look { 0%, 4% { transform: none; } 10%, 17% { transform: translateX(-2.4px); } 23%, 30% { transform: translateX(2.4px); } 34%, 100% { transform: none; } }
+@keyframes pk-eye { 0%, 35% { opacity: 1; transform: none; filter: none; }
+  36.5% { transform: scaleY(.08); } 38% { transform: none; opacity: 1; filter: none; }
+  44%, 90% { opacity: 0; transform: scale(.86); filter: blur(3px); }
+  97%, 100% { opacity: 1; transform: none; filter: none; } }
+@keyframes pk-cam { 0%, 41% { opacity: 0; transform: scale(.86); filter: blur(3px); }
+  48%, 86% { opacity: 1; transform: none; filter: none; }
+  93%, 100% { opacity: 0; transform: scale(.92); filter: blur(3px); } }
+@keyframes pk-strike { 0%, 51% { stroke-dashoffset: 25; } 60%, 100% { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {      /* still: the struck-through camera */
+  .peek { opacity: 1; animation: none; } .peek .pk-eye { opacity: 0; } .peek .pk-cam { opacity: 1; } .peek .pk-strike { stroke-dashoffset: 0; }
+}
+
+/* ---------- section headings: words blur up one after another when the section arrives (transitions.dev "Texts reveal" values) ---------- */
+.lx-sec .lx-sec-head { filter: none !important; }        /* the words carry the blur now; no double blur */
+.hw-in .hw { display: inline-block; opacity: 0; transform: translateY(.32em); filter: blur(8px);
+  transition: opacity 700ms cubic-bezier(.22,1,.36,1), transform 700ms cubic-bezier(.22,1,.36,1), filter 700ms cubic-bezier(.22,1,.36,1);
+  transition-delay: calc(var(--i) * 45ms + 60ms); }
+.seen .hw-in .hw { opacity: 1; transform: none; filter: none; }
+
+/* ---------- numbers: the % is set in the serif, like the heading accents ---------- */
+.lx-stats .dim, .lx-numbers .dim { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; margin-left: .04em; }

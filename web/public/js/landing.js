@@ -179,11 +179,14 @@ fetch("/data/results.json").then((r) => r.json()).then((r) => {
 // ---------- sections unfold once
 const io = new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting) { x.target.classList.add("seen"); io.unobserve(x.target); } }), { rootMargin: "0px 0px -8% 0px" });
 document.querySelectorAll(".lx-sec, .lx-why").forEach((s) => io.observe(s));
+// section headings arrive word by word when their section scrolls in (same blur-up as the hero, shorter stagger)
+if (!RM) document.querySelectorAll(".lx-sec .lx-h2").forEach((h) => { h.classList.add("hw-in"); words(h, "hw"); });
 
 
 // =================================================================== level 2: scroll-driven motion (js/fx.js)
 // hero headline: words blur in one after another, the page's one orchestrated moment
 const h1 = $("#hero-h"); h1.classList.remove("rise"); h1.classList.add("words-in"); words(h1);
+{ const pk = h1.querySelector(".peek"), w0 = pk && pk.nextElementSibling; if (w0) { w0.prepend(pk); w0.style.whiteSpace = "nowrap"; } }   // the eye rides with "Without", never alone at a line end
 const fin = $("#fin-h"); words(fin);
 new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { fin.classList.add("words-in"); o.disconnect(); } }), { threshold: 0.6 }).observe(fin);
 

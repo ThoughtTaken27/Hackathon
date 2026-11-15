@@ -1,5 +1,5 @@
 // Kettle service worker: offline shell, model cache, web push alerts.
-const CACHE = "kettle-v31-3";
+const CACHE = "kettle-v31-5";
 
 const SHELL = [
   "/", "/family", "/kitchen", "/listen", "/start", "/pair", "/how-sure",

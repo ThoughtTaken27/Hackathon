@@ -13,13 +13,13 @@
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/img/scene-home.svg" as="image">
-<link rel="stylesheet" href="/css/app.css?v=h2">
-<link rel="stylesheet" href="/css/theme.css?v=h2">
-<link rel="stylesheet" href="/css/landing.css?v=h2">
-<link rel="stylesheet" href="/css/landing2.css?v=h2">
-<link rel="stylesheet" href="/css/type.css?v=h2">
-<link rel="stylesheet" href="/css/family.css?v=h2">
-<link rel="stylesheet" href="/css/polish.css?v=h2">
+<link rel="stylesheet" href="/css/app.css?v=h4">
+<link rel="stylesheet" href="/css/theme.css?v=h4">
+<link rel="stylesheet" href="/css/landing.css?v=h4">
+<link rel="stylesheet" href="/css/landing2.css?v=h4">
+<link rel="stylesheet" href="/css/type.css?v=h4">
+<link rel="stylesheet" href="/css/family.css?v=h4">
+<link rel="stylesheet" href="/css/polish.css?v=h4">
 </head>
 <body class="lx">
 <header class="lx-nav" id="nav"><div class="lx-nav-in">
@@ -36,7 +36,7 @@
   <section class="lx-hero" aria-labelledby="hero-h">
     <div class="lx-hero-bg" aria-hidden="true"></div>
     <div class="lx-hero-in">
-      <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay, in any room. <em>Without a camera.</em></h1>
+      <h1 class="lx-h1 rise" style="--d:1" id="hero-h">Know the day went okay, in any room. <em><span class="peek" aria-hidden="true"><svg viewBox="0 0 24 24"><g class="pk-eye"><path d="M2.5 12C5 7.2 8.3 5 12 5s7 2.2 9.5 7c-2.5 4.8-5.8 7-9.5 7s-7-2.2-9.5-7Z"/><g class="pk-pupil"><circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="12" r="1.2" class="pk-dot"/></g></g><g class="pk-cam"><rect x="2.5" y="7" width="19" height="13" rx="3"/><path d="M8.5 7l1.3-2.3h4.4L15.5 7"/><circle cx="12" cy="13.5" r="3.6"/><line class="pk-strike" x1="3.5" y1="3.5" x2="20.5" y2="20.5"/></g></svg></span>Without a camera.</em></h1>
       <p class="lx-lede rise" style="--d:2">Kettle turns a spare phone or laptop in the rooms of someone you love into a calm timeline of their day, from sound alone. No recordings, no words.</p>
       <div class="lx-cta rise" style="--d:3">
         <a class="lx-pill lg" href="/start">Set it up, free <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
@@ -139,12 +139,12 @@
           <div class="node"><span class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span><b>Your phone</b><small>a calm timeline</small></div>
         </div>
         <h3>Labels, never recordings</h3>
-        <p>In a 3-minute test of the original app Kettle wrote no audio files and made no outbound connections. This version runs the identical model in the browser, checked to give the same label on all 90 sample clips.</p>
+        <p>Ten seconds in memory, named, then forgotten. Only the label leaves.</p>
       </article>
       <article class="lx-card">
         <div class="viz viz-pause" aria-hidden="true"><span class="big-pause">Pause</span><p>The family sees <strong>Paused at 2:10 PM</strong></p></div>
         <h3>They stay in charge</h3>
-        <p>One big button pauses Kettle or turns it off. It asks again every week, and their screen shows exactly what you see.</p>
+        <p>One big button pauses it. Their screen shows what you see.</p>
       </article>
       <article class="lx-card">
         <div class="viz viz-rules theme-dark" aria-hidden="true">
@@ -152,7 +152,7 @@
           <div class="rule" data-state="cant_tell"><p class="name">TV on for more than 4 hours</p><p class="state">Can't tell: Kettle wasn't listening</p></div>
         </div>
         <h3>Checks you set, never alerts</h3>
-        <p>Kettle doesn't learn a routine or judge it. It answers the questions you choose, and says "Can't tell" when it wasn't listening.</p>
+        <p>You choose the questions. If it wasn't listening, it says so.</p>
       </article>
       <article class="lx-card wide">
         <div class="viz viz-evidence theme-dark" aria-hidden="true">
@@ -161,7 +161,7 @@
           <div class="ev-bars"><span style="--w:.86"><b>Frying (food)</b><i></i><em class="num">0.36</em></span><span style="--w:.52"><b>Dishes, pots, and pans</b><i></i><em class="num">0.22</em></span><span style="--w:.31"><b>Cupboard open or close</b><i></i><em class="num">0.13</em></span></div>
         </div>
         <h3>It shows its work</h3>
-        <p>Tap any block to see why Kettle thinks so and how sure it was. When it can't tell, it says "Not sure" instead of guessing.</p>
+        <p>Tap any block to see why. Unsure? It says so instead of guessing.</p>
       </article>
     </div>
   </section>
@@ -238,6 +238,6 @@
   <nav aria-label="Footer"><a href="/start">Set up</a><a href="/pair">Enter a code</a><a href="/how-sure">How sure</a><a href="/credits">Credits</a><a href="#faq">FAQ</a></nav>
   <p>Prototype, not medical advice. Not an emergency device. The sample days are recordings from a public research home, not anyone we know. Landscapes are generated, not photographs.</p>
 </div></footer>
-<script type="module" src="/js/landing.js?v=p1"></script>
+<script type="module" src="/js/landing.js?v=h4"></script>
 </body>
 </html>

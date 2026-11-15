@@ -5,6 +5,7 @@
    Magic UI (MIT) "blur-fade" 6px blur, "number-ticker" spring k=100 c=60 (js/fx.js). Hand-ported, no code copied. */
 
 
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: swap; }
 :root:root {
   /* colours are OKLCH (perceptual lightness, so equal L reads equally bright); converted from the hex palette, same look
      light "home" palette (Nov 15): near-white stone canvas, warm graphite ink, white cards on soft shadows. Not cream, no glow. */
@@ -22,6 +23,7 @@
   /* one warm accent, spent on the main action: the kettle-orange of the cooking colour, deepened to pass 5:1 with white text */
   --accent: oklch(55.0% 0.152 38.5); --accent-press: oklch(49.4% 0.136 38.5);
   --glass: oklch(100.0% 0 0);
+  --serif: "Instrument Serif", "Iowan Old Style", "Times New Roman", serif;
   --out: cubic-bezier(0.22, 1, 0.36, 1);
   --pop: cubic-bezier(0.34, 1.35, 0.64, 1);
   color-scheme: light;
@@ -30,7 +32,7 @@ html { background: var(--canvas); }
 body { background: transparent; color: var(--text); position: relative; min-height: 100vh; min-height: 100dvh; }   /* dvh: Safari's toolbar makes 100vh too tall */
 ::selection { background: rgba(28,25,23,0.11); color: var(--ink); }
 h1, h2, h3 { color: var(--ink); }
-em.s, .h1 em, .top h1 em, .k-serif em { font: inherit; font-style: normal; letter-spacing: inherit; color: inherit; }   /* no serif accents in the light theme */
+em.s, .h1 em, .top h1 em, .k-serif em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; font-size: 1.06em; color: inherit; }   /* the serif accent: one phrase per heading */
 
 /* ---------- sky: the landing's hero scene behind every app header, fading into the canvas (one scene, so the app and landing read as one product) ---------- */
 .sky { position: absolute; inset: 0 0 auto; height: 680px; z-index: -1; pointer-events: none; overflow: hidden;

@@ -1,12 +1,15 @@
 /* Kettle web landing: light, homely, calm (dark until Nov 15). Scenes are generated (web/tools/scenes.mjs).
-   Type: Geist only (the serif accents went with the dark theme). */
+   Type: Geist (sans, measured Vercel tracking) + Instrument Serif italic for one accent phrase per heading. */
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/instrument-serif-italic.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("/fonts/instrument-serif.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: swap; }
 
 .lx {
   --bg: #FAFAF9; --bg2: #F5F5F4; --surface: #FFFFFF; --raise: #FFFFFF; --ln: rgba(28,25,23,.09); --ln2: rgba(28,25,23,.15);
+  --serif: "Instrument Serif", "Iowan Old Style", "Times New Roman", serif;
   --tx: #1C1917; --tx2: #44403C; --tx3: #6F6964; --tx4: #A8A29E;
   background: var(--bg); color: var(--tx2); overflow-x: hidden;
 }
-.lx em { font-style: normal; }
+.lx em { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
 .lx a { color: inherit; }
 .theme-dark { color: var(--text); }   /* light theme since Nov 15: inner panels use the page tokens */
 
@@ -42,7 +45,8 @@
 .lx-chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 13px; border-radius: 999px; font-size: 13px; color: var(--ink);
   text-decoration: none; background: rgba(28,25,23,0.048); box-shadow: inset 0 0 0 1px rgba(28,25,23,0.126); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .lx-h1 { margin-top: 26px; font-size: clamp(44px, 7vw, 86px); line-height: .98; font-weight: 500; letter-spacing: -0.055em; color: var(--ink); text-wrap: balance; }
-.lx-h1 em { color: inherit; }
+.lx-h1 em { font-size: 1.08em; letter-spacing: -0.02em; color: inherit; }
+.lx-h2 em { font-size: 1.08em; letter-spacing: -0.015em; }
 .lx-h1.sm { font-size: clamp(40px, 5.6vw, 72px); }
 .lx-lede { margin-top: 22px; max-width: 34em; font-size: clamp(16px, 1.5vw, 18.5px); line-height: 1.55; color: var(--text); letter-spacing: -0.005em; text-wrap: pretty; }
 .lx-cta { margin-top: 32px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
