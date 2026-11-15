@@ -133,3 +133,107 @@ test("handover 3.6: an Urgent alert from the kitchen reaches the family until th
   assert.equal(s.status, 200);
   assert.ok(s.body.state.alerts[0].seen > 0);
 });
+
+// ---------------------------------------------------------------- handover v3.5: red at once, updated in place, pushed to phones
+import { notify, payloadFor } from "../src/notify.js";
+import { b64uEncode, makeVapidKeys } from "../src/push.js";
+
+async function fakeSub(host = "fcm.googleapis.com") {
+  const pair = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]);
+  const pub = new Uint8Array(await crypto.subtle.exportKey("raw", pair.publicKey));
+  return { endpoint: `https://${host}/fcm/send/${Math.random().toString(36).slice(2)}`, keys: { p256dh: b64uEncode(pub), auth: b64uEncode(crypto.getRandomValues(new Uint8Array(16))) } };
+}
+async function pairedHome() {
+  const m = memEnv(), notices = [];
+  m.env.notify = async (id, n) => { notices.push({ id, n }); };
+  const c = await call(m.env, "POST", "/api/households", { parent: "Papa", caregiver: "Asha", tz: "America/Chicago", as: "family" });
+  const pair = await call(m.env, "POST", "/api/pair", { code: c.body.code });
+  const K = pair.body.key, F = c.body.familyKey, id = c.body.id;
+  await call(m.env, "POST", `/api/h/${id}/action`, { type: "consent" }, K);
+  return { ...m, notices, K, F, id };
+}
+
+test("v3.5: a scream goes red at once (asking), then the same alert turns amber when they press I'm OK; retries tell nobody twice", async () => {
+  const { env, notices, K, F, id } = await pairedHome();
+  const T = 1_800_000_000;
+  assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "scream", at: T, checkin: "maybe" }, K, T)).status, 400);
+  const r1 = await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "scream", at: T, checkin: "asking" }, K, T);
+  assert.equal(r1.status, 200);
+  assert.equal(r1.body.state.alerts.length, 1);
+  assert.equal(r1.body.state.alerts[0].checkin, "asking");
+  assert.equal(notices.length, 1, "the family is told at the moment of the scream, not after the check-in");
+  assert.equal(notices[0].n.alert.checkin, "asking");
+  assert.equal(r1.body.notify, undefined, "the notice never goes back to the client");
+  await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "scream", at: T, checkin: "asking" }, K, T + 2);   // a retry
+  assert.equal(notices.length, 1);
+  const r2 = await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "scream", at: T, checkin: "ok" }, K, T + 20);
+  assert.equal(r2.body.state.alerts.length, 1, "same time, same id: updated, not a second banner");
+  assert.equal(r2.body.state.alerts[0].checkin, "ok");
+  assert.equal(r2.body.state.alerts[0].answered, T + 20);
+  assert.equal(notices.length, 2);
+  // "I need help" is never undone by a late "asking"
+  await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "fall", at: T + 100, checkin: "help" }, K, T + 130);
+  await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "fall", at: T + 100, checkin: "asking" }, K, T + 131);
+  const s = await call(env, "GET", `/api/h/${id}/state`, null, F, T + 140);
+  assert.equal(s.body.state.alerts.find((a) => a.id === `a${T + 100}`).checkin, "help");
+  // new kinds are accepted (gunshot, shout, CO, crying)
+  for (const kind of ["gunshot", "shout", "co", "distress"]) assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind, at: T + 200 + kind.length * 20 }, K, T + 300)).status, 200);
+});
+
+test("v3.5: push subscriptions are the family's, validated, deduped, capped, and never shown to either screen", async () => {
+  const { env, K, F, id } = await pairedHome();
+  const sub = await fakeSub();
+  assert.equal((await call(env, "POST", `/api/h/${id}/push`, { subscription: sub }, K)).status, 403);
+  assert.equal((await call(env, "POST", `/api/h/${id}/push`, { subscription: { ...sub, endpoint: "https://evil.example/x" } }, F)).status, 400);
+  assert.equal((await call(env, "POST", `/api/h/${id}/pushtest`, {}, F)).status, 409);
+  const r = await call(env, "POST", `/api/h/${id}/push`, { subscription: sub }, F);
+  assert.equal(r.status, 200);
+  assert.equal(r.body.subscribed, 1);
+  assert.equal((await call(env, "POST", `/api/h/${id}/push`, { subscription: sub }, F)).body.subscribed, 1, "same phone twice = one");
+  const st = await call(env, "GET", `/api/h/${id}/state`, null, K);
+  assert.equal(st.body.state.push, undefined);
+  assert.equal(st.body.state.pushCount, 1);
+  for (let i = 0; i < 12; i++) await call(env, "POST", `/api/h/${id}/push`, { subscription: await fakeSub() }, F);
+  assert.equal((await call(env, "GET", `/api/h/${id}/state`, null, F)).body.state.pushCount, 10);
+  const d = await call(env, "DELETE", `/api/h/${id}/push`, { endpoint: sub.endpoint }, F);
+  assert.equal(d.body.subscribed, 10);
+});
+
+test("v3.5: an urgent alert is encrypted and sent to every phone; dead subscriptions are dropped; no key or score in the payload", async () => {
+  const { env, hs, K, F, id } = await pairedHome();
+  const keys = await makeVapidKeys();
+  const a = await fakeSub(), b = await fakeSub("updates.push.services.mozilla.com");
+  await call(env, "POST", `/api/h/${id}/push`, { subscription: a }, F);
+  await call(env, "POST", `/api/h/${id}/push`, { subscription: b }, F);
+  const store = { async getState() { return structuredClone(hs[id].state); }, async putState(s) { hs[id].state = s; } };
+  const sent = [];
+  const fetchImpl = async (url, init) => { sent.push({ url, init }); return { status: url === b.endpoint ? 410 : 201 }; };
+  const T = 1_800_000_000;
+  const n = { alert: { id: `a${T}`, kind: "smoke", at: T, checkin: "none", seen: null }, tz: "America/Chicago", names: { parent: "Papa", room: { type: "kitchen" } } };
+  const res = await notify(store, id, n, keys, fetchImpl);
+  assert.deepEqual(res.map((x) => x.ok), [true, false]);
+  assert.equal(sent.length, 2);
+  assert.match(sent[0].init.headers.Authorization, /^vapid t=.+, k=/);
+  assert.equal(sent[0].init.headers.Urgency, "high");
+  assert.equal(sent[0].init.headers["Content-Encoding"], "aes128gcm");
+  assert.equal(hs[id].state.push.length, 1, "the 410 subscription is deleted");
+  const p = payloadFor(id, n);
+  assert.equal(p.tier, "urgent");
+  assert.match(p.body, /smoke alarm at \d+:\d\d (AM|PM)/);
+  assert.equal(p.url, `/family?h=${id}`);
+  assert.ok(!JSON.stringify(p).includes(F) && !JSON.stringify(p).includes(K), "no key in a lock-screen payload");
+  const ok = payloadFor(id, { ...n, alert: { ...n.alert, kind: "scream", checkin: "ok", answered: T + 30 } });
+  assert.equal(ok.tier, "update");
+  assert.match(ok.body, /pressed "I'm OK" at/);
+  assert.equal(payloadFor(id, { test: true, at: T, tz: "UTC" }).tier, "test");
+});
+
+test("v3.5: the server makes one push key and serves only its public half", async () => {
+  const { env } = memEnv();
+  assert.equal((await call(env, "GET", "/api/push/key")).status, 503);
+  const keys = await makeVapidKeys();
+  env.codes.vapid = async () => keys;
+  const r = await call(env, "GET", "/api/push/key");
+  assert.equal(r.body.publicKey, keys.publicKey);
+  assert.equal(r.body.privateJwk, undefined);
+});
