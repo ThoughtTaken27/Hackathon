@@ -2,6 +2,8 @@
 //   household(id).call(op) -> {status, body}      one household's store + handle()
 //   household(id).init(state)                       store a new household
 //   codes.put(code, value, ttlS) / codes.get(code)  short pairing codes ("K7P 4QX") -> {id, role, key}
+//   codes.vapid()                                   this server's Web Push key pair, made once and kept (never in git)
+//   notify(id, notice)                              optional: send push notifications in the background (notify.js)
 import { create, randomId } from "./household.js";
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -22,6 +24,10 @@ export async function route(req, env, now = Date.now() / 1000) {
   const p = url.pathname.replace(/\/+$/, "");
   try {
     if (p === "/api/health") return json(200, { ok: true, now });
+    if (p === "/api/push/key" && req.method === "GET") {
+      const k = env.codes.vapid ? await env.codes.vapid() : null;
+      return k ? json(200, { publicKey: k.publicKey }) : json(503, { error: "Alerts aren't set up on this server." });
+    }
 
     if (p === "/api/households" && req.method === "POST") {
       const b = await readBody(req);
@@ -62,6 +68,7 @@ export async function route(req, env, now = Date.now() / 1000) {
       }
       const body = req.method === "GET" ? { since: +url.searchParams.get("since") || 0 } : await readBody(req);
       const r = await env.household(id).call({ method: req.method, route: sub, key, body, now });
+      if (r.notify && env.notify) await env.notify(id, r.notify);     // hosts hand this to the background (waitUntil)
       return json(r.status, r.body);
     }
     return json(404, { error: "not found" });

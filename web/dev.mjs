@@ -8,6 +8,8 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { handle } from "./src/household.js";
 import { route } from "./src/router.js";
+import { makeVapidKeys } from "./src/push.js";
+import { notify } from "./src/notify.js";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PUB = join(ROOT, "public");
@@ -43,7 +45,10 @@ const env = {
     get: async (code) => { const c = db.codes[code]; return c && c.exp > Date.now() / 1000 ? c.v : null; },
     miss: async (who, t) => { missLog.push([who, t]); missLog = missLog.filter(([, x]) => x > t - 3600); },
     misses: async (who, since) => missLog.filter(([w, x]) => w === who && x > since).length,
+    vapid: async () => { if (!db.vapid) { db.vapid = await makeVapidKeys(); save(); } return db.vapid; },
   },
+  // push notifications in the background, as the Worker does with waitUntil
+  notify: (id, n) => { if (db.households[id]) env.codes.vapid().then((keys) => notify(memStore(id), id, n, keys)).then((r) => r.length && console.log(`push: ${r.filter((x) => x.ok).length}/${r.length} sent`)); },
 };
 
 async function file(path) {
