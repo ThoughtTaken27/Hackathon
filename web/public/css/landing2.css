@@ -130,3 +130,24 @@ main > section:not(.lx-hero), .lx-foot { position: relative; z-index: 1; }
   .lx-pill:hover::after { transform: translateX(120%); transition: transform 700ms cubic-bezier(.22,1,.36,1); }
 }
 .lx-hero .lx-lede { color: rgba(255,255,255,.8); }
+
+/* Hero and device frames: blocks glide to their new place when the day grows, instead of jumping (Nov 15) */
+.lx-panel .blk, .lx-scene-ui .blk, .dev .blk { transition: left 600ms cubic-bezier(.22,1,.36,1), width 600ms cubic-bezier(.22,1,.36,1); }
+.lx-panel .now-tick, .lx-scene-ui .now-tick, .dev .now-tick { transition: left 600ms cubic-bezier(.22,1,.36,1); }
+.lp-heard li { transition: background-color 400ms ease, opacity 400ms ease; will-change: transform; }
+.lp-heard li:nth-child(6) { opacity: .45; }
+.lp-heard li:nth-child(5) { opacity: .75; }
+
+/* Condensed (Nov 15): less empty space between sections, so the page reads in fewer scrolls */
+.lx-hero { padding-top: 120px; }
+.lx-why { padding-top: 88px; }
+.lx-why-in { gap: 40px; }
+.lx-why-text .lx-pill { margin-top: 28px; }
+.lx-built { margin-top: 72px; }
+.lx-sec { padding-top: 96px; }
+.lx-sec-head { margin-bottom: 32px; }
+.lx-stage { padding-top: 44px; }
+.lx-faq summary { padding: 16px 0; }
+.lx-final-in { padding: 56px 24px; }
+@media (max-width: 700px) { .lx-hero { padding-top: 96px; } .lx-why, .lx-sec { padding-top: 64px; } .lx-built { margin-top: 48px; } }
+.lx-final { margin-top: 96px; min-height: 420px; }

@@ -102,6 +102,9 @@ export async function startMic({ onWindow, onLevel = () => {}, clockNow, context
   const tap = new AudioWorkletNode(ctx, "kettle-tap");
   const mute = ctx.createGain(); mute.gain.value = 0;
   src.connect(tap); tap.connect(mute); mute.connect(ctx.destination);
+  // Some browsers suspend audio in a background tab or after the laptop wakes; ask for it back so listening carries on.
+  ctx.onstatechange = () => { if (!stopped && ctx.state !== "running" && ctx.state !== "closed") ctx.resume().catch(() => {}); };
+  if (ctx.state !== "running") ctx.resume().catch(() => {});
   const ratio = ctx.sampleRate / SR;
   const ring = new Float32Array(SR * WIN_S);
   let filled = 0, sinceHop = 0, prevEnd = null, busy = false, stopped = false, frac = 0, hop = HOP_S;

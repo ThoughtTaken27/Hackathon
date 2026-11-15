@@ -13,11 +13,11 @@
 <link rel="preload" href="/fonts/geist-latin-wght.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/instrument-serif-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/img/scene-hero.svg" as="image">
-<link rel="stylesheet" href="/css/app.css?v=w4">
-<link rel="stylesheet" href="/css/theme.css?v=w4">
-<link rel="stylesheet" href="/css/landing.css?v=w4">
-<link rel="stylesheet" href="/css/landing2.css?v=w4">
-<link rel="stylesheet" href="/css/type.css?v=w4">
+<link rel="stylesheet" href="/css/app.css?v=w5">
+<link rel="stylesheet" href="/css/theme.css?v=w5">
+<link rel="stylesheet" href="/css/landing.css?v=w5">
+<link rel="stylesheet" href="/css/landing2.css?v=w5">
+<link rel="stylesheet" href="/css/type.css?v=w5">
 </head>
 <body class="lx">
 <header class="lx-nav" id="nav"><div class="lx-nav-in">
@@ -45,7 +45,7 @@
     <div class="lx-panel-wrap rise" style="--d:4">
       <div class="lx-panel theme-dark" aria-label="A sample day, playing">
         <div class="lp-top">
-          <p class="lp-title">Dad's kitchen, today</p>
+          <p class="lp-title">The kitchen, today</p>
           <span class="lp-sp"></span>
           <span class="lp-tag">Sample day</span>
           <span class="lp-live"><i></i>listening</span>
@@ -59,11 +59,11 @@
         </div>
         <div class="lp-grid">
           <section class="lp-card">
-            <div class="lp-card-h"><p>What Kettle heard</p><span class="lp-dot-line"><i></i>on Dad's laptop</span></div>
+            <div class="lp-card-h"><p>What Kettle heard</p><span class="lp-dot-line"><i></i>on the kitchen laptop</span></div>
             <ol class="lp-heard" id="lp-heard"></ol>
           </section>
           <section class="lp-card">
-            <div class="lp-card-h"><p>What Meera sees</p><span class="muted num" id="lp-count"></span></div>
+            <div class="lp-card-h"><p>What the family sees</p><span class="muted num" id="lp-count"></span></div>
             <p class="lp-sum" id="lp-sum">Waiting for the first sound…</p>
             <div id="lp-bar"></div>
             <div class="lp-rules" id="lp-rules"></div>
@@ -144,7 +144,7 @@
         <p>In a 3-minute test of the original app Kettle wrote no audio files and made no outbound connections. This version runs the identical model in the browser, checked to give the same label on all 90 sample clips.</p>
       </article>
       <article class="lx-card">
-        <div class="viz viz-pause" aria-hidden="true"><span class="big-pause">Pause</span><p>Meera sees <strong>Paused by Dad at 2:10 PM</strong></p></div>
+        <div class="viz viz-pause" aria-hidden="true"><span class="big-pause">Pause</span><p>The family sees <strong>Paused at 2:10 PM</strong></p></div>
         <h3>Your parent stays in charge</h3>
         <p>One big button pauses Kettle or turns it off. It asks again every week, and their screen shows exactly what you see.</p>
       </article>
@@ -171,7 +171,7 @@
   <section class="lx-sec" id="screens" aria-labelledby="scr-h">
     <div class="lx-sec-head split">
       <div><p class="lx-label">Two screens</p><h2 class="lx-h2" id="scr-h">One day, seen <em>from both</em> sides</h2></div>
-      <p class="lx-sub">Dad's laptop stays on the counter and tells him exactly what it's doing. Meera's phone shows the same day, 300 miles away.</p>
+      <p class="lx-sub">The kitchen laptop stays on the counter and says exactly what it's doing. The family's phone shows the same day, 300 miles away.</p>
     </div>
     <div class="lx-stage scene-day" id="stage">
       <div class="stage-in">
@@ -181,14 +181,14 @@
         </div>
         <div class="dev phone" data-w="390" data-h="844"><div class="glass"><div class="canvas" id="family-canvas"></div></div></div>
       </div>
-      <div class="stage-caps"><p><strong>Dad's kitchen</strong>His laptop, on the counter</p><p><strong>Meera's phone</strong>300 miles away</p></div>
+      <div class="stage-caps"><p><strong>The kitchen</strong>A laptop on the counter</p><p><strong>The family's phone</strong>300 miles away</p></div>
     </div>
     <div class="stage-bar">
       <div class="lx-seg" role="group" aria-label="Sample days">
         <button type="button" data-sid="nobreakfast" aria-pressed="true">Breakfast didn't happen</button>
         <button type="button" data-sid="usual">A usual morning</button>
         <button type="button" data-sid="visitor">A visitor came</button>
-        <button type="button" data-sid="paused">Dad paused it</button>
+        <button type="button" data-sid="paused">Paused for a while</button>
         <button type="button" data-sid="closed">Laptop closed</button>
         <button type="button" data-sid="quiet">A quiet morning</button>
         <button type="button" data-sid="tv">A TV-only afternoon</button>
@@ -237,8 +237,8 @@
 <footer class="lx-foot"><div class="lx-foot-in">
   <span class="mark"><svg width="18" height="18" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</span>
   <nav aria-label="Footer"><a href="/start">Set up</a><a href="/pair">Enter a code</a><a href="/how-sure">How sure</a><a href="/credits">Credits</a><a href="#faq">FAQ</a></nav>
-  <p>Prototype, not medical advice. Not an emergency device. Meera and Ravi are invented people. Landscapes are generated, not photographs.</p>
+  <p>Prototype, not medical advice. Not an emergency device. The sample days are recordings from a public research home, not anyone we know. Landscapes are generated, not photographs.</p>
 </div></footer>
-<script type="module" src="/js/landing.js?v=w4"></script>
+<script type="module" src="/js/landing.js?v=w5"></script>
 </body>
 </html>

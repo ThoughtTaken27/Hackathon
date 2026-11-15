@@ -172,9 +172,54 @@ strong, b, .meta strong, td.strong, tr.row-shipped td, .dc-row.ours .dc-label, .
 .hb .dot { margin-top: 6px; }
 /* phones: section gaps scale down with the type (160px of air reads as a broken page at 393px) */
 @media (max-width: 600px) {
-  .lx-sec { padding-top: 112px; }
-  .lx-why { padding-top: 104px; }
-  .lx-built { margin-top: 72px; }
-  .lx-final { margin-top: 112px; }
-  .lx-sec-head { margin-bottom: 40px; }
+  .lx-sec { padding-top: 64px; }
+  .lx-why { padding-top: 64px; }
+  .lx-built { margin-top: 48px; }
+  .lx-final { margin-top: 72px; }
+  .lx-sec-head { margin-bottom: 28px; }
 }
+
+/* ---------- kitchen, condensed (Nov 15): the whole listening screen fits a laptop screen without scrolling.
+   Still large enough to read from a step away: headline 40, body 20, live label 40, buttons 20. */
+.kitchen { padding-top: 32px; padding-bottom: 24px; min-height: 0; }
+.k-main { gap: 20px; align-content: start; }
+.kitchen .k-head { font-size: 40px; line-height: 46px; }
+.kitchen .k-body, .k-rules { font-size: 20px; line-height: 28px; }
+.kitchen .k-body { margin-top: 6px; }
+.kitchen .k-body + .k-body { margin-top: 4px; }
+.k-status .dot { margin-top: 12px; }
+@media (min-width: 900px) { .k-status .dot { top: 12px; } }
+.chip.big { font-size: 40px; line-height: 46px; padding: 12px 26px; border-radius: 24px; }
+.btn.kbtn { font-size: 20px; min-height: 56px; min-width: 200px; padding: 0 26px; }
+.btn.kbtn.pause { font-size: 22px; min-height: 64px; max-width: 400px; }
+.k-tools { margin-top: 12px; gap: 10px; }
+.k-tools .btn.kbtn, .k-tools .btn { min-height: 44px; min-width: 0; font-size: 17px; padding: 0 18px; }
+.k-share { margin-top: 16px; padding-top: 12px; }
+.k-foot { margin-top: 20px; padding-top: 14px; font-size: 15px; line-height: 22px; }
+.k-guide li { padding: 10px 0; }
+.g-t { font-size: 20px; }
+.g-s, .g-live { font-size: 17px; line-height: 24px; }
+.kitchen .bar-hit { height: 64px; }
+.kitchen .bar { top: 8px; height: 48px; }
+.kitchen .now-tick { height: 60px; }
+html.big-text .kitchen .k-head { font-size: 52px; line-height: 58px; }
+html.big-text .kitchen .k-body { font-size: 26px; line-height: 36px; }
+html.big-text .chip.big { font-size: 52px; line-height: 58px; }
+@media (max-width: 520px) {
+  .kitchen .k-head { font-size: 30px; line-height: 36px; }
+  .kitchen .k-body, .k-rules { font-size: 18px; line-height: 26px; }
+  .chip.big { font-size: 30px; line-height: 36px; padding: 12px 18px; }
+  .btn.kbtn { font-size: 18px; min-height: 52px; }
+  .btn.kbtn.pause { font-size: 20px; }
+}
+/* "First, teach Kettle this kitchen": the next thing to do, at the top of the listening screen */
+.k-teach-cta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin: 0 0 16px; padding: 16px 18px; border-radius: 18px;
+  background: rgba(76,195,134,.10); box-shadow: inset 0 0 0 1.5px rgba(76,195,134,.45); max-width: 760px; }
+.k-teach-cta > div { flex: 1 1 280px; }
+.k-teach-cta .t { font-size: 22px; line-height: 28px; color: #fff; font-weight: 520; letter-spacing: -0.015em; }
+.k-teach-cta .s { font-size: 17px; line-height: 24px; color: rgba(255,255,255,.74); margin-top: 2px; }
+.k-teach-cta .btn.kbtn { min-width: 0; }
+.k-checks { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; }
+.k-checks ul { margin: 0; display: flex; flex-wrap: wrap; gap: 2px 12px; }
+.k-checks li { margin: 0; }
+.k-checks li::before { content: "·"; margin-right: 8px; color: rgba(255,255,255,.4); }

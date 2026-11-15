@@ -1,10 +1,11 @@
 // Kettle landing (dark): a live sample day in the hero panel, interactive steps, both real screens, numbers from results.json.
-import { DISPLAY, COLOUR, clock, rawLabel } from "./core.js";
+import { DISPLAY, COLOUR, KIND_NAMES, clock, rawLabel } from "./core.js";
 import { $, el, setText, dayBar, legend, rulesList, homes, reduceMotion } from "./ui.js";
 import { play } from "./sample.js";
 import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
 
 const RM = reduceMotion();
+const NAMES = { parent: "your parent", caregiver: "You" };      // the landing names nobody: any parent, any family
 
 // ---------- nav frosts once you scroll
 const nav = $("#nav");
@@ -13,7 +14,7 @@ addEventListener("scroll", onScroll, { passive: true }); onScroll();
 const mine = Object.values(homes()).sort((a, b) => b.saved - a.saved)[0];
 if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? `${mine.parent || "My"}'s kitchen` : "Kitchen screen"; }
 
-// ---------- hero panel: what Kettle heard (Dad's laptop) beside what Meera sees
+// ---------- hero panel: what Kettle heard (the kitchen laptop) beside what the family sees
 const heardList = $("#lp-heard"), steps = [...document.querySelectorAll(".lp-steps span")];
 const heroBar = dayBar($("#lp-bar"));
 let heard = [], stepT = [];
@@ -23,22 +24,36 @@ function runSteps() {
   steps.forEach((s, i) => stepT.push(setTimeout(() => { steps.forEach((x, j) => { x.classList.toggle("done", j < i); x.classList.toggle("now", j === i); }); }, i * (RM ? 0 : 160))));
   stepT.push(setTimeout(() => steps.forEach((x) => { x.classList.add("done"); x.classList.remove("now"); }), RM ? 0 : 760));
 }
+// One row of "What Kettle heard": time, colour, label, the named everyday sound (the same allow-list the family sees), confidence.
+function heardRow(x, t) {
+  const lab = rawLabel(x, 0.66), ns = lab === "not_sure";       // the same rule the day bar uses
+  const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking or TV" : DISPLAY[lab];
+  const sound = (x.kinds || []).map((k) => KIND_NAMES[k]).filter(Boolean)[0] || "";
+  return el("li", { class: (ns ? "ns " : "") + "enter", "data-k": String(x.end) },
+    el("span", { class: "t num", text: clock(x.end, t.tz_offset) }),
+    el("span", { class: "sw", style: `background:var(${COLOUR[lab] || COLOUR[x.label]})${ns ? ";opacity:.35" : ""}` }),
+    el("span", { class: "lab" }, name, el("small", { text: sound })),
+    el("span", { class: "conf num" }, el("i", {}, el("b", { style: `--p:${x.conf}` })), x.conf.toFixed(2)));
+}
 function heroFrame(t) {
   $("#lp-clock").textContent = t.now_text;
   const e = t.last_event;
+  if (t.sample.i === 1) { heard = []; heardList.textContent = ""; }            // the sample day starts again
   if (e) {
     heard.unshift(e); heard = heard.slice(0, 6);
-    heardList.textContent = "";
+    // FLIP: rows keep their element, so the list slides down by one row instead of being redrawn
+    const before = new Map([...heardList.children].map((n) => [n.dataset.k, n.getBoundingClientRect().top]));
+    const keep = new Set(heard.map((x) => String(x.end)));
+    for (const n of [...heardList.children]) if (!keep.has(n.dataset.k)) n.remove(); else n.classList.remove("enter");
     heard.forEach((x, i) => {
-      const lab = rawLabel(x, 0.66), ns = lab === "not_sure";       // the same rule the day bar uses
-      const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking or TV" : DISPLAY[lab];
-      const li = el("li", { class: (ns ? "ns " : "") + (i === 0 ? "enter" : "") },
-        el("span", { class: "t num", text: clock(x.end, t.tz_offset) }),
-        el("span", { class: "sw", style: `background:var(${COLOUR[lab] || COLOUR[x.label]})${ns ? ";opacity:.35" : ""}` }),
-        el("span", { class: "lab" }, name, el("small", { text: (x.sounds[0] || {}).name || "" })),
-        el("span", { class: "conf num" }, el("i", {}, el("b", { style: `--p:${x.conf}` })), x.conf.toFixed(2)));
-      heardList.append(li);
+      const li = heardList.querySelector(`[data-k="${x.end}"]`) || heardRow(x, t);
+      if (heardList.children[i] !== li) heardList.insertBefore(li, heardList.children[i] || null);
     });
+    if (!RM) for (const n of heardList.children) {
+      const b = before.get(n.dataset.k);
+      const d = b == null ? 0 : b - n.getBoundingClientRect().top;
+      if (d) n.animate([{ transform: `translateY(${d}px)` }, { transform: "none" }], { duration: 480, easing: "cubic-bezier(.22,1,.36,1)" });
+    }
     runSteps();
   }
   setText($("#lp-sum"), t.summary || "Listening. Nothing named yet.");
@@ -47,7 +62,7 @@ function heroFrame(t) {
   rulesList($("#lp-rules"), t.rules);
 }
 let heroPlayer = null;
-const startHero = async () => { heard = []; heroPlayer = await play("usual", heroFrame, { seconds: RM ? 0.5 : 34, loop: true }); };
+const startHero = async () => { heard = []; heroPlayer = await play("usual", heroFrame, { seconds: RM ? 0.5 : 46, loop: true, names: NAMES }); };
 new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting && !heroPlayer) startHero(); else if (!x.isIntersecting && heroPlayer) { heroPlayer.stop(); heroPlayer = null; } }), { threshold: 0.2 }).observe($(".lx-panel"));
 
 // ---------- how it works: four steps, auto-advancing, each with its own screen
@@ -56,16 +71,16 @@ const STEP_MS = 6500;
 let cur = 0, timer = null, flowBar = null;
 const meter = () => el("span", { class: "su-meter", "aria-hidden": "true" }, el("i"), el("i"), el("i"), el("i"), el("i"));
 const views = [
-  () => [el("p", { class: "su-k", text: "Meera's phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect Dad's laptop" }),
-    el("p", { class: "su-p", text: "On his kitchen laptop, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
+  () => [el("p", { class: "su-k", text: "Your phone · Step 3 of 3" }), el("p", { class: "su-h", text: "Now connect the kitchen laptop" }),
+    el("p", { class: "su-p", text: "On the kitchen laptop, open Kettle and type:" }), el("p", { class: "su-code num", html: "K7P<span> </span>4QX" }),
     el("p", { class: "su-p", text: "The code works for 48 hours." })],
-  () => [el("p", { class: "su-k", text: "Dad's kitchen laptop" }), el("p", { class: "su-h", text: "This laptop listens for kitchen sounds." }),
+  () => [el("p", { class: "su-k", text: "The kitchen laptop" }), el("p", { class: "su-h", text: "This laptop listens for kitchen sounds." }),
     el("p", { class: "su-p", text: "It only notes the kind of sound, like dishes or TV. It keeps no recordings and no words. You can pause it or turn it off any time." }),
-    el("div", {}, el("span", { class: "su-btn", text: "Yes, Meera can see this" }), el("span", { class: "su-btn ghost", text: "Not now" }))],
-  () => [el("p", { class: "su-k" }, el("i"), "Dad's kitchen laptop, listening"), el("p", { class: "su-h", text: "Listening for kitchen sounds" }),
+    el("div", {}, el("span", { class: "su-btn", text: "Yes, my family can see this" }), el("span", { class: "su-btn ghost", text: "Not now" }))],
+  () => [el("p", { class: "su-k" }, el("i"), "The kitchen laptop, listening"), el("p", { class: "su-h", text: "Listening for kitchen sounds" }),
     el("span", { class: "su-chip" }, "Sounds like cooking", meter()),
-    el("div", { class: "su-list" }, el("p", {}, el("span", { text: "Sound, 10 seconds" }), el("b", { text: "dropped" })), el("p", {}, el("span", { text: "Label sent to Meera" }), el("b", { text: "Cooking, 8:05 AM" })))],
-  () => { const box = el("div"); const holder = [el("p", { class: "su-k", text: "Meera's phone" }), el("p", { class: "su-h", text: "Dad's kitchen today" }),
+    el("div", { class: "su-list" }, el("p", {}, el("span", { text: "Sound, 10 seconds" }), el("b", { text: "dropped" })), el("p", {}, el("span", { text: "Label sent to the family" }), el("b", { text: "Cooking, 8:05 AM" })))],
+  () => { const box = el("div"); const holder = [el("p", { class: "su-k", text: "Your phone" }), el("p", { class: "su-h", text: "The kitchen today" }),
     el("p", { class: "su-p", id: "su-sum", text: "So far today: cooking around 8:05 AM, eating around 8:30 AM and TV from about 9:30 AM." }), box, el("div", { class: "lp-rules", id: "su-rules", style: "grid-template-columns:1fr" })];
     flowBar = dayBar(box); return holder; },
 ];
@@ -76,7 +91,7 @@ function show(i, user = false) {
   flowUI.textContent = ""; flowUI.append(...views[i]());
   flowUI.classList.remove("swap"); void flowUI.offsetWidth; flowUI.classList.add("swap");
   if (flowFrames) { flowFrames.stop(); flowFrames = null; }
-  if (i === 3) play("usual", (t) => { flowBar && flowBar.render(t); const s = $("#su-sum"); if (s) s.textContent = t.summary; const r = $("#su-rules"); if (r) rulesList(r, t.rules); }, { seconds: 4 }).then((p) => (flowFrames = p));
+  if (i === 3) play("usual", (t) => { flowBar && flowBar.render(t); const s = $("#su-sum"); if (s) s.textContent = t.summary; const r = $("#su-rules"); if (r) rulesList(r, t.rules); }, { seconds: 4, names: NAMES }).then((p) => (flowFrames = p));
   clearTimeout(timer);
   if (!RM) timer = setTimeout(() => show((cur + 1) % views.length), STEP_MS);
   if (user) accBox.classList.remove("paused");
@@ -91,13 +106,13 @@ new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting && !fl
 const K = $("#kitchen-canvas"), F = $("#family-canvas");
 K.append(el("div", { class: "kitchen k-mini" },
   el("div", { class: "k-status", "data-state": "listening" }, el("span", { class: "dot" }), el("div", {},
-    el("h1", { class: "k-head", text: "Listening for kitchen sounds" }), el("p", { class: "k-body", text: "Meera sees the kinds of sounds, not recordings or words." }))),
+    el("h1", { class: "k-head", text: "Listening for kitchen sounds" }), el("p", { class: "k-body", text: "The family sees the kinds of sounds, not recordings or words." }))),
   el("div", { class: "chip big" }, el("span", { class: "txt", id: "k-chip", text: "Waiting for the first sound…" })),
   el("div", { class: "k-controls" }, el("span", { class: "btn kbtn primary pause", text: "Pause" }), el("span", { class: "btn kbtn", text: "Turn it off" })),
   el("div", { id: "k-bar" })));
 F.append(el("div", { class: "f-mini" },
   el("div", { class: "notch" }), el("div", { class: "sbar" }, el("span", { class: "num", id: "f-clock", text: "9:41" }), el("span", { text: "●●●" })),
-  el("p", { class: "eyebrow", text: "What Meera sees" }), el("h1", {}, "Dad's kitchen, ", el("em", { text: "today" })),
+  el("p", { class: "eyebrow", text: "What the family sees" }), el("h1", {}, "The kitchen, ", el("em", { text: "today" })),
   el("p", { class: "hb", "data-state": "listening" }, el("span", { class: "dot" }), el("span", { class: "text", text: "Listening · last heard just now" })),
   el("p", { class: "summary", id: "f-sum" }), el("div", { class: "card" }, el("div", { id: "f-bar" })), el("div", { class: "rules", id: "f-rules" })));
 const kBar = dayBar($("#k-bar"), { big: true }), fBar = dayBar($("#f-bar")), fLegend = legend($("#f-bar"));
@@ -112,7 +127,7 @@ async function startStage(sid) {
   if (stage) stage.stop();
   document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sid === sid)));
   moveInd();
-  stage = await play(sid, stageFrame, { seconds: RM ? 0.5 : 18, loop: true });
+  stage = await play(sid, stageFrame, { seconds: RM ? 0.5 : 18, loop: true, names: NAMES });
 }
 document.querySelectorAll(".lx-seg [data-sid]").forEach((b) => b.addEventListener("click", () => startStage(b.dataset.sid)));
 new IntersectionObserver((es) => es.forEach((x) => {

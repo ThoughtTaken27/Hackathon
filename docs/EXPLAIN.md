@@ -202,3 +202,20 @@ Stage-2 probes (encoder speed, Apple's classifier, live latency) and the pain-po
 
 ### `kettle/kinds.py`
 - **What:** the Python copy of the sound-type rule and the appliance hold, used to give sample days the same fields a kitchen laptop sends.
+
+## Usability round (Sun Nov 15, morning)
+
+### Kitchen screen: teach first, condensed, keeps listening in the background (`web/public/js/kitchen.js`, `tick.js`, `listen.js`)
+- **What:** setup is now 4 steps (consent, placement, sound check, **teach this kitchen**); until it's taught, the listening screen opens with a "First, teach Kettle this kitchen" card. A worker ticks once a second so syncing keeps pace in a background tab; only one tab per home listens (the other says "listening in another window"); "Open Kettle in a small window" pops it out; the tab title shows "● Listening"; closing asks first; if no window arrives for 45 s the microphone restarts.
+- **Why this way:** a browser can't listen with the page closed, so we made "page open in a corner" easy and visible instead of building a native app after the gate.
+- **Known limit:** headless tests can't hide a tab, so background behaviour was checked with another tab in front and the pop-out window, not on a real minimised laptop over hours.
+- **Judge question:** "What if the parent closes the tab?" Kettle asks before closing; if it's closed anyway, the family view says "Not listening since …".
+
+### Sample days and the landing hero (`demo_cache/scenarios.json`, `web/public/js/landing.js`)
+- **What:** each sample-day segment uses clips the model labels as their recorded activity; the hero list slides rows down instead of redrawing and shows the named household sound (allow-list), not a raw AudioSet tag like "Rain".
+- **Known limit:** the sample days are now a best case; the honest error rates live on How sure (held-out test) and in `results/sound_check_web.json`.
+- **Judge question:** "Did you cherry-pick the demo?" Yes, the screens' demo, and we say so in the scenario file and DECISIONS; the numbers come from the frozen held-out run.
+
+### Sound check through the real page (`web/test/sound_check.cjs` → `results/sound_check_web.json`)
+- **What:** each WAV plays into Chromium's fake microphone on `/kitchen`; we read back every window the kitchen sent. 20 home clips and 54 confusing ESC-50 clips, 3 windows each.
+- **Result (Nov 15):** home clips 17 of 20 named right (misses: one washing-up clip heard as cooking, the "unclear" demo clip as typing, one quiet loop as some activity); confusing clips: 0 of 162 windows given a confident activity, 51 of 54 chips said "Not sure", 3 said "Sounds like eating" through the second-opinion rule (brushing teeth, sipping, water drops); no cough, crying, sneeze, snore or toilet name was ever sent. A muted microphone now says "Kettle hears nothing at all" instead of 20 s of "Not sure".
