@@ -312,6 +312,7 @@ def main() -> None:
     R["novelty"] = novelty_tradeoff(d, head, off)
     R["enrolment"] = enrol_sim(d)
     OUT.write_text(json.dumps(R, indent=1))
+    (ROOT / "web" / "public" / "data" / "beyond.json").write_text(json.dumps(R))   # the How sure page reads this copy
     WEB.joinpath("kinds.json").write_text(json.dumps({
         "kinds": [{"id": k, "name": v[0], "index": v[1], "tau": R["sound_types"]["taus"][k]} for k, v in KINDS.items()],
         "never": NEVER, "veto": VETO, "cook_evidence": COOK_EVIDENCE, "hum": HUM,

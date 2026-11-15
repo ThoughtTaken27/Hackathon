@@ -14,7 +14,7 @@
   <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
   <span class="nav-sp"></span>
   
-  <a class="btn primary nav-cta" href="/start" style="min-height:36px;padding:0 16px;font-size:13.5px">Set up Kettle</a>
+  <a class="btn primary nav-cta" href="/start" style="min-height:44px;padding:0 16px;font-size:13.5px">Set up Kettle</a>
 </div></nav>
 <main class="page enter">
   <header class="top">
@@ -24,13 +24,15 @@
     </div>
     <a class="link" href="/"><span class="long">Back to Kettle</span><span class="short">Back</span></a>
   </header>
+  <div id="beyond"></div>
   <div id="content"></div>
   <footer class="foot">
-    <p>Every number on this page is read from results/metrics.json, made by running <code>python -m eval</code>. None is typed by hand.</p>
+    <p>Every number on this page is read from results/metrics.json (<code>python -m eval</code>), results/beyond.json (<code>python -m eval.beyond</code>) and results/stress.json (<code>python -m eval.stress</code>). None is typed by hand.</p>
     <p><strong>Prototype, not medical advice.</strong> Kettle is not an emergency device.</p>
   </footer>
 </main>
 <script src="/js/common-legacy.js"></script>
 <script src="/js/howsure.js?v=w3"></script>
+<script type="module" src="/js/beyond.js?v=w3"></script>
 </body>
 </html>
