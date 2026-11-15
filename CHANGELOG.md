@@ -29,3 +29,15 @@
   A check on a hidden sound says "Can't tell"; a kettle check needs 2 windows of one block. The family's check editor offers
   only shown sounds. Kitchen20 was embedded on this machine with the app's encoder (`data/emb/ced-tiny/kitchen20/all.npz`).
 - Also: `eval/beyond.py` crashed on the new "kitchen" meal label; fixed (thresholds, enrolment and novelty numbers unchanged).
+
+## Sun Nov 15, ~1:45–2:20 PM CT: 3.3 and 3.2 measured, not shipped; 3.4 scorer ready
+- 3.3 (`eval/confetti.py` → `results/confetti.json`): rule 2e (bridge novel kitchen-tagged gaps) and 2f (TV named → TV) on SINS dev
+  stitched and on Kitchen20 TUNE stitched into 6-clip sessions. 2e: no change on either set; 2f: SINS pieces per session
+  2.58 → 2.56, false blocks per hour 1.78 → 1.82, nothing on Kitchen20. **Neither ships.** The real finding: on Kitchen20, 80.9%
+  of the time is "Not sure" because whole sessions are "unlike anything it learned", not short gaps.
+- 3.2 (`eval/judge.py` → `results/judge.json`): logistic judge on 527 log-tags, trained on Kitchen20 TUNE, ESC-50 TUNE and SINS dev
+  (weight 0.15), group-CV out-of-fold. Best trade: cutoff 0.9 cuts wrong activity 4 → 0 and false meal calls 41 → 30, but names
+  6 fewer real meals (218 → 212); cutoff 0.8 names 18 more but adds one false call on Kitchen20. **Fails the gate written before
+  the run** (it passes the handover's narrower gate at 0.9 only). Not shipped; `models/judge.json` not written; Kitchen20 TEST not
+  touched. DESED is not on this machine.
+- 3.4: `python -m eval.own_kitchen --timeline --session <name>` scores a labelled recording old rule vs new rule; dry-run checked.

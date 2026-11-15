@@ -1,0 +1,271 @@
+{
+ "about": "A trained, multi-home \"judge\" for windows the head can't name (handover v3.2, 3.2), with a ship/no-ship gate.",
+ "C_by_cv_logloss": {
+  "0.01": 0.2256762757935897,
+  "0.03": 0.20685059140135192,
+  "0.1": 0.2055095339562869,
+  "0.3": 0.22176490126210957
+ },
+ "C": 0.1,
+ "sins_weight": 0.15,
+ "dev": {
+  "0.6": {
+   "kitchen20_tune": {
+    "n": 473,
+    "shipped_rule": {
+     "not_meal": 290,
+     "false_meal": 16,
+     "meal": 183,
+     "right": 86,
+     "wrong_activity": 4,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 290,
+     "false_meal": 22,
+     "meal": 183,
+     "right": 118,
+     "wrong_activity": 3,
+     "kitchen_unnamed": 0
+    }
+   },
+   "esc50_tune": {
+    "n": 972,
+    "shipped_rule": {
+     "not_meal": 972,
+     "false_meal": 12
+    },
+    "judge": {
+     "not_meal": 972,
+     "false_meal": 11
+    }
+   },
+   "sins_dev_sessions": {
+    "n": 8920,
+    "shipped_rule": {
+     "not_meal": 895,
+     "false_meal": 13,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 895,
+     "false_meal": 15,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    }
+   },
+   "_gate": {
+    "false_meal_not_higher": false,
+    "wrong_activity": [
+     4,
+     3
+    ],
+    "right": [
+     218,
+     250
+    ],
+    "handover_gate_pass": false,
+    "pass": false
+   }
+  },
+  "0.7": {
+   "kitchen20_tune": {
+    "n": 473,
+    "shipped_rule": {
+     "not_meal": 290,
+     "false_meal": 16,
+     "meal": 183,
+     "right": 86,
+     "wrong_activity": 4,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 290,
+     "false_meal": 19,
+     "meal": 183,
+     "right": 111,
+     "wrong_activity": 2,
+     "kitchen_unnamed": 0
+    }
+   },
+   "esc50_tune": {
+    "n": 972,
+    "shipped_rule": {
+     "not_meal": 972,
+     "false_meal": 12
+    },
+    "judge": {
+     "not_meal": 972,
+     "false_meal": 9
+    }
+   },
+   "sins_dev_sessions": {
+    "n": 8920,
+    "shipped_rule": {
+     "not_meal": 895,
+     "false_meal": 13,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 895,
+     "false_meal": 14,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    }
+   },
+   "_gate": {
+    "false_meal_not_higher": false,
+    "wrong_activity": [
+     4,
+     2
+    ],
+    "right": [
+     218,
+     243
+    ],
+    "handover_gate_pass": false,
+    "pass": false
+   }
+  },
+  "0.8": {
+   "kitchen20_tune": {
+    "n": 473,
+    "shipped_rule": {
+     "not_meal": 290,
+     "false_meal": 16,
+     "meal": 183,
+     "right": 86,
+     "wrong_activity": 4,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 290,
+     "false_meal": 17,
+     "meal": 183,
+     "right": 104,
+     "wrong_activity": 1,
+     "kitchen_unnamed": 0
+    }
+   },
+   "esc50_tune": {
+    "n": 972,
+    "shipped_rule": {
+     "not_meal": 972,
+     "false_meal": 12
+    },
+    "judge": {
+     "not_meal": 972,
+     "false_meal": 7
+    }
+   },
+   "sins_dev_sessions": {
+    "n": 8920,
+    "shipped_rule": {
+     "not_meal": 895,
+     "false_meal": 13,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 895,
+     "false_meal": 12,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    }
+   },
+   "_gate": {
+    "false_meal_not_higher": false,
+    "wrong_activity": [
+     4,
+     1
+    ],
+    "right": [
+     218,
+     236
+    ],
+    "handover_gate_pass": false,
+    "pass": false
+   }
+  },
+  "0.9": {
+   "kitchen20_tune": {
+    "n": 473,
+    "shipped_rule": {
+     "not_meal": 290,
+     "false_meal": 16,
+     "meal": 183,
+     "right": 86,
+     "wrong_activity": 4,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 290,
+     "false_meal": 15,
+     "meal": 183,
+     "right": 80,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    }
+   },
+   "esc50_tune": {
+    "n": 972,
+    "shipped_rule": {
+     "not_meal": 972,
+     "false_meal": 12
+    },
+    "judge": {
+     "not_meal": 972,
+     "false_meal": 4
+    }
+   },
+   "sins_dev_sessions": {
+    "n": 8920,
+    "shipped_rule": {
+     "not_meal": 895,
+     "false_meal": 13,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    },
+    "judge": {
+     "not_meal": 895,
+     "false_meal": 11,
+     "meal": 132,
+     "right": 132,
+     "wrong_activity": 0,
+     "kitchen_unnamed": 0
+    }
+   },
+   "_gate": {
+    "false_meal_not_higher": true,
+    "wrong_activity": [
+     4,
+     0
+    ],
+    "right": [
+     218,
+     212
+    ],
+    "handover_gate_pass": true,
+    "pass": false
+   }
+  }
+ },
+ "gate_pass_taus": [],
+ "decision": "not shipped: no cutoff passed the development gate written before the run (fewer false meal calls, fewer wrong activities, and no fewer right answers); see handover_gate_pass for the handover's gate alone"
+}

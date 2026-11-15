@@ -1,0 +1,346 @@
+{
+ "about": "Fewer \"Not sure\" gaps and broken-up blocks (handover v3.2, 3.3): candidate rules 2e and 2f measured through the app's timeline.\nResult (Sun Nov 15): neither moved the dev numbers enough to ship (results/confetti.json); they are applied here only, by wrapping\nkettle/timeline.raw_label and bridge, so the app's code is unchanged.",
+ "sets": {
+  "sins_dev": "SINS dev, 4 folds stitched (development data)",
+  "kitchen20_tune": "Kitchen20 TUNE half by uploader, 6-clip sessions per category, stitched (development data)"
+ },
+ "decision": "not shipped: no gain on either development set",
+ "variants": {
+  "shipped (2b-2d)": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.58,
+    "not_sure_share_pct": 8.9,
+    "false_activity_blocks_per_hour": 1.78,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.64
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.0
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 3.0
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 17,
+    "caught_pct": 23.0,
+    "pieces_per_session": 1.35,
+    "not_sure_share_pct": 80.9,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 8,
+      "pieces_per_session": 1.74
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 6,
+      "pieces_per_session": 1.5
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.17
+     }
+    }
+   }
+  },
+  "+2e bridge novel kitchen gaps": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.58,
+    "not_sure_share_pct": 8.9,
+    "false_activity_blocks_per_hour": 1.78,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.64
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.0
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 3.0
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 17,
+    "caught_pct": 23.0,
+    "pieces_per_session": 1.35,
+    "not_sure_share_pct": 80.9,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 8,
+      "pieces_per_session": 1.74
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 6,
+      "pieces_per_session": 1.5
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.17
+     }
+    }
+   }
+  },
+  "+2f TV": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.56,
+    "not_sure_share_pct": 8.8,
+    "false_activity_blocks_per_hour": 1.82,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.64
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.1
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 2.25
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 17,
+    "caught_pct": 23.0,
+    "pieces_per_session": 1.35,
+    "not_sure_share_pct": 80.9,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 8,
+      "pieces_per_session": 1.74
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 6,
+      "pieces_per_session": 1.5
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.17
+     }
+    }
+   }
+  },
+  "+2e +2f": {
+   "sins_dev": {
+    "sessions": 218,
+    "caught_one_activity_half": 185,
+    "caught_pct": 84.9,
+    "pieces_per_session": 2.56,
+    "not_sure_share_pct": 8.8,
+    "false_activity_blocks_per_hour": 1.82,
+    "hours": 24.78,
+    "per_activity": {
+     "cooking": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.08
+     },
+     "dishwashing": {
+      "sessions": 9,
+      "caught": 9,
+      "pieces_per_session": 8.56
+     },
+     "eating": {
+      "sessions": 12,
+      "caught": 12,
+      "pieces_per_session": 4.33
+     },
+     "other": {
+      "sessions": 117,
+      "caught": 90,
+      "pieces_per_session": 1.64
+     },
+     "social_activity": {
+      "sessions": 20,
+      "caught": 20,
+      "pieces_per_session": 2.1
+     },
+     "vacuum_cleaner": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 1.0
+     },
+     "watching_tv": {
+      "sessions": 8,
+      "caught": 8,
+      "pieces_per_session": 2.25
+     },
+     "working": {
+      "sessions": 32,
+      "caught": 26,
+      "pieces_per_session": 3.78
+     }
+    }
+   },
+   "kitchen20_tune": {
+    "sessions": 74,
+    "caught_one_activity_half": 17,
+    "caught_pct": 23.0,
+    "pieces_per_session": 1.35,
+    "not_sure_share_pct": 80.9,
+    "false_activity_blocks_per_hour": 0.81,
+    "hours": 1.23,
+    "per_activity": {
+     "cooking": {
+      "sessions": 19,
+      "caught": 8,
+      "pieces_per_session": 1.74
+     },
+     "dishwashing": {
+      "sessions": 6,
+      "caught": 6,
+      "pieces_per_session": 1.5
+     },
+     "eating": {
+      "sessions": 3,
+      "caught": 3,
+      "pieces_per_session": 1.33
+     },
+     "other": {
+      "sessions": 46,
+      "caught": 0,
+      "pieces_per_session": 1.17
+     }
+    }
+   }
+  }
+ }
+}

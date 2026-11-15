@@ -3,6 +3,14 @@
 Audio: data/private/own_kitchen/ (git-ignored, never committed). Labels: eval/own_kitchen/labels.csv
 (file,start_s,end_s,activity,session,notes). Straddle rule (fixed before scoring, see eval/OWN_KITCHEN_GUIDE.md):
 a 10-s window is scored only if it lies fully inside one labelled row. Exploratory: small N, session-level Wilson CIs.
+
+Timeline scoring (handover v3.2, 3.4): `python -m eval.own_kitchen --timeline [--session NAME]` runs the whole recording through
+the app's own timeline (kettle/timeline.blocks, so rules 2c and 2d apply) twice: with the evidence numbers the device now sends
+("new rule") and without them ("old rule", what shipped before Sun Nov 15). Each labelled stretch is scored by the activity
+covering most of it: right, wrong activity, "kitchen activity" (unnamed), or nothing; non-meal stretches count false meal blocks.
+Plan: the first session is development (look and tune), the second is the test (score once, report whatever it says).
+Windows every 5 s (several offsets, as the browser's alignment is arbitrary). On-device web rules (quiet level, voices) are
+not applied here. Overrides for a dry run: KETTLE_OWN_AUDIO, KETTLE_OWN_LABELS.
 """
 from __future__ import annotations
 
@@ -17,8 +25,11 @@ from eval import metrics as M
 from eval.common import ROOT, num
 from kettle.labels import CLASSES
 
-AUDIO = ROOT / "data" / "private" / "own_kitchen"
-LABELS = ROOT / "eval" / "own_kitchen" / "labels.csv"
+import os
+
+AUDIO = Path(os.environ.get("KETTLE_OWN_AUDIO", ROOT / "data" / "private" / "own_kitchen"))
+LABELS = Path(os.environ.get("KETTLE_OWN_LABELS", ROOT / "eval" / "own_kitchen" / "labels.csv"))
+MEAL3 = ("cooking", "dishwashing", "eating")
 
 
 def read_labels() -> list[dict]:
@@ -96,6 +107,60 @@ def score() -> None:
     print(json.dumps(out["macro_f1_present_classes"]))
 
 
+def timeline_score(session: str | None = None, hop_s: float = 5.0) -> dict:
+    """The full timeline, old rule vs new rule, per labelled stretch (handover 3.4). Writes results/own_kitchen_timeline.json."""
+    from collections import Counter
+    from kettle import audio, encoders, kinds, model, timeline, witness
+    rows = [r for r in read_labels() if session is None or r["session"] == session]
+    if not rows:
+        raise SystemExit("no labelled stretches" + (f" for session {session}" if session else ""))
+    if problems(rows):
+        raise SystemExit("Fix the label problems first: python -m eval.own_kitchen_check")
+    head = model.load(ROOT / "models" / "head.json")
+    enc = encoders.load()
+    out = {"split": "own kitchen (exploratory, laptop mic)", "session": session or "all", "hop_s": hop_s, "rules": {}}
+    for rule in ("old", "new"):
+        tally, per = Counter(), []
+        for f, rs in _by_file(rows).items():
+            x = _full(AUDIO / f)
+            evs = []
+            for t0, w in audio.windows(x, hop_s=hop_s):
+                e, a = encoders.embed(enc, w[None, :])
+                p = model.predict_proba(head, e)[0]
+                o = witness.opinion(a[0])
+                if rule == "old":
+                    o = {k: o[k] for k in ("k", "family", "v")}
+                evs.append({"start": t0, "end": t0 + 10, "probs": dict(zip(CLASSES, map(float, p))), "conf": float(p.max()),
+                            "novel": bool(model.novelty(head, e)[0] > head["novelty"]["threshold"]), "sounds": [], "w": o,
+                            "kinds": [k["id"] for k in kinds.named(a[0])] if rule == "new" else []})
+            blks = timeline.blocks(evs, head["theta"], gap_s=hop_s + 1)
+            for r in rs:
+                cover = Counter()
+                for b in blks:
+                    ov = min(r["end_s"], b["end"]) - max(r["start_s"], b["start"])
+                    if ov > 0 and b["state"] in ("activity", "empty", "not_sure", "talk_or_tv"):
+                        cover[b["activity"] or b["state"]] += ov
+                shown = cover.most_common(1)[0][0] if cover else None
+                truth = r["activity"]
+                if truth in MEAL3:
+                    tally["meal"] += 1
+                    tally["right"] += shown == truth
+                    tally["wrong_activity"] += shown in MEAL3 and shown != truth
+                    tally["kitchen_unnamed"] += shown == "kitchen"
+                else:
+                    tally["not_meal"] += 1
+                    tally["false_meal"] += shown in MEAL3 or shown == "kitchen"
+                    tally["right_other"] += shown == truth
+                per.append({"file": f, "start_s": r["start_s"], "end_s": r["end_s"], "truth": truth, "shown": shown,
+                            "cover_s": {k: round(v) for k, v in cover.most_common(3)}})
+        out["rules"][rule] = {"tally": dict(tally), "stretches": per}
+    name = f"own_kitchen_timeline{'_' + session if session else ''}.json"
+    (ROOT / "results" / name).write_text(json.dumps(out, indent=1, default=float))
+    for rule in ("old", "new"):
+        print(rule, out["rules"][rule]["tally"])
+    return out
+
+
 def _by_file(rows):
     d = defaultdict(list)
     for r in rows:
@@ -107,3 +172,12 @@ def _full(path: Path) -> np.ndarray:
     from kettle import audio
     x, sr = audio.decode(path.read_bytes())
     return audio.to_16k_mono(x, sr)
+
+
+if __name__ == "__main__":
+    import sys
+    a = sys.argv[1:]
+    if "--timeline" in a:
+        timeline_score(a[a.index("--session") + 1] if "--session" in a else None)
+    else:
+        score()

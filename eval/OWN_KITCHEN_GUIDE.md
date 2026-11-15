@@ -137,3 +137,15 @@ Say these three things in your own words:
 - **How the labels were made.** A teammate who did not write the code listened to each recording and wrote down the start, end and activity by hand. Everyone who could be heard had signed a consent form first.
 - **Why the code author did not label.** Parth wrote Kettle's code. If he also labelled the test data, he could shape the labels to fit the model. A different person labels so the test is fair.
 - **What was dropped and why.** Any 10-second window that crossed two activities was dropped before scoring, using a rule fixed in advance. Sessions with no consent, or with a conversation, were removed or skipped and written down in `NOTES.md`.
+
+## Scoring the whole timeline (added Sun Nov 15, handover v3.2 §3.4)
+
+```bash
+python -m eval.own_kitchen_check                              # format checks on labels.csv
+python -m eval.own_kitchen --timeline --session <first>       # development session: look, tune
+python -m eval.own_kitchen --timeline --session <second>      # test session: score once, report whatever it says
+```
+
+Runs every 5 s window through `kettle/timeline.blocks` with the old rule (before Sun Nov 15) and the new one (rules 2c/2d,
+named sounds) and writes `results/own_kitchen_timeline_<session>.json`: right / wrong activity / unnamed kitchen activity per
+meal stretch, false meal blocks on the others. Dry-run checked on stitched sample clips (5 of 5 stretches right, both rules).
