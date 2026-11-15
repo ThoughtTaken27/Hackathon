@@ -166,3 +166,19 @@ test("credits page: every dataset and model the code uses is credited, links are
   }
   for (const page of ["index.html", "how-sure.html"]) assert.match(fs.readFileSync(new URL("web/public/" + page, root), "utf8"), /href="\/credits"/, `${page} does not link to /credits`);
 });
+
+test("handover 3.5: no voice tag is on the sound-name allow-list, so the server never stores one", () => {
+  for (const v of ["Speech", "Conversation", "Chatter", "Hubbub, speech noise, speech babble", "Narration, monologue"]) assert.ok(!SHOWN_SOUNDS.has(v), v);
+  const shown = read("web/public/model/evidence.json").shown;
+  assert.ok(!shown.includes("Speech") && shown.includes("Frying (food)"));
+});
+
+test("handover 3.1: a check on a hidden sound says Can't tell, never missed; a kettle needs 2 windows", async () => {
+  const { evaluateRules: ev2, KINDS_SHOWN, KIND_MIN_WINDOWS } = await import("../public/js/core.js");
+  assert.ok(!KINDS_SHOWN.has("kettle") && KIND_MIN_WINDOWS.kettle === 2);
+  const day0 = 1_800_000_000 - (1_800_000_000 % 86400);
+  const blk = (kinds) => ({ start: day0 + 7 * 3600, end: day0 + 7 * 3600 + 60, state: "activity", activity: "cooking", conf: 0.9, kinds });
+  const r = [{ id: "r1", type: "kind_by", kind: "kettle", time: "09:00" }];
+  const out = ev2(r, [blk({ kettle: { n: 3, at: day0 + 7 * 3600 } })], day0 + 10 * 3600, day0, 0);
+  assert.equal(out[0].state, "cant_tell");
+});

@@ -1,5 +1,5 @@
 // Dad's kitchen screen (Kettle web). Pairs with a code, asks Dad first, labels sound on this device, sends only labels.
-import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, HIDEABLE } from "./core.js";
+import { today as computeToday, canListen, rawLabel, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
 import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
@@ -301,7 +301,7 @@ function screen(t) {
       controls: [button("Start", () => { ui.step = "intro"; draw(); }, "primary")] };
     const lines = [`The program is called Kettle. It uses this ${DEVICE}'s microphone and only notes the kind of sound, like 'dishes', 'TV' or 'people talking'.`,
       `It keeps no recordings and no words. The sound never leaves this ${DEVICE}.`, `${n.caregiver} sees a day timeline like this one. You can pause it or turn it off any time.`,
-      `${n.caregiver} will also see when people were talking (that shows a visit, never what was said), when the TV was on, and everyday sounds like the kettle or running water. You can hide any of these.`,
+      `${n.caregiver} will also see when people were talking (that shows a visit, never what was said) and when the TV or radio was on. You can hide any of these.`,
       "Kettle never names voices, coughs, crying or bathroom sounds. If a guest or carer comes, you can pause it for them."];
     return { state: "never", stepK: setupDone() ? 0 : 1, head: `This ${DEVICE} listens for kitchen sounds.`, body: lines, example: true,
       controls: [button("Next", () => { ui.step = "teachback"; draw(); }, "primary"), button("Not now", () => { ui.step = "declined"; draw(); }),
@@ -438,7 +438,7 @@ function sharePanel(t) {
   const save = () => act("privacy", { hide: [...hide], kindsOff: [...off] });
   const box = (label, on, flip) => el("label", {}, el("input", { type: "checkbox", checked: on || null, onchange: (e) => { flip(e.target.checked); save(); } }), el("span", { text: label }));
   const acts = HIDEABLE.map((c) => box(c === "social_activity" ? "Conversation (shows a visit, never words)" : DISPLAY[c], !hide.has(c), (v) => (v ? hide.delete(c) : hide.add(c))));
-  const kinds = Object.entries(KIND_NAMES).map(([id, name]) => box(name, !off.has(id), (v) => (v ? off.delete(id) : off.add(id))));
+  const kinds = Object.entries(KIND_NAMES).filter(([id]) => KINDS_SHOWN.has(id)).map(([id, name]) => box(name, !off.has(id), (v) => (v ? off.delete(id) : off.add(id))));
   const open = ui.shareOpen ? { open: "" } : {};
   const d = el("details", { class: "k-share", ...open, ontoggle: (e) => { ui.shareOpen = e.target.open; } }, el("summary", { text: `What ${t.names.caregiver} can see` }),
     el("fieldset", {}, el("legend", { text: "Activities (ticked = shared)" }), ...acts),

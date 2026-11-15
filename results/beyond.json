@@ -25,34 +25,13 @@
       0.8
      ]
     },
-    "esc50_hit": {
-     "k": 8,
-     "n": 16,
-     "pct": 50.0,
-     "ci95": [
-      28.0,
-      72.0
-     ],
-     "categories": [
-      "pouring_water"
-     ]
-    },
     "esc50_false_fire_other_household": {
-     "k": 3,
-     "n": 208,
-     "pct": 1.4,
+     "k": 2,
+     "n": 224,
+     "pct": 0.9,
      "ci95": [
-      0.5,
-      4.2
-     ]
-    },
-    "esc50_hit_after_veto": {
-     "k": 8,
-     "n": 16,
-     "pct": 50.0,
-     "ci95": [
-      28.0,
-      72.0
+      0.2,
+      3.2
      ]
     }
    },
@@ -299,12 +278,12 @@
     "name": "Running water",
     "tau": 0.05,
     "false_fire_dev_test": {
-     "k": 2,
+     "k": 1,
      "n": 1896,
      "pct": 0.1,
      "ci95": [
       0.0,
-      0.4
+      0.3
      ]
     },
     "false_fire_quiet_dev_test": {
@@ -317,54 +296,33 @@
      ]
     },
     "heard_in_related_dev_test": {
-     "k": 66,
+     "k": 46,
      "n": 560,
-     "pct": 11.8,
+     "pct": 8.2,
      "ci95": [
-      9.4,
-      14.7
+      6.2,
+      10.8
      ],
      "related": [
       "dishwashing"
      ]
     },
-    "esc50_hit": {
-     "k": 7,
-     "n": 16,
-     "pct": 43.8,
-     "ci95": [
-      23.1,
-      66.8
-     ],
-     "categories": [
-      "water_drops"
-     ]
-    },
     "esc50_false_fire_other_household": {
-     "k": 17,
-     "n": 208,
-     "pct": 8.2,
+     "k": 7,
+     "n": 224,
+     "pct": 3.1,
      "ci95": [
-      5.2,
-      12.7
+      1.5,
+      6.3
      ]
     },
     "heard_in_related_dev_test_after_veto": {
-     "k": 63,
+     "k": 44,
      "n": 560,
-     "pct": 11.2,
+     "pct": 7.9,
      "ci95": [
-      8.9,
-      14.1
-     ]
-    },
-    "esc50_hit_after_veto": {
-     "k": 7,
-     "n": 16,
-     "pct": 43.8,
-     "ci95": [
-      23.1,
-      66.8
+      5.9,
+      10.4
      ]
     }
    },
@@ -452,7 +410,7 @@
     }
    },
    "alarm": {
-    "name": "An alarm or beeping",
+    "name": "Timer or appliance beep",
     "tau": 0.05,
     "false_fire_dev_test": {
      "k": 0,
@@ -485,12 +443,12 @@
      ]
     },
     "esc50_false_fire_other_household": {
-     "k": 2,
+     "k": 3,
      "n": 208,
-     "pct": 1.0,
+     "pct": 1.4,
      "ci95": [
-      0.3,
-      3.4
+      0.5,
+      4.2
      ]
     },
     "esc50_hit_after_veto": {
@@ -807,12 +765,12 @@
    }
   },
   "sensitive_any_name": {
-   "k": 6,
+   "k": 2,
    "n": 128,
-   "pct": 4.7,
+   "pct": 1.6,
    "ci95": [
-    2.2,
-    9.8
+    0.4,
+    5.5
    ]
   },
   "sensitive_by_category": {
@@ -889,15 +847,14 @@
     "named_as": []
    },
    "toilet_flush": {
-    "k": 5,
+    "k": 1,
     "n": 16,
-    "pct": 31.2,
+    "pct": 6.2,
     "ci95": [
-     14.2,
-     55.6
+     1.1,
+     28.3
     ],
     "named_as": [
-     "kettle",
      "tap"
     ]
    }
@@ -921,30 +878,30 @@
   },
   "veto": {
    "household_named_before": {
-    "k": 109,
+    "k": 94,
     "n": 224,
-    "pct": 48.7,
+    "pct": 42.0,
     "ci95": [
-     42.2,
-     55.2
+     35.7,
+     48.5
     ]
    },
    "household_named_after": {
-    "k": 109,
+    "k": 94,
     "n": 224,
-    "pct": 48.7,
+    "pct": 42.0,
     "ci95": [
-     42.2,
-     55.2
+     35.7,
+     48.5
     ]
    },
    "sensitive_named_before_veto": {
-    "k": 17,
+    "k": 11,
     "n": 128,
-    "pct": 13.3,
+    "pct": 8.6,
     "ci95": [
-     8.5,
-     20.2
+     4.9,
+     14.7
     ]
    }
   }

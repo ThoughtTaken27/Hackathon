@@ -48,3 +48,10 @@ def test_app_never_imports_the_dataset_downloader():
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 names = [a.name for a in node.names] + ([node.module] if isinstance(node, ast.ImportFrom) and node.module else [])
                 assert "kettle.data" not in names, p
+
+
+def test_no_voice_tags_on_the_shown_list():
+    """Handover v3.2, 3.5: the family page says Kettle never names voices, so no voice tag may be shown or sent."""
+    from kettle import evidence
+    for v in ("Speech", "Conversation", "Chatter", "Hubbub, speech noise, speech babble", "Narration, monologue"):
+        assert v not in evidence.SHOWN

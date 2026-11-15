@@ -1,0 +1,1806 @@
+{
+ "about": "Named everyday sounds: precision and recall before vs after the context rules (handover v3.2, 3.1).",
+ "prereg": "eval/PREREGISTER-SOUNDS.md",
+ "bar": {
+  "precision": 90.0,
+  "recall": 40.0
+ },
+ "n_windows": {
+  "kitchen20": {
+   "tune": 538,
+   "test": 532
+  },
+  "esc50": {
+   "tune": 972,
+   "test": 1028
+  },
+  "sins_dev": {
+   "tune": 4504,
+   "test": 4416
+  },
+  "synth_alarms": {
+   "tune": 480,
+   "test": 480
+  },
+  "nonspeech7k": {
+   "tune": 366,
+   "test": 359
+  }
+ },
+ "tune": {
+  "before": {
+   "kettle": {
+    "recall": {
+     "k": 16,
+     "n": 24,
+     "pct": 66.7,
+     "ci95": [
+      46.7,
+      82.0
+     ]
+    },
+    "false_per_1000": 23.82,
+    "false_k": 118,
+    "neg_n": 4953,
+    "precision": {
+     "k": 16,
+     "n": 134,
+     "pct": 11.9,
+     "ci95": [
+      7.5,
+      18.5
+     ]
+    },
+    "top_false": {
+     "syn:t4": 23,
+     "sins:vacuum_cleaner": 20,
+     "syn:timer": 17,
+     "syn:t3": 15,
+     "syn:none": 11
+    }
+   },
+   "frying": {
+    "recall": {
+     "k": 23,
+     "n": 24,
+     "pct": 95.8,
+     "ci95": [
+      79.8,
+      99.3
+     ]
+    },
+    "false_per_1000": 0.81,
+    "false_k": 4,
+    "neg_n": 4934,
+    "precision": {
+     "k": 23,
+     "n": 27,
+     "pct": 85.2,
+     "ci95": [
+      67.5,
+      94.1
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 3,
+     "k20:water-flowing": 1
+    }
+   },
+   "chopping": {
+    "recall": {
+     "k": 15,
+     "n": 23,
+     "pct": 65.2,
+     "ci95": [
+      44.9,
+      81.2
+     ]
+    },
+    "false_per_1000": 2.62,
+    "false_k": 13,
+    "neg_n": 4968,
+    "precision": {
+     "k": 15,
+     "n": 28,
+     "pct": 53.6,
+     "ci95": [
+      35.8,
+      70.5
+     ]
+    },
+    "top_false": {
+     "esc:door_wood_knock": 3,
+     "k20:sweep": 2,
+     "esc:crackling_fire": 1,
+     "esc:mouse_click": 1,
+     "k20:book": 1
+    }
+   },
+   "blender": {
+    "recall": {
+     "k": 18,
+     "n": 26,
+     "pct": 69.2,
+     "ci95": [
+      50.0,
+      83.5
+     ]
+    },
+    "false_per_1000": 1.03,
+    "false_k": 7,
+    "neg_n": 6809,
+    "precision": {
+     "k": 18,
+     "n": 25,
+     "pct": 72.0,
+     "ci95": [
+      52.4,
+      85.7
+     ]
+    },
+    "top_false": {
+     "esc:vacuum_cleaner": 3,
+     "esc:chainsaw": 2,
+     "sins:cooking": 1,
+     "syn:timer": 1
+    }
+   },
+   "microwave": {
+    "recall": {
+     "k": 30,
+     "n": 30,
+     "pct": 100.0,
+     "ci95": [
+      88.6,
+      100
+     ]
+    },
+    "false_per_1000": 8.64,
+    "false_k": 59,
+    "neg_n": 6830,
+    "precision": {
+     "k": 30,
+     "n": 89,
+     "pct": 33.7,
+     "ci95": [
+      24.7,
+      44.0
+     ]
+    },
+    "top_false": {
+     "sins:cooking": 16,
+     "k20:stove-fan": 12,
+     "k20:juicer": 5,
+     "syn:timer": 5,
+     "syn:t4": 4
+    }
+   },
+   "dishes": {
+    "recall": {
+     "k": 41,
+     "n": 85,
+     "pct": 48.2,
+     "ci95": [
+      37.9,
+      58.7
+     ]
+    },
+    "false_per_1000": 14.61,
+    "false_k": 70,
+    "neg_n": 4790,
+    "precision": {
+     "k": 41,
+     "n": 111,
+     "pct": 36.9,
+     "ci95": [
+      28.5,
+      46.2
+     ]
+    },
+    "top_false": {
+     "esc:glass_breaking": 18,
+     "sins:working": 13,
+     "sins:social_activity": 10,
+     "sins:watching_tv": 8,
+     "esc:engine": 5
+    }
+   },
+   "tap": {
+    "recall": {
+     "k": 31,
+     "n": 39,
+     "pct": 79.5,
+     "ci95": [
+      64.5,
+      89.2
+     ]
+    },
+    "false_per_1000": 19.82,
+    "false_k": 97,
+    "neg_n": 4894,
+    "precision": {
+     "k": 31,
+     "n": 128,
+     "pct": 24.2,
+     "ci95": [
+      17.6,
+      32.3
+     ]
+    },
+    "top_false": {
+     "syn:t4": 22,
+     "syn:timer": 16,
+     "syn:t3": 14,
+     "k20:frying-pan": 11,
+     "syn:none": 11
+    }
+   },
+   "cupboard": {
+    "recall": {
+     "k": 1,
+     "n": 47,
+     "pct": 2.1,
+     "ci95": [
+      0.4,
+      11.1
+     ]
+    },
+    "false_per_1000": 22.08,
+    "false_k": 109,
+    "neg_n": 4936,
+    "precision": {
+     "k": 1,
+     "n": 110,
+     "pct": 0.9,
+     "ci95": [
+      0.2,
+      5.0
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 57,
+     "sins:working": 36,
+     "sins:absence": 16
+    }
+   },
+   "door": {
+    "recall": {
+     "k": 2,
+     "n": 14,
+     "pct": 14.3,
+     "ci95": [
+      4.0,
+      39.9
+     ]
+    },
+    "false_per_1000": 16.32,
+    "false_k": 80,
+    "neg_n": 4901,
+    "precision": {
+     "k": 2,
+     "n": 82,
+     "pct": 2.4,
+     "ci95": [
+      0.7,
+      8.5
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 36,
+     "sins:working": 26,
+     "sins:absence": 15,
+     "esc:footsteps": 1,
+     "k20:stove-burner": 1
+    }
+   },
+   "alarm": {
+    "recall": {
+     "k": 109,
+     "n": 144,
+     "pct": 75.7,
+     "ci95": [
+      68.1,
+      82.0
+     ]
+    },
+    "false_per_1000": 29.95,
+    "false_k": 199,
+    "neg_n": 6644,
+    "precision": {
+     "k": 109,
+     "n": 308,
+     "pct": 35.4,
+     "ci95": [
+      30.3,
+      40.9
+     ]
+    },
+    "top_false": {
+     "syn:t3": 110,
+     "syn:t4": 77,
+     "esc:car_horn": 3,
+     "sins:eating": 2,
+     "sins:other": 2
+    }
+   },
+   "tv": {
+    "recall": {
+     "k": 391,
+     "n": 500,
+     "pct": 78.2,
+     "ci95": [
+      74.4,
+      81.6
+     ]
+    },
+    "false_per_1000": 0.0,
+    "false_k": 0,
+    "neg_n": 5730,
+    "precision": {
+     "k": 391,
+     "n": 391,
+     "pct": 100.0,
+     "ci95": [
+      99.0,
+      100
+     ]
+    },
+    "top_false": {}
+   },
+   "vacuum": {
+    "recall": {
+     "k": 518,
+     "n": 521,
+     "pct": 99.4,
+     "ci95": [
+      98.3,
+      99.8
+     ]
+    },
+    "false_per_1000": 5.05,
+    "false_k": 32,
+    "neg_n": 6339,
+    "precision": {
+     "k": 518,
+     "n": 550,
+     "pct": 94.2,
+     "ci95": [
+      91.9,
+      95.8
+     ]
+    },
+    "top_false": {
+     "sins:dishwashing": 6,
+     "syn:t4": 6,
+     "syn:none": 5,
+     "syn:t3": 5,
+     "k20:blender": 4
+    }
+   },
+   "typing": {
+    "recall": {
+     "k": 127,
+     "n": 505,
+     "pct": 25.1,
+     "ci95": [
+      21.6,
+      29.1
+     ]
+    },
+    "false_per_1000": 9.79,
+    "false_k": 62,
+    "neg_n": 6333,
+    "precision": {
+     "k": 127,
+     "n": 189,
+     "pct": 67.2,
+     "ci95": [
+      60.2,
+      73.5
+     ]
+    },
+    "top_false": {
+     "syn:none": 11,
+     "syn:t4": 11,
+     "syn:timer": 11,
+     "sins:social_activity": 10,
+     "syn:t3": 7
+    }
+   },
+   "footsteps": {
+    "recall": {
+     "k": 14,
+     "n": 18,
+     "pct": 77.8,
+     "ci95": [
+      54.8,
+      91.0
+     ]
+    },
+    "false_per_1000": 8.59,
+    "false_k": 54,
+    "neg_n": 6289,
+    "precision": {
+     "k": 14,
+     "n": 68,
+     "pct": 20.6,
+     "ci95": [
+      12.7,
+      31.6
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 13,
+     "syn:t3": 10,
+     "sins:working": 7,
+     "syn:t4": 6,
+     "syn:none": 5
+    }
+   },
+   "glass": {
+    "recall": {
+     "k": 25,
+     "n": 25,
+     "pct": 100.0,
+     "ci95": [
+      86.7,
+      100
+     ]
+    },
+    "false_per_1000": 0.88,
+    "false_k": 6,
+    "neg_n": 6793,
+    "precision": {
+     "k": 25,
+     "n": 31,
+     "pct": 80.6,
+     "ci95": [
+      63.7,
+      90.8
+     ]
+    },
+    "top_false": {
+     "k20:cutlery": 3,
+     "esc:footsteps": 2,
+     "k20:drawer": 1
+    }
+   }
+  },
+  "after": {
+   "kettle": {
+    "recall": {
+     "k": 16,
+     "n": 24,
+     "pct": 66.7,
+     "ci95": [
+      46.7,
+      82.0
+     ]
+    },
+    "false_per_1000": 1.82,
+    "false_k": 9,
+    "neg_n": 4953,
+    "precision": {
+     "k": 16,
+     "n": 25,
+     "pct": 64.0,
+     "ci95": [
+      44.5,
+      79.8
+     ]
+    },
+    "top_false": {
+     "ns7k:screaming": 4,
+     "esc:crackling_fire": 2,
+     "syn:t4": 2,
+     "syn:none": 1
+    }
+   },
+   "frying": {
+    "recall": {
+     "k": 23,
+     "n": 24,
+     "pct": 95.8,
+     "ci95": [
+      79.8,
+      99.3
+     ]
+    },
+    "false_per_1000": 0.81,
+    "false_k": 4,
+    "neg_n": 4934,
+    "precision": {
+     "k": 23,
+     "n": 27,
+     "pct": 85.2,
+     "ci95": [
+      67.5,
+      94.1
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 3,
+     "k20:water-flowing": 1
+    }
+   },
+   "chopping": {
+    "recall": {
+     "k": 15,
+     "n": 23,
+     "pct": 65.2,
+     "ci95": [
+      44.9,
+      81.2
+     ]
+    },
+    "false_per_1000": 2.62,
+    "false_k": 13,
+    "neg_n": 4968,
+    "precision": {
+     "k": 15,
+     "n": 28,
+     "pct": 53.6,
+     "ci95": [
+      35.8,
+      70.5
+     ]
+    },
+    "top_false": {
+     "esc:door_wood_knock": 3,
+     "k20:sweep": 2,
+     "esc:crackling_fire": 1,
+     "esc:mouse_click": 1,
+     "k20:book": 1
+    }
+   },
+   "blender": {
+    "recall": {
+     "k": 18,
+     "n": 26,
+     "pct": 69.2,
+     "ci95": [
+      50.0,
+      83.5
+     ]
+    },
+    "false_per_1000": 1.03,
+    "false_k": 7,
+    "neg_n": 6809,
+    "precision": {
+     "k": 18,
+     "n": 25,
+     "pct": 72.0,
+     "ci95": [
+      52.4,
+      85.7
+     ]
+    },
+    "top_false": {
+     "esc:vacuum_cleaner": 3,
+     "esc:chainsaw": 2,
+     "sins:cooking": 1,
+     "syn:timer": 1
+    }
+   },
+   "microwave": {
+    "recall": {
+     "k": 10,
+     "n": 30,
+     "pct": 33.3,
+     "ci95": [
+      19.2,
+      51.2
+     ]
+    },
+    "false_per_1000": 0.0,
+    "false_k": 0,
+    "neg_n": 6830,
+    "precision": {
+     "k": 10,
+     "n": 10,
+     "pct": 100.0,
+     "ci95": [
+      72.2,
+      100
+     ]
+    },
+    "top_false": {}
+   },
+   "dishes": {
+    "recall": {
+     "k": 41,
+     "n": 85,
+     "pct": 48.2,
+     "ci95": [
+      37.9,
+      58.7
+     ]
+    },
+    "false_per_1000": 14.61,
+    "false_k": 70,
+    "neg_n": 4790,
+    "precision": {
+     "k": 41,
+     "n": 111,
+     "pct": 36.9,
+     "ci95": [
+      28.5,
+      46.2
+     ]
+    },
+    "top_false": {
+     "esc:glass_breaking": 18,
+     "sins:working": 13,
+     "sins:social_activity": 10,
+     "sins:watching_tv": 8,
+     "esc:engine": 5
+    }
+   },
+   "tap": {
+    "recall": {
+     "k": 31,
+     "n": 39,
+     "pct": 79.5,
+     "ci95": [
+      64.5,
+      89.2
+     ]
+    },
+    "false_per_1000": 2.25,
+    "false_k": 11,
+    "neg_n": 4894,
+    "precision": {
+     "k": 31,
+     "n": 42,
+     "pct": 73.8,
+     "ci95": [
+      58.9,
+      84.7
+     ]
+    },
+    "top_false": {
+     "syn:t4": 3,
+     "esc:toilet_flush": 2,
+     "k20:frying-pan": 2,
+     "syn:timer": 2,
+     "sins:social_activity": 1
+    }
+   },
+   "cupboard": {
+    "recall": {
+     "k": 1,
+     "n": 47,
+     "pct": 2.1,
+     "ci95": [
+      0.4,
+      11.1
+     ]
+    },
+    "false_per_1000": 22.08,
+    "false_k": 109,
+    "neg_n": 4936,
+    "precision": {
+     "k": 1,
+     "n": 110,
+     "pct": 0.9,
+     "ci95": [
+      0.2,
+      5.0
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 57,
+     "sins:working": 36,
+     "sins:absence": 16
+    }
+   },
+   "door": {
+    "recall": {
+     "k": 2,
+     "n": 14,
+     "pct": 14.3,
+     "ci95": [
+      4.0,
+      39.9
+     ]
+    },
+    "false_per_1000": 16.32,
+    "false_k": 80,
+    "neg_n": 4901,
+    "precision": {
+     "k": 2,
+     "n": 82,
+     "pct": 2.4,
+     "ci95": [
+      0.7,
+      8.5
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 36,
+     "sins:working": 26,
+     "sins:absence": 15,
+     "esc:footsteps": 1,
+     "k20:stove-burner": 1
+    }
+   },
+   "alarm": {
+    "recall": {
+     "k": 108,
+     "n": 144,
+     "pct": 75.0,
+     "ci95": [
+      67.3,
+      81.4
+     ]
+    },
+    "false_per_1000": 30.25,
+    "false_k": 201,
+    "neg_n": 6644,
+    "precision": {
+     "k": 108,
+     "n": 309,
+     "pct": 35.0,
+     "ci95": [
+      29.8,
+      40.4
+     ]
+    },
+    "top_false": {
+     "syn:t3": 108,
+     "syn:t4": 77,
+     "esc:car_horn": 6,
+     "esc:door_wood_creaks": 2,
+     "sins:eating": 2
+    }
+   },
+   "tv": {
+    "recall": {
+     "k": 391,
+     "n": 500,
+     "pct": 78.2,
+     "ci95": [
+      74.4,
+      81.6
+     ]
+    },
+    "false_per_1000": 0.0,
+    "false_k": 0,
+    "neg_n": 5730,
+    "precision": {
+     "k": 391,
+     "n": 391,
+     "pct": 100.0,
+     "ci95": [
+      99.0,
+      100
+     ]
+    },
+    "top_false": {}
+   },
+   "vacuum": {
+    "recall": {
+     "k": 518,
+     "n": 521,
+     "pct": 99.4,
+     "ci95": [
+      98.3,
+      99.8
+     ]
+    },
+    "false_per_1000": 5.05,
+    "false_k": 32,
+    "neg_n": 6339,
+    "precision": {
+     "k": 518,
+     "n": 550,
+     "pct": 94.2,
+     "ci95": [
+      91.9,
+      95.8
+     ]
+    },
+    "top_false": {
+     "sins:dishwashing": 6,
+     "syn:t4": 6,
+     "syn:none": 5,
+     "syn:t3": 5,
+     "k20:blender": 4
+    }
+   },
+   "typing": {
+    "recall": {
+     "k": 127,
+     "n": 505,
+     "pct": 25.1,
+     "ci95": [
+      21.6,
+      29.1
+     ]
+    },
+    "false_per_1000": 9.79,
+    "false_k": 62,
+    "neg_n": 6333,
+    "precision": {
+     "k": 127,
+     "n": 189,
+     "pct": 67.2,
+     "ci95": [
+      60.2,
+      73.5
+     ]
+    },
+    "top_false": {
+     "syn:none": 11,
+     "syn:t4": 11,
+     "syn:timer": 11,
+     "sins:social_activity": 10,
+     "syn:t3": 7
+    }
+   },
+   "footsteps": {
+    "recall": {
+     "k": 14,
+     "n": 18,
+     "pct": 77.8,
+     "ci95": [
+      54.8,
+      91.0
+     ]
+    },
+    "false_per_1000": 8.59,
+    "false_k": 54,
+    "neg_n": 6289,
+    "precision": {
+     "k": 14,
+     "n": 68,
+     "pct": 20.6,
+     "ci95": [
+      12.7,
+      31.6
+     ]
+    },
+    "top_false": {
+     "sins:social_activity": 13,
+     "syn:t3": 10,
+     "sins:working": 7,
+     "syn:t4": 6,
+     "syn:none": 5
+    }
+   },
+   "glass": {
+    "recall": {
+     "k": 25,
+     "n": 25,
+     "pct": 100.0,
+     "ci95": [
+      86.7,
+      100
+     ]
+    },
+    "false_per_1000": 0.88,
+    "false_k": 6,
+    "neg_n": 6793,
+    "precision": {
+     "k": 25,
+     "n": 31,
+     "pct": 80.6,
+     "ci95": [
+      63.7,
+      90.8
+     ]
+    },
+    "top_false": {
+     "k20:cutlery": 3,
+     "esc:footsteps": 2,
+     "k20:drawer": 1
+    }
+   }
+  }
+ },
+ "before": {
+  "kettle": {
+   "recall": {
+    "k": 15,
+    "n": 22,
+    "pct": 68.2,
+    "ci95": [
+     47.3,
+     83.6
+    ]
+   },
+   "false_per_1000": 17.06,
+   "false_k": 79,
+   "neg_n": 4631,
+   "precision": {
+    "k": 15,
+    "n": 94,
+    "pct": 16.0,
+    "ci95": [
+     9.9,
+     24.7
+    ]
+   },
+   "top_false": {
+    "sins:vacuum_cleaner": 24,
+    "k20:clean-dishes": 12,
+    "esc:pouring_water": 10,
+    "syn:timer": 7,
+    "k20:water-flowing": 5
+   }
+  },
+  "frying": {
+   "recall": {
+    "k": 41,
+    "n": 44,
+    "pct": 93.2,
+    "ci95": [
+     81.8,
+     97.7
+    ]
+   },
+   "false_per_1000": 3.28,
+   "false_k": 15,
+   "neg_n": 4579,
+   "precision": {
+    "k": 41,
+    "n": 56,
+    "pct": 73.2,
+    "ci95": [
+     60.4,
+     83.0
+    ]
+   },
+   "top_false": {
+    "k20:clean-dishes": 9,
+    "k20:water-flowing": 3,
+    "esc:crackling_fire": 2,
+    "sins:working": 1
+   }
+  },
+  "chopping": {
+   "recall": {
+    "k": 17,
+    "n": 22,
+    "pct": 77.3,
+    "ci95": [
+     56.6,
+     89.9
+    ]
+   },
+   "false_per_1000": 2.82,
+   "false_k": 13,
+   "neg_n": 4613,
+   "precision": {
+    "k": 17,
+    "n": 30,
+    "pct": 56.7,
+    "ci95": [
+     39.2,
+     72.6
+    ]
+   },
+   "top_false": {
+    "k20:cupboard": 4,
+    "esc:crackling_fire": 2,
+    "k20:book": 2,
+    "k20:sweep": 2,
+    "esc:door_wood_knock": 1
+   }
+  },
+  "blender": {
+   "recall": {
+    "k": 16,
+    "n": 21,
+    "pct": 76.2,
+    "ci95": [
+     54.9,
+     89.4
+    ]
+   },
+   "false_per_1000": 1.92,
+   "false_k": 13,
+   "neg_n": 6768,
+   "precision": {
+    "k": 16,
+    "n": 29,
+    "pct": 55.2,
+    "ci95": [
+     37.5,
+     71.6
+    ]
+   },
+   "top_false": {
+    "esc:vacuum_cleaner": 4,
+    "syn:none": 3,
+    "esc:chainsaw": 2,
+    "esc:washing_machine": 1,
+    "k20:clean-dishes": 1
+   }
+  },
+  "microwave": {
+   "recall": {
+    "k": 17,
+    "n": 21,
+    "pct": 81.0,
+    "ci95": [
+     60.0,
+     92.3
+    ]
+   },
+   "false_per_1000": 18.55,
+   "false_k": 126,
+   "neg_n": 6794,
+   "precision": {
+    "k": 17,
+    "n": 143,
+    "pct": 11.9,
+    "ci95": [
+     7.6,
+     18.2
+    ]
+   },
+   "top_false": {
+    "sins:cooking": 42,
+    "syn:timer": 28,
+    "syn:t4": 11,
+    "syn:none": 9,
+    "sins:dishwashing": 7
+   }
+  },
+  "dishes": {
+   "recall": {
+    "k": 65,
+    "n": 107,
+    "pct": 60.7,
+    "ci95": [
+     51.3,
+     69.5
+    ]
+   },
+   "false_per_1000": 11.06,
+   "false_k": 49,
+   "neg_n": 4432,
+   "precision": {
+    "k": 65,
+    "n": 114,
+    "pct": 57.0,
+    "ci95": [
+     47.8,
+     65.7
+    ]
+   },
+   "top_false": {
+    "esc:glass_breaking": 15,
+    "sins:watching_tv": 11,
+    "sins:social_activity": 8,
+    "esc:engine": 5,
+    "sins:working": 4
+   }
+  },
+  "tap": {
+   "recall": {
+    "k": 65,
+    "n": 71,
+    "pct": 91.5,
+    "ci95": [
+     82.8,
+     96.1
+    ]
+   },
+   "false_per_1000": 15.69,
+   "false_k": 71,
+   "neg_n": 4525,
+   "precision": {
+    "k": 65,
+    "n": 136,
+    "pct": 47.8,
+    "ci95": [
+     39.6,
+     56.1
+    ]
+   },
+   "top_false": {
+    "syn:none": 15,
+    "syn:t3": 10,
+    "syn:timer": 10,
+    "k20:frying-pan": 8,
+    "syn:t4": 7
+   }
+  },
+  "cupboard": {
+   "recall": {
+    "k": 0,
+    "n": 56,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     6.4
+    ]
+   },
+   "false_per_1000": 10.03,
+   "false_k": 46,
+   "neg_n": 4586,
+   "precision": {
+    "k": 0,
+    "n": 46,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     7.7
+    ]
+   },
+   "top_false": {
+    "sins:working": 21,
+    "sins:social_activity": 16,
+    "sins:absence": 8,
+    "sins:watching_tv": 1
+   }
+  },
+  "door": {
+   "recall": {
+    "k": 2,
+    "n": 26,
+    "pct": 7.7,
+    "ci95": [
+     2.1,
+     24.1
+    ]
+   },
+   "false_per_1000": 11.45,
+   "false_k": 52,
+   "neg_n": 4541,
+   "precision": {
+    "k": 2,
+    "n": 54,
+    "pct": 3.7,
+    "ci95": [
+     1.0,
+     12.5
+    ]
+   },
+   "top_false": {
+    "sins:working": 20,
+    "sins:social_activity": 16,
+    "sins:absence": 11,
+    "k20:book": 2,
+    "sins:watching_tv": 2
+   }
+  },
+  "alarm": {
+   "recall": {
+    "k": 116,
+    "n": 136,
+    "pct": 85.3,
+    "ci95": [
+     78.4,
+     90.3
+    ]
+   },
+   "false_per_1000": 34.22,
+   "false_k": 227,
+   "neg_n": 6634,
+   "precision": {
+    "k": 116,
+    "n": 343,
+    "pct": 33.8,
+    "ci95": [
+     29.0,
+     39.0
+    ]
+   },
+   "top_false": {
+    "syn:t3": 112,
+    "syn:t4": 103,
+    "k20:stove-fan": 4,
+    "esc:crickets": 3,
+    "ns7k:laugh": 2
+   }
+  },
+  "tv": {
+   "recall": {
+    "k": 396,
+    "n": 500,
+    "pct": 79.2,
+    "ci95": [
+     75.4,
+     82.5
+    ]
+   },
+   "false_per_1000": 1.51,
+   "false_k": 9,
+   "neg_n": 5945,
+   "precision": {
+    "k": 396,
+    "n": 405,
+    "pct": 97.8,
+    "ci95": [
+     95.8,
+     98.8
+    ]
+   },
+   "top_false": {
+    "syn:timer": 5,
+    "syn:none": 3,
+    "sins:working": 1
+   }
+  },
+  "vacuum": {
+   "recall": {
+    "k": 434,
+    "n": 439,
+    "pct": 98.9,
+    "ci95": [
+     97.4,
+     99.5
+    ]
+   },
+   "false_per_1000": 10.66,
+   "false_k": 68,
+   "neg_n": 6376,
+   "precision": {
+    "k": 434,
+    "n": 502,
+    "pct": 86.5,
+    "ci95": [
+     83.2,
+     89.2
+    ]
+   },
+   "top_false": {
+    "syn:none": 29,
+    "syn:t3": 11,
+    "sins:dishwashing": 8,
+    "syn:t4": 8,
+    "syn:timer": 5
+   }
+  },
+  "typing": {
+   "recall": {
+    "k": 152,
+    "n": 535,
+    "pct": 28.4,
+    "ci95": [
+     24.8,
+     32.4
+    ]
+   },
+   "false_per_1000": 8.46,
+   "false_k": 53,
+   "neg_n": 6262,
+   "precision": {
+    "k": 152,
+    "n": 205,
+    "pct": 74.1,
+    "ci95": [
+     67.7,
+     79.7
+    ]
+   },
+   "top_false": {
+    "syn:t3": 8,
+    "sins:social_activity": 6,
+    "syn:t4": 6,
+    "syn:timer": 6,
+    "sins:cooking": 4
+   }
+  },
+  "footsteps": {
+   "recall": {
+    "k": 13,
+    "n": 22,
+    "pct": 59.1,
+    "ci95": [
+     38.7,
+     76.7
+    ]
+   },
+   "false_per_1000": 2.07,
+   "false_k": 13,
+   "neg_n": 6287,
+   "precision": {
+    "k": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "top_false": {
+    "k20:book": 4,
+    "sins:cooking": 4,
+    "k20:chopping": 2,
+    "k20:eat": 2,
+    "syn:none": 1
+   }
+  },
+  "glass": {
+   "recall": {
+    "k": 14,
+    "n": 15,
+    "pct": 93.3,
+    "ci95": [
+     70.2,
+     98.8
+    ]
+   },
+   "false_per_1000": 1.48,
+   "false_k": 10,
+   "neg_n": 6779,
+   "precision": {
+    "k": 14,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "top_false": {
+    "k20:cutlery": 8,
+    "esc:can_opening": 1,
+    "k20:drawer": 1
+   }
+  }
+ },
+ "after": {
+  "kettle": {
+   "recall": {
+    "k": 11,
+    "n": 22,
+    "pct": 50.0,
+    "ci95": [
+     30.7,
+     69.3
+    ]
+   },
+   "false_per_1000": 3.02,
+   "false_k": 14,
+   "neg_n": 4631,
+   "precision": {
+    "k": 11,
+    "n": 25,
+    "pct": 44.0,
+    "ci95": [
+     26.7,
+     62.9
+    ]
+   },
+   "top_false": {
+    "syn:timer": 7,
+    "sins:working": 3,
+    "ns7k:screaming": 2,
+    "esc:vacuum_cleaner": 1,
+    "syn:none": 1
+   },
+   "shown": false
+  },
+  "frying": {
+   "recall": {
+    "k": 41,
+    "n": 44,
+    "pct": 93.2,
+    "ci95": [
+     81.8,
+     97.7
+    ]
+   },
+   "false_per_1000": 3.28,
+   "false_k": 15,
+   "neg_n": 4579,
+   "precision": {
+    "k": 41,
+    "n": 56,
+    "pct": 73.2,
+    "ci95": [
+     60.4,
+     83.0
+    ]
+   },
+   "top_false": {
+    "k20:clean-dishes": 9,
+    "k20:water-flowing": 3,
+    "esc:crackling_fire": 2,
+    "sins:working": 1
+   },
+   "shown": false
+  },
+  "chopping": {
+   "recall": {
+    "k": 17,
+    "n": 22,
+    "pct": 77.3,
+    "ci95": [
+     56.6,
+     89.9
+    ]
+   },
+   "false_per_1000": 2.82,
+   "false_k": 13,
+   "neg_n": 4613,
+   "precision": {
+    "k": 17,
+    "n": 30,
+    "pct": 56.7,
+    "ci95": [
+     39.2,
+     72.6
+    ]
+   },
+   "top_false": {
+    "k20:cupboard": 4,
+    "esc:crackling_fire": 2,
+    "k20:book": 2,
+    "k20:sweep": 2,
+    "esc:door_wood_knock": 1
+   },
+   "shown": false
+  },
+  "blender": {
+   "recall": {
+    "k": 16,
+    "n": 21,
+    "pct": 76.2,
+    "ci95": [
+     54.9,
+     89.4
+    ]
+   },
+   "false_per_1000": 1.92,
+   "false_k": 13,
+   "neg_n": 6768,
+   "precision": {
+    "k": 16,
+    "n": 29,
+    "pct": 55.2,
+    "ci95": [
+     37.5,
+     71.6
+    ]
+   },
+   "top_false": {
+    "esc:vacuum_cleaner": 4,
+    "syn:none": 3,
+    "esc:chainsaw": 2,
+    "esc:washing_machine": 1,
+    "k20:clean-dishes": 1
+   },
+   "shown": false
+  },
+  "microwave": {
+   "recall": {
+    "k": 6,
+    "n": 21,
+    "pct": 28.6,
+    "ci95": [
+     13.8,
+     50.0
+    ]
+   },
+   "false_per_1000": 0.74,
+   "false_k": 5,
+   "neg_n": 6794,
+   "precision": {
+    "k": 6,
+    "n": 11,
+    "pct": 54.5,
+    "ci95": [
+     28.0,
+     78.7
+    ]
+   },
+   "top_false": {
+    "syn:timer": 3,
+    "k20:stove-fan": 1,
+    "sins:cooking": 1
+   },
+   "shown": false
+  },
+  "dishes": {
+   "recall": {
+    "k": 65,
+    "n": 107,
+    "pct": 60.7,
+    "ci95": [
+     51.3,
+     69.5
+    ]
+   },
+   "false_per_1000": 11.06,
+   "false_k": 49,
+   "neg_n": 4432,
+   "precision": {
+    "k": 65,
+    "n": 114,
+    "pct": 57.0,
+    "ci95": [
+     47.8,
+     65.7
+    ]
+   },
+   "top_false": {
+    "esc:glass_breaking": 15,
+    "sins:watching_tv": 11,
+    "sins:social_activity": 8,
+    "esc:engine": 5,
+    "sins:working": 4
+   },
+   "shown": false
+  },
+  "tap": {
+   "recall": {
+    "k": 55,
+    "n": 71,
+    "pct": 77.5,
+    "ci95": [
+     66.5,
+     85.6
+    ]
+   },
+   "false_per_1000": 5.97,
+   "false_k": 27,
+   "neg_n": 4525,
+   "precision": {
+    "k": 55,
+    "n": 82,
+    "pct": 67.1,
+    "ci95": [
+     56.3,
+     76.3
+    ]
+   },
+   "top_false": {
+    "syn:none": 9,
+    "syn:t3": 8,
+    "syn:t4": 3,
+    "esc:toilet_flush": 2,
+    "syn:timer": 2
+   },
+   "shown": false
+  },
+  "cupboard": {
+   "recall": {
+    "k": 0,
+    "n": 56,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     6.4
+    ]
+   },
+   "false_per_1000": 10.03,
+   "false_k": 46,
+   "neg_n": 4586,
+   "precision": {
+    "k": 0,
+    "n": 46,
+    "pct": 0.0,
+    "ci95": [
+     0,
+     7.7
+    ]
+   },
+   "top_false": {
+    "sins:working": 21,
+    "sins:social_activity": 16,
+    "sins:absence": 8,
+    "sins:watching_tv": 1
+   },
+   "shown": false
+  },
+  "door": {
+   "recall": {
+    "k": 2,
+    "n": 26,
+    "pct": 7.7,
+    "ci95": [
+     2.1,
+     24.1
+    ]
+   },
+   "false_per_1000": 11.45,
+   "false_k": 52,
+   "neg_n": 4541,
+   "precision": {
+    "k": 2,
+    "n": 54,
+    "pct": 3.7,
+    "ci95": [
+     1.0,
+     12.5
+    ]
+   },
+   "top_false": {
+    "sins:working": 20,
+    "sins:social_activity": 16,
+    "sins:absence": 11,
+    "k20:book": 2,
+    "sins:watching_tv": 2
+   },
+   "shown": false
+  },
+  "alarm": {
+   "recall": {
+    "k": 116,
+    "n": 136,
+    "pct": 85.3,
+    "ci95": [
+     78.4,
+     90.3
+    ]
+   },
+   "false_per_1000": 33.92,
+   "false_k": 225,
+   "neg_n": 6634,
+   "precision": {
+    "k": 116,
+    "n": 341,
+    "pct": 34.0,
+    "ci95": [
+     29.2,
+     39.2
+    ]
+   },
+   "top_false": {
+    "syn:t3": 112,
+    "syn:t4": 97,
+    "k20:stove-fan": 4,
+    "esc:crickets": 3,
+    "ns7k:laugh": 2
+   },
+   "shown": false
+  },
+  "tv": {
+   "recall": {
+    "k": 396,
+    "n": 500,
+    "pct": 79.2,
+    "ci95": [
+     75.4,
+     82.5
+    ]
+   },
+   "false_per_1000": 1.51,
+   "false_k": 9,
+   "neg_n": 5945,
+   "precision": {
+    "k": 396,
+    "n": 405,
+    "pct": 97.8,
+    "ci95": [
+     95.8,
+     98.8
+    ]
+   },
+   "top_false": {
+    "syn:timer": 5,
+    "syn:none": 3,
+    "sins:working": 1
+   },
+   "shown": true
+  },
+  "vacuum": {
+   "recall": {
+    "k": 434,
+    "n": 439,
+    "pct": 98.9,
+    "ci95": [
+     97.4,
+     99.5
+    ]
+   },
+   "false_per_1000": 10.66,
+   "false_k": 68,
+   "neg_n": 6376,
+   "precision": {
+    "k": 434,
+    "n": 502,
+    "pct": 86.5,
+    "ci95": [
+     83.2,
+     89.2
+    ]
+   },
+   "top_false": {
+    "syn:none": 29,
+    "syn:t3": 11,
+    "sins:dishwashing": 8,
+    "syn:t4": 8,
+    "syn:timer": 5
+   },
+   "shown": false
+  },
+  "typing": {
+   "recall": {
+    "k": 152,
+    "n": 535,
+    "pct": 28.4,
+    "ci95": [
+     24.8,
+     32.4
+    ]
+   },
+   "false_per_1000": 8.46,
+   "false_k": 53,
+   "neg_n": 6262,
+   "precision": {
+    "k": 152,
+    "n": 205,
+    "pct": 74.1,
+    "ci95": [
+     67.7,
+     79.7
+    ]
+   },
+   "top_false": {
+    "syn:t3": 8,
+    "sins:social_activity": 6,
+    "syn:t4": 6,
+    "syn:timer": 6,
+    "sins:cooking": 4
+   },
+   "shown": false
+  },
+  "footsteps": {
+   "recall": {
+    "k": 13,
+    "n": 22,
+    "pct": 59.1,
+    "ci95": [
+     38.7,
+     76.7
+    ]
+   },
+   "false_per_1000": 2.07,
+   "false_k": 13,
+   "neg_n": 6287,
+   "precision": {
+    "k": 13,
+    "n": 26,
+    "pct": 50.0,
+    "ci95": [
+     32.1,
+     67.9
+    ]
+   },
+   "top_false": {
+    "k20:book": 4,
+    "sins:cooking": 4,
+    "k20:chopping": 2,
+    "k20:eat": 2,
+    "syn:none": 1
+   },
+   "shown": false
+  },
+  "glass": {
+   "recall": {
+    "k": 14,
+    "n": 15,
+    "pct": 93.3,
+    "ci95": [
+     70.2,
+     98.8
+    ]
+   },
+   "false_per_1000": 1.48,
+   "false_k": 10,
+   "neg_n": 6779,
+   "precision": {
+    "k": 14,
+    "n": 24,
+    "pct": 58.3,
+    "ci95": [
+     38.8,
+     75.5
+    ]
+   },
+   "top_false": {
+    "k20:cutlery": 8,
+    "esc:can_opening": 1,
+    "k20:drawer": 1
+   },
+   "shown": false
+  }
+ }
+}

@@ -44,22 +44,39 @@ RNG = np.random.default_rng(0)
 #      SINS activities that should NOT contain it (false-fire set), matching ESC-50 categories)
 KITCHEN_NOT = ["absence", "working", "watching_tv", "vacuum_cleaner"]
 KINDS = {
-    "kettle":    ("Kettle or a hot drink", [456, 296, 403, 402, 449, 452], [], KITCHEN_NOT, ["pouring_water"]),
+    "kettle":    ("Kettle or a hot drink", [456, 296, 403, 402], [], KITCHEN_NOT, []),
     "frying":    ("Frying or sizzling", [367, 490], ["cooking"], KITCHEN_NOT, []),
     "chopping":  ("Chopping", [366, 438], ["cooking"], KITCHEN_NOT, []),
     "blender":   ("Blender", [369], ["cooking"], KITCHEN_NOT, []),
     "microwave": ("Microwave", [368], [], KITCHEN_NOT, []),
     "dishes":    ("Dishes and cutlery", [364, 365, 442, 489], ["dishwashing"], KITCHEN_NOT, []),
-    "tap":       ("Running water", [370, 371, 288], ["dishwashing"], KITCHEN_NOT, ["water_drops"]),
+    "tap":       ("Running water", [370, 371], ["dishwashing"], KITCHEN_NOT, []),
     "cupboard":  ("Cupboards and drawers", [362, 363], [], ["absence", "watching_tv", "vacuum_cleaner"], []),
     "door":      ("A door", [354, 357], [], ["absence", "watching_tv", "vacuum_cleaner"], ["door_wood_creaks"]),
-    "alarm":     ("An alarm or beeping", [399, 400, 388, 395, 481], [], ["absence", "vacuum_cleaner"], ["clock_alarm"]),
+    "alarm":     ("Timer or appliance beep", [481, 398, 395], [], ["absence", "vacuum_cleaner"], ["clock_alarm"]),
     "tv":        ("TV or radio", [524, 525], ["watching_tv"], ["absence", "vacuum_cleaner", "dishwashing"], []),
     "vacuum":    ("Vacuum cleaner", [377], ["vacuum_cleaner"], [c for c in CLASSES if c != "vacuum_cleaner"], ["vacuum_cleaner"]),
     "typing":    ("Typing", [384, 386], ["working"], ["absence", "cooking", "dishwashing", "vacuum_cleaner", "watching_tv"], ["keyboard_typing"]),
     "footsteps": ("Footsteps", [53], [], ["absence", "vacuum_cleaner"], ["footsteps"]),
     "glass":     ("Glass breaking", [443, 470], [], ["absence", "vacuum_cleaner"], ["glass_breaking"]),
 }
+# Context rules (handover v3.2, 3.1; eval/PREREGISTER-SOUNDS.md): a name also needs its score to beat these classes in the
+# same window ("beat"), and/or a minimum score ("min"). Smoke and fire alarms (399, 400) are never a family sound name.
+CONTEXT = {
+    "kettle":    {"beat": [367, 490, 370, 371, 364, 365, 442, 489, 377, 412, 413]},   # frying, tap, dishes, vacuum/fan hum (last three chosen on tune)
+    "tap":       {"beat": [367, 490]},                                   # frying hiss reads as water
+    "microwave": {"min": 0.5, "beat": [377, 412, 413, 343]},             # vacuum, fan, air conditioning, engine hum
+}
+SHOWN_FILE = ROOT / "results" / "sounds.json"      # eval/sounds.py: which names passed the pre-registered bar
+
+
+def shown_ids() -> dict:
+    """Pass/fail per sound from the last eval/sounds.py run (all shown until it has run)."""
+    if not SHOWN_FILE.exists():
+        return {}
+    return {k: v["shown"] for k, v in json.loads(SHOWN_FILE.read_text())["after"].items()}
+
+
 # Never named, never sent (D1): voices, body and bathroom sounds. Listed on the consent screen.
 NEVER = ["Speech", "Conversation", "Laughter", "Singing", "Crying, sobbing", "Baby cry, infant cry", "Cough", "Sneeze",
          "Snoring", "Breathing", "Chewing, mastication", "Toilet flush", "Toothbrush", "Bathtub (filling or washing)"]
@@ -217,7 +234,7 @@ def labels(P, nov):
 
 
 def scores(y, pred) -> dict:
-    meal_t, meal_p = np.isin(y, [C[c] for c in MEAL]), np.isin(pred, [C[c] for c in MEAL])
+    meal_t, meal_p = np.isin(y, [C[c] for c in MEAL if c in C]), np.isin(pred, [C[c] for c in MEAL if c in C])
     return {"n_windows": int(len(y)), "macro_f1": round(100 * f1_score(y, pred, labels=list(range(len(CLASSES))), average="macro", zero_division=0), 1),
             "kitchen_noticed": rate(meal_p[meal_t]), "false_kitchen": rate(meal_p[~meal_t]), "not_sure_share": rate(pred == -1),
             "recall": {c: rate(pred[y == C[c]] == C[c])["pct"] for c in ("absence", "cooking", "dishwashing", "eating")}}
@@ -267,8 +284,10 @@ def main() -> None:
     R["enrolment"] = enrol_sim(d)
     OUT.write_text(json.dumps(R, indent=1))
     (ROOT / "web" / "public" / "data" / "beyond.json").write_text(json.dumps(R))   # the How sure page reads this copy
+    shown = shown_ids()
     WEB.joinpath("kinds.json").write_text(json.dumps({
-        "kinds": [{"id": k, "name": v[0], "index": v[1], "tau": R["sound_types"]["taus"][k]} for k, v in KINDS.items()],
+        "kinds": [{"id": k, "name": v[0], "index": v[1], "tau": R["sound_types"]["taus"][k], **CONTEXT.get(k, {}),
+                   "shown": shown.get(k, True)} for k, v in KINDS.items()],
         "never": NEVER, "veto": VETO, "source": "eval/beyond.py -> results/beyond.json"}))
     en = R["enrolment"]
     WEB.joinpath("enrol.json").write_text(json.dumps({"alpha": en["alpha"], "rho": en["rho"], "knn": en["knn"],

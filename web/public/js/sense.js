@@ -25,15 +25,18 @@ export function levelDb(wave) {
 }
 
 /** The named sound types a window contains: [{id, name, score}] strongest first (score / its threshold). */
-export function kindsOf(sense, as, off = []) {
+export function kindsOf(sense, as, off = [], withHidden = false) {
   const out = [];
   let top = 0;
   for (const k of sense.kinds) {
     let s = 0;
     for (const i of k.index) s = Math.max(s, as[i]);
-    if (s < k.tau) continue;
-    top = Math.max(top, s);                                  // the veto compares with every type, even switched-off ones
-    if (!off.includes(k.id)) out.push({ id: k.id, name: k.name, score: Math.round(s * 1000) / 1000, r: s / k.tau });
+    if (s < k.tau || s < (k.min || 0)) continue;
+    let rival = 0;                                           // context: e.g. a kettle must be louder than frying, tap and dishes
+    for (const i of k.beat || []) rival = Math.max(rival, as[i]);
+    if (k.beat && s <= rival) continue;
+    top = Math.max(top, s);                                  // the veto compares with every type, even switched-off or hidden ones
+    if (!off.includes(k.id) && (withHidden || k.shown !== false)) out.push({ id: k.id, name: k.name, score: Math.round(s * 1000) / 1000, r: s / k.tau });
   }
   let sensitive = 0;
   for (const i of sense.veto) sensitive = Math.max(sensitive, as[i]);
@@ -125,5 +128,7 @@ export function roomRules(sense, ctx, as, db, r) {
 export function refine(sense, ctx, emb, as, r, db = NaN) {
   const out = roomRules(sense, ctx, as, db, applyEnrolment(sense, ctx.head, ctx.enrolment, emb, r));
   const named = kindsOf(sense, as, ctx.kindsOff || []);
-  return { ...out, novel: !!out.novel, taught: !!out.taught, kinds: named.map((k) => k.id) };
+  // every name the device computed, including ones hidden for missing the accuracy bar: for on-device safety concerns only, never sent
+  const device = kindsOf(sense, as, [], true).map((k) => k.id);
+  return { ...out, novel: !!out.novel, taught: !!out.taught, kinds: named.map((k) => k.id), kindsDevice: device };
 }

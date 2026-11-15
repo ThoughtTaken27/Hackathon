@@ -66,3 +66,22 @@ def test_opinion_reads_only_the_listed_tags():
     assert witness.opinion(a) == {"k": 0.61, "family": "dishwashing", "v": 0.2, "cook": 0.0, "water": 0.0, "mouth": 0.0}
     k, fam, v = witness.opinions(a[None])
     assert round(float(k[0]), 2) == 0.61 and fam[0] == "dishwashing" and round(float(v[0]), 2) == 0.2
+
+
+def test_sound_context_rules_python_twin():
+    """Handover 3.1: kettle/kinds.py named() applies the same context rules and hides sounds that missed the bar."""
+    from kettle import kinds
+    a = np.zeros(527)
+    a[456], a[524] = 0.5, 0.6                      # boiling + television: kettle hidden, TV shown
+    assert [k["id"] for k in kinds.named(a)] == ["tv"]
+    b = np.zeros(527)
+    b[367], b[456], b[370] = 0.6, 0.3, 0.2         # frying louder than boiling and the tap
+    shown = {k["id"]: k.get("shown", True) for k in kinds.CFG["kinds"]}
+    for k in kinds.CFG["kinds"]:
+        k["shown"] = True
+    try:
+        ids = [k["id"] for k in kinds.named(b)]
+    finally:
+        for k in kinds.CFG["kinds"]:
+            k["shown"] = shown[k["id"]]
+    assert "kettle" not in ids and "tap" not in ids and "frying" in ids

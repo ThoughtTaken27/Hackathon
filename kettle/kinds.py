@@ -17,10 +17,12 @@ def named(scores, off: tuple = ()) -> list[dict]:
     out, top = [], 0.0
     for k in CFG["kinds"]:
         s = max(float(scores[i]) for i in k["index"])
-        if s < k["tau"]:
+        if s < k["tau"] or s < k.get("min", 0):
+            continue
+        if k.get("beat") and s <= max(float(scores[i]) for i in k["beat"]):   # context: louder than its look-alikes
             continue
         top = max(top, s)
-        if k["id"] not in off:
+        if k["id"] not in off and k.get("shown", True):
             out.append((s / k["tau"], k["id"], k["name"], round(s, 3)))
     if out and max(float(scores[i]) for i in CFG["veto"]) >= top:
         return []

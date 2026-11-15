@@ -106,11 +106,11 @@ export function newEngine() {
 
 /** Was something going on in this window (a sound above the room's quiet, a named sound, or an activity label)? */
 export function isActive(w) {
-  if ((w.kinds || []).length) return true;
+  if ((w.kindsDevice || w.kinds || []).length) return true;
   if (w.floor != null && w.db != null) return w.db >= w.floor + 3;
   return !!w.label && w.label !== "absence";
 }
-const cooks = (w) => ["cooking", "dishwashing", "eating"].includes(w.label) || (w.kinds || []).some((k) => COOKING_KINDS.includes(k) || OTHER_KITCHEN.includes(k));
+const cooks = (w) => ["cooking", "dishwashing", "eating"].includes(w.label) || (w.kindsDevice || w.kinds || []).some((k) => COOKING_KINDS.includes(k) || OTHER_KITCHEN.includes(k));
 const has = (w, id) => (w.hits || []).includes(id);
 function separate(ws, id, since) {   // windows with this detection, counted only when 10 s or more apart (windows overlap)
   let n = 0, prev = -Infinity;
@@ -136,7 +136,7 @@ function startCheckin(st, t, rule, type, evidence) {
 export function step(st, w, opts = {}) {
   const { urgent = true, concern = true, paused = false, smokeWhilePaused = false } = opts;
   const t = w.t, out = [];
-  st.hist.push({ t, hits: w.hits || [], media: !!w.media || w.label === "watching_tv", active: isActive(w), cooks: cooks(w), kinds: w.kinds || [], label: w.label || null });
+  st.hist.push({ t, hits: w.hits || [], media: !!w.media || w.label === "watching_tv", active: isActive(w), cooks: cooks(w), kinds: w.kindsDevice || w.kinds || [], label: w.label || null });
   st.hist = st.hist.filter((h) => h.t > t - KEEP_S);
   const h = st.hist, me = h[h.length - 1];
   if (me.active) st.lastActive = t;
@@ -193,7 +193,7 @@ function ev(w, ids, pat = null) {
 
 /** C6 stove maybe left on, C7 beeping ignored, C9 water left running: sustained named sounds, measured on the device. */
 function deviceConcerns(st, w, t) {
-  const out = [], k = w.kinds || [];
+  const out = [], k = w.kindsDevice || w.kinds || [];
   // C6: frying or boiling heard at least every 3 minutes for 40 minutes, and no other kitchen sound or footsteps
   if (k.some((x) => COOKING_KINDS.includes(x))) {
     if (st.stoveFrom == null || t - st.stoveSeen > STOVE_GAP_S) st.stoveFrom = t;

@@ -1,5 +1,5 @@
 {
- "_why": "AudioSet labels Kettle may show as evidence: sounds of things in the kitchen and living room only. Left out on purpose: body sounds (chewing, biting, laughter, singing, whistling, burping, coughing, breathing), bathroom sounds, pets, and sounds that reveal calls or visits (telephone, ringtone, doorbell, knock, keys, zipper). Speech is shown only as 'Speech' or 'Conversation': never who is speaking, how, or what. Room-tone labels (static, hum, noise) are left out: they describe the microphone and the room, not what happened. The sync server keeps the same list and drops any other name (web/src/household.js). Trimmed Sat Nov 14 after a teammate's review saw 'Chewing', 'Laughter', 'Cat' and 'Dog' in the payload: more than the consent screen promises.",
+ "_why": "AudioSet labels Kettle may show as evidence: sounds of things in the kitchen and living room only. Left out on purpose: body sounds (chewing, biting, laughter, singing, whistling, burping, coughing, breathing), bathroom sounds, pets, and sounds that reveal calls or visits (telephone, ringtone, doorbell, knock, keys, zipper). No voice tags at all (Speech, Conversation, Chatter, Hubbub, Narration): the family page promises Kettle never names voices; a visit shows only as the Conversation activity. Room-tone labels (static, hum, noise) are left out: they describe the microphone and the room, not what happened. The sync server keeps the same list and drops any other name (web/src/household.js). Trimmed Sat Nov 14 after a teammate's review saw 'Chewing', 'Laughter', 'Cat' and 'Dog' in the payload: more than the consent screen promises. Voice tags removed Sun Nov 15 (handover v3.2, 3.5): the server stored 'Speech' per window while the family page said Kettle never names voices.",
  "labels": [
   "Silence",
   "Mechanical fan",
@@ -41,15 +41,10 @@
   "Creak",
   "Thump, thud",
   "Rustle",
-  "Conversation",
-  "Chatter",
-  "Hubbub, speech noise, speech babble",
-  "Speech",
   "Vacuum cleaner",
   "Television",
   "Radio",
   "Music",
-  "Narration, monologue",
   "Background music",
   "Theme music",
   "Soundtrack music",

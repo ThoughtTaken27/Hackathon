@@ -15,15 +15,32 @@ test("kinds.json names match core.KIND_NAMES (the family view and the server use
   assert.deepEqual(Object.fromEntries(kinds.kinds.map((k) => [k.id, k.name])), core.KIND_NAMES);
 });
 
-test("named sound types: strongest first; switched-off types are not named", () => {
+test("named sound types: strongest first; switched-off types are not named (device list, hidden ones included)", () => {
   const as = AS({ 456: 0.5, 370: 0.2, 443: 0.9, 74: 0.9 });       // boiling, tap, shatter; a dog is never named
-  assert.deepEqual(kindsOf(S, as).map((k) => k.id), ["glass", "kettle", "tap"]);
-  assert.deepEqual(kindsOf(S, as, ["glass"]).map((k) => k.id), ["kettle", "tap"]);
+  assert.deepEqual(kindsOf(S, as, [], true).map((k) => k.id), ["glass", "kettle", "tap"]);
+  assert.deepEqual(kindsOf(S, as, ["glass"], true).map((k) => k.id), ["kettle", "tap"]);
+});
+
+test("handover 3.1: only sounds that passed the pre-registered bar are sent; core.KINDS_SHOWN matches kinds.json", () => {
+  assert.deepEqual(new Set(kinds.kinds.filter((k) => k.shown).map((k) => k.id)), core.KINDS_SHOWN);
+  assert.deepEqual(kindsOf(S, AS({ 456: 0.5, 524: 0.6 })).map((k) => k.id), ["tv"]);            // the kettle is computed but hidden
+});
+
+test("handover 3.1 context: frying with a hiss is not a kettle or a tap; a kettle louder than everything is", () => {
+  const ids = (as) => kindsOf(S, as, [], true).map((k) => k.id);
+  assert.ok(!ids(AS({ 367: 0.6, 456: 0.3, 370: 0.2 })).includes("kettle"));                     // frying louder than boiling
+  assert.ok(!ids(AS({ 367: 0.6, 370: 0.3 })).includes("tap"));                                   // frying louder than the tap
+  assert.ok(!ids(AS({ 449: 0.9, 452: 0.9 })).includes("kettle"));                               // pouring is not a kettle
+  assert.ok(ids(AS({ 456: 0.6, 367: 0.1 })).includes("kettle"));
+  assert.ok(!ids(AS({ 368: 0.4 })).includes("microwave"));                                      // microwave needs >= 0.5
+  assert.ok(!ids(AS({ 368: 0.7, 377: 0.8 })).includes("microwave"));                            // ... and to beat a vacuum
+  assert.ok(ids(AS({ 368: 0.7 })).includes("microwave"));
+  assert.ok(!ids(AS({ 399: 0.9 })).includes("alarm"));                                         // a smoke alarm is never a family sound name
 });
 
 test("privacy veto: a toilet flush louder than every named type names nothing (plan D1)", () => {
-  assert.deepEqual(kindsOf(S, AS({ 374: 0.6, 370: 0.3 })), []);
-  assert.deepEqual(kindsOf(S, AS({ 374: 0.1, 370: 0.3 })).map((k) => k.id), ["tap"]);
+  assert.deepEqual(kindsOf(S, AS({ 374: 0.6, 370: 0.3 }), [], true), []);
+  assert.deepEqual(kindsOf(S, AS({ 374: 0.1, 370: 0.3 }), [], true).map((k) => k.id), ["tap"]);
 });
 
 
@@ -49,27 +66,29 @@ const day = (labels, t0 = 8 * 3600, step = 10, extra = () => ({})) =>
   labels.map((l, i) => ({ start: t0 + i * step, end: t0 + (i + 1) * step, label: l, conf: 0.9, probs: probs(l), novel: false, sounds: [], ...extra(i) }));
 
 test("coverage line and named sounds today (plans F1, A6)", () => {
-  const evs = [...day(Array(60).fill("cooking"), 8 * 3600, 10, (i) => ({ kinds: i === 3 ? ["kettle"] : i > 50 ? ["tap"] : [] })),
+  const evs = [...day(Array(60).fill("cooking"), 8 * 3600, 10, (i) => ({ kinds: i === 3 ? ["kettle"] : i > 50 ? ["tv"] : [] })),
     ...day(Array(30).fill("other"), 8 * 3600 + 600, 10, () => ({ novel: true }))];
   const s = core.newState(); core.actions.consent(s, 8 * 3600 - 60); s.last_window_t = evs.at(-1).end;
   const t = core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 });
   assert.equal(t.coverage.pct, 67);
   assert.match(t.coverage.text, /67% of the time it listened/);
-  assert.deepEqual(t.heard.map((h) => [h.id, h.text]), [["kettle", "at 8:00 AM"], ["tap", "at 8:08 AM"]]);
+  assert.deepEqual(t.heard.map((h) => [h.id, h.text]), [["tv", "at 8:08 AM"]]);          // the kettle missed the bar: never listed
   const ns = t.blocks.find((b) => b.state === "not_sure");
   assert.match(ns.card, /a sound unlike anything it learned/);
 });
 
-test("a 'Kettle or a hot drink by 9:00 AM' check (plan A6/F9)", () => {
-  const rules = core.validateRules([{ type: "kind_by", kind: "kettle", time: "9:00" }]);
+test("a 'sound heard by' check (plan A6/F9): met for a shown sound, Can't tell for a hidden one (handover 3.1)", () => {
+  const rules = core.validateRules([{ type: "kind_by", kind: "tv", time: "9:00" }]);
   assert.throws(() => core.validateRules([{ type: "kind_by", kind: "speech", time: "9:00" }]));
   const s = core.newState(); core.actions.consent(s, 6 * 3600); s.rules = rules;
-  const evs = day(Array(12).fill("cooking"), 7 * 3600, 10, (i) => ({ kinds: i === 5 ? ["kettle"] : [] }));
+  const evs = day(Array(12).fill("cooking"), 7 * 3600, 10, (i) => ({ kinds: i === 5 ? ["tv", "kettle"] : [] }));
   s.last_window_t = evs.at(-1).end;
   let t = core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 });
-  assert.equal(t.rules[0].title, "Kettle or a hot drink by 9:00 AM");
+  assert.equal(t.rules[0].title, "TV or radio by 9:00 AM");
   assert.equal(t.rules[0].state, "met");
-  assert.match(t.rules[0].detail, /Met at 7:00 AM \(kettle or a hot drink heard\)/);
+  assert.match(t.rules[0].detail, /Met at 7:00 AM \(tv or radio heard\)/);
+  s.rules = core.validateRules([{ type: "kind_by", kind: "kettle", time: "9:00" }]);
+  assert.equal(core.today(s, evs, evs.at(-1).end + 1, { theta: 0.66, off: 0, day0: 0, hop: 10 }).rules[0].state, "cant_tell");
   const none = day(Array(400).fill("absence"), 6 * 3600, 10);
   s.last_window_t = 9 * 3600 + 30;
   t = core.today(s, [...none, ...day(Array(200).fill("absence"), 6 * 3600 + 4000, 10)], 9 * 3600 + 60, { theta: 0.66, off: 0, day0: 0, hop: 10 });

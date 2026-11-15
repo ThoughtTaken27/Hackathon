@@ -15,9 +15,14 @@ export const ACTIVE = new Set([...CLASSES, "kitchen"].filter((c) => c !== "absen
 const TALK_OR_TV_MARGIN = 0.15;
 // The named household sound types (web/public/model/kinds.json, measured by eval/beyond.py). Order = display order.
 // No pets, phone or doorbell: the same choice as the sound-name allow-list (kettle/evidence_labels.json).
+// Named sounds that passed the pre-registered bar (eval/PREREGISTER-SOUNDS.md -> results/sounds.json; kinds.json "shown").
+// The others are never sent; a check on one says "Can't tell". web/test/fixes.test.mjs keeps this equal to kinds.json.
+export const KINDS_SHOWN = new Set(["tv"]);
+// A kettle check needs the kettle in 2 or more windows of one block (about 20 s), not one stray window (handover v3.2, 3.1).
+export const KIND_MIN_WINDOWS = { kettle: 2 };
 export const KIND_NAMES = { kettle: "Kettle or a hot drink", frying: "Frying or sizzling", chopping: "Chopping", blender: "Blender",
   microwave: "Microwave", dishes: "Dishes and cutlery", tap: "Running water", cupboard: "Cupboards and drawers", door: "A door",
-  alarm: "An alarm or beeping", tv: "TV or radio", vacuum: "Vacuum cleaner", typing: "Typing", footsteps: "Footsteps", glass: "Glass breaking" };
+  alarm: "Timer or appliance beep", tv: "TV or radio", vacuum: "Vacuum cleaner", typing: "Typing", footsteps: "Footsteps", glass: "Glass breaking" };
 // Labels the parent may keep private (plan D2): they reveal visits and TV habits.
 export const HIDEABLE = ["social_activity", "watching_tv"];
 export const WHY_TEXT = { veto: "a machine or bathroom sound was louder than any kitchen sound", novel: "a sound unlike anything it learned",
@@ -321,7 +326,7 @@ export function ruleTitle(r) {
   return `${r.type === "kitchen_by" ? "Kitchen activity" : "Activity"} by ${hhmm(r.time)}`;
 }
 function counts(r, b) {
-  if (r.type === "kind_by") return !!(b.kinds && b.kinds[r.kind]);
+  if (r.type === "kind_by") return !!(b.kinds && b.kinds[r.kind] && b.kinds[r.kind].n >= (KIND_MIN_WINDOWS[r.kind] || 1));
   if (r.type === "kitchen_by") return b.state === "activity" && MEAL.has(b.activity);
   return (b.state === "activity" && ACTIVE.has(b.activity)) || b.state === "talk_or_tv";
 }
@@ -341,6 +346,8 @@ const byStart = (blks) => blks.slice().sort((a, b) => a.start - b.start);
 function ruleOne(r, blks, now, day0, off, hidden = [], ctx = {}) {
   if (r.type === "concern") return concernOne(r, blks, now, day0, off, hidden, ctx);
   if (r.type === "tv_over") return ruleTv(r, blks, now, day0, off, hidden);
+  if (r.type === "kind_by" && !KINDS_SHOWN.has(r.kind))
+    return { state: "cant_tell", at: null, detail: `Can't tell: Kettle can't name "${(KIND_NAMES[r.kind] || r.kind).toLowerCase()}" reliably yet (it missed our accuracy bar), so this check is paused.`, note: null };
   const [h, m] = r.time.split(":").map(Number);
   const deadline = day0 + h * 3600 + m * 60;
   const start = Math.min(day0 + WINDOW_START_H * 3600, deadline - 3600);
@@ -719,7 +726,7 @@ export function blockView(b, off, names) {
     out.label = b.kind === "off" ? `Turned off by ${names.parent}` : b.kind === "guest" ? "Paused for a guest" : `Paused by ${names.parent}`;
     out.card = `${out.label} · ${rng}`;
   }
-  out.heard = Object.keys(KIND_NAMES).filter((k) => b.kinds && b.kinds[k]).map((k) => KIND_NAMES[k]);
+  out.heard = Object.keys(KIND_NAMES).filter((k) => KINDS_SHOWN.has(k) && b.kinds && b.kinds[k]).map((k) => KIND_NAMES[k]);
   return out;
 }
 export function chipText(ev, theta, now, live) {
@@ -768,7 +775,7 @@ export function coverage(blks) {
 export function heardToday(evs, off) {
   const agg = {};
   for (const e of evs) for (const k of e.kinds || []) {
-    if (!Object.hasOwn(KIND_NAMES, k)) continue;
+    if (!Object.hasOwn(KIND_NAMES, k) || !KINDS_SHOWN.has(k)) continue;     // older stored windows may carry a now-hidden name
     const a = agg[k] || (agg[k] = { id: k, name: KIND_NAMES[k], n: 0, first: e.start, last: e.start });
     a.n++; a.first = Math.min(a.first, e.start); a.last = Math.max(a.last, e.start);
   }

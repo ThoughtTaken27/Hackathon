@@ -3,7 +3,7 @@
 This is independent of the activity head, so a judge (or Meera) can see *why* a block says
 "Washing up": the encoder heard "Dishes, pots, and pans 0.36 · Water tap, faucet 0.21".
 Only a fixed list of kitchen and living-room sounds is ever shown (kettle/evidence_labels.json):
-no body or bathroom sounds, and speech only as "Speech"/"Conversation", never who or what.
+no body or bathroom sounds and no voice tags (a visit shows only as the Conversation activity).
 """
 from __future__ import annotations
 

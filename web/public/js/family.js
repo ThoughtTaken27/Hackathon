@@ -1,5 +1,5 @@
 // Meera's view (Kettle web): reads the household's labels and draws the same day the kitchen screen shows.
-import { today as computeToday, ruleTitle, week, DISPLAY, KIND_NAMES } from "./core.js";
+import { today as computeToday, ruleTitle, week, DISPLAY, KIND_NAMES, KINDS_SHOWN } from "./core.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 
@@ -135,16 +135,16 @@ function fields() {
     const type = el("select", { "aria-label": "Kind of check" },
       ["kitchen_by", "any_by", "kind_by", "tv_over"].map((v) => el("option", { value: v, selected: r.type === v, text: { kitchen_by: "Kitchen activity by", any_by: "Some sound of activity by", kind_by: "A sound heard by", tv_over: "TV on for more than (hours)" }[v] })));
     const kind = r.type === "kind_by" ? el("select", { "aria-label": "Which sound", onchange: (e) => { r.kind = e.target.value; } },
-      Object.entries(KIND_NAMES).map(([id, name]) => el("option", { value: id, selected: r.kind === id, text: name }))) : null;
+      Object.entries(KIND_NAMES).filter(([id]) => KINDS_SHOWN.has(id)).map(([id, name]) => el("option", { value: id, selected: r.kind === id, text: name }))) : null;
     const val = r.type === "tv_over" ? el("input", { type: "number", min: 0.5, max: 16, step: 0.5, value: r.hours ?? 4, "aria-label": "Hours" })
       : el("input", { type: "time", value: r.time || "10:00", "aria-label": "Time" });
-    type.addEventListener("change", () => { draft[i] = type.value === "tv_over" ? { type: "tv_over", hours: 4 } : type.value === "kind_by" ? { type: "kind_by", kind: "kettle", time: "09:00" } : { type: type.value, time: "10:00" }; fields(); });
+    type.addEventListener("change", () => { draft[i] = type.value === "tv_over" ? { type: "tv_over", hours: 4 } : type.value === "kind_by" ? { type: "kind_by", kind: [...KINDS_SHOWN][0], time: "09:00" } : { type: type.value, time: "10:00" }; fields(); });
     val.addEventListener("change", () => { if (r.type === "tv_over") r.hours = +val.value; else r.time = val.value; });
     box.append(el("div", { class: "field" }, type, kind, val, el("button", { class: "btn quiet", type: "button", text: "Remove", onclick: () => { draft.splice(i, 1); fields(); } })));
   });
   $("#add-rule").disabled = draft.length >= 3;
   const presets = [["Breakfast by 10", { type: "kitchen_by", time: "10:00" }], ["Lunch by 2", { type: "kitchen_by", time: "14:00" }],
-    ["Evening meal by 8", { type: "kitchen_by", time: "20:00" }], ["Morning drink by 9", { type: "kind_by", kind: "kettle", time: "09:00" }]];
+    ["Evening meal by 8", { type: "kitchen_by", time: "20:00" }], ...(KINDS_SHOWN.has("kettle") ? [["Morning drink by 9", { type: "kind_by", kind: "kettle", time: "09:00" }]] : [])];
   box.append(el("div", { class: "row presets", style: "margin-top:10px;flex-wrap:wrap;gap:8px" }, el("span", { class: "meta muted", text: "Quick add:" }),
     ...presets.map(([label, r]) => el("button", { class: "btn quiet", type: "button", text: label, disabled: draft.length >= 3 || null, onclick: () => { if (draft.length < 3) { draft.push({ ...r }); fields(); } } }))));
 }
