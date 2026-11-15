@@ -103,7 +103,14 @@ def fill_writeup(A: dict) -> None:
             f"{zero('outbound_connections')} outbound connections (`results/privacy_check.json`). **The browser version has not had an "
             "equivalent network audit:** there, privacy is by design (only labels, scores, times and allowed sound names are posted; the server drops any other "
             "field) and checked by code review and tests, not by watching traffic.")
-    blocks = {"accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
+    ev = json.loads((ROOT / "results" / "metrics.json").read_text())["dcase_eval"]
+    bl, me = ev["baselines"], ev["ours_ch0"]["macro_f1"]
+    cif = lambda r: f"{r['value']} [{r['ci95'][0]}, {r['ci95'][1]}]"
+    headline = (f"**Our simplest baseline (always say \"Quiet\") scored {cif(bl['majority'])} macro F1, and Apple's built-in sound classifier "
+                f"scored {cif(bl['apple_zeroshot'])}. Our model scored {cif(me)} on held-out test data:** a pre-registered sample of the official "
+                f"DCASE 2018 test set ({me['n_clips']:,} ten-second clips from {me['n_sessions']} sessions), scored once with the model frozen. "
+                "Macro F1 averages the 9 activities equally; brackets are 95% intervals from resampling sessions.")
+    blocks = {"headline": headline, "accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
     p = ROOT / "docs" / "WRITEUP.md"
     t = p.read_text()
     for k, v in blocks.items():
