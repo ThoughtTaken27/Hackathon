@@ -523,7 +523,7 @@ a.btn { text-decoration: none; }
 .code6 .cbox { flex: 1; aspect-ratio: 4 / 5; max-width: 56px; border-radius: 14px; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--line-strong);
   display: grid; place-items: center; font-size: 28px; font-weight: 560; color: var(--ink); font-variant-numeric: tabular-nums; letter-spacing: 0;
   transition: box-shadow 150ms ease-out; }
-.code6 .cbox.gap { margin-right: 10px; }
+.code6 .cbox.split { margin-right: 10px; }
 .code6 .cbox.cur { box-shadow: inset 0 0 0 2px var(--ink); }
 .code6 .cbox.cur:empty::after { content: ""; width: 2px; height: 30px; background: var(--ink); animation: caret 1s steps(1) infinite; }
 .code6.bad .cbox { box-shadow: inset 0 0 0 2px var(--danger); }
@@ -536,3 +536,13 @@ a.btn { text-decoration: none; }
   transition: transform 250ms cubic-bezier(0.22, 1, 0.36, 1), opacity 250ms cubic-bezier(0.22, 1, 0.36, 1), filter 250ms cubic-bezier(0.22, 1, 0.36, 1); }
 .toast.show { transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1), opacity 350ms cubic-bezier(0.22, 1, 0.36, 1), filter 350ms cubic-bezier(0.22, 1, 0.36, 1); }
 @media (prefers-reduced-motion: reduce) { .toast, .toast.show { transition: none; } }
+.code6 { align-items: flex-start; }
+.code6 .cbox { line-height: 1; }
+
+/* review round 1 (visual critique): larger reading sizes for a 75+ parent, firmer code boxes, a distinct "try again" mark */
+.g-s, .g-live { font-size: 20px; line-height: 28px; }
+.g-n { width: 32px; height: 32px; font-size: 17px; }
+.k-guide li { grid-template-columns: 36px 1fr; }
+.code6 { max-width: 420px; }
+.code6 .cbox { max-width: 64px; font-size: 34px; box-shadow: inset 0 0 0 2px var(--line-strong); }
+.k-status.retry .dot { background: transparent; box-shadow: inset 0 0 0 3px var(--stale); }

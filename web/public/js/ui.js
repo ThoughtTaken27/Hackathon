@@ -236,25 +236,29 @@ export async function copy(text) { try { await navigator.clipboard.writeText(tex
 // One real <input> (so paste, autofill and screen readers work) drawn as six boxes. A wrong code shakes the row:
 // timings from transitions.dev "Error State Shake" (MIT): 6 px, 4 px overshoot, 80/60/80/60 ms, cubic-bezier(0.22, 1, 0.36, 1).
 export function codeInput({ onComplete, label = "Six-letter code" } = {}) {
-  const boxes = Array.from({ length: 6 }, (_, i) => el("span", { class: "cbox" + (i === 2 ? " gap" : "") }));
+  const boxes = Array.from({ length: 6 }, (_, i) => el("span", { class: "cbox" + (i === 2 ? " split" : "") }));
   const inp = el("input", { class: "code-real", inputmode: "text", maxlength: 7, autocomplete: "one-time-code", autocapitalize: "characters",
     spellcheck: "false", "aria-label": label, enterkeyhint: "go" });
   const row = el("div", { class: "code6" }, ...boxes, inp);
   const clean = () => inp.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6);
+  let busy = false, replace = false;                       // one submit at a time: auto-submit on the 6th letter, then Enter/Go, must not POST twice
+  const submit = () => { if (busy || clean().length !== 6 || !onComplete) return; busy = true; onComplete(clean()); };
   const paint = () => {
     const v = clean(), focused = document.activeElement === inp;
     boxes.forEach((b, i) => { b.textContent = v[i] || ""; b.classList.toggle("cur", focused && i === Math.min(v.length, 5)); b.classList.toggle("on", !!v[i]); });
     row.classList.remove("bad");
   };
-  inp.addEventListener("input", () => { inp.value = clean(); paint(); if (inp.value.length === 6 && onComplete) onComplete(inp.value); });
+  inp.addEventListener("input", () => { inp.value = clean(); paint(); if (inp.value.length === 6) submit(); });
+  inp.addEventListener("beforeinput", (e) => { if (replace && e.inputType.startsWith("insert")) { inp.value = ""; replace = false; } });
   inp.addEventListener("focus", paint); inp.addEventListener("blur", paint);
-  inp.addEventListener("keydown", (e) => { if (e.key === "Enter" && clean().length === 6 && onComplete) onComplete(clean()); });
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
   row.addEventListener("click", () => inp.focus());
   return {
-    node: row, input: inp, value: clean, focus: () => inp.focus(),
+    node: row, input: inp, value: clean, focus: () => inp.focus(), submit,
     error() {
+      busy = false;
       row.classList.add("bad");
-      inp.select();                     // typing again replaces the wrong code
+      replace = true;                   // the next letter typed starts a fresh code (no selection handles on phones)
       if (reduceMotion()) return;
       row.animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(-4px)" }, { transform: "translateX(4px)" }, { transform: "translateX(0)" }],
         { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });

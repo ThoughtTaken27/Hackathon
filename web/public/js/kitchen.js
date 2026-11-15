@@ -11,8 +11,9 @@ const link = linkFromHash("kitchen");
 const ui = { step: "intro", pauseMenu: false, mic: "idle", model: 0, down: false, failures: 0, showChip: true, resumedAt: 0, resumedText: "", setup: null, check: null };
 // First-time setup on this device, after the parent says yes: 2) where to put it, 3) a live sound check. Remembered per home.
 const SKEY = link ? `kettle.setup.${link.id}` : null;
-const setupDone = () => { try { return localStorage.getItem(SKEY) === "1"; } catch { return true; } };
-const finishSetup = () => { try { localStorage.setItem(SKEY, "1"); } catch {} ui.setup = null; ui.check = null; draw(); };
+let setupFinished = false;              // also in memory, so blocked storage can't loop the parent back into setup
+const setupDone = () => { if (setupFinished) return true; try { return localStorage.getItem(SKEY) === "1"; } catch { return true; } };
+const finishSetup = () => { setupFinished = true; try { localStorage.setItem(SKEY, "1"); } catch {} ui.setup = null; ui.check = null; draw(); };
 let srv = null, events = [], queue = [], mic = null, wake = null, t = null, silentRun = 0, flushing = false;
 const bar = dayBar($("#bar"), { big: true });
 const QKEY = link ? `kettle.queue.${link.id}` : null;
@@ -36,8 +37,9 @@ if (!link) {
     } catch (e) { err.textContent = e.message; ci.error(); ci.focus(); }
   };
   const ci = codeInput({ onComplete: go });
+  ci.input.addEventListener("input", () => { err.textContent = ""; });
   $("#body").append(el("p", { class: "k-body", text: "Type the six-letter code from your family member's phone." }), el("div", { style: "margin-top:24px" }, ci.node, err));
-  $("#controls").append(button("Connect", () => (ci.value().length === 6 ? go(ci.value()) : ((err.textContent = "Type all six letters and numbers."), ci.error())), "primary"),
+  $("#controls").append(button("Connect", () => (ci.value().length === 6 ? ci.submit() : ((err.textContent = "Type all six letters and numbers."), ci.error())), "primary"),
     el("a", { class: "btn kbtn quiet-k", href: "/start", text: "Set up Kettle from scratch" }));
   ci.focus();
 } else boot();
@@ -239,7 +241,7 @@ function checkScreen(n) {
   if (MEAL.has(c.label)) return { state: "listening", stepK: 3, done: true, head: `Kettle heard ${name}.`,
     body: [`This spot works. ${n.caregiver} will see moments like this on the timeline, never the sound itself.`],
     controls: [button("Finish setup", finishSetup, "primary")] };
-  return { state: "starting", stepK: 3, head: `Kettle heard ${name}.`,
+  return { state: "starting", stepK: 3, retry: true, head: `Kettle heard ${name}.`,
     body: ["That isn't a kitchen sound yet. Move a little closer to the sink, or make the sound a bit louder, then try again."],
     controls: [button("Try again", () => { ui.check = null; draw(); }, "primary"), button("Finish anyway", finishSetup, "quiet-k")] };
 }
@@ -281,6 +283,7 @@ function draw(fresh = false) {
   $("#who-tag").textContent = `${t.names.parent}'s kitchen`;
   $("#status").dataset.state = s.state;
   $("#status").classList.toggle("done", !!s.done);
+  $("#status").classList.toggle("retry", !!s.retry);
   const ks = $("#kstep");
   ks.hidden = !s.stepK || ui.pauseMenu;
   if (s.stepK) { ks.textContent = ""; ks.append(el("span", { class: "dots", "aria-hidden": "true" }, [1, 2, 3].map((i) => el("i", { class: i <= s.stepK ? "on" : "" }))),

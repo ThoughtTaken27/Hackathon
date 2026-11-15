@@ -29,7 +29,8 @@ const go = async (code) => {
 };
 const ci = codeInput({ onComplete: go });
 $("#code-slot").append(ci.node);
-$("#go").addEventListener("click", () => ci.value().length === 6 ? go(ci.value()) : (($("#err").textContent = "Type all six letters and numbers."), ci.error()));
+ci.input.addEventListener("input", () => { $("#err").textContent = ""; });
+$("#go").addEventListener("click", () => ci.value().length === 6 ? ci.submit() : (($("#err").textContent = "Type all six letters and numbers."), ci.error()));
 ci.focus();
 </script>
 </body>

@@ -79,6 +79,9 @@ async function micStream() {
   src.loop = true;
   const dest = ctx.createMediaStreamDestination();
   src.connect(dest); src.start(); await ctx.resume();
+  dest.stream.getTracks().forEach((tr) => tr.addEventListener("ended", () => ctx.close()));
+  const stop = MediaStreamTrack.prototype.stop;
+  dest.stream.getTracks().forEach((tr) => { tr.stop = function () { stop.call(this); ctx.close().catch(() => {}); }; });
   return dest.stream;
 }
 
