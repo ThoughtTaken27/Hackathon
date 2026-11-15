@@ -156,9 +156,10 @@
    An eye glances left and right, blinks, becomes a camera, and the camera is struck through. 9 s loop that starts once the
    headline has landed. Stroke ~1.9 units = about the stem of the serif beside it; the strike uses the one warm accent.
    Swaps cross-fade through a 3px blur so the eye and the camera read as one thing changing. Transform, opacity and filter on one small SVG. */
-.peek { display: inline-block; width: .74em; height: .74em; margin-right: .16em; vertical-align: -0.04em; opacity: 0; color: var(--ink);
+.nobr { white-space: nowrap; }
+.peek { display: inline-block; width: .9em; height: .9em; margin: 0 .02em 0 .1em; vertical-align: -0.1em; opacity: 0; color: var(--ink);
   animation: pk-in 700ms cubic-bezier(.22,1,.36,1) 1.15s forwards; }
-.peek svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.peek svg { display: block; width: 100%; height: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .peek .pk-dot { fill: currentColor; stroke: none; }
 .peek .pk-strike { stroke: var(--accent); stroke-width: 2.1; stroke-dasharray: 25; stroke-dashoffset: 25; }
 .peek g, .peek line { transform-box: fill-box; transform-origin: center; }
@@ -192,3 +193,16 @@
 
 /* ---------- numbers: the % is set in the serif, like the heading accents ---------- */
 .lx-stats .dim, .lx-numbers .dim { font-family: var(--serif); font-style: italic; font-weight: 400; letter-spacing: 0; margin-left: .04em; }
+
+/* the icon stands in for the word "camera" (the word stays for screen readers): when the camera appears it "takes a picture",
+   a small press and a warm shutter flash in the lens, then the strike draws through it and holds as the last word of the line */
+.peek .pk-flash { fill: var(--accent); stroke: none; opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .peek .pk-cam { animation: pk-cam 9s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
+  .peek svg { animation: pk-click 9s cubic-bezier(.34,1.35,.64,1) 1.9s infinite; }
+  .peek .pk-flash { animation: pk-flash 9s ease-out 1.9s infinite; }
+}
+@keyframes pk-click { 0%, 49% { transform: none; } 50.5% { transform: scale(.9); } 53%, 100% { transform: none; } }
+@keyframes pk-flash { 0%, 50% { opacity: 0; transform: scale(.4); } 51.5% { opacity: .95; transform: scale(1.15); } 57%, 100% { opacity: 0; transform: scale(1); } }
+.peek .pk-strike { animation-delay: 2.2s !important; }
+#hero-h em { display: block; }   /* the punchline keeps its own line: "Without a [camera]." */

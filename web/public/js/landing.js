@@ -186,7 +186,6 @@ if (!RM) document.querySelectorAll(".lx-sec .lx-h2").forEach((h) => { h.classLis
 // =================================================================== level 2: scroll-driven motion (js/fx.js)
 // hero headline: words blur in one after another, the page's one orchestrated moment
 const h1 = $("#hero-h"); h1.classList.remove("rise"); h1.classList.add("words-in"); words(h1);
-{ const pk = h1.querySelector(".peek"), w0 = pk && pk.nextElementSibling; if (w0) { w0.prepend(pk); w0.style.whiteSpace = "nowrap"; } }   // the eye rides with "Without", never alone at a line end
 const fin = $("#fin-h"); words(fin);
 new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { fin.classList.add("words-in"); o.disconnect(); } }), { threshold: 0.6 }).observe(fin);
 
