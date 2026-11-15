@@ -7,6 +7,9 @@ const h = (tag, attrs = {}, ...kids) => {
   for (const c of kids.flat()) if (c != null) n.append(c);
   return n;
 };
+// Owner's call (Sun Nov 15): per-sound real-home rows for these two aren't listed here; they stay in results/real_homes.json,
+// results/sound_head_v3.json and docs/WRITEUP.md.
+const OFF_PAGE = ["tap", "footsteps"];
 const p = (r) => (r && r.pct != null ? `${r.pct.toFixed(1)}%` : "–");
 const ci = (r) => (r && r.ci95 ? ` (${r.ci95[0].toFixed(0)}–${r.ci95[1].toFixed(0)})` : "");
 const n = (r) => (r ? `${r.k}/${r.n}` : "");
@@ -81,7 +84,7 @@ async function accuracy(box) {
         ["… named \"Washing up\" itself", pc(act.named_washing_up)],
         ["… \"Not sure\"", pc(act.not_sure)],
         ["No kitchen sound at all: a kitchen activity named anyway", pc(act.kitchen_activity_named_anyway)],
-        ...Object.entries(H.sounds).map(([k, v]) => [`${KIND_NAMES[k] || k}: named when present`, `${v.recall.k} of ${v.windows_with_sound} (${v.false_named_windows} wrong names)`])]),
+        ...Object.entries(H.sounds).filter(([k]) => !OFF_PAGE.includes(k)).map(([k, v]) => [`${KIND_NAMES[k] || k}: named when present`, `${v.recall.k} of ${v.windows_with_sound} (${v.false_named_windows} wrong names)`])]),
       h("p", { class: "gap", text: "In homes it never heard, Kettle rarely names a sound wrongly but also rarely names one at all: the precision-first thresholds don't carry over. Teaching Kettle the room at setup is meant for this, and isn't measured here." }));
   }
   const V = A.sound_head_v3;
@@ -90,7 +93,7 @@ async function accuracy(box) {
     sec.append(h("h3", { text: "Trying to fix that: training on real homes too (not shipped)" }),
       h("p", { class: "meta", text: `We added real-home audio (those 10 homes and half of DESED's domestic clips) to the sound head's training, then tested once on ${V.n.test_real_home} windows from real homes it never heard.` }),
       table(["Sound (new homes)", "v2, shipped: named when present", "v3: named when present", "Wrong names v2 → v3"],
-        V.annotated.map((k) => [KIND_NAMES[k] || k, `${V.real_home.v2[k].true} of ${V.real_home.v2[k].n}`, `${V.real_home.v3[k].true} of ${V.real_home.v3[k].n}`, `${V.real_home.v2[k].false} → ${V.real_home.v3[k].false}`])),
+        V.annotated.filter((k) => !OFF_PAGE.includes(k)).map((k) => [KIND_NAMES[k] || k, `${V.real_home.v2[k].true} of ${V.real_home.v2[k].n}`, `${V.real_home.v3[k].true} of ${V.real_home.v3[k].n}`, `${V.real_home.v2[k].false} → ${V.real_home.v3[k].false}`])),
       h("p", { class: "gap", text: `v3 named more sounds correctly (${ad.real_home_true_names_v2} → ${ad.real_home_true_names_v3}) but fewer names passed the bar (${ad.shown_v2} → ${ad.shown_v3}), so by the rule we wrote before the run it isn't shipped. Its real-home labels mark short events (a clink, a drawer) inside 10-second windows, which made dishes, the tap, cupboards and footsteps harder to learn, not easier.` }));
   }
   const J = A.judge.dev, best = J["0.9"];
