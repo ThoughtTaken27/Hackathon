@@ -6,27 +6,28 @@
 
 
 :root:root {
-  /* light "home" palette (Nov 15): near-white stone canvas, warm graphite ink, white cards on soft shadows. Not cream, no glow. */
-  --canvas: #FAFAF9; --card: #FFFFFF; --line: rgba(28,25,23,.09); --line-strong: rgba(28,25,23,.16);
-  --ink: #1C1917; --text: #44403C; --muted: #6F6964; --faint: #A8A29E;
-  --ok: #18794E; --paused: #4B6584; --stale: #8F5F00; --danger: #C62828;
-  --act-cooking: #eb6834; --act-eating: #1baf7a; --act-washing: #2a78d6; --act-kitchen: #b98a63; --act-tv: #eda100;
-  --act-talk: #e87ba4; --act-working: #6250d6; --act-vacuum: #008300; --act-moving: #8a919a; --act-empty: #E7E5E4;
-  --hatch: rgba(120,113,108,.5); --fill-soft: #F3F2F0; --focus: rgba(28,25,23,.3);
-  --edge: 0 0 0 1px rgba(28,25,23,.08), 0 1px 2px rgba(28,25,23,.04);
-  --lift: 0 0 0 1px rgba(28,25,23,.07), 0 1px 2px rgba(28,25,23,.04), 0 14px 34px -18px rgba(28,25,23,.16);
+  /* colours are OKLCH (perceptual lightness, so equal L reads equally bright); converted from the hex palette, same look
+     light "home" palette (Nov 15): near-white stone canvas, warm graphite ink, white cards on soft shadows. Not cream, no glow. */
+  --canvas: oklch(98.5% 0.001 106.4); --card: oklch(100.0% 0 0); --line: oklch(21.6% 0.006 56.0 / .09); --line-strong: oklch(21.6% 0.006 56.0 / .16);
+  --ink: oklch(21.6% 0.006 56.0); --text: oklch(37.4% 0.009 67.6); --muted: oklch(52.5% 0.011 62.4); --faint: oklch(71.6% 0.009 56.3);
+  --ok: oklch(51.1% 0.110 158.4); --paused: oklch(49.9% 0.059 253.3); --stale: oklch(52.4% 0.111 74.7); --danger: oklch(53.9% 0.194 26.7);
+  --act-cooking: oklch(67.1% 0.175 40.6); --act-eating: oklch(66.9% 0.141 162.1); --act-washing: oklch(57.5% 0.163 255.5); --act-kitchen: oklch(67.0% 0.079 60.6); --act-tv: oklch(76.4% 0.161 75.1);
+  --act-talk: oklch(71.6% 0.141 357.4); --act-working: oklch(52.7% 0.197 283.4); --act-vacuum: oklch(52.9% 0.180 142.5); --act-moving: oklch(65.4% 0.016 254.6); --act-empty: oklch(92.3% 0.003 48.7);
+  --hatch: oklch(55.3% 0.012 58.1 / .5); --fill-soft: oklch(96.1% 0.003 84.6); --focus: oklch(21.6% 0.006 56.0 / .3);
+  --edge: 0 0 0 1px oklch(21.6% 0.006 56.0 / .08), 0 1px 2px oklch(21.6% 0.006 56.0 / .04);
+  --lift: 0 0 0 1px oklch(21.6% 0.006 56.0 / .07), 0 1px 2px oklch(21.6% 0.006 56.0 / .04), 0 14px 34px -18px oklch(21.6% 0.006 56.0 / .16);
   /* cards: a hairline plus a soft, low shadow (replaces the dark double bezel) */
-  --bezel: 0 0 0 1px rgba(28,25,23,.07), 0 1px 2px rgba(28,25,23,.04), 0 18px 40px -26px rgba(28,25,23,.18);
-  --surface: #FFFFFF;
+  --bezel: 0 0 0 1px oklch(21.6% 0.006 56.0 / .07), 0 1px 2px oklch(21.6% 0.006 56.0 / .04), 0 18px 40px -26px oklch(21.6% 0.006 56.0 / .18);
+  --surface: oklch(100.0% 0 0);
   /* one warm accent, spent on the main action: the kettle-orange of the cooking colour, deepened to pass 5:1 with white text */
-  --accent: #B84A24; --accent-press: #9F3F1E;
-  --glass: #FFFFFF;
+  --accent: oklch(55.0% 0.152 38.5); --accent-press: oklch(49.4% 0.136 38.5);
+  --glass: oklch(100.0% 0 0);
   --out: cubic-bezier(0.22, 1, 0.36, 1);
   --pop: cubic-bezier(0.34, 1.35, 0.64, 1);
   color-scheme: light;
 }
 html { background: var(--canvas); }
-body { background: transparent; color: var(--text); position: relative; min-height: 100vh; }
+body { background: transparent; color: var(--text); position: relative; min-height: 100vh; min-height: 100dvh; }   /* dvh: Safari's toolbar makes 100vh too tall */
 ::selection { background: rgba(28,25,23,0.11); color: var(--ink); }
 h1, h2, h3 { color: var(--ink); }
 em.s, .h1 em, .top h1 em, .k-serif em { font: inherit; font-style: normal; letter-spacing: inherit; color: inherit; }   /* no serif accents in the light theme */
@@ -102,7 +103,7 @@ th, td { border-bottom-color: var(--line); }
 .badge { background: rgba(28,25,23,0.042); }
 .stat-n { color: var(--ink); font-weight: 450; }
 .verdict { color: var(--ink); font-size: clamp(22px, 2.3vw, 28px); line-height: 1.38; font-weight: 450; letter-spacing: -0.022em; }
-figure img { box-shadow: 0 0 0 1px var(--line); }
+figure img { box-shadow: none; }   /* multiply blend (app.css): no frame around a chart that has melted into the page */
 .tip { background: #1C1917; color: #fff; }
 .qr { box-shadow: 0 0 0 1px rgba(28,25,23,0.09), 0 20px 50px -24px rgba(28,25,23,0.14); border-radius: 20px; }
 
@@ -126,7 +127,7 @@ figure img { box-shadow: 0 0 0 1px var(--line); }
 .code6 .cbox.cur { background: rgba(28,25,23,0.042); box-shadow: inset 0 0 0 2px rgba(28,25,23,0.5), 0 0 0 5px rgba(28,25,23,0.054); }
 .code6 .cbox.cur:empty::after { background: #1C1917; }
 .code6 .cbox.pop { animation: cpop 260ms var(--pop) both; }
-@keyframes cpop { from { transform: scale(.9); } to { transform: none; } }
+@keyframes cpop { from { transform: scale(.85); filter: blur(3px); opacity: .4; } to { transform: none; filter: none; opacity: 1; } }   /* a number becoming a check: a touch of blur makes the swap read as one change */
 .code6.bad .cbox { box-shadow: inset 0 0 0 2px var(--danger); background: rgba(255,122,122,.06); }
 .choice { background: var(--surface); box-shadow: inset 0 0 0 1px rgba(28,25,23,0.081), 0 24px 60px -40px rgba(28,25,23,0.14); border-radius: 22px; padding: 22px;
   transition: box-shadow 200ms ease, transform 160ms var(--out), background-color 200ms ease; }
@@ -152,7 +153,7 @@ figure img { box-shadow: 0 0 0 1px var(--line); }
 .kitchen { padding-top: 56px; }
 .kitchen .k-head { color: var(--ink); letter-spacing: -0.05em; }
 .kitchen .k-body { color: var(--text); }
-.chip, .chip.big { background: linear-gradient(180deg, rgba(28,25,23,0.045), rgba(28,25,23,0.028)); color: var(--ink);
+.chip, .chip.big { background: #fff; color: var(--ink);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 0 0 1px rgba(28,25,23,0.108), 0 30px 70px -40px rgba(28,25,23,0.14);
   -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
 .k-status .dot { box-shadow: 0 0 0 6px rgba(28,25,23,0.036); }
@@ -165,8 +166,8 @@ figure img { box-shadow: 0 0 0 1px var(--line); }
 .g-s { color: var(--muted); }
 .g-live { color: var(--ink); }
 .k-guide li[data-ok="yes"] .g-n { background: var(--ok); box-shadow: 0 0 0 5px rgba(35,163,95,.14); animation: cpop 360ms var(--pop) both; }
-.k-guide li[data-ok="yes"] .g-n::after { border-color: #08130D; }
-.k-status.done .dot::before { border-color: #08130D; }
+.k-guide li[data-ok="yes"] .g-n::after { border-color: #fff; }
+.k-status.done .dot::before { border-color: #fff; }
 .k-checks li { background: transparent; box-shadow: none; padding: 0; border-radius: 0; font-size: 18px; color: var(--text); }
 .k-checks ul { flex-direction: column; gap: 4px; }
 .k-foot { color: var(--muted); }
@@ -206,3 +207,4 @@ figure img { box-shadow: 0 0 0 1px var(--line); }
 .chip, .chip.big { -webkit-backdrop-filter: none; backdrop-filter: none; }   /* the kitchen device may be an old laptop running all day: no live blur behind the chip */
 .card > #bar:first-child { margin-top: -6px; }
 @media (min-width: 768px) { .page > .card, section.card { padding-top: 20px; } }
+.card > .fail, .card .fail { border-radius: 10px; }   /* inside a 20-22px card with 18-26px padding: clearly smaller, never a near-match */

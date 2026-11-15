@@ -17,7 +17,7 @@
   --fs-khead: 56px; --lh-khead: 60px;
   --fs-chip: 64px; --lh-chip: 68px;
 
-  --canvas: #FAFAFA; --card: #FFFFFF; --line: #EBEBEB; --line-strong: #DEDEDE; --ink: #171717; --text: #4D4D4D; --muted: #6B6B6B;
+  --canvas: #FAFAFA; --card: #FFFFFF; --line: rgba(23,23,23,.08); --line-strong: rgba(23,23,23,.13); --ink: #171717; --text: #4D4D4D; --muted: #6B6B6B;
   --ok: #1A8F55; --paused: #4B6584; --stale: #8A6100; --danger: #C62828;
   /* activity hues: dataviz reference palette, assigned so real neighbours (cooking→eating→washing up→TV→conversation)
      pass the CVD and normal-vision checks (scripts/validate_palette.js); every block also has a text label */
@@ -260,8 +260,8 @@ html.embed .nav, html.embed .foot, html.embed .k-foot { display: none !important
   background: var(--card); color: var(--ink); padding: 0 12px; }
 
 /* ---------- kitchen screen (the room device) ---------- */
-.kitchen { max-width: 1040px; margin: 0 auto; padding: 40px 40px 40px; min-height: calc(100vh - 61px); display: flex; flex-direction: column; }
-html.embed .kitchen { min-height: 100vh; }
+.kitchen { max-width: 1040px; margin: 0 auto; padding: 40px 40px 40px; min-height: calc(100vh - 61px); min-height: calc(100dvh - 61px); display: flex; flex-direction: column; }
+html.embed .kitchen { min-height: 100vh; min-height: 100dvh; }
 .kitchen .k-head { font-size: var(--fs-khead); line-height: var(--lh-khead); color: var(--ink); font-weight: 500; letter-spacing: -0.045em; text-wrap: balance; }
 .kitchen .k-body { font-size: var(--fs-kbody); line-height: var(--lh-kbody); color: var(--text); max-width: 32em; letter-spacing: -0.01em; margin-top: 10px; }
 .kitchen .k-body + .k-body { margin-top: 8px; }
@@ -361,7 +361,7 @@ ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
 .two-col { display: grid; gap: 24px; }
 @media (min-width: 900px) { .two-col { grid-template-columns: 5fr 7fr; align-items: start; } }
 figure { margin: 0; }
-figure img { width: 100%; max-width: 480px; height: auto; border-radius: var(--r-row); background: #fff; display: block; box-shadow: var(--edge); }
+figure img { width: 100%; max-width: 480px; height: auto; border-radius: var(--r-row); background: transparent; mix-blend-mode: multiply; display: block; box-shadow: none; }   /* white-backed charts melt into the page instead of sitting in a white box */
 tr.row-shipped td { color: var(--ink); font-weight: 560; }
 .gap { font-size: var(--fs-body); line-height: var(--lh-body); color: var(--text); margin: 8px 0 4px; max-width: 46em; }
 .gap strong { color: var(--ink); font-weight: 560; }

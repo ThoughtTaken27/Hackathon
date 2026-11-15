@@ -113,3 +113,22 @@
 .viz-flow small { color: var(--muted); font-size: 12px; }
 .lx-stage.scene-day { background-image: url("/img/scene-home.svg"); background-position: center 30%; }
 .stage-caps p { color: rgba(255,255,255,.86); } .stage-caps strong { color: #fff; }   /* captions sit on the low green hills */
+
+/* ---------- concentric corners (Nov 15): an inner corner = outer radius minus the gap between them.
+   Where the gap is wider than the outer radius the corners can't share a centre, so the inner one steps clearly smaller instead of matching. ---------- */
+.lx-panel-wrap { border-radius: 26px; padding: 7px; }
+.lx-panel { border-radius: 19px; padding: 10px; }                 /* 26 - 7 */
+.lp-top { padding: 4px 8px 12px; }
+.lp-card { border-radius: 9px; }                                   /* 19 - 10 */
+.lp-fam .lp-day, .lp-fam .rules, .lp-rules.rules { border-radius: 6px; }
+.lp-fam .lp-day .bar { border-radius: 4px; }
+.lx-card { padding: 8px 8px 24px; }
+.lx-card .viz { border-radius: 18px; }                             /* 26 - 8 */
+.lx-card h3, .lx-card > p { padding: 0 18px; }
+.viz-rules, .viz-evidence { padding: 10px; }
+.viz-rules .rule, .viz-evidence .evidence { border-radius: 8px; }  /* 18 - 10 */
+
+/* icon strokes follow the weight of the text beside them (rendered px ~ the font's stem): hero readout label is 15px/500 */
+.lx-panel .ro-step svg { stroke-width: 1.5; }
+.lx .lx-panel .lp-rules.rules { border-radius: 6px; }                   /* inside the 9px card */
+.lx .f-mini.fam .day-card .bar { border-radius: 10px; }                /* phone mock: 20 - 10 */

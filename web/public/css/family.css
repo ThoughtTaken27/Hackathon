@@ -44,7 +44,7 @@ body:has(.fam) .nav-in { max-width: 880px; }
 .fam .ro-step { width: 44px; height: 44px; border-radius: 999px; border: 0; padding: 0; display: grid; place-items: center; cursor: pointer;
   background: transparent; color: var(--text); -webkit-tap-highlight-color: transparent;
   transition: background-color 150ms ease, color 150ms ease, transform 160ms cubic-bezier(.22,1,.36,1); }
-.fam .ro-step svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.fam .ro-step svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .fam .ro-step:active { transform: scale(.92); background: rgba(28,25,23,0.048); }
 @media (hover: hover) and (pointer: fine) { .fam .ro-step:hover { background: rgba(28,25,23,0.042); color: var(--ink); } }
 .fam .ro-step:focus-visible { outline: 2px solid rgba(28,25,23,0.47); outline-offset: 2px; }
@@ -60,7 +60,7 @@ body:has(.fam) .nav-in { max-width: 880px; }
 .fam .blk.selected { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ink); }
 .fam .now-tick { top: 2px; height: 60px; width: 2px; opacity: .85; }
 .fam .scrub { top: 0; bottom: 0; width: 2px; background: #1C1917; box-shadow: 0 0 0 1px rgba(28,25,23,0.07); }
-.fam .scrub::after { left: -8px; bottom: -8px; width: 18px; height: 18px; background: #fff; box-shadow: 0 2px 8px rgba(28,25,23,0.1); }
+.fam .scrub::after { left: -8px; bottom: -8px; width: 18px; height: 18px; background: #fff; box-shadow: 0 0 0 2px var(--ink), 0 2px 6px rgba(28,25,23,.18); }   /* white knob needs an ink ring on a light card */
 .fam .bar-hit.scrubbing .scrub::after { transform: scale(1.15); }
 @media not ((hover: hover) and (pointer: fine)) {
   .fam .bar-hit { height: 76px; }
@@ -180,3 +180,8 @@ body:has(.fam) .nav-in { max-width: 880px; }
 .fam .evidence .head { display: none; }
 .fam .evidence > p:nth-child(2) { margin-top: 0; }
 .fam .ro-step:disabled { opacity: .28; pointer-events: none; }
+/* the colour swatch is the "icon" that swaps as you slide: it settles in from a 2px blur instead of popping (cheap: 12px element) */
+@media (prefers-reduced-motion: no-preference) {
+  .fam .ro-body.swap .ro-sw { animation: ro-sw-in 200ms cubic-bezier(.22,1,.36,1) both; }
+  @keyframes ro-sw-in { from { transform: scale(.6); filter: blur(2px); opacity: .3; } to { transform: none; filter: none; opacity: 1; } }
+}

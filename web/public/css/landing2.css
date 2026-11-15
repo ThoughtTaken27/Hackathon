@@ -35,7 +35,7 @@
 .acc-b > span { overflow: hidden; min-height: 0; }
 .acc[aria-selected="true"] .acc-b { grid-template-rows: 1fr; }
 .acc[aria-selected="true"] .acc-b > span { padding-top: 10px; }
-.acc-p i { background: linear-gradient(90deg, rgba(28,25,23,.2), #1C1917); }
+.acc-p i { background: linear-gradient(90deg in oklch, rgba(28,25,23,.2), #1C1917); }
 @media (hover: hover) and (pointer: fine) { .acc:hover .acc-h { color: var(--ink); } }
 
 /* ---------- privacy: the sound stops at the device, only the label travels on ---------- */
