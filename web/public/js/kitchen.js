@@ -85,9 +85,21 @@ function toggleText() {
   try { localStorage.setItem("kettle.bigText", on ? "1" : "0"); } catch {}
   draw();
 }
+// Dims like a room light on a dimmer: ~1.8 s to black, the note arrives once it's dark; a touch brings it back faster (0.45 s).
 function dimScreen() {
-  const cover = el("button", { class: "dim-cover", type: "button", text: "Kettle is still listening. Touch the screen to wake it.", onclick: () => cover.remove() });
+  if (document.querySelector(".dim-cover")) return;
+  const cover = el("button", { class: "dim-cover", type: "button", "aria-label": "Wake the screen" },
+    el("span", { text: "Kettle is still listening. Touch the screen to wake it." }));
+  cover.onclick = () => {
+    if (cover.classList.contains("off")) return;
+    cover.classList.add("off"); cover.classList.remove("on");
+    const done = () => cover.remove();
+    cover.addEventListener("transitionend", (e) => { if (e.target === cover) done(); }, { once: false });
+    setTimeout(done, 700);                        // in case transitionend never fires (tab hidden, reduced motion)
+  };
   document.body.append(cover);
+  void cover.offsetWidth;                         // commit opacity 0 before the fade starts
+  requestAnimationFrame(() => cover.classList.add("on"));
 }
 
 
