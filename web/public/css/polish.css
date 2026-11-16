@@ -165,24 +165,14 @@
 
 #hero-h em { display: block; }   /* the punchline keeps its own line: "Without a [camera]." */
 
-/* ---------- hero: "Without a [camera]." in 3D emoji (Microsoft Fluent Emoji, MIT; animated set for the eyes and camera) ----------
-   10 s loop once the headline lands: the animated eyes look around, blur into the animated camera (its own flash plays),
-   the prohibited sign springs on top and holds, then everything blurs back to the eyes. Swaps cross-fade through a short blur. */
+/* ---------- hero: "Without anyone [eyes]." (Microsoft Fluent Emoji Animated, MIT) ----------
+   The animated eyes glance around on their own loop; they arrive with the headline through a short blur and sit on a soft contact shadow. */
 .nobr { white-space: nowrap; }
-.peek { position: relative; display: inline-block; width: 1.02em; height: 1.02em; margin: 0 .02em 0 .1em; vertical-align: -0.16em;
+.peek { position: relative; display: inline-block; width: 1.02em; height: 1.02em; margin: 0 .02em 0 -.06em; vertical-align: -0.16em;
   opacity: 0; animation: pk-in 700ms cubic-bezier(.22,1,.36,1) 1.15s forwards; }
-.peek::after { content: ""; position: absolute; left: 14%; right: 14%; bottom: -4%; height: 14%; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(28,25,23,.22), transparent); z-index: -1; }     /* the soft contact shadow under the emoji */
+.peek::after { content: ""; position: absolute; left: 16%; right: 16%; bottom: -3%; height: 12%; border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(28,25,23,.2), transparent); z-index: -1; }
 .peek img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.peek .pk-cam, .peek .pk-no { opacity: 0; }
 @keyframes pk-in { from { opacity: 0; transform: translateY(.2em) scale(.7); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
-@media (prefers-reduced-motion: no-preference) {
-  .peek .pk-eyes { animation: pk-eyes 10s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
-  .peek .pk-cam { animation: pk-cam2 10s cubic-bezier(.22,1,.36,1) 1.9s infinite; }
-  .peek .pk-no { animation: pk-no 10s cubic-bezier(.34,1.5,.64,1) 1.9s infinite; }
-}
-@keyframes pk-eyes { 0%, 32% { opacity: 1; transform: none; filter: none; } 38%, 92% { opacity: 0; transform: scale(.8); filter: blur(4px); } 98%, 100% { opacity: 1; transform: none; filter: none; } }
-@keyframes pk-cam2 { 0%, 34% { opacity: 0; transform: scale(.8); filter: blur(4px); } 41%, 86% { opacity: 1; transform: none; filter: none; } 92%, 100% { opacity: 0; transform: scale(.9); filter: blur(4px); } }
-@keyframes pk-no { 0%, 58% { opacity: 0; transform: scale(1.6) rotate(-20deg); } 64%, 86% { opacity: .95; transform: none; } 92%, 100% { opacity: 0; transform: scale(.9); } }
-@media (prefers-reduced-motion: reduce) { .peek { opacity: 1; animation: none; } .peek .pk-eyes { opacity: 0; } .peek .pk-cam { opacity: 1; } .peek .pk-no { opacity: .95; } }
-.peek .pk-no { mix-blend-mode: multiply; }   /* the sign's white middle drops out, so the camera stays visible under the slash */
+@media (prefers-reduced-motion: reduce) { .peek { opacity: 1; animation: none; } }
+.lx-hero .lx-lede { max-width: 37em; }
