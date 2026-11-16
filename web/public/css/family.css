@@ -188,3 +188,7 @@ body:has(.fam) .nav-in { max-width: 880px; }
 
 /* the title's "today" is the serif accent (Instrument Serif italic), dimmed: the app speaks in the landing's voice */
 .fam .fam-title .dim { font-family: var(--serif, "Instrument Serif", serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; font-size: 1.1em; }
+
+/* the readout's emoji (Microsoft Fluent Emoji, MIT): the thing Kettle heard, on a tint of its day-bar colour */
+.fam .ro-sw.ro-ej { width: 30px; height: 30px; border-radius: 9px; display: inline-grid; place-items: center; background: color-mix(in oklch, var(--c) 16%, transparent); }
+.fam .ro-ej img { width: 21px; height: 21px; display: block; }

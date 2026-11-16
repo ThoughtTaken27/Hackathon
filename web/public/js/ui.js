@@ -2,6 +2,16 @@
 // its legend and the evidence card. Plain ES modules, no build step.
 import { COLOUR, DISPLAY } from "./core.js";
 
+// One 3D emoji per thing Kettle can name (Microsoft Fluent Emoji, MIT; static WebP in /img/emoji). Colour stays the
+// day bar's key; the emoji sits on a tint of that colour so the two always agree.
+export const EMOJI = { cooking: "cooking", dishwashing: "sponge", eating: "plate", watching_tv: "tv", talk_or_tv: "tv",
+  social_activity: "speech", vacuum_cleaner: "broom", working: "keyboard", other: "footprints", kitchen: "teapot",
+  absence: "leaf", empty: "leaf", not_sure: "question" };
+export function emoji(key, cls = "ej-i") {
+  const n = EMOJI[key]; if (!n) return null;
+  const i = document.createElement("img"); i.className = cls; i.src = `/img/emoji/${n}.webp`; i.alt = ""; i.width = i.height = 48;
+  i.decoding = "async"; i.setAttribute("aria-hidden", "true"); return i;
+}
 export const $ = (s, r = document) => r.querySelector(s);
 export const reduceMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 export function el(tag, attrs = {}, ...kids) {
@@ -282,8 +292,13 @@ export function readout(root, { hint = ["Slide along the day to read it", "Drag 
     if (body.dataset.k === key) return; body.dataset.k = key;
     body.textContent = "";
     if (b) {
-      const sw = el("i", { class: "ro-sw" + (b.activity ? "" : ` blk ${b.state}`) });
-      if (b.activity) sw.style.background = `var(${COLOUR[b.activity]})`;
+      const key = b.activity || b.state, pic = emoji(key);
+      let sw;
+      if (pic) {                                            // the emoji on a tint of its day-bar colour
+        sw = el("i", { class: "ro-sw ro-ej" }); sw.append(pic);
+        sw.style.setProperty("--c", `var(${COLOUR[b.activity] || (key === "talk_or_tv" ? "--act-tv" : "--act-moving")})`);
+      } else sw = el("i", { class: "ro-sw" + (b.activity ? "" : ` blk ${b.state}`) });
+      if (b.activity && !pic) sw.style.background = `var(${COLOUR[b.activity]})`;
       body.append(el("span", { class: "ro-line" }, sw, el("b", { text: b.label })), el("span", { class: "ro-time num", text: glue(b.range) }));
     } else body.append(el("span", { class: "ro-hint" }, ...(has ? [el("span", { class: "touch", text: hint[0] }), el("span", { class: "mouse", text: hint[1] })] : [el("span", { text: empty })])));
     body.classList.remove("swap"); void body.offsetWidth; body.classList.add("swap");

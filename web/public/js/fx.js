@@ -29,12 +29,14 @@ export function progress(el, start = 1, end = 0) {           // 0 when el's top 
 
 export function scrub(block, { base = 0.16, soft = 10 } = {}) {
   const ws = words(block, "sw");
-  if (RM) { ws.forEach((w) => (w.style.opacity = 1)); return () => {}; }
+  const chips = [...block.querySelectorAll(".ej")].map((c) => [c, c.querySelector(".sw")]);   // an emoji chip pops in when its word lights
+  if (RM) { ws.forEach((w) => (w.style.opacity = 1)); chips.forEach(([c]) => c.classList.add("on")); return () => {}; }
   let last = -1;
   return () => {
     const p = progress(block, 0.88, 0.32), n = ws.length, head = p * (n + soft);
     if (Math.abs(head - last) < 0.05) return; last = head;
     ws.forEach((w, i) => { const o = (base + (1 - base) * clamp((head - i) / soft)).toFixed(2); if (w._o !== o) { w._o = o; w.style.opacity = o; } });   // opacity only: a per-word blur repainted the whole paragraph every frame
+    chips.forEach(([c, w]) => c.classList.toggle("on", w && +w._o > 0.55));
   };
 }
 
