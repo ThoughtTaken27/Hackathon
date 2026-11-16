@@ -58,7 +58,7 @@ Priority order for tonight: **§3 (urgent alerts) → §5 (write-up to one page,
 
 ## 2. Environment (Parth's Mac quirks; on your own machine, adapt)
 
-- Python with torch + soundfile: `/Users/parth/Hackathon/.venv-probe/bin/python` (`.venv` lacks them). Elsewhere: `pip install -r requirements.txt` plus `soundfile torch`.
+- Python with torch + soundfile: `<repo>/.venv-probe/bin/python` (`.venv` lacks them). Elsewhere: `pip install -r requirements.txt` plus `soundfile torch`.
 - Tests:
   ```bash
   cd web && npm test && cd ..                      # 142 pass at 408fb46
@@ -70,11 +70,11 @@ Priority order for tonight: **§3 (urgent alerts) → §5 (write-up to one page,
 - Seeding a test home through the API: POST `/api/households` → POST `/api/h/<id>/action {type:"consent"}` (kitchen key as Bearer) →
   POST `/api/h/<id>/events` (each event ≤ 600 s long, ≤ 24 h old). Delete afterwards: `DELETE /api/h/<id>`.
   A saved home in localStorage from a deleted test household makes `/family` say "This home isn't available"; clear it.
-- e2e: `KETTLE_E2E_LISTEN_MS=... python web/test/e2e.py http://localhost:8787 web/.data/test/fake-kitchen.wav <out>`; on the Mac it needs `PLAYWRIGHT_BROWSERS_PATH=/Users/parth/Library/Caches/ms-playwright`.
+- e2e: `KETTLE_E2E_LISTEN_MS=... python web/test/e2e.py http://localhost:8787 web/.data/test/fake-kitchen.wav <out>`; on the Mac it needs `PLAYWRIGHT_BROWSERS_PATH=~/Library/Caches/ms-playwright`.
 - Embedding caches (527 AudioSet scores + embeddings per clip) live in `results/cache/*.npz`: `ced-tiny_dev`, `ced-tiny_esc50all`,
   `ced-tiny_nonspeech7k`, `ced-tiny_synth_alarms`, `ced-tiny_offlist`. `eval/beyond.py load()` reads them; `eval/safety.py sources()` builds the clip list.
 - **Deploy (Cloudflare Worker, Parth's account):** only Parth's machine has the wrangler login. From a clean export:
-  `git archive <sha> web | tar -x -C /tmp/kdeploy && cd /tmp/kdeploy/web && HOME=/Users/parth /Users/parth/.npm/_npx/c943b712072b77c4/node_modules/.bin/wrangler deploy`.
+  `git archive <sha> web | tar -x -C /tmp/kdeploy && cd /tmp/kdeploy/web && HOME=~ ~/.npm/_npx/c943b712072b77c4/node_modules/.bin/wrangler deploy`.
   A bare `npx wrangler` hangs or exits silently in that sandbox. Live site: https://kettle.parth-dev.workers.dev. **Deploying needs Parth's go.**
   Bump `CACHE` in `web/public/sw.js` whenever shipped JS/CSS changes, or phones keep the old build.
 

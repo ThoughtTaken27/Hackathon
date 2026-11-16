@@ -179,8 +179,8 @@ A laptop in the kitchen hears 10-second windows of sound. A frozen pretrained au
 - `make_notebook.py`: builds `notebooks/kettle_reproduce.ipynb`, then nbconvert executes it with outputs saved.
 - `writeup_numbers.py`: fills the number blocks in README and WRITEUP from `results/metrics.json`.
 
-### Research scripts (`docs/research/kettle/probes/`, `docs/research/kettle/raw/`)
-Stage-2 probes (encoder speed, Apple's classifier, live latency) and the pain-point coding scripts. They produced the decisions in `docs/DECISIONS.md`; no reported number comes from them except where labelled "probe".
+### Research scripts (`docs/research/kettle/probes/`)
+Stage-2 probes (encoder speed, Apple's classifier, live latency) and the pain-point coding scripts (the scraped store pages and competitor-site captures they read are not published; the coded results are in `docs/research/kettle/coded-items.csv` and `feature-matrix.md`). They produced the decisions in `docs/DECISIONS.md`; no reported number comes from them except where labelled "probe".
 
 ## Improvement round (Sat Nov 14, evening)
 

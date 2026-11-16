@@ -1,21 +1,45 @@
 # Kettle
 
-**A laptop already in a parent's kitchen turns household sounds into a calm day timeline for the adult child who lives far away, keeps no audio and no words, and publishes how often it misses an activity and how often it cries wolf.**
+**Know the day went okay, without a camera.** Kettle helps an adult child who lives far from a parent with early memory loss by turning the sounds of the parent's kitchen into a private, glanceable timeline of the day. The audio never leaves the room.
 
-Track: AI + Health ("manage an ongoing one better"). Built for an adult child caring from a distance for a parent with early memory loss (invented persona: Meera, 34, and her father Ravi, 79, who consents on his own kitchen screen and can pause it).
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/ThoughtTaken27/Hackathon/blob/main/notebooks/kettle_reproduce.ipynb)
 
-> **This project is a prototype and is not medical advice.** Kettle is not an emergency device, can't call for help, and doesn't replace a smoke or CO detector or 911. Its urgent alerts were tested on public and synthetic clips and in a browser, never in a real home.
+| | |
+|---|---|
+| **Try it live** | https://kettle.parth-dev.workers.dev (the opening page plays sample days; open `/kitchen` on a laptop and `/family` on a phone to try it for real) |
+| **One-page write-up** | [`docs/WRITEUP.pdf`](docs/WRITEUP.pdf) ([markdown](docs/WRITEUP.md)) |
+| **Demo video (2 min)** | submitted with the entry form |
+| **Reproduce every number** | [`notebooks/kettle_reproduce.ipynb`](notebooks/kettle_reproduce.ipynb) (Colab button above, about 3 min on CPU, no keys) |
+| **Track** | AI + Health |
+
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device, can't call for help, and doesn't replace a smoke or CO detector or 911. Its urgent alerts were tested on public and synthetic clips and in a browser, never in a real emergency.
+
+**Our user:** Meera, 34 (an invented persona), lives 300 miles from her dad Ravi, 79, who has early memory loss and lives alone. A laptop on Ravi's counter names what it hears every 10 seconds (cooking, washing up, eating, talking or TV, quiet). Meera's phone shows a calm day bar and the checks she picked ("kitchen activity by 10 AM: met at 8:05"), and turns red for a smoke alarm or a crash followed by a cry or stillness. Ravi agrees first, sees what she sees, and can pause it.
 
 | Meera's phone ("Dad's kitchen today") | Dad's kitchen laptop |
 |---|---|
 | <img src="docs/screenshots/readme/caregiver-phone-evidence.png" width="260" alt="Caregiver view on a phone: heartbeat, summary, day bar and the evidence behind a cooking block"> | <img src="docs/screenshots/readme/kitchen-desktop.png" width="520" alt="Kitchen screen: listening, the checks Meera set, a large Pause button"> |
 
-<!-- lead:start -->
-On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments × 7 microphones = 7,791 clips from 91 sessions), Kettle scores **84.1** macro F1 (95% CI 74.4–86.7) on one microphone and 85.3 on four. That is close to the official 2018 baseline's published 85.0 (known microphones) / 83.1 (unseen), but not directly comparable: they scored the full test set and trained on all development data; we scored a pre-registered sample. The best entry scored 90.4 / 88.4. Our contribution isn't the leaderboard: it's publishing every activity's misses and false alarms separately, a "Not sure" that gave a confident label to only 0.4% of 260 off-list sounds, and a consent and pause design built around them. These are recordings from one research home replayed through the app, not yet a real kitchen. (For context only: Apple's built-in sound classifier, zero-shot with a different label set, scores 31.8 on the same clips.)
-<!-- lead:end -->
+## Results at a glance (held-out data)
 
+| Test | Kettle | Baseline or before |
+|---|--:|--:|
+| Naming 9 activities, DCASE 2018 test, 7,791 clips, 91 sessions (macro F1, 95% CI) | **84.1** [74.4, 86.7] | Apple SoundAnalysis 31.8 · always "Quiet" 5.0 |
+| Same, each of the 7 microphones scored alone (check across groups) | **79.9 to 85.6** | 4-mic average 85.3 |
+| Kitchen activity caught, as the app shows it | **83.1%** [76.5, 90.2] | 81.1% before the kitchen detector |
+| Kitchen activity missed / false alarms (counted separately) | **225 of 1,183** / **21 of 6,608** (0.3%) | 0.1% false before |
+| Other homes' kitchen clips caught: Kitchen20 / DESED dish and frying | **78% / 88%** | 63% / 85% before |
+| Moments labeled "Not sure" | **3.6%** | 16.3% before "Some activity" |
+| Urgent caught, 60 simulated timelines each: smoke / crash + cry / crash + stillness / screaming | **88% / 73% / 72% / 83%** | |
+| False urgent alerts: 12.3 h of ordinary home audio / 360 look-alikes | **0 / 0** | |
 
-> **Setting this up (people or agents):** follow [`SETUP.md`](SETUP.md) top to bottom: Python app, web app, every test, and the Cloudflare deploy. **Try it live:** https://kettle.parth-dev.workers.dev
+Sources: `results/metrics.json`, `web/public/data/app.json`, `results/kitchen_detector.json`, `results/describe_rule.json`, `results/safety.json`. **Where it fails:** a teammate's real kitchen read cooking with metal pots as "eating" (rules fixed, not re-run); through a simulated room and laptop mic only 28% of dish and cooking clips were caught; one research home taught it everything. Details in the write-up and on the live **How sure is Kettle?** page.
+
+**Built during the hackathon.** All project code was written after kickoff (Fri Nov 13, 11 PM CT). The commits before kickoff are planning docs and team tooling only (`AGENTS.md`, `.claude/`, `docs/BRIEF.md`, `docs/IDEAS.md`); no code. AI tools are credited below and in [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md).
+
+---
+
+The rest of this README is the detailed build log, newest first.
 
 ## Urgent alerts that reach the phone (Sun Nov 15, evening)
 
@@ -93,7 +117,7 @@ Recall fell from dev to held-out for some activity 76% → 55%, washing up 89% �
 
 Every held-out moment was heard by all 7 microphones, so differences between microphones on the same activity come from the microphone alone, its position or hardware (a post-hoc slice of the saved predictions, `results/metrics.md`): typing ranged from 63% on node 3 to 88%, while some activity was 50–60% on every microphone, so its drop isn't a microphone effect.
 
-**Meera's check (any kitchen activity), held-out:** the top label caught **1,039 of 1,183** kitchen-activity windows (**missed 144**): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
+**Meera's check (any kitchen activity), held-out.** What the app shows after its rules and the kitchen detector: **83.1%** caught [76.5, 90.2], 0.3% false alarms (`web/public/data/app.json`). The model's raw top label alone: the top label caught **1,039 of 1,183** kitchen-activity windows (**missed 144**): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
 
 **Development folds (session-disjoint, 4-fold; optimistic: the same folds chose the model):**
 
@@ -153,17 +177,18 @@ kitchen mic ─► 10-s windows every 2 s (RAM only) ─► CED-tiny (frozen, 19
 ```
 
 ## Limits (read before quoting any number)
-- **One home, one person.** SINS is one adult living alone for a week, so we can't check whether Kettle works equally well across ages, sexes or households. The only other homes are two teammates' kitchens (exploratory, small N, added Sunday).
+- **One home, one person.** SINS is one adult living alone for a week, so we can't check whether Kettle works equally well across ages or sexes. Our group check is across the 7 microphones (79.9 to 85.6 macro F1) and across other homes' public clips (Kitchen20, DESED). A teammate's kitchen was an informal test, not a measured one.
+- **Room and mic.** Through a simulated room and laptop mic, kitchen catch drops to 28% on DESED dish and cooking clips. Mic placement near the stove and sink matters.
 - **Development numbers are optimistic**: the same folds chose the encoder, C, θ and smoothing. The held-out number is a single pre-registered run on a seeded sample of the official test set, reweighted to its class counts: close to, not exactly, a leaderboard number. Our pre-registered check could not tell which eval microphones are the 3 unseen ones, so we report all 7 together.
 - **Clock times in the sample days are staged** (SINS has none); the labels are the real model's output.
 - **"Kitchen activity" means kitchen sounds were heard**, not that anyone ate. Eating is hard to hear; "moving about" is the weakest class.
-- **Not an emergency device.** No fall, smoke or distress detection. No alerts are sent.
+- **Not an emergency device.** Urgent alerts (smoke or CO alarm, crash then cry or stillness, screaming) were tested on synthetic alarms and recorded crashes mixed into home audio, never in a real emergency; gunshot and shouting have no measured catch rate.
 - **Privacy proof limits:** `python -m eval.privacy_check` proves Kettle's own code writes no audio and makes no outside connections; it is not a kernel trace and can't protect against a compromised computer.
 
 ## Credits
-The judge-facing version, with links and licences, is the site's [Credits page](web/public/credits.html) (`/credits`). DESED uploader attribution: `web/public/desed-attribution.txt`.
+Every dataset, model and library with links and licences: [`docs/WRITEUP.md`](docs/WRITEUP.md) (Sources), the live [Credits page](https://kettle.parth-dev.workers.dev/credits) and [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md). AI tools: Claude Code (Anthropic) wrote most of the code and documents under our direction; Aside (Claude), an AI browser agent, built parts of the web app and ran evaluations; REA for the product teardown. Who wrote what: [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md). DESED uploader attribution: `web/public/desed-attribution.txt`.
 
-Data: SINS / DCASE 2018 Task 5 development (CC BY-NC 4.0) and evaluation (CC BY-NC-ND 4.0) sets, KU Leuven ADVISE (Zenodo 1247102, 1291760, 1964758); ESC-50 (CC BY-NC 3.0). Models: CED-tiny / CED-small (Xiaomi, Apache-2.0), AST (MIT, BSD-3), Apple SoundAnalysis (built into macOS, baseline only). Published comparison: DCASE 2018 Task 5 results page. Libraries: PyTorch, torchaudio, transformers, scikit-learn, NumPy, SciPy, soundfile, PyAV, FastAPI, uvicorn, matplotlib, Playwright. Products studied (patterns only): Howz, Canary Care, havn, Assistiv, Apple Sound Recognition, Alexa Together, StackCare, Care Daily, Snug, Caregiver Aware, WellNest. AI tools: Claude Code (code, research, reviews), REA (teardowns), Aside (research) — every use in [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md). Full list: [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md). UI motion: timings for the toast, the wrong-code shake and the success check follow transitions.dev (Jakub Antalik, MIT; "Toast open/close", "Error State Shake", "Toggle"), found through devlibraries.com and hand-ported to plain CSS/JS. Motion and type values were hand-ported to plain CSS/JS, with no code copied: Magic UI (MIT): number ticker, marquee, animated beam and text blur-in timings. React Bits (MIT + Commons Clause): only the idea of the scroll word reveal. The type scale follows Arc foundation (uiarc.dev), and the tracking ramp follows published Vercel Geist and Linear values.
+Data: SINS / DCASE 2018 Task 5 development (CC BY-NC 4.0) and evaluation (CC BY-NC-ND 4.0) sets, KU Leuven ADVISE (Zenodo 1247102, 1291760, 1964758); ESC-50 (CC BY-NC 3.0). Models: CED-tiny / CED-small (Xiaomi, Apache-2.0), AST (MIT, BSD-3), Apple SoundAnalysis (built into macOS, baseline only). Published comparison: DCASE 2018 Task 5 results page. Libraries: PyTorch, torchaudio, transformers, scikit-learn, NumPy, SciPy, soundfile, PyAV, FastAPI, uvicorn, matplotlib, Playwright. Products studied (patterns only): Howz, Canary Care, havn, Assistiv, Apple Sound Recognition, Alexa Together, StackCare, Care Daily, Snug, Caregiver Aware, WellNest. AI tools: Claude Code (code, research, reviews), REA (teardowns), Aside (research) , every use in [`docs/AI-USAGE-LOG.md`](docs/AI-USAGE-LOG.md). Full list: [`docs/DATA-SOURCES.md`](docs/DATA-SOURCES.md). UI motion: timings for the toast, the wrong-code shake and the success check follow transitions.dev (Jakub Antalik, MIT; "Toast open/close", "Error State Shake", "Toggle"), found through devlibraries.com and hand-ported to plain CSS/JS. Motion and type values were hand-ported to plain CSS/JS, with no code copied: Magic UI (MIT): number ticker, marquee, animated beam and text blur-in timings. React Bits (MIT + Commons Clause): only the idea of the scroll word reveal. The type scale follows Arc foundation (uiarc.dev), and the tracking ramp follows published Vercel Geist and Linear values.
 
 ## Team tooling
 

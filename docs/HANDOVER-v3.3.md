@@ -110,7 +110,7 @@ python -m eval.check_metrics                         # 0 problems
 cd web && node dev.mjs                               # http://localhost:8787 (restart it after changing web/src/*)
 python web/test/e2e.py http://localhost:8787 web/.data/test/fake-kitchen.wav <out>   # errors: []
 ```
-On Parth's Mac use v3.2 §1 (`.venv-probe`, `HOME=/Users/parth`, port 8799). After changing sample days, kinds or witness:
+On Parth's Mac use v3.2 §1 (`.venv-probe`, `HOME=~`, port 8799). After changing sample days, kinds or witness:
 `tools/export_web_fixtures.py`, `tools/export_safety_fixtures.py`. After changing a results file the page shows:
 `tools/export_accuracy.py`. Regenerate named sounds: `python -m eval.beyond && python -m eval.sounds && python -m eval.beyond`.
 

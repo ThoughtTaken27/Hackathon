@@ -1,7 +1,7 @@
 # Kettle
 **Know the day went okay, without a camera.**
 
-**Track:** AI + Health · **Live demo:** [kettle.parth-dev.workers.dev](https://kettle.parth-dev.workers.dev) · **Code:** [github.com/ThoughtTaken27/Hackathon](https://github.com/ThoughtTaken27/Hackathon) · **Video:** VIDEO_LINK · **One-page PDF:** [`docs/WRITEUP.pdf`](WRITEUP.pdf)
+**Track:** AI + Health · **Live demo:** [kettle.parth-dev.workers.dev](https://kettle.parth-dev.workers.dev) · **Code:** [github.com/ThoughtTaken27/Hackathon](https://github.com/ThoughtTaken27/Hackathon) · **Video:** 2-min demo, on the entry form · **One-page PDF:** [`docs/WRITEUP.pdf`](WRITEUP.pdf)
 
 **Kettle helps an adult child who lives far from a parent with early memory loss** by turning the sounds of the parent's kitchen into a private, glanceable timeline of the day. The audio never leaves the room.
 

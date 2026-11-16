@@ -14,26 +14,26 @@
   "outbound_connections": [],
   "upload_5mb_status": "ok",
   "files_new_after_5mb_upload": [
-   "/Users/parth/Library/Caches/at.studio.AsideUpdater/Cache.db-shm",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/91b179b28b9bd696_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/391f4e7a38f4a3d4_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/73dd5483cde0aada_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/40ac3107233d76aa_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/aab81cfce36d8a1e_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/3849c680c8777e71_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/54c7e4bd440d1e2b_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/b6e09b637413ed65_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/b317c55786336fc4_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/bd8cbc880d869094_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/e1b5981a3c68d3c3_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/a6cfa63ce0403e0d_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/bee27263e6f1e5f2_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/55c73976b863ec2b_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/8f7d12a615be2bbb_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/6fe51730201586d4_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/06df0b22d318a221_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/bd95ed7c95bc606e_0",
-   "/Users/parth/Library/Caches/Aside/Default/Cache/Cache_Data/e8b60e66df64dee7_0"
+   "~/Library/Caches/at.studio.AsideUpdater/Cache.db-shm",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/91b179b28b9bd696_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/391f4e7a38f4a3d4_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/73dd5483cde0aada_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/40ac3107233d76aa_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/aab81cfce36d8a1e_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/3849c680c8777e71_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/54c7e4bd440d1e2b_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/b6e09b637413ed65_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/b317c55786336fc4_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/bd8cbc880d869094_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/e1b5981a3c68d3c3_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/a6cfa63ce0403e0d_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/bee27263e6f1e5f2_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/55c73976b863ec2b_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/8f7d12a615be2bbb_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/6fe51730201586d4_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/06df0b22d318a221_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/bd95ed7c95bc606e_0",
+   "~/Library/Caches/Aside/Default/Cache/Cache_Data/e8b60e66df64dee7_0"
   ]
  },
  "labels_file_fields": [
@@ -50,13 +50,13 @@
   "type"
  ],
  "labels_files": [
-  "/Users/parth/Hackathon/data/timeline_privacy_check/2026-11-14.jsonl"
+  "<repo>/data/timeline_privacy_check/2026-11-14.jsonl"
  ],
  "watched": [
-  "/Users/parth/Hackathon",
+  "<repo>",
   "/var/folders/6h/lwz2dqpx5zv1lb9phwfwm_r00000gn/T",
   "/tmp",
-  "/Users/parth/Library/Caches"
+  "~/Library/Caches"
  ],
  "skipped_dataset_caches": [
   "/.git",

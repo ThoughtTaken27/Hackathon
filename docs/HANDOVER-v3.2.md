@@ -41,12 +41,12 @@ Submit. You fill the form and stop. Leave enough time for the video (section 7).
 
 ## 1. Environment on Parth's Mac (different from Shaurya's cloud box)
 
-- Repo: **`/Users/parth/Hackathon`** (not `/home/user/Hackathon`).
+- Repo: **`<repo>`** (not `/home/user/Hackathon`).
 - Python: **`.venv-probe/bin/python`** has torch, soundfile, librosa, transformers, sklearn and playwright. `.venv/bin/python`
   **lacks soundfile**, so `tools/export_web_fixtures.py` fails there. Use `.venv-probe` for everything.
-- Prefix git, wrangler and Python with **`HOME=/Users/parth`**. The agent shell's HOME is a sandbox without the git
+- Prefix git, wrangler and Python with **`HOME=~`**. The agent shell's HOME is a sandbox without the git
   credential helper or the wrangler login. For git also set `GIT_TERMINAL_PROMPT=0`.
-- Playwright: `PLAYWRIGHT_BROWSERS_PATH=/Users/parth/Library/Caches/ms-playwright`. Don't run `playwright install`.
+- Playwright: `PLAYWRIGHT_BROWSERS_PATH=~/Library/Caches/ms-playwright`. Don't run `playwright install`.
 - Dev server: `cd web && PORT=8799 node dev.mjs`. Use a port other than 8787 (another agent has used 8787). It writes
   `web/.data/dev.json` (git-ignored).
 - Hugging Face models already cached: `mispeech/ced-tiny`, `mispeech/ced-small`, `MIT/ast-finetuned-audioset-10-10-0.4593`,
@@ -60,20 +60,20 @@ Submit. You fill the form and stop. Leave enough time for the video (section 7).
 
 ### Commands to run before every commit
 ```bash
-cd /Users/parth/Hackathon
-HOME=/Users/parth .venv-probe/bin/python tools/export_web_fixtures.py      # sample days + parity fixtures + web/public/model/witness.json
-HOME=/Users/parth .venv-probe/bin/python tools/export_safety_fixtures.py
+cd <repo>
+HOME=~ .venv-probe/bin/python tools/export_web_fixtures.py      # sample days + parity fixtures + web/public/model/witness.json
+HOME=~ .venv-probe/bin/python tools/export_safety_fixtures.py
 cd web && npm test && cd ..                                                 # expect: 131 pass, 0 fail, 4 skipped (lint PENDING)
-HOME=/Users/parth .venv-probe/bin/python -m pytest -q tests                 # expect: 77 passed
-HOME=/Users/parth .venv-probe/bin/python smoke_test.py                      # PASS, < 60 s
+HOME=~ .venv-probe/bin/python -m pytest -q tests                 # expect: 77 passed
+HOME=~ .venv-probe/bin/python smoke_test.py                      # PASS, < 60 s
 .venv-probe/bin/python -m eval.check_metrics                                # 0 problems
-HOME=/Users/parth .venv-probe/bin/python -m eval.kitchen_naming --dev       # dev-only accuracy table (never touches TEST)
+HOME=~ .venv-probe/bin/python -m eval.kitchen_naming --dev       # dev-only accuracy table (never touches TEST)
 git diff --cached | grep -E "sk-|AIza|BEGIN PRIVATE|ghp_|key="              # 'key=lambda' in Python is a known false hit
 ```
 Full browser flow (works again, see 2.4):
 ```bash
 cd web && (PORT=8799 node dev.mjs &) ; cd ..
-HOME=/Users/parth PLAYWRIGHT_BROWSERS_PATH=/Users/parth/Library/Caches/ms-playwright KETTLE_E2E_LISTEN_MS=170000 \
+HOME=~ PLAYWRIGHT_BROWSERS_PATH=~/Library/Caches/ms-playwright KETTLE_E2E_LISTEN_MS=170000 \
   .venv-probe/bin/python web/test/e2e.py http://localhost:8799 <clip.wav 16 kHz mono> <out_dir>
 ```
 It takes about 3.5 minutes with a 170 s listen, so run it with `nohup ... &` and poll the log. Screenshots go to `<out_dir>/e2e-*.png`.
@@ -288,7 +288,7 @@ The banner plus polling is enough for the demo.
 ## 4. Real-kitchen recording (needs a human; ask Parth at once)
 
 At ~11:10 AM Parth was sent a notification asking him to record his mom cooking lunch, with her OK. He hadn't answered by
-12:15 PM. Ask him whether a recording exists in `/Users/parth/Downloads/`, or ask him to make one:
+12:15 PM. Ask him whether a recording exists in `~/Downloads/`, or ask him to make one:
 - Laptop on the counter, 1–2 m from the stove, QuickTime → New Audio Recording, 20–30 min.
 - A **written log of clock times**: cooking, washing up (tap running), eating, quiet. A second short session on another meal
   becomes the held-out test.
@@ -339,7 +339,7 @@ At ~11:10 AM Parth was sent a notification asking him to record his mom cooking 
   cooking 'eating'. We found why (one tag per 10 s), measured it, fixed it with stretch-level evidence, and here's the
   real-kitchen number." Every number comes from `results/*.json`.
 - A rough video cut must exist by ~5 PM. Upload unlisted by 7 PM.
-- Deploy to Cloudflare only with Parth's OK. Steps are in `docs/HANDOVER-v3.1.md` §0.11 and memory: `HOME=/Users/parth`,
+- Deploy to Cloudflare only with Parth's OK. Steps are in `docs/HANDOVER-v3.1.md` §0.11 and memory: `HOME=~`,
   deploy from a clean `git archive` of `web/` at the pushed commit, wrangler 4.x.
   **The live site still runs the OLD version without rules 2c and 2d**, so anyone testing live will still see the old misfires.
   Deploying is the next step once Parth says go.
