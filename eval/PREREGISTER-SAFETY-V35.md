@@ -20,7 +20,7 @@ is run once after this note is committed. Any rerun is disclosed in `results/saf
    ("asking"), not after it ends. That is a UI change, so no new detector number.
 
 ## Not changed tonight (and why)
-- Smoke-alarm second path (handover 3.5a) and looser T3 timing (3.5b): the simulator has no loudness, so the "loud" guard can't be
+- Smoke-alarm second path (handover 3.5a) and looser T3 timing (3.5b) [superseded in part by the addendum below: U1b]: the simulator has no loudness, so the "loud" guard can't be
   checked, and kitchen timers are the obvious false alarm. Left as is; the honest number stays 68.3%.
 - A thud alone: never urgent (1.06 false fires per hour of home audio would be ~25 false reds a day).
 

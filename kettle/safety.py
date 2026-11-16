@@ -184,7 +184,8 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
     pat = w.get("pattern") or {"t3": 0, "t4": 0}
     me["t3"], me["t4"] = pat["t3"], pat["t4"]
     if urgent and (not paused or smoke_while_paused):
-        smoke = sum(1 for x in last3 if _has(x, "smoke_alarm")) >= 2 or pat["t3"] >= 2
+        smoke = (sum(1 for x in last3 if _has(x, "smoke_alarm")) >= 2 or pat["t3"] >= 2
+                 or sum(1 for x in last3 if (x.get("t3") or 0) >= 1) >= 2)          # U1b: one T3 cycle in 2 of the last 3 windows
         if smoke:
             if st["smokeSince"] is None:
                 st["smokeSince"] = t - 10

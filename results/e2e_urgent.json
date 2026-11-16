@@ -7,6 +7,6 @@
   "smoke"
  ],
  "errors": [],
- "ran_at": "2026-11-16 00:02 UTC",
+ "ran_at": "2026-11-16 00:05 UTC",
  "note": "Chromium fake microphone playing the WAV; family page polls every 5 s (push not tested headless)."
 }

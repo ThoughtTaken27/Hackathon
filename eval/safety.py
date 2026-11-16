@@ -281,7 +281,9 @@ def main() -> None:
                             "wait 600 s -> 120 s, and a new negative scenario (cans, knocks, fireworks, thunder while cooking). The new scenario draws "
                             "from the shared random generator before the development run, so scenarios_dev timelines are redrawn (dev screaming "
                             "98.3% -> 90.0% is that resampling: with the shout rule switched off the same timelines give the same count). The script "
-                            "was rerun twice more only to edit this note; it is deterministic (seed 0) and the numbers were identical. "
+                            "was rerun twice more only to edit this note; it is deterministic (seed 0) and the numbers were identical. Then smoke rule U1b "
+                            "(a T3 cycle in 2 of the last 3 windows) was pre-registered as an addendum with its dev numbers and this file "
+                            "was regenerated once with it. "
                             "Earlier, disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms "
                             "from screams and timers. The floors were raised to the plan's values (smoke 0.35, glass 0.3, fire 0.3) and the same "
                             "simulator is also reported on development clips (scenarios_dev), so the change can be checked on data not used to report."),

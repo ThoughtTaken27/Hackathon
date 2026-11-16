@@ -48,6 +48,9 @@ def scenarios() -> list[dict]:
     add("smoke_alarm", quiet(T0, 4) + [win(T0 + 20 + i * HOP, hits=("smoke_alarm",), db=-20) for i in range(4)] + quiet(T0 + 40, 4))
     add("smoke_one_window_no", quiet(T0, 4) + [win(T0 + 20, hits=("smoke_alarm",), db=-20)] + quiet(T0 + 25, 6))
     add("smoke_t3_pattern", quiet(T0, 2) + [win(T0 + 10, pattern={"t3": 2, "t4": 0}, db=-25)])
+    # v3.5 U1b: one T3 cycle in 2 of the last 3 windows; one window alone is not enough
+    add("smoke_t3_two_windows", quiet(T0, 2) + [win(T0 + 10, pattern={"t3": 1, "t4": 0}, db=-25), win(T0 + 15, pattern={"t3": 1, "t4": 0}, db=-25)] + quiet(T0 + 20, 2))
+    add("smoke_t3_one_window_no", quiet(T0, 2) + [win(T0 + 10, pattern={"t3": 1, "t4": 0}, db=-25)] + quiet(T0 + 15, 6))
     add("smoke_while_paused_opt_in", [win(T0 + i * HOP, hits=("smoke_alarm",)) for i in range(3)], opts={"paused": True, "smokeWhilePaused": True})
     add("smoke_while_paused_no", [win(T0 + i * HOP, hits=("smoke_alarm",)) for i in range(3)], opts={"paused": True})
     # U2 CO alarm

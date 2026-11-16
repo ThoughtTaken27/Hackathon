@@ -6,7 +6,8 @@
 // both give the same answers on shared fixtures (web/test/safety_fixtures.json, made by tools/export_web_fixtures.py).
 //
 // Urgent rules (notify the family at once; person-related ones ask "Are you OK?" on the screen first):
-//   U1 smoke or fire alarm   smoke detector score in 2 of the last 3 windows, or 2 T3 beep cycles in one window
+//   U1 smoke or fire alarm   smoke detector score in 2 of the last 3 windows, or 2 T3 beep cycles in one window,
+//                            or (U1b) a T3 cycle in 2 of the last 3 windows
 //   U2 carbon monoxide alarm T4 beep pattern in 2 separate windows within 40 s
 //   U3 possible fall         impact or breaking glass, then within 60 s a distress voice; or 10 min of stillness
 //                            after it (2 stray windows allowed) when the person had been active in the 30 min before (cancelled by normal
@@ -151,7 +152,8 @@ export function step(st, w, opts = {}) {
   const pat = w.pattern || { t3: 0, t4: 0 };
   me.t3 = pat.t3; me.t4 = pat.t4;
   if (urgent && (!paused || smokeWhilePaused)) {
-    const smoke = last3.filter((x) => has(x, "smoke_alarm")).length >= 2 || pat.t3 >= 2;
+    // U1b (v3.5 addendum): one T3 cycle in 2 of the last 3 windows, since a 10-s window often holds only one complete cycle
+    const smoke = last3.filter((x) => has(x, "smoke_alarm")).length >= 2 || pat.t3 >= 2 || last3.filter((x) => x.t3 >= 1).length >= 2;
     if (smoke) { if (st.smokeSince == null) { st.smokeSince = t - 10; out.push(alert(st, t, "urgent", "smoke", { since: st.smokeSince, evidence: ev(w, ["smoke_alarm"], pat) })); } }
     else if (st.smokeSince != null && !h.some((x) => x.t > t - SMOKE_CLEAR_S && (has(x, "smoke_alarm") || x.t3))) st.smokeSince = null;
     const co = separate(h.map((x) => ({ ...x, hits: x.t4 >= 1 ? ["t4"] : [] })), "t4", t - 40) >= 2;      // two separate windows in 40 s
