@@ -20,7 +20,7 @@ CED-tiny, a small audio model pretrained on AudioSet, runs in the browser. On to
 | Kitchen activity, what the app shows (caught / right when it says kitchen / false on other moments) | **83.1%** [76.5, 90.2] / 96.9% / 0.3% |
 | Kitchen sounds from other kitchens, Kitchen20 / DESED (before the kitchen detector) | **78% / 88%** (63% / 85%) |
 | "Not sure" on held-out windows (before the "Some activity" rule) | **3.6%** (16.3%) |
-| Smoke alarm while cooking / crash then cry / crash then stillness / screaming, 60 timelines each | **88.3% / 73.3% / 71.7% / 83.3%** |
+| Urgent alerts on synthetic alarms and recorded crashes in home audio: smoke while cooking / crash then cry / crash then stillness / screaming, 60 timelines each | **88.3% / 73.3% / 71.7% / 83.3%** |
 | False urgent alerts: 12.3 h of ordinary home sound / 360 look-alikes (TV, dropped pans, timers) | **0 / 0** |
 | Live browser test: smoke alarm turns the room screen red, then the family's | 19.9 s, then 2.8 s later |
 
