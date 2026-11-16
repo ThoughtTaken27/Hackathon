@@ -40,3 +40,23 @@ overlap by 5 s, so a continuous alarm gives this within about 15 s).
   fire under U1: U1b adds none there.
 - **Gate:** ship only if held-out ordinary home audio stays at 0 urgent per 24 h and every held-out negative scenario stays at 0.
   Report the held-out smoke-during-cooking rate whatever it is. Earlier v3.5 rows will be recomputed in the same run (deterministic).
+
+## Addendum 2 (before its held-out run): the simulator now sees what the app sees, and a fix for "TV" guesses
+A live browser test (glass breaking after kitchen sounds, then 4 minutes of a quiet room) raised **no alert**. The crash was
+detected, but the activity head labelled that window "watching TV", and the engine treats any TV label in the last 3 windows as
+"media on", which silences crash, scream and crying alerts. The simulator never showed this because it fed the **dataset's** label;
+the app feeds the **head's own guess**. On cached clips the frozen head calls ESC-50 glass breaking "TV" in 21 of 40 and
+Nonspeech7k crying "TV" in 64 of 205; real SINS TV windows are called TV ~98% of the time.
+
+1. **Method change (reported from now on):** every simulated window carries the activity head's own label, as in the app
+   (out-of-fold predictions for SINS clips; the frozen head on cached embeddings for ESC-50, Nonspeech7k and synthetic clips).
+   The old dataset-label simulator is kept in the results as `scenarios_dataset_labels` so the difference is visible.
+2. **Rule change (both engines):** "media on" = the AudioSet TV/radio/music detector in any of the last 3 windows (unchanged), OR
+   the head's label "TV" in **2 or more windows in the last 60 s that hold no danger detection** (a crash or scream can itself
+   push the head to "TV"; real TV is continuous).
+- Development only, app-faithful labels (seed 0): crash then groan 27 → 38 of 60, crash then stillness 21 → 29, smoke 55 → 55,
+  screaming 56 → 56, crying 36 → 37; TV drama false alarms 8 → 0; dropped pan, timers, busy kitchen, cans: 0 → 0; knocks/dogs/
+  laughter 5 → 4; ordinary home audio 0 → 0.
+- **Gate:** ship only if, on held-out with app-faithful labels, ordinary home audio stays at 0 urgent per 24 h and the TV-drama
+  scenario is at or below the current rule's count. All positives and negatives are reported whatever they are, next to the
+  dataset-label numbers.
