@@ -161,7 +161,12 @@ let pushKey = null, pushOn = null;
 async function drawPush() {
   const box = $("#push"); if (!box) return;
   const sup = pushSupport();
-  if (pushOn === null) pushOn = !!(await currentSubscription());
+  if (pushOn === null) {
+    const sub = await currentSubscription();
+    pushOn = !!sub;
+    // re-send this phone's subscription on every visit (the server dedupes it), so alerts survive a server-side reset
+    if (sub) api(`/api/h/${link.id}/push`, { method: "POST", key: link.key, body: { subscription: sub } }).catch(() => {});
+  }
   box.textContent = "";
   const why = { "ios-needs-home-screen": "On iPhone: tap Share, then Add to Home Screen, open Kettle from there, then turn alerts on.",
     denied: "Notifications are blocked for this site. Allow them in your browser's site settings, then reload.",

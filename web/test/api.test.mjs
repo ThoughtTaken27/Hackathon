@@ -175,7 +175,11 @@ test("v3.5: a scream goes red at once (asking), then the same alert turns amber 
   await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "fall", at: T + 100, checkin: "help" }, K, T + 130);
   await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "fall", at: T + 100, checkin: "asking" }, K, T + 131);
   const s = await call(env, "GET", `/api/h/${id}/state`, null, F, T + 140);
-  assert.equal(s.body.state.alerts.find((a) => a.id === `a${T + 100}`).checkin, "help");
+  assert.equal(s.body.state.alerts.find((a) => a.id === `a${T + 100}-fall`).checkin, "help");
+  // a smoke and a CO alarm in the same second are two alerts, not one
+  await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "smoke", at: T + 150 }, K, T + 160);
+  const two = await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind: "co", at: T + 150 }, K, T + 160);
+  assert.equal(two.body.state.alerts.filter((a) => a.at === T + 150).length, 2);
   // new kinds are accepted (gunshot, shout, CO, crying)
   for (const kind of ["gunshot", "shout", "co", "distress"]) assert.equal((await call(env, "POST", `/api/h/${id}/action`, { type: "alert", kind, at: T + 200 + kind.length * 20 }, K, T + 300)).status, 200);
 });

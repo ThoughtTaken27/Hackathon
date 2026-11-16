@@ -166,7 +166,7 @@ export async function handle(store, { method, route, key, body, now }) {
       const checkin = body.checkin || "none";
       if (!SAFETY_TYPES.includes(body.kind) || !CHECKIN_STATES.includes(checkin)) return { status: 400, body: { error: "bad alert" } };
       const at = Math.min(now, Math.max(now - 3600, +body.at || now));
-      const id = `a${Math.round(at)}`;
+      const id = `a${Math.round(at)}-${body.kind}`;      // same time + same kind = the same alert (a smoke and a CO alarm stay two)
       const old = (s.alerts || []).find((x) => x.id === id);
       if (old) {                        // the same alert, answered (or not): update it in place, never a second banner
         if (old.checkin === checkin) return done(200);                  // a retry: nothing new, nobody is told twice
