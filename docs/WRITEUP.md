@@ -4,7 +4,7 @@
 *This project is a prototype and is not medical advice.*
 
 # The problem
-Millions of older Americans with early memory loss are living completely alone - hours away from the children who love them. They are too busy working or too far away, forcing adults into the painful trap of a weekly call where the parent hides their decline. On the other hand, cameras feel like they're being watched and expensive sensor kits make things worse with false alarm and it reaches a peak where families tune them out. Families that are left blind until a missed warning sign can turn a preventable emergency into a crisis.  
+Millions of older Americans with early memory loss are living completely alone - hours away from the children who love them. They are too busy working or too far away, forcing adults into the painful trap of a weekly call where the parent hides their decline. On the other hand, cameras feel like they're being watched and expensive sensor kits make things worse with false alarm and it reaches a peak where families tune them out. Families that are left blind until a missed warning sign can turn a preventable emergency into a crisis. About 1 in 4 people with dementia who live at home live alone (26%; [Alzheimer's Association, 2025 Facts and Figures](https://pmc.ncbi.nlm.nih.gov/articles/PMC12040760/)).
 
 # What we built
 **Our user:** Meera, 34, lives 300 miles from her father Ravi, 79, who has early memory loss and lives alone. At 10 AM she wonders: *What has Dad been up to in the kitchen this morning?*
@@ -28,7 +28,7 @@ Millions of older Americans with early memory loss are living completely alone -
 - **Why:** it is small enough to run in a browser (exported to ONNX; same label as Python on 90 of 90 sample clips). On the development folds, a 4× bigger version of the same encoder was within the error bars, and AST (16× bigger) scored lower on the same clips.
 - **Rules decide what the screen says:**
   - Show a label only at confidence ≥ θ = 0.66 (chosen on dev so shown labels are right 90% of the time).
-  - Say "Not sure" for sounds unlike anything it learned (a distance check on the encoder's output).
+  - Say "Not sure" for sounds unlike anything it learned (a distance check on the encoder's output), and "Some activity" when it clearly heard someone but can't name the activity.
   - A "second opinion" from the encoder's own 527 sound tags for kitchen windows the head can't name.
   - 2-of-3 smoothing, and kitchen stretches named from evidence across all their windows.
 - **No LLM:** it couldn't hear without sending audio to a cloud.
@@ -51,7 +51,7 @@ Millions of older Americans with early memory loss are living completely alone -
 | DCASE 2018 official baseline (published) | 85.0 known mics · 83.1 unseen mics | full eval set, all dev data |
 | DCASE 2018 best entry (published) | 90.4 · 88.4 | full eval set |
 
-**Kitchen activity check, held-out:** the top label caught **1,039 of 1,183** kitchen-activity windows (**missed 144**): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
+**Kitchen activity check, held-out:** what the app actually shows (its display rules on top of the model) caught **83.1%** [76.5, 90.2] of 1,183 kitchen-activity windows (**missed 225**) and was wrong on 21 of 6,608 other windows (0.3%). The model's top label alone caught **1,039 of 1,183** (missed 144): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
 
 For context, our development folds which we used to select the model and are therefore slightly optimistic showed Kettle scoring 85.1 [81.1, 87.4] across 8,920 clips (257 sessions). On a 2,700-clip subset of that development data, Kettle (85.5) also outperformed both a simple logistic regression model using log-mel statistics (79.7) and a 16 times larger AST model using the same classification head (83.0).
 <!-- results:end -->
@@ -63,7 +63,7 @@ For context, our development folds which we used to select the model and are the
 | Head alone | 6.3% [1.4, 11.8] (5 of 79) | 0 of 191 |
 | Head + second opinion (tags), as shipped | **43.0% [25.9, 60.5] (34 of 79)** (tune half: 63.0%) | 0 of 191 |
 
-For comparison, in the research home's held-out test the top label caught 87.8% of kitchen-activity windows (raw; 1,183 windows); in other homes, 43.0% of real-home kitchen clips. The system fails safely rather than crying wolf. When tested on 667 10 second clips, it recognized 615 of them as "unlike anything it learned" and shown as "Not sure", not as a wrong activity. (We ran this test before adding our stretch-naming rules, which only affect which specific activity gets chosen, not whether an activity is detected.)
+For comparison, in the research home's held-out test the top label caught 87.8% of kitchen-activity windows (raw; 1,183 windows; 83.1% after the app's display rules); in other homes, 43.0% of real-home kitchen clips. The system fails safely rather than crying wolf. When tested on 667 10 second clips, it recognized 615 of them as "unlike anything it learned" and shown as "Not sure", not as a wrong activity. (We ran this test before adding our stretch-naming rules, which only affect which specific activity gets chosen, not whether an activity is detected.)
 <!-- crosshome:end -->
 
 **A live test in a real kitchen, and the fix.** In a teammate's kitchen, cooking with metal pots showed up as "eating", and plate clatter showed as "washing up" with no tap running. Each 10-second window had been named from its single loudest kitchen tag. Now a kitchen stretch is named from evidence across all its windows, and every everyday-sound name must pass a bar written before choosing a label. 
@@ -92,7 +92,7 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 1. **Cooking → washing up** (63 dev clips): Rinsing and running water during cooking sounds like washing up.
 2. **TV → conversation** (12 dev clips): TV audio is mostly people talking; the model can't always tell a broadcast from a conversation.
 3. **Some activity → quiet** (91 dev clips): 'Moving about' is often a few soft footsteps or a door in an otherwise quiet room.
-4. **Other homes** (above): most homes sound unlike anything it learned. One home, one person and one set of microphones is too narrow. 
+4. **Other homes** (above): most homes sound unlike anything it learned. One home, one person and one set of microphones is too narrow. Replayed through a simulated room and laptop mic (echo, quieter, background hiss), the app caught only 28% of DESED kitchen clips (11 of 40) and 18% of Kitchen20 kitchen clips (40 of 222) (`results/kitchen_detector_realworld.json`).
 5. **A TV left on:** TV audio is mostly speech and music, and it masks the quieter kitchen sounds (`results/stress.json`).
 <!-- failures:end -->
 
@@ -116,7 +116,7 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
   - Comparisons only: CED-small, [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593), [CLAP](https://arxiv.org/abs/2211.06687), Apple SoundAnalysis.
 - **Libraries and hosting:** [ONNX Runtime Web](https://github.com/microsoft/onnxruntime), Cloudflare Workers, PyTorch, Transformers, scikit-learn.
 - **Images (demo video only, all from [Pexels](https://www.pexels.com/license/), free to use):** [elderly hands holding a red cup](https://www.pexels.com/photo/elderly-hands-holding-red-coffee-cup-outdoors-31114349/); [kitchen table and chairs](https://www.pexels.com/photo/rectangular-brown-wooden-table-and-two-chairs-972841/); [a woman using her smartphone on a couch](https://www.pexels.com/photo/a-woman-using-her-smartphone-on-a-couch-7681271/); [ceiling-mounted fire alarm](https://www.pexels.com/photo/ceiling-mounted-fire-alarm-system-in-building-39183052/).
-- **Statistic:** [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans).
+- **Statistic:** [Alzheimer's Association, 2025 Alzheimer's Disease Facts and Figures](https://pmc.ncbi.nlm.nih.gov/articles/PMC12040760/) (26% of people with dementia living in the community live alone); [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans).
 - **Tutorials:** none followed.
 - **AI tools:**
   - [Claude Code](https://claude.com/claude-code) (Anthropic) wrote most of the code and documents under our direction.
