@@ -1,6 +1,6 @@
 // Kettle landing (dark): a live sample day in the hero panel, interactive steps, both real screens, numbers from results.json.
 import { DISPLAY, COLOUR, KIND_NAMES, clock, rawLabel } from "./core.js";
-import { $, el, setText, dayBar, legend, readout, rulesList, homes, reduceMotion } from "./ui.js";
+import { $, el, setText, dayBar, legend, readout, rulesList, homes, reduceMotion, emoji } from "./ui.js";
 import { play } from "./sample.js";
 import { place } from "./people.js";
 import { words, scrub, ticker, progress, onScrollFrame } from "./fx.js";
@@ -40,7 +40,7 @@ function heardRow(x, t) {
   const sound = (x.kinds || []).map((k) => KIND_NAMES[k]).filter(Boolean)[0] || "";
   return el("li", { class: (ns ? "ns " : "") + "enter", "data-k": String(x.end) },
     el("span", { class: "t num", text: clock(x.end, t.tz_offset) }),
-    el("span", { class: "sw", style: `background:var(${COLOUR[lab] || COLOUR[x.label]})${ns ? ";opacity:.35" : ""}` }),
+    el("span", { class: "sw ej-sw", style: `--c:var(${COLOUR[lab] || COLOUR[x.label] || "--act-moving"})` }, emoji(ns ? "not_sure" : lab) || ""),
     el("span", { class: "lab" }, name, el("small", { text: sound })),
     el("span", { class: "conf num" }, el("i", {}, el("b", { style: `--p:${x.conf}` })), x.conf.toFixed(2)));
 }
