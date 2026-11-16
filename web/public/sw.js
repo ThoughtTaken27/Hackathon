@@ -1,5 +1,5 @@
 // Kettle service worker: offline shell, model cache, web push alerts.
-const CACHE = "kettle-v35-3";
+const CACHE = "kettle-v35-4";
 
 const SHELL = [
   "/", "/family", "/kitchen", "/listen", "/start", "/pair", "/how-sure",
@@ -8,7 +8,7 @@ const SHELL = [
   "/js/chrome.js?v=w4", "/js/family.js?v=w4", "/js/kitchen.js?v=w4", "/js/start.js?v=w4", "/js/howsure.js?v=w4", "/js/beyond.js?v=w4", "/js/landing.js?v=w4",
   "/js/common-legacy.js", "/js/core.js", "/js/ui.js", "/js/listen.js", "/js/sense.js", "/js/sounds.js", "/js/fx.js", "/js/sample.js", "/js/head.js", "/js/worklet.js",
   "/fonts/geist-latin-wght.woff2", "/fonts/instrument-serif-italic.woff2",
-  "/vendor/qrcode.js", "/css/urgent.css?v=u2", "/js/pushclient.js", "/js/safety.js", "/js/family.js?v=u3", "/js/kitchen.js?v=u3", "/js/devicename.js",
+  "/vendor/qrcode.js", "/css/urgent.css?v=u4", "/js/pushclient.js", "/js/safety.js", "/js/family.js?v=u4", "/js/kitchen.js?v=u4", "/js/devicename.js",
 ];
 
 self.addEventListener("install", (event) => {

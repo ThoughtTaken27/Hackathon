@@ -97,6 +97,8 @@ function draw() {
   $("#heard-sec").hidden = !t.heard.length;
   drawUrgent(n);
   drawHomes();
+  drawRooms();
+  drawDevices(n);
   if (!pushDrawn) { pushDrawn = true; drawPush(); }
   drawWeek();
   $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
@@ -212,6 +214,59 @@ function drawWeek() {
     el("span", { class: "d", text: r.day }),
     el("span", { class: "v", text: r.state === "yes" ? `✓ ${r.at}` : r.state === "no" ? "Not heard" : "Can't tell" }),
     el("span", { class: "k", text: r.kettle ? `Kettle ${r.kettle}` : "" })));
+}
+
+/** One person, several rooms: when more than one listening device joined this home (one code, each named), each gets its own
+ *  day bar under the main one, built from only the windows that device heard. The main bar above still shows every window. */
+const roomBars = new Map();
+function drawRooms() {
+  const box = $("#rooms"); if (!box) return;
+  const listening = (srv.devices || []).filter((d) => d.role === "kitchen");
+  box.hidden = listening.length < 2;
+  if (box.hidden) return;
+  const key = listening.map((d) => d.id + d.name).join("|");
+  if (box.dataset.k !== key) {
+    box.dataset.k = key; box.textContent = ""; roomBars.clear();
+    box.append(el("div", { class: "sec-head" }, el("h2", { class: "sec-title", text: "Each room" })));
+    for (const d of listening) {
+      const head = el("p", { class: "room-h", text: d.name }), sum = el("p", { class: "room-sum" }), holder = el("div");
+      box.append(el("div", { class: "room-card" }, head, sum, holder));
+      roomBars.set(d.id, { sum, bar: dayBar(holder) });
+    }
+  }
+  for (const d of listening) {
+    const r = roomBars.get(d.id), evs = events.filter((e) => e.dev === d.id);
+    const td = computeToday(srv, evs, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
+    r.sum.textContent = evs.length ? `${td.summary || "Heard today."} Last heard ${clock(evs[evs.length - 1].end, td.tz_offset)}.` : "Nothing heard from this device yet today.";
+    r.bar.render(td);
+  }
+}
+
+/** Every device connected to this home (one code works for several, each asked for a name), and how to add one more. */
+let roomCode = null;
+function drawDevices(n) {
+  const box = $("#devices"); if (!box) return;
+  const devs = srv.devices || [];
+  const lastHeard = (id) => { let m = null; for (const e of events) if (e.dev === id && (m == null || e.end > m)) m = e.end; return m; };
+  const rows = devs.map((d) => {
+    const lh = d.role === "kitchen" ? lastHeard(d.id) : null;
+    return [d.name, d.role === "kitchen" ? (lh ? `listening · last heard ${clock(lh, t.tz_offset)}` : "listening · nothing heard yet") : "family view"];
+  });
+  const home = homes()[link.id] || {};
+  const k = JSON.stringify(rows) + (roomCode || "");
+  box.hidden = !devs.length && !home.kitchenKey;
+  if (box.hidden || box.dataset.k === k) return;
+  box.dataset.k = k; box.textContent = "";
+  box.append(el("div", { class: "sec-head" }, el("h2", { class: "sec-title", text: "Connected devices" })),
+    devs.length ? el("ul", { class: "dev-list" }, ...rows.map(([name, what]) => el("li", {}, el("span", { class: "dev-n", text: name }), el("span", { class: "dev-w", text: what }))))
+      : el("p", { class: "sec-text", text: "Devices that join with a code appear here by their name." }));
+  if (home.kitchenKey) {
+    const p = el("p", { class: "sec-foot", text: `To add a device in another room of ${n.possMid} home, open ${location.host}/listen on it, name it, and type the code.` });
+    box.append(p);
+    if (!roomCode) api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "kitchen", key: home.kitchenKey } })
+      .then((r) => { roomCode = `${r.code.slice(0, 3)} ${r.code.slice(3)}`; box.dataset.k = ""; drawDevices(n); }).catch(() => {});
+    else p.textContent = `To add a device in another room of ${n.possMid} home, open ${location.host}/listen on it, name it, and type ${roomCode}. One code works for several devices for 48 hours.`;
+  }
 }
 
 /** More than one parent (or grandparent): every home this phone can see, one chip each, plus "Add someone". Each home has its

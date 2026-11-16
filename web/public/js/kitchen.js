@@ -1,10 +1,10 @@
 // The room screen (Kettle web; route /kitchen). Pairs with a code, asks the person first, labels sound on this device, sends only labels.
 import { today as computeToday, canListen, rawLabel, clock, tzOffset, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
 import { ROOMS, who } from "./people.js";
-import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
+import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, homes, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
-import { deviceNameField, saveDeviceName } from "./devicename.js";
+import { deviceNameField, saveDeviceName, savedDeviceName } from "./devicename.js";
 import { newEngine, step as safetyStep, timeouts as safetyTimeouts, answer as safetyAnswer, help as safetyHelp, TEXT as SAFETY_TEXT } from "./safety.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
@@ -145,8 +145,19 @@ if (!link) {
 } else boot();
 
 // ---------------------------------------------------------------- paired
+// Each listening device has an id and a name, so the family sees one day bar per device ("Kitchen laptop", "Bedroom tablet").
+// A device opened from a link (no code, so never asked) registers itself once under a plain default name.
+const myDevice = () => (link && homes()[link.id] && homes()[link.id].deviceId) || null;
+async function ensureDevice() {
+  if (!link || myDevice() || !srv) return;
+  const room = (srv.names && srv.names.room) || {};
+  const name = savedDeviceName() || `${room.type === "other" && room.name ? room.name : (ROOMS[room.type] || ROOMS.kitchen).label} ${DEVICE}`;
+  try { const r = await api(`/api/h/${link.id}/joined`, { method: "POST", key: link.key, body: { name } }); saveHome(link.id, { deviceId: r.deviceId, deviceName: name }); srv = r.state; }
+  catch {}
+}
 async function boot() {
   await poll();
+  ensureDevice();
   watchBattery();
   let sec = 0;
   everySecond(() => {
@@ -348,8 +359,9 @@ function shareable(w) {
   const hide = (srv && srv.hide) || [];
   const top = Object.keys(w.probs).sort((a, b) => w.probs[b] - w.probs[a]);
   const voices = top.slice(0, 2).every((c) => HIDEABLE.includes(c)) && top.slice(0, 2).some((c) => hide.includes(c));
-  if (hide.includes(w.label) || voices) return { start: w.start, end: w.end, label: "private", conf: 0, probs: Object.fromEntries(Object.keys(w.probs).map((c) => [c, 0])), novel: false, private: true, sounds: [], kinds: [] };
-  return { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds, kinds: w.kinds, taught: w.taught };
+  const dev = myDevice() ? { dev: myDevice() } : {};
+  if (hide.includes(w.label) || voices) return { start: w.start, end: w.end, label: "private", conf: 0, probs: Object.fromEntries(Object.keys(w.probs).map((c) => [c, 0])), novel: false, private: true, sounds: [], kinds: [], ...dev };
+  return { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds, kinds: w.kinds, taught: w.taught, ...dev };
 }
 function stopListening() { if (mic) { mic.stop(); mic = null; } if (wake) { wake.release().catch(() => {}); wake = null; } if (ui.mic === "on") ui.mic = "idle"; }
 // ---------------------------------------------------------------- device report: kind, plugged in or not, and how fast it labels

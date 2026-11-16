@@ -59,3 +59,14 @@
   color: var(--text); background: var(--card); box-shadow: inset 0 0 0 1px var(--line); text-decoration: none; }
 .home-chip[aria-current="page"] { color: var(--card); background: var(--ink); box-shadow: none; font-weight: 500; }
 .home-chip.add { color: var(--muted); box-shadow: inset 0 0 0 1px var(--line-strong, var(--line)); }
+
+/* family: one day bar per room device, and the list of connected devices */
+.rooms { margin-top: 20px; display: grid; gap: 12px; }
+.room-card { padding: 16px; border-radius: 20px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line); }
+.room-card .room-h { font-size: 16px; line-height: 22px; font-weight: 560; color: var(--ink); }
+.room-card .room-sum { margin: 2px 0 10px; font-size: 14px; line-height: 20px; color: var(--muted); }
+.devices { margin-top: 20px; }
+.dev-list { list-style: none; margin: 6px 0 0; padding: 0; }
+.dev-list li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 15px; line-height: 22px; }
+.dev-list .dev-n { color: var(--ink); font-weight: 500; }
+.dev-list .dev-w { color: var(--muted); text-align: right; }

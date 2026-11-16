@@ -46,13 +46,15 @@ export function publicState(s) {
   return { ...rest, pushCount: (push || []).length };
 }
 
+const DEVICE_ID = /^[a-z0-9]{8}$/;     // ids the server hands out in route "joined" (randomId(8))
 export function cleanEvent(e, now) {
   if (!e || typeof e !== "object") return null;
   const start = +e.start, end = +e.end;
   if (!(end > start) || end - start > 600 || end > now + 120 || end < now - 86400) return null;
+  const dev = typeof e.dev === "string" && DEVICE_ID.test(e.dev) ? { dev: e.dev } : {};   // which named device heard it (one bar per room)
   if (e.label === "private") {           // a label the parent keeps private: no scores, no sounds (plan D2)
     const probs = Object.fromEntries(CLASSES.map((c) => [c, 0]));
-    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [] };
+    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [], ...dev };
   }
   if (!CLASSES.includes(e.label)) return null;
   const probs = {};
@@ -72,7 +74,7 @@ export function cleanEvent(e, now) {
   // named household sound types: ids from the allow-list only (plan D1, A6); "taught" = helped by this kitchen's setup
   out.kinds = Array.isArray(e.kinds) ? [...new Set(e.kinds.filter((k) => Object.hasOwn(KIND_NAMES, k)))] : [];
   if (e.taught) out.taught = true;
-  return out;
+  return { ...out, ...dev };
 }
 
 /**
