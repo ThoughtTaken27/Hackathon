@@ -1,6 +1,5 @@
 # Kettle
 **Track:** Health
-**Team:** Parth Khavate, Amrutha Sree Murahari, Shaurya Nadagoudra
 
 # The problem
 Millions of older Americans with early memory loss are living completely alone - hours away from the children who love them. They are too busy working or too far away, forcing adults into the painful trap of a weekly call where the parent hides their decline. On the other hand, cameras feel like they're being watched and expensive sensor kits make things worse with false alarm and it reaches a peak where families tune them out. Families that are left blind until a missed warning sign can turn a preventable emergency into a crisis.  
@@ -9,7 +8,7 @@ Millions of older Americans with early memory loss are living completely alone -
 **Our user:** Meera, 34, lives 300 miles from her father Ravi, 79, who has early memory loss and lives alone. At 10 AM she wonders: *What has Dad been up to in the kitchen this morning?*
 
 - **What goes in:** sound from the kitchen goes into a laptop on Ravi's kitchen counter. Ravi says yes on his own screen first and sees exactly what Meera sees.
-- **What comes out:** every 10 seconds, a label with timestamps pops up. It is one of the activities such as cooking, washing up, eating, conversation, etc or if the house is quite or has the TV running in the background. The audio stays in the browser's memory and is overwritten; only labels, scores, times and allowed sound names leave the laptop.
+- **What comes out:** every 10 seconds, a label with timestamps pops up. It is one of the activities such as cooking, washing up, eating, conversation, etc or if the house is quiet or has the TV running in the background. The audio stays in the browser's memory and is overwritten; only labels, scores, times and allowed sound names leave the laptop.
 - **How Meera uses it:** her phone shows a calm day bar with labels, a one-line summary, and the checks she set, such as *"Kitchen activity by 10:00 AM: Met at 8:05 (cooking)"*, *Missed* or *Can't tell*.
 
 # What we added
@@ -34,7 +33,7 @@ Millions of older Americans with early memory loss are living completely alone -
 
 # Results
 <!-- headline:start -->
-**Our model scored 84.1 [74.4, 86.7] on held-out test data while Apple's built-in sound classifier scored 31.8 [25.7, 37.9], nearly 3 times better. Its also far above our baseline of always guessing "Quiet" (5.0 [1.6, 7.8])** We froze the model before testing and scored  it only once on a pre-registered sample of the official DCASE 2018 test set (7,791 ten-second clips from 91 sessions). Because macro F1 averages all the 9 activities equally, the model cannot increase its score by only getting common sounds correct. The brackets represent 95% confidence intervals calculated by resampling the sessions.
+**Our model scored 84.1 [74.4, 86.7] on held-out test data while Apple's built-in sound classifier scored 31.8 [25.7, 37.9], more than 2.5 times higher. It's also far above our baseline of always guessing "Quiet" (5.0 [1.6, 7.8])** We froze the model before testing and scored it only once on a pre-registered sample of the official DCASE 2018 test set (7,791 ten-second clips from 91 sessions). Because macro F1 averages all the 9 activities equally, the model cannot increase its score by only getting common sounds correct. The brackets represent 95% confidence intervals calculated by resampling the sessions.
 <!-- headline:end -->
 
 <!-- results:start -->
@@ -52,7 +51,7 @@ Millions of older Americans with early memory loss are living completely alone -
 
 **Kitchen activity check, held-out:** the top label caught **1,039 of 1,183** kitchen-activity windows (**missed 144**): 87.8% raw, **89.3%** [85.3, 94.1] reweighted. **False alarms** on **41 of 6,608** other windows: 0.62% raw, **0.5%** [0.2, 1.1] reweighted. Counts are raw; reweighted percentages re-scale each activity to the full test set's activity mix (the sample topped rare activities up to at least 50 moments each, which over-represents them), as pre-registered. Computed after the run from its saved predictions (not in the pre-registration).
 
-For context, our development folds which we used to selected the model and are therefore slightly optimistic showed Kettle scoring 85.1 [81.1, 87.4] across 8,920 clips (257 sessions). On a 2,700-clip subset of that development data, Kettle (85.5) also outperformed both a simple logistic regression model using log-mel statistics (79.7) and a 16 times larger AST model using the same classification head (83.0).
+For context, our development folds which we used to select the model and are therefore slightly optimistic showed Kettle scoring 85.1 [81.1, 87.4] across 8,920 clips (257 sessions). On a 2,700-clip subset of that development data, Kettle (85.5) also outperformed both a simple logistic regression model using log-mel statistics (79.7) and a 16 times larger AST model using the same classification head (83.0).
 <!-- results:end -->
 
 **Outside the home it learned from (pre-registered):**
@@ -62,10 +61,10 @@ For context, our development folds which we used to selected the model and are t
 | Head alone | 6.3% [1.4, 11.8] (5 of 79) | 0 of 191 |
 | Head + second opinion (tags), as shipped | **43.0% [25.9, 60.5] (34 of 79)** (tune half: 63.0%) | 0 of 191 |
 
-For comparison, in the research home's held-out test the top label caught 87.8% of kitchen-activity windows (raw; 1,183 windows); in other homes, 43.0% of real-home kitchen clips. The system falis safely rather than crying wolf. When tested on 667 10 second clips, it recognized 615 of them as "unlike anything it learned" and shown as "Not sure", not as a wrong activity. (We ran this test before adding our stretch-naming rules, which only affect which specific activity gets chosen, not whether an activity is detected.)
+For comparison, in the research home's held-out test the top label caught 87.8% of kitchen-activity windows (raw; 1,183 windows); in other homes, 43.0% of real-home kitchen clips. The system fails safely rather than crying wolf. When tested on 667 10 second clips, it recognized 615 of them as "unlike anything it learned" and shown as "Not sure", not as a wrong activity. (We ran this test before adding our stretch-naming rules, which only affect which specific activity gets chosen, not whether an activity is detected.)
 <!-- crosshome:end -->
 
-**A live test in a real kitchen, and the fix.** In a teammate's kitchen, cooking with metal pots showed up as "cooking", and plate clatter showed as "washing up" with a tap running. Each 10-second window had been named from its single loudest kitchen tag. Now a kitchen stretch is named from evidence across all its windows, and every everyday-sound name must pass a bar written before choosing a label. 
+**A live test in a real kitchen, and the fix.** In a teammate's kitchen, cooking with metal pots showed up as "eating", and plate clatter showed as "washing up" with no tap running. Each 10-second window had been named from its single loudest kitchen tag. Now a kitchen stretch is named from evidence across all its windows, and every everyday-sound name must pass a bar written before choosing a label. 
 <!-- accuracy:start -->
 **Naming a kitchen stretch from evidence across its windows (rules 2c, 2d), same events before → after:**
 
@@ -83,7 +82,7 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 | Kettle or a hot drink | 44.0% → 100.0% | 3.02 → 0.0 | 40.9% | 22 / 4,631 | yes |
 | Running water | 67.1% → 95.7% | 5.97 → 0.44 | 62.0% | 71 / 4,525 | yes |
 | Microwave | 54.5% → 82.6% | 0.74 → 0.59 | 90.5% | 21 / 6,794 | hidden |
-| TV or radio | 97.8% → 95.0% | 1.51 → 4.04 | 91.6% | 500 / 5,945 | yes |
+| Talking / TV | 97.8% → 95.0% | 1.51 → 4.04 | 91.6% | 500 / 5,945 | yes |
 
 
 **Where it fails, and why we think so:**
@@ -95,7 +94,7 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
 5. **A TV left on:** TV audio is mostly speech and music, and it masks the quieter kitchen sounds (`results/stress.json`).
 <!-- failures:end -->
 
-*Not part of our claims:* an experimental layer for a few urgent sounds (a smoke alarm, screaming, a crash then a cry) is in the code. 
+**Urgent sounds:** a smoke or CO alarm, a crash then a cry or 2 minutes of stillness, screaming, shouting, a gunshot, or the "I need help" button turns the family's view red and notifies their phone at once. On held-out simulated timelines (60 each, nobody answering) it caught a smoke alarm during cooking 88.3%, a crash then a cry 73.3%, a crash then stillness 71.7% and screaming 83.3%, with **0 false urgent alerts in 12.3 hours** of ordinary home sound (`results/safety.json`). In a live browser test, a smoke alarm turned the family page red 2.8 s after the kitchen screen (`results/e2e_urgent.json`). Limits: the alarms are synthetic tones, the crashes are breaking glass, and we had no gunshot or shouting recordings, so those two have no measured catch rate.
 
 # What we'd do next
 1. **Measure real homes:** record and label our own kitchens (protocol in `docs/REAL-KITCHEN-PROTOCOL.md`), then run a two-week diary study in five consenting households, scored per home.
@@ -121,4 +120,4 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
   - Aside, an AI browser agent, built the web app and gathered the product reviews.
   - REA was our product-teardown tool.
   - What each wrote is in `docs/AI-USAGE-LOG.md`; every module is explained in `docs/EXPLAIN.md`.
-- **Reproduce every number:** `notebooks/kettle_reproduce.ipynb`, `python -m eval.other_homes`, `python -m eval.sounds`, `python tools/export_accuracy.py`.
+- **Reproduce every number:** `notebooks/kettle_reproduce.ipynb`, `python -m eval.other_homes`, `python -m eval.sound_head`, `python tools/export_accuracy.py`.
