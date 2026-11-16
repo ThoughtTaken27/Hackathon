@@ -37,6 +37,19 @@ TAU_MOUTH: float = CFG["tau_mouth"]
 COOK_SHARE: float = CFG["cook_share"]
 
 
+DET = CFG.get("detector")
+TAU_KD: float = DET["tau"] if DET else 1.0
+
+
+def detector(audioset: np.ndarray) -> float:
+    """P(kitchen activity) from all 527 tags (models/witness.json "detector"); 0 when no detector is configured."""
+    if not DET:
+        return 0.0
+    a = np.clip(np.asarray(audioset, dtype=np.float64), 1e-4, 1 - 1e-4)
+    z = float(np.dot(np.log(a / (1 - a)), DET["coef"]) + DET["intercept"])
+    return float(1 / (1 + np.exp(-z)))
+
+
 def opinion(audioset: np.ndarray) -> dict:
     """527 AudioSet probabilities for one window -> {'k', 'family', 'v'} (three numbers and a word; no tag names leave)."""
     fam = [float(audioset[KITCHEN_IDX[f]].max()) for f in FAMILIES]
@@ -44,6 +57,8 @@ def opinion(audioset: np.ndarray) -> dict:
     out = {"k": round(fam[best], 3), "family": FAMILIES[best], "v": round(float(audioset[VETO_IDX].max()), 3)}
     for g, ix in EVIDENCE_IDX.items():                      # three more numbers: cooking, running-water and chewing evidence
         out[g] = round(float(audioset[ix].max()), 3)
+    if DET:
+        out["kd"] = round(detector(audioset), 3)              # one more number: the kitchen detector's probability
     return out
 
 
@@ -109,3 +124,10 @@ def unsupported(label: str, evs: list[dict]) -> bool:
     if not v["has"]:
         return False
     return (label == "dishwashing" and v["water"] == 0) or (label == "eating" and v["mouth"] == 0) or label == "kitchen"
+
+
+def detects(label: str, w: dict | None, kitchen: set[str]) -> bool:
+    """Rule 2f: the head didn't say a kitchen activity, the kitchen detector is sure enough, and no motor or bathroom
+    sound is louder than the kitchen tags (the same guard as the veto). Windows without 'kd' (older data) never fire."""
+    return bool(w) and "kd" in w and label not in kitchen and label not in ("private", "kitchen") and w["kd"] >= TAU_KD \
+        and not (w["v"] >= TAU_V and w["v"] > w["k"])

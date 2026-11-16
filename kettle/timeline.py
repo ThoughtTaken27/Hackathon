@@ -63,6 +63,8 @@ def raw_label(ev: dict, theta: float) -> str:
         # the head had no answer; the tags clearly heard kitchen sounds. Since Sun Nov 15 (rule 2c) the window says only
         # "kitchen"; its stretch is named later from evidence across all its windows. Older windows keep the old family.
         return "kitchen" if "cook" in w else w["family"]
+    if witness.detects(lab, w, MEAL):
+        return "kitchen"                       # rule 2f: the kitchen detector heard kitchen work; the stretch is named from evidence
     return lab
 
 
@@ -100,7 +102,8 @@ def settle(labels: list[str], run: list[dict]) -> list[str]:
 
 def by_sounds(ev: dict, theta: float) -> bool:
     """True when this window's label came from the second opinion, not from the head."""
-    return witness.rescues(head_label(ev, theta), ev.get("w"))
+    lab, w = head_label(ev, theta), ev.get("w")
+    return witness.rescues(lab, w) or (not witness.vetoes(lab, w, MEAL) and witness.detects(lab, w, MEAL))
 
 
 def smooth(labels: list[str]) -> list[str]:

@@ -63,7 +63,9 @@ def test_opinion_reads_only_the_listed_tags():
     a[witness.NAMES.index("Vacuum cleaner")] = 0.2
     a[witness.NAMES.index("Blender")] = 0.99          # deliberately not kitchen evidence
     a[witness.NAMES.index("Speech")] = 0.99
-    assert witness.opinion(a) == {"k": 0.61, "family": "dishwashing", "v": 0.2, "cook": 0.0, "water": 0.0, "mouth": 0.0}
+    o = witness.opinion(a)
+    kd = o.pop("kd")                                   # rule 2f: one kitchen probability, the only number made from all tags
+    assert o == {"k": 0.61, "family": "dishwashing", "v": 0.2, "cook": 0.0, "water": 0.0, "mouth": 0.0} and 0 <= kd <= 1
     k, fam, v = witness.opinions(a[None])
     assert round(float(k[0]), 2) == 0.61 and fam[0] == "dishwashing" and round(float(v[0]), 2) == 0.2
 
@@ -85,3 +87,13 @@ def test_sound_context_rules_python_twin():
         for k in kinds.CFG["kinds"]:
             k["shown"] = shown[k["id"]]
     assert "kettle" not in ids and "tap" not in ids and "frying" in ids
+
+
+def test_kitchen_detector_never_calls_speech_or_tv_kitchen():
+    """Rule 2f reads all 527 tags, so check what matters: voices, TV and music alone can't make a window say kitchen."""
+    from eval.kitchen_detector import PROBES
+    for names in PROBES:
+        a = np.full(527, 0.001, np.float32)
+        for n in names:
+            a[witness.NAMES.index(n)] = 0.9
+        assert witness.opinion(a)["kd"] < witness.TAU_KD, names
