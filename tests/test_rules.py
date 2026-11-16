@@ -1,6 +1,6 @@
 """Caregiver checks on scripted days. The safety property: not listening -> "Can't tell", never "Missed" or "Met"."""
 from kettle import rules, timeline
-from tests.helpers import run_of
+from tests.helpers import run_of, unheard
 
 TH = 0.5
 DAY0 = 0.0          # local midnight (tz offset 0 for the tests)
@@ -92,7 +92,7 @@ def test_never_started_says_nothing_heard_yet():
 
 
 def test_unnamed_sounds_before_deadline_say_so_not_heard_nothing():
-    ev = day(run_of(6 * H, "absence", 20, dur=600), run_of(int(9.4 * H), "cooking", 6, conf=0.3, dur=300),
+    ev = day(run_of(6 * H, "absence", 20, dur=600), unheard(run_of(int(9.4 * H), "cooking", 6, conf=0.3, dur=300)),
              run_of(int(10.5 * H), "cooking", 3, dur=300))
     r = state(KITCHEN, blocks(ev, 11 * H), 11 * H)
     assert r["state"] == "missed" and r["detail"].startswith("No clear kitchen activity by 10:00 AM.")

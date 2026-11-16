@@ -175,7 +175,9 @@ function renderResults(box, r) {
   // not sure + off-list
   const ns = d.not_sure, off = r.offlist;
   const nsBox = el("div", { class: "stack" },
-    el("p", { text: `Below ${Math.round(ns.theta * 100)}% confidence Kettle says "Not sure" instead of guessing. On development clips that leaves ${ns.coverage_metric.value.toFixed(0)}% of windows labelled, and those labels are right ${ns.shown_precision_metric.value.toFixed(0)}% of the time.` }));
+    el("p", { text: `Below ${Math.round(ns.theta * 100)}% confidence Kettle won't name an activity. On development clips that leaves ${ns.coverage_metric.value.toFixed(0)}% of windows named, and those names are right ${ns.shown_precision_metric.value.toFixed(0)}% of the time.` }),
+    // results/describe_rule.json (rule 2e, Sun Nov 15): measured once on the held-out test clips
+    el("p", { text: `When it can't name the activity but still heard an everyday sound (typing, a door, footsteps, pots), it says "Some activity" instead of "Not sure". On 7,791 held-out test windows that cut "Not sure" from 16.3% to 3.6%; 476 of the 534 windows it turned into "Some activity" really had someone doing something. Fan hum, room noise and the TV never count as activity.` }));
   if (d.novelty) nsBox.append(el("p", { text: `It also says "Not sure" when a sound is unlike all 9 activities it learned (${d.novelty.flagged_in_distribution.value.toFixed(0)}% of development windows get flagged this way).` }));
   if (off && off.confident_wrong) nsBox.append(el("p", { text: `On ${off.n} sounds that aren't household activities at all (dogs, sirens, rain, alarm clocks, noise, silence), Kettle gave a confident label to ${pct(off.confident_wrong)} (95% CI ${ci(off.confident_wrong)}). Without the "unlike anything it learned" check it would have been ${pct(off.confident_wrong_without_novelty_gate)}. Every one of those labels would have been wrong.` }));
   const sl = d.session_level;

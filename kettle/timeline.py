@@ -66,6 +66,38 @@ def raw_label(ev: dict, theta: float) -> str:
     return lab
 
 
+# Rule 2e (Sun Nov 15, owner's call after a real room showed "Not sure" over typing, a tap and writing the sound tags had
+# named correctly). Activity names still need theta. A window still "not_sure" after smoothing and bridging becomes "other"
+# ("Some activity") when a person-made everyday sound was heard, "talk_or_tv" when only TV/radio/music was clear,
+# "absence" when nothing was heard and the head leans quiet; otherwise it stays "not_sure". Hum and media never count as
+# activity, so a fan or a TV left on can't meet an "activity by 10 AM" check. Mirrors web/public/js/core.js describe().
+TAU_HEARD = 0.03                   # results/describe_rule.json
+QUIET_LEAN = 0.4
+AMBIENT = {"Silence", "Rustle", "Mechanical fan", "Air conditioning", "Wind", "Rain", "Bird", "Traffic noise, roadway noise", "Tick-tock", "Clock"}
+MEDIA = {"Television", "Radio", "Music", "Background music", "Theme music", "Soundtrack music", "Jingle (music)", "Applause",
+         "Cheering", "Crowd"}
+
+
+def describe(ev: dict) -> str:
+    """What a window Kettle couldn't name still honestly says (rule 2e)."""
+    if ev.get("private"):
+        return "private"
+    loud = [x for x in ev.get("sounds") or [] if x["score"] >= TAU_HEARD]
+    w = ev.get("w") or {}
+    if ev.get("kinds") or any(x["name"] not in AMBIENT and x["name"] not in MEDIA for x in loud) \
+            or max(w.get("k", 0), w.get("v", 0)) >= TAU_HEARD:
+        return "other"
+    if any(x["name"] in MEDIA for x in loud):
+        return "talk_or_tv"
+    p = ev.get("probs") or {}
+    top = sorted(p, key=p.get, reverse=True)[0] if p else None
+    return "absence" if top == "absence" and p["absence"] >= QUIET_LEAN else "not_sure"
+
+
+def settle(labels: list[str], run: list[dict]) -> list[str]:
+    return [describe(run[i]) if lab == "not_sure" else lab for i, lab in enumerate(labels)]
+
+
 def by_sounds(ev: dict, theta: float) -> bool:
     """True when this window's label came from the second opinion, not from the head."""
     return witness.rescues(head_label(ev, theta), ev.get("w"))
@@ -249,7 +281,7 @@ def blocks(events: list[dict], theta: float, pauses: list = (),
         labs = smooth([raw_label(e, theta) for e in run])
         if hold_last and r == len(all_runs) - 1:        # rule 5: the newest window isn't settled yet; its neighbour
             labs, run = labs[:-1], run[:-1]             # already used it for 2-of-3, and bridging must not lean on it
-        labs = name_stretches(bridge(labs, run, bridge_s), run)
+        labs = settle(name_stretches(bridge(labs, run, bridge_s), run), run)   # rule 2e last
         n = len(run)
         i = 0
         while i < n:
