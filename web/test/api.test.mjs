@@ -241,3 +241,17 @@ test("v3.5: the server makes one push key and serves only its public half", asyn
   assert.equal(r.body.publicKey, keys.publicKey);
   assert.equal(r.body.privateJwk, undefined);
 });
+
+test("one code connects several devices; each is recorded under the name it was given", async () => {
+  const { env } = memEnv();
+  const c = await call(env, "POST", "/api/households", { parent: "Papa", caregiver: "Asha", tz: "UTC", as: "family" });
+  const a = await call(env, "POST", "/api/pair", { code: c.body.code, name: "Kitchen laptop" });
+  const b = await call(env, "POST", "/api/pair", { code: c.body.code, name: "  Living room tablet with a very long name indeed  " });
+  const old = await call(env, "POST", "/api/pair", { code: c.body.code });                  // an older client: no name, still pairs
+  assert.equal(a.status, 200); assert.equal(b.status, 200); assert.equal(old.status, 200);
+  assert.equal(a.body.key, b.body.key, "same home, same role");
+  assert.ok(a.body.deviceId && b.body.deviceId && a.body.deviceId !== b.body.deviceId);
+  const st = await call(env, "GET", `/api/h/${c.body.id}/state`, null, c.body.familyKey);
+  assert.deepEqual(st.body.state.devices.map((d) => [d.name, d.role]), [["Kitchen laptop", "kitchen"], ["Living room tablet with", "kitchen"]]);
+  assert.equal((await call(env, "POST", `/api/h/${c.body.id}/joined`, { name: " " }, a.body.key)).status, 400);
+});

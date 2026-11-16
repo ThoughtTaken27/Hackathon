@@ -108,7 +108,7 @@ export const SAFETY_TYPES = ["smoke", "co", "gunshot", "fall", "fall_still", "sc
 // Handover v3.5, 3.2: the family is told at once ("asking": the kitchen screen is asking "Are you OK?" right now), then the same
 // alert (same time, same id) is updated when the person answers ("ok", "help") or doesn't ("no_answer"). "none" = no check-in.
 export const CHECKIN_STATES = ["asking", "ok", "help", "no_answer", "none"];
-const MAX_ALERTS = 20, MAX_PUSH = 10;
+const MAX_ALERTS = 20, MAX_PUSH = 10, MAX_DEVICES = 20;
 
 export async function handle(store, { method, route, key, body, now }) {
   const s = await store.getState();
@@ -217,6 +217,16 @@ export async function handle(store, { method, route, key, body, now }) {
     if (!(s.push || []).length) return { status: 409, body: { error: "Turn on alerts on this phone first." } };
     const r = await done(200, { subscribed: s.push.length });
     return { ...r, notify: { test: true, at: now, tz: s.tz, names: s.names } };
+  }
+  // A device joined with a pairing code and the name its owner gave it ("Kitchen laptop", "Mum's tablet"). One code works for any
+  // number of devices for 48 hours; each one is listed here so the family can see what is connected.
+  if (method === "POST" && route === "joined") {
+    const name = typeof body?.name === "string" ? body.name.trim().slice(0, MAX_NAME).trim() : "";
+    if (!name) return { status: 400, body: { error: "Give this device a name first." } };
+    const dev = { id: randomId(8), name, role, at: now };
+    s.devices = [...(s.devices || []), dev].slice(-MAX_DEVICES);
+    changed = true;
+    return done(200, { deviceId: dev.id });
   }
   if (method === "POST" && route === "names") {
     s.names = { parent: cleanName(body?.parent, s.names.parent), caregiver: cleanName(body?.caregiver, s.names.caregiver),

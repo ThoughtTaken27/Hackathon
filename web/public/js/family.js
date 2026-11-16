@@ -248,7 +248,7 @@ async function drawInvite() {
     el("p", { class: "step-k", text: `Next: connect the ${R} device` }),
     el("h2", { class: "section-title", text: `On ${n.possMid} ${R} device, go to ${location.host}/listen and type` }),
     code ? el("p", { class: "code-big num", html: `${code.slice(0, 3)}<span> </span>${code.slice(3)}` }) : null,
-    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the ${R}.` }),
+    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the ${R}. The code works on more than one device for 48 hours; each is asked for a name first.` }),
     el("div", { class: "linkbox" }, el("code", { text: url }), el("button", { class: "btn", type: "button", text: "Copy link", onclick: () => copy(url) }))));
 }
 
@@ -308,6 +308,18 @@ $("#menu-btn")?.addEventListener("click", async () => {
     el("p", { class: "meta muted", text: "They get the same view. Send them this link, or let them scan the code." }));
   const famUrl = linkFor("family", link.id, link.key);
   body.append(el("div", { class: "linkbox" }, el("code", { text: famUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(famUrl) })));
+  // or a six-letter code: any number of phones can use it for 48 hours (each one is asked for a name first, at /pair)
+  const famCode = el("p", { class: "meta", style: "margin-top:10px" });
+  body.append(famCode);
+  api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "family", key: link.key } })
+    .then((r) => { famCode.textContent = `Or on their phone go to ${location.host}/pair and type ${r.code.slice(0, 3)} ${r.code.slice(3)}. Any number of phones can use this code for 48 hours.`; })
+    .catch(() => {});
+  const devs = (srv.devices || []).slice().reverse();
+  body.append(el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
+    el("p", { class: "panel-h", text: "Devices in this home" }),
+    devs.length ? el("ul", { class: "plain", style: "margin:6px 0 0;padding:0;list-style:none" }, ...devs.map((d) => el("li", { class: "meta", style: "padding:4px 0" },
+      el("strong", { text: d.name }), ` · ${d.role === "kitchen" ? "listens in the room" : "family view"} · added ${clock(d.at, t ? t.tz_offset : 0)}`)))
+      : el("p", { class: "meta muted", text: "Devices that join with a code appear here by the name they were given." }));
   qr(famUrl, 152).then((q) => { q.style.marginTop = "14px"; q.style.justifySelf = "start"; body.insertBefore(q, del); });
   const del = el("div", {}, el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
     el("p", { class: "panel-h", text: "Delete this home" }),
