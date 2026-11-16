@@ -10,7 +10,8 @@ const NAMES = { parent: "someone at home", caregiver: "You" };   // the landing 
 
 // ---------- nav frosts once you scroll
 const nav = $("#nav");
-const onScroll = () => nav.classList.toggle("solid", scrollY > 24);
+let solid = null;
+const onScroll = () => { const v = scrollY > 24; if (v !== solid) { solid = v; nav.classList.toggle("solid", v); } };
 addEventListener("scroll", onScroll, { passive: true }); onScroll();
 const mine = Object.values(homes()).sort((a, b) => b.saved - a.saved)[0];
 if (mine) { const a = $("#nav-home"); a.href = mine.familyKey ? "/family" : "/kitchen"; a.textContent = mine.familyKey ? "Open your timeline" : "Room screen"; }
@@ -102,15 +103,28 @@ function show(i, user = false) {
   flowUI.classList.remove("swap"); void flowUI.offsetWidth; flowUI.classList.add("swap");
   if (flowFrames) { flowFrames.stop(); flowFrames = null; }
   if (i === 3) play("usual", (t) => { flowBar && flowBar.render(t); const s = $("#su-sum"); if (s) s.textContent = t.summary; const r = $("#su-rules"); if (r) rulesList(r, t.rules); }, { seconds: 4, names: NAMES }).then((p) => (flowFrames = p));
+  arm();
+}
+// Auto-advance only while the steps are actually on screen and the tab is visible. It starts on step 1 the first time the
+// block is properly in view (not when its first pixel scrolls in), freezes (bar included) when it leaves, and resumes the
+// current step from the start when it comes back. No hover pause: on a Mac the cursor rests over the list while scrolling,
+// which made it look stuck.
+let flowVisible = false;
+function arm() {
   clearTimeout(timer);
-  if (!RM) timer = setTimeout(() => show((cur + 1) % views.length), STEP_MS);
-  if (user) accBox.classList.remove("paused");
+  const live = flowVisible && !document.hidden && !RM;
+  accBox.classList.toggle("paused", !live);
+  if (live) timer = setTimeout(() => show((cur + 1) % views.length), STEP_MS);
 }
 accs.forEach((a, i) => a.addEventListener("click", () => show(i, true)));
-accBox.addEventListener("pointerenter", () => { accBox.classList.add("paused"); clearTimeout(timer); });
-accBox.addEventListener("pointerleave", () => { accBox.classList.remove("paused"); clearTimeout(timer); if (!RM) timer = setTimeout(() => show((cur + 1) % views.length), STEP_MS / 2); });
+show(0); accBox.classList.add("paused"); clearTimeout(timer);           // step 1 is waiting before anyone arrives
 let flowStarted = false;
-new IntersectionObserver((es) => es.forEach((x) => { if (x.isIntersecting && !flowStarted) { flowStarted = true; show(0); } })).observe($("#how"));
+new IntersectionObserver((es) => es.forEach((x) => {
+  flowVisible = x.isIntersecting;
+  if (flowVisible && !flowStarted) { flowStarted = true; show(0); return; }
+  if (flowVisible) show(cur); else arm();
+}), { rootMargin: "0px 0px -35% 0px" }).observe($(".lx-flow"));   // "in view" = its top has passed 65% of the screen; works however tall the block is on a phone
+document.addEventListener("visibilitychange", () => (document.hidden ? arm() : flowVisible && show(cur)));
 
 // ---------- two screens: the real kitchen screen and family view in device frames
 const K = $("#kitchen-canvas"), F = $("#family-canvas");
@@ -192,7 +206,16 @@ new IntersectionObserver((es, o) => es.forEach((x) => { if (x.isIntersecting) { 
 // hero: the sky drifts slower than the page, the copy lifts away, the live panel tilts up to meet you
 const heroBg = $(".lx-hero-bg"), heroIn = $(".lx-hero-in"), panelWrap = $(".lx-panel-wrap");
 const stageIn = $(".stage-in"), finalSec = $(".lx-final");
-const why = scrub($(".lx-why-text .lx-scrub"));
+const whyBlock = $(".lx-why-text .lx-scrub"), why = scrub(whyBlock);
+// Speed: a scroll frame does no layout reads. Element tops come from offsetTop (which ignores the transforms we set), are
+// cached, and are re-measured only when the page's size changes. Before this, each frame wrote a transform and then read a
+// rect, four times over, so the browser re-ran layout up to four times per frame.
+const absTop = (n) => { let t = 0; for (; n; n = n.offsetParent) t += n.offsetTop; return t; };
+let tops = {};
+const measure = () => { tops = { panel: absTop(panelWrap), why: absTop(whyBlock), stage: absTop(stageIn) }; };
+measure(); new ResizeObserver(() => { measure(); }).observe(document.body);
+const prog = (top, start, end) => { const vh = innerHeight; return Math.min(1, Math.max(0, (start * vh - (top - scrollY)) / ((start - end) * vh))); };
+let lastStage = "";
 onScrollFrame(() => {
   if (RM) return;
   const y = scrollY;
@@ -202,14 +225,13 @@ onScrollFrame(() => {
     const f = Math.min(1, y / 520);
     heroIn.style.opacity = (1 - f).toFixed(3);
     heroIn.style.transform = `translate3d(0, ${(-y * 0.12).toFixed(1)}px, 0)`;
-    const p = progress(panelWrap, 1.0, 0.25);
+    const p = prog(tops.panel, 1.0, 0.25);
     panelWrap.style.transform = `perspective(1800px) rotateX(${((1 - p) * 14).toFixed(2)}deg) scale(${(0.94 + p * 0.06).toFixed(4)})`;
   }
-  why();
-  const ps = progress(stageIn, 1.05, 0.35);
-  stageIn.style.transform = `perspective(2000px) rotateX(${((1 - ps) * 9).toFixed(2)}deg) translate3d(0, ${((1 - ps) * 40).toFixed(1)}px, 0)`;
-  const pf = progress(finalSec, 1.2, -0.2);
-  finalSec.style.setProperty("--fy", `${((pf - 0.5) * -60).toFixed(1)}px`);
+  why(prog(tops.why, 0.88, 0.32));
+  const ps = prog(tops.stage, 1.05, 0.35);
+  const st = `perspective(2000px) rotateX(${((1 - ps) * 9).toFixed(2)}deg) translate3d(0, ${((1 - ps) * 40).toFixed(1)}px, 0)`;
+  if (st !== lastStage) { stageIn.style.transform = st; lastStage = st; }   // settled once it's flat; no writes while it sits there
 });
 
 // nav: the section you're reading lights up

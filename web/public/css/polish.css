@@ -230,7 +230,7 @@
 
 /* Fitts: small targets get a bigger invisible hit area */
 .lx-links a { position: relative; }
-.lx-links a::after { content: ""; position: absolute; inset: -12px -8px; }
+.lx-links a::before { content: ""; position: absolute; inset: -12px -8px; }   /* hit area; ::after is the active dot */
 .lp-fam .ro-step, .f-mini.fam .ro-step { position: relative; }
 .lp-fam .ro-step::after, .f-mini.fam .ro-step::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
 
@@ -243,4 +243,27 @@
 @media (prefers-reduced-motion: reduce) {
   .ej > img, .hj img, .ej-sw img { opacity: 1; transform: none; transition: none; animation: none !important; }
   .swash path { stroke-dashoffset: 0; transition: none; }
+}
+
+.su-btn.ghost { background: rgba(28,25,23,0.05); color: var(--ink) !important; }
+
+/* =================================================================== speed pass
+   1) The nav no longer frosts with a live backdrop blur (it re-blurred the page under it on every scroll frame);
+      a near-opaque fill with a hairline looks the same on this light page.
+   2) Big blocks (cards, the how-it-works panel, the two screens, numbers, FAQ rows) arrive on opacity + transform only.
+      Blurring a large layer re-rasterises it every frame of the transition, right while you scroll. Blur stays only
+      on small things: the hero's words and section-heading words.
+   3) The closing scene no longer moves its background-position on scroll (a full repaint each frame). */
+.lx-nav.solid { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: rgba(250,250,249,.94) !important; }
+.lx-sec .lx-sec-head, .lx-flow, .lx-cards, .lx-stage, .lx-numbers, .lx-faq-grid, .lx-why-in,
+.lx-cards > *, .lx-numbers > div, .lx-faq details { filter: none !important; }
+.lx-flow, .lx-stage, .lx-faq-grid, .lx-why-in { transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out) !important; }
+.seen .lx-flow, .seen .lx-stage { transition-delay: 80ms !important; }
+
+/* phones: the credits line reads as one centred sentence, and the footer stacks (logo, links, note) instead of wrapping ragged */
+@media (max-width: 600px) {
+  .lx-built-k { display: block; text-align: center; text-wrap: balance; padding: 0 12px; line-height: 1.55; }
+  .lx-built-k a { white-space: nowrap; }
+  .lx-foot-in { grid-template-columns: 1fr; gap: 14px; }
+  .lx-foot nav { justify-content: flex-start; gap: 8px 18px; }
 }
