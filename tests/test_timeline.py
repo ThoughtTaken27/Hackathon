@@ -1,6 +1,6 @@
 """Day-bar rules: not sure, talk-or-TV, 2-of-3 smoothing, merging, gaps and pauses; summary facts == blocks."""
 from kettle import timeline
-from tests.helpers import ev, run_of
+from tests.helpers import ev, run_of, unheard
 
 TH = 0.5
 
@@ -66,12 +66,12 @@ def test_summary_facts_equal_blocks():
 
 
 def test_summary_never_invents_activity_from_quiet_or_not_sure():
-    b = timeline.blocks(run_of(0, "absence", 4) + run_of(40, "cooking", 4, conf=0.3), TH)
+    b = timeline.blocks(run_of(0, "absence", 4) + unheard(run_of(40, "cooking", 4, conf=0.3)), TH)
     assert timeline.summary(b, 0, listening_since=0).startswith("No kitchen activity heard yet today.")
 
 
 def _unsure_gap(start: float, n: int) -> list[dict]:
-    return [ev(start + i * 10, "cooking", conf=0.3) for i in range(n)]       # below θ -> "not_sure"
+    return unheard([ev(start + i * 10, "cooking", conf=0.3) for i in range(n)])   # below θ, nothing placeable -> "not_sure"
 
 
 def test_short_not_sure_gap_inside_one_activity_is_bridged():
@@ -122,3 +122,25 @@ def test_rule_2d_absorbs_a_short_unsupported_washing_up_flip_into_cooking():
     acts = lambda evs: [b["activity"] for b in timeline.blocks(evs, 0.66) if b["state"] == "activity"]
     assert acts([fry(0), fry(10), fry(20), plate(30), plate(40), fry(50), fry(60), fry(70)]) == ["cooking"]
     assert acts([fry(0), fry(10), fry(20), tap(30), tap(40), fry(50), fry(60), fry(70)]) == ["cooking", "dishwashing", "cooking"]
+
+
+def test_rule_2e_heard_sounds_say_some_activity_not_not_sure():
+    """Sun Nov 15, owner's call: typing, a tap and writing were named correctly, yet the bar said "Not sure"."""
+    typing = [dict(e, sounds=[{"name": "Silence", "score": 0.22}, {"name": "Typing", "score": 0.046}, {"name": "Writing", "score": 0.037}])
+              for e in run_of(0, "absence", 4, conf=0.35)]          # head leans quiet, below any theta used here
+    assert [(x["state"], x["activity"]) for x in timeline.blocks(typing, TH)] == [("activity", "other")]
+
+
+def test_rule_2e_hum_and_media_never_count_as_activity():
+    hum = [dict(e, sounds=[{"name": "Silence", "score": 0.3}, {"name": "Rustle", "score": 0.09}, {"name": "Mechanical fan", "score": 0.2}])
+           for e in run_of(0, "cooking", 4, conf=0.3)]
+    assert [x["state"] for x in timeline.blocks(hum, TH)] == ["not_sure"]
+    tv = [dict(e, sounds=[{"name": "Television", "score": 0.2}]) for e in run_of(0, "cooking", 4, conf=0.3)]
+    assert [x["state"] for x in timeline.blocks(tv, TH)] == ["talk_or_tv"]
+    quiet = [dict(e, sounds=[{"name": "Silence", "score": 0.4}]) for e in run_of(0, "absence", 4, conf=0.5)]
+    assert [x["state"] for x in timeline.blocks(quiet, TH)] == ["empty"]
+
+
+def test_rule_2e_some_activity_never_meets_a_kitchen_check():
+    b = timeline.blocks(run_of(0, "cooking", 4, conf=0.3), TH)          # unsure head, pots heard -> "Some activity"
+    assert [x["activity"] for x in b] == ["other"] and not any(x["activity"] in timeline.MEAL for x in b)

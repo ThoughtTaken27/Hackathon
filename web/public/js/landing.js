@@ -1,5 +1,5 @@
 // Kettle landing (dark): a live sample day in the hero panel, interactive steps, both real screens, numbers from results.json.
-import { DISPLAY, COLOUR, KIND_NAMES, clock, rawLabel } from "./core.js";
+import { DISPLAY, COLOUR, KIND_NAMES, clock, rawLabel, describe } from "./core.js";
 import { $, el, setText, dayBar, legend, readout, rulesList, homes, reduceMotion, emoji } from "./ui.js";
 import { play } from "./sample.js";
 import { place } from "./people.js";
@@ -36,7 +36,9 @@ function runSteps() {
 }
 // One row of "What Kettle heard": time, colour, label, the named everyday sound (the same allow-list the family sees), confidence.
 function heardRow(x, t) {
-  const lab = rawLabel(x, 0.66), ns = lab === "not_sure";       // the same rule the day bar uses
+  let lab = rawLabel(x, 0.66);
+  if (lab === "not_sure") lab = describe(x);                  // rule 2e, the same as the day bar
+  const ns = lab === "not_sure";
   const name = ns ? "Not sure" : lab === "talk_or_tv" ? "Talking / TV" : DISPLAY[lab];
   const sound = (x.kinds || []).map((k) => KIND_NAMES[k]).filter(Boolean)[0] || "";
   return el("li", { class: (ns ? "ns " : "") + "enter", "data-k": String(x.end) },

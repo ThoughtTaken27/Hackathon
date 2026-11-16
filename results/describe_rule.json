@@ -1,0 +1,9 @@
+{
+  "rule": "2e describe (kettle/timeline.py describe, web/public/js/core.js describe): a window still Not sure after smoothing and bridging says Some activity if a person-made allow-listed sound >= 0.03 was heard (hum incl. Rustle, and media excluded), Talking / TV if only TV/radio/music, Quiet if the head leans quiet >= 0.4, else Not sure. Activity names still need theta = 0.66.",
+  "tau_heard": 0.03, "quiet_lean": 0.4, "ambient_added": ["Rustle"],
+  "measured": "single windows (channel 0, before smoothing), ced-tiny cached embeddings + AudioSet scores; tuned on dev, eval touched once",
+  "dev_in_sample_head": {"n": 8920, "not_sure_before_pct": 10.7, "not_sure_after_pct": 2.4, "some_activity_truly_active_pct": 92, "note": "head was trained on these clips; Rustle-as-hum chosen here (79% -> 92% truly active)"},
+  "eval_held_out": {"n": 7791, "not_sure_before_pct": 16.3, "not_sure_after_pct": 3.6,
+    "some_activity": {"n": 534, "truly_active": 476}, "quiet": {"n": 263, "truly_quiet": 209}, "talk_or_tv": {"n": 196, "truly_talk_or_tv": 189}},
+  "when": "Sun Nov 15 2026 ~7:45 PM CT", "script": "/tmp measure script, logic mirrored in this file's rule text"
+}

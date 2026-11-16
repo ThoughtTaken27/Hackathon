@@ -15,3 +15,8 @@ def ev(start: float, label: str, conf: float = 0.9, dur: float = 10.0, second: s
 
 def run_of(start: float, label: str, n: int, conf: float = 0.9, dur: float = 10.0) -> list[dict]:
     return [ev(start + i * dur, label, conf, dur) for i in range(n)]
+
+
+def unheard(evs: list[dict]) -> list[dict]:
+    """The same windows with nothing the sound tags can place (rule 2e keeps these "not_sure")."""
+    return [dict(e, sounds=[]) for e in evs]

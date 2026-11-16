@@ -165,6 +165,28 @@ export function rawLabel(ev, theta) {
   return lab;
 }
 export const bySounds = (ev, theta) => rescues(headLabel(ev, theta), ev.w);
+// Rule 2e (kettle/timeline.py describe; Sun Nov 15, owner's call after a real room showed "Not sure" over typing, a tap and
+// writing that the sound tags had named correctly). Activity names still need theta, so nothing here makes a new activity
+// claim. A window still "Not sure" after smoothing and bridging becomes:
+//   "Some activity" (other) when a person-made everyday sound was heard (a named sound type, or a shown sound >= TAU_HEARD
+//     that isn't background hum or media; the second opinion's kitchen/motor tag counts too);
+//   "Talking / TV" when the only clear sounds were TV, radio or music;
+//   "Quiet" when nothing was heard and the head leans quiet (>= QUIET_LEAN);
+//   otherwise it stays "Not sure": the head can't decide and nothing it can place was heard.
+// Hum and media never count as activity, so a fan or a TV left on can't meet an "activity by 10 AM" check.
+export const TAU_HEARD = 0.03, QUIET_LEAN = 0.4;   // results/describe_rule.json
+export const AMBIENT = new Set(["Silence", "Rustle", "Mechanical fan", "Air conditioning", "Wind", "Rain", "Bird", "Traffic noise, roadway noise", "Tick-tock", "Clock"]);
+export const MEDIA = new Set(["Television", "Radio", "Music", "Background music", "Theme music", "Soundtrack music", "Jingle (music)", "Applause", "Cheering", "Crowd"]);
+export function describe(ev) {
+  if (ev.private) return "private";
+  const loud = (ev.sounds || []).filter((x) => x.score >= TAU_HEARD);
+  const w = ev.w || {};
+  if ((ev.kinds || []).length || loud.some((x) => !AMBIENT.has(x.name) && !MEDIA.has(x.name)) || Math.max(w.k || 0, w.v || 0) >= TAU_HEARD) return "other";
+  if (loud.some((x) => MEDIA.has(x.name))) return "talk_or_tv";
+  const p = ev.probs || {}, top = Object.keys(p).sort((a, b) => p[b] - p[a])[0];
+  return top === "absence" && p.absence >= QUIET_LEAN ? "absence" : "not_sure";
+}
+export const settle = (labels, run) => labels.map((lab, i) => (lab === "not_sure" ? describe(run[i]) : lab));
 export function smooth(labels) {
   return labels.map((lab, i) => {
     if (i === 0 || i === labels.length - 1) return lab;
@@ -261,7 +283,7 @@ export function blocks(events, theta, { pauses = [], listeningFrom = null, now =
   allRuns.forEach((full, r) => {
     let labs = smooth(full.map((e) => rawLabel(e, theta))), run = full;
     if (holdLast && r === allRuns.length - 1) { labs = labs.slice(0, -1); run = full.slice(0, -1); }
-    labs = nameStretches(bridge(labs, run, bridgeS), run);
+    labs = settle(nameStretches(bridge(labs, run, bridgeS), run), run);   // rule 2e last: bridging still sees the gaps
     let i = 0;
     while (i < run.length) {
       let j = i;
@@ -719,6 +741,7 @@ export function blockView(b, off, names) {
       out.how_sure = "medium";
       out.card = `${DISPLAY[b.activity]} · ${rng} · ${b.n_windows} windows · how sure: medium · named from general kitchen sounds, because this room sounds unlike the home Kettle learned in`;
     }
+    if (b.activity === "other") out.card = `Some activity · ${rng} · Kettle heard everyday sounds here, but no single activity stood out.`;
   } else if (b.state === "not_sure") {
     const g = b.guesses.map((x) => `${DISPLAY[x.activity]} ${fmt2(x.p)}`).join(" · ");
     out.card = `Not sure · ${rng} · Kettle heard something but couldn't tell what: ${WHY_TEXT[b.why || "low"]}. Closest guesses: ${g}.`;
@@ -736,6 +759,7 @@ export function chipText(ev, theta, now, live) {
   if (!ev || !live || now - ev.end > 15) return null;
   let lab = rawLabel(ev, theta);               // the same rule as the day bar, so the chip never disagrees with it
   if (lab === "kitchen") lab = nameKitchen([ev]);   // rule 2c on this one window
+  if (lab === "not_sure") lab = describe(ev);       // rule 2e on this one window
   return { not_sure: "Not sure what that is", absence: "Quiet", talk_or_tv: "Sounds like talking / TV" }[lab] || `Sounds like ${PHRASE[lab]}`;
 }
 
