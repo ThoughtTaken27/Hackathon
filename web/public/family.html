@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="/css/type.css?v=h11">
 <link rel="stylesheet" href="/css/family.css?v=h11">
 <script src="/js/chrome.js?v=w7" defer></script>
-<link rel="stylesheet" href="/css/urgent.css?v=u1">
+<link rel="stylesheet" href="/css/urgent.css?v=u4">
 </head>
 <body>
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
@@ -24,6 +24,7 @@
   <button class="btn" type="button" id="menu-btn" aria-haspopup="dialog">Settings</button>
 </div></nav>
 <main class="page fam enter" id="app">
+  <nav class="homes" id="homes" aria-label="Whose home"></nav>
   <header class="fam-head">
     <p class="fam-date" id="date"></p>
     <h1 class="fam-title" id="title">Today</h1>
@@ -43,6 +44,8 @@
       <p class="privacy-line">Only these labels leave the room. Never audio. <a href="/how-sure#privacy">How we check</a></p>
     </div>
   </section>
+  <section id="rooms" class="rooms" aria-label="Each room" hidden></section>
+  <section id="devices" class="devices" aria-label="Connected devices" hidden></section>
   <div class="fam-grid">
     <section id="push" class="fam-sec push-sec" aria-label="Urgent alerts on this phone"></section>
     <section aria-labelledby="checks-h" class="fam-sec">
@@ -94,6 +97,6 @@
   <h2 id="settings-h">Settings</h2>
   <div id="settings-body"></div>
 </div>
-<script type="module" src="/js/family.js?v=u1"></script>
+<script type="module" src="/js/family.js?v=u4"></script>
 </body>
 </html>

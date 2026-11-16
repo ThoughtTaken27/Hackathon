@@ -38,6 +38,9 @@ def main() -> int:
                 pg.on("pageerror", lambda e, w=who: errors.append(f"{w}: {e}"))
             fam.goto(f"{BASE}/family#f={hid}.{fkey}")
             kit.goto(f"{BASE}/kitchen#k={hid}.{kitchen_key}")
+            if kit.get_by_label("Device name").count():               # v3.6: name this device first
+                kit.get_by_role("button", name="Kitchen laptop").click()
+                kit.get_by_role("button", name="Next").click()
             kit.get_by_role("button", name="Next").click()
             kit.get_by_role("button", name="Yes, Asha can see this").click()
             kit.wait_for_timeout(1000)

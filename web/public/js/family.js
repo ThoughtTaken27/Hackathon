@@ -4,6 +4,7 @@ import { TEXT as SAFETY_TEXT } from "./safety.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, readout, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 import { pushSupport, subscribe, currentSubscription, unsubscribe, registerSW } from "./pushclient.js";
+import { ROOMS } from "./people.js";
 
 // a notification opens /family?h=<home>[&ack=<alert>]: pick that home (the key stays in this browser), then clean the address
 const qs = new URLSearchParams(location.search);
@@ -55,7 +56,9 @@ async function poll() {
     events = [...m.values()].sort((a, b) => a.end - b.end).filter((e) => e.end > now() - 36 * 3600);
     const sig = JSON.stringify(r.state) + "|" + events.length + "|" + (events.length ? events[events.length - 1].end : 0);
     srv = r.state; failures = 0;
-    saveHome(link.id, { parent: srv.names.parent, caregiver: srv.names.caregiver });
+    const room = srv.names.room || {};
+    saveHome(link.id, { parent: srv.names.parent, caregiver: srv.names.caregiver, room: room.type === "other" ? room.name : (ROOMS[room.type] || ROOMS.kitchen).label,
+      ...(homes()[link.id] && homes()[link.id].first ? {} : { first: Date.now() }) });
     if (sig !== lastSig || Date.now() - lastDraw > 14000) { lastSig = sig; draw(); }
   } catch (e) {
     if (e.status === 403 || e.status === 404) return gone(e.message);
@@ -93,6 +96,9 @@ function draw() {
   for (const h of t.heard) heard.append(el("li", { text: `${h.name}: ${h.text}${h.n > 1 ? ` (${h.n}×)` : ""}` }));
   $("#heard-sec").hidden = !t.heard.length;
   drawUrgent(n);
+  drawHomes();
+  drawRooms();
+  drawDevices(n);
   if (!pushDrawn) { pushDrawn = true; drawPush(); }
   drawWeek();
   $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
@@ -210,6 +216,72 @@ function drawWeek() {
     el("span", { class: "k", text: r.kettle ? `Kettle ${r.kettle}` : "" })));
 }
 
+/** One person, several rooms: when more than one listening device joined this home (one code, each named), each gets its own
+ *  day bar under the main one, built from only the windows that device heard. The main bar above still shows every window. */
+const roomBars = new Map();
+function drawRooms() {
+  const box = $("#rooms"); if (!box) return;
+  const listening = (srv.devices || []).filter((d) => d.role === "kitchen");
+  box.hidden = listening.length < 2;
+  if (box.hidden) return;
+  const key = listening.map((d) => d.id + d.name).join("|");
+  if (box.dataset.k !== key) {
+    box.dataset.k = key; box.textContent = ""; roomBars.clear();
+    box.append(el("div", { class: "sec-head" }, el("h2", { class: "sec-title", text: "Each room" })));
+    for (const d of listening) {
+      const head = el("p", { class: "room-h", text: d.name }), sum = el("p", { class: "room-sum" }), holder = el("div");
+      box.append(el("div", { class: "room-card" }, head, sum, holder));
+      roomBars.set(d.id, { sum, bar: dayBar(holder) });
+    }
+  }
+  for (const d of listening) {
+    const r = roomBars.get(d.id), evs = events.filter((e) => e.dev === d.id);
+    const td = computeToday(srv, evs, now(), { theta: 0.66, tz: srv.tz, hop: HOP_S, names: srv.names });
+    r.sum.textContent = evs.length ? `${td.summary || "Heard today."} Last heard ${clock(evs[evs.length - 1].end, td.tz_offset)}.` : "Nothing heard from this device yet today.";
+    r.bar.render(td);
+  }
+}
+
+/** Every device connected to this home (one code works for several, each asked for a name), and how to add one more. */
+let roomCode = null;
+function drawDevices(n) {
+  const box = $("#devices"); if (!box) return;
+  const devs = srv.devices || [];
+  const lastHeard = (id) => { let m = null; for (const e of events) if (e.dev === id && (m == null || e.end > m)) m = e.end; return m; };
+  const rows = devs.map((d) => {
+    const lh = d.role === "kitchen" ? lastHeard(d.id) : null;
+    return [d.name, d.role === "kitchen" ? (lh ? `listening · last heard ${clock(lh, t.tz_offset)}` : "listening · nothing heard yet") : "family view"];
+  });
+  const home = homes()[link.id] || {};
+  const k = JSON.stringify(rows) + (roomCode || "");
+  box.hidden = !devs.length && !home.kitchenKey;
+  if (box.hidden || box.dataset.k === k) return;
+  box.dataset.k = k; box.textContent = "";
+  box.append(el("div", { class: "sec-head" }, el("h2", { class: "sec-title", text: "Connected devices" })),
+    devs.length ? el("ul", { class: "dev-list" }, ...rows.map(([name, what]) => el("li", {}, el("span", { class: "dev-n", text: name }), el("span", { class: "dev-w", text: what }))))
+      : el("p", { class: "sec-text", text: "Devices that join with a code appear here by their name." }));
+  if (home.kitchenKey) {
+    const p = el("p", { class: "sec-foot", text: `To add a device in another room of ${n.possMid} home, open ${location.host}/listen on it, name it, and type the code.` });
+    box.append(p);
+    if (!roomCode) api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "kitchen", key: home.kitchenKey } })
+      .then((r) => { roomCode = `${r.code.slice(0, 3)} ${r.code.slice(3)}`; box.dataset.k = ""; drawDevices(n); }).catch(() => {});
+    else p.textContent = `To add a device in another room of ${n.possMid} home, open ${location.host}/listen on it, name it, and type ${roomCode}. One code works for several devices for 48 hours.`;
+  }
+}
+
+/** More than one parent (or grandparent): every home this phone can see, one chip each, plus "Add someone". Each home has its
+ *  own room device, link and alerts; the chips only switch which one this page shows (the keys stay in this browser). */
+function drawHomes() {
+  const box = $("#homes"); if (!box) return;
+  const list = Object.values(homes()).filter((h) => h.familyKey).sort((a, b) => (a.first || a.saved || 0) - (b.first || b.saved || 0));
+  const name = (h) => `${h.parent || "Your parent"}${h.room ? ` · ${h.room}` : ""}`;
+  const k = list.map((h) => h.id + name(h)).join("|") + "#" + link.id;
+  if (box.dataset.k === k) return;
+  box.dataset.k = k; box.textContent = "";
+  box.append(...list.map((h) => el("a", { class: "home-chip", href: `/family?h=${h.id}`, "aria-current": h.id === link.id ? "page" : null, text: name(h) })),
+    el("a", { class: "home-chip add", href: "/start", text: "+ Add someone" }));
+}
+
 // before the parent's device has said yes: show how to connect it (only on the device that holds the kitchen key)
 let inviteShown = "";
 async function drawInvite() {
@@ -231,7 +303,7 @@ async function drawInvite() {
     el("p", { class: "step-k", text: `Next: connect the ${R} device` }),
     el("h2", { class: "section-title", text: `On ${n.possMid} ${R} device, go to ${location.host}/listen and type` }),
     code ? el("p", { class: "code-big num", html: `${code.slice(0, 3)}<span> </span>${code.slice(3)}` }) : null,
-    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the ${R}.` }),
+    el("p", { class: "meta muted", text: `Or send ${P} this link. Open it on the phone, tablet or laptop that stays in the ${R}. The code works on more than one device for 48 hours; each is asked for a name first.` }),
     el("div", { class: "linkbox" }, el("code", { text: url }), el("button", { class: "btn", type: "button", text: "Copy link", onclick: () => copy(url) }))));
 }
 
@@ -291,6 +363,18 @@ $("#menu-btn")?.addEventListener("click", async () => {
     el("p", { class: "meta muted", text: "They get the same view. Send them this link, or let them scan the code." }));
   const famUrl = linkFor("family", link.id, link.key);
   body.append(el("div", { class: "linkbox" }, el("code", { text: famUrl }), el("button", { class: "btn", type: "button", text: "Copy", onclick: () => copy(famUrl) })));
+  // or a six-letter code: any number of phones can use it for 48 hours (each one is asked for a name first, at /pair)
+  const famCode = el("p", { class: "meta", style: "margin-top:10px" });
+  body.append(famCode);
+  api(`/api/h/${link.id}/code`, { method: "POST", key: link.key, body: { for: "family", key: link.key } })
+    .then((r) => { famCode.textContent = `Or on their phone go to ${location.host}/pair and type ${r.code.slice(0, 3)} ${r.code.slice(3)}. Any number of phones can use this code for 48 hours.`; })
+    .catch(() => {});
+  const devs = (srv.devices || []).slice().reverse();
+  body.append(el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
+    el("p", { class: "panel-h", text: "Devices in this home" }),
+    devs.length ? el("ul", { class: "plain", style: "margin:6px 0 0;padding:0;list-style:none" }, ...devs.map((d) => el("li", { class: "meta", style: "padding:4px 0" },
+      el("strong", { text: d.name }), ` · ${d.role === "kitchen" ? "listens in the room" : "family view"} · added ${clock(d.at, t ? t.tz_offset : 0)}`)))
+      : el("p", { class: "meta muted", text: "Devices that join with a code appear here by the name they were given." }));
   qr(famUrl, 152).then((q) => { q.style.marginTop = "14px"; q.style.justifySelf = "start"; body.insertBefore(q, del); });
   const del = el("div", {}, el("hr", { style: "border:0;border-top:1px solid var(--line);margin:24px 0 8px" }),
     el("p", { class: "panel-h", text: "Delete this home" }),

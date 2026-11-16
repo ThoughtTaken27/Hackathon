@@ -1,9 +1,10 @@
 // The room screen (Kettle web; route /kitchen). Pairs with a code, asks the person first, labels sound on this device, sends only labels.
 import { today as computeToday, canListen, rawLabel, clock, tzOffset, DISPLAY, MEAL, KIND_NAMES, KINDS_SHOWN, HIDEABLE } from "./core.js";
 import { ROOMS, who } from "./people.js";
-import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, dayBar, toast, codeInput } from "./ui.js";
+import { $, el, setText, api, now, linkFromHash, saveHome, forgetHome, homes, dayBar, toast, codeInput } from "./ui.js";
 import { loadModel, startMic, HOP_S, modelHead } from "./listen.js";
 import { buildEnrolment } from "./sense.js";
+import { deviceNameField, saveDeviceName, savedDeviceName } from "./devicename.js";
 import { newEngine, step as safetyStep, timeouts as safetyTimeouts, answer as safetyAnswer, help as safetyHelp, TEXT as SAFETY_TEXT } from "./safety.js";
 
 // What this device is, in the words the parent and the family will read. Kettle runs in a browser tab, so the "kitchen device"
@@ -106,30 +107,57 @@ function dimScreen() {
 function button(text, onclick, cls = "") { return el("button", { class: `btn kbtn ${cls}`, type: "button", text, onclick }); }
 function speak(lines) { if (!("speechSynthesis" in window)) return; speechSynthesis.cancel(); for (const l of lines) speechSynthesis.speak(new SpeechSynthesisUtterance(l)); }
 
-// ---------------------------------------------------------------- not paired yet: type the code
+// ---------------------------------------------------------------- not paired yet: name this device, then type the code
 if (!link) {
   $("#status").dataset.state = "never";
-  $("#head").textContent = `Connect this ${DEVICE} to your family`;
   const err = el("p", { class: "err", role: "alert" });
+  const nf = deviceNameField([`Kitchen ${DEVICE}`, `Living room ${DEVICE}`, `Bedroom ${DEVICE}`, `Hallway ${DEVICE}`], { big: true });
+  let ci = null;
   const go = async (code) => {
     err.textContent = "";
     try {
-      const r = await api("/api/pair", { method: "POST", body: { code } });
-      saveHome(r.id, { [r.role + "Key"]: r.key });
+      const r = await api("/api/pair", { method: "POST", body: { code, name: nf.value() } });
+      saveHome(r.id, { [r.role + "Key"]: r.key, deviceName: r.name || nf.value(), deviceId: r.deviceId || null });
       location.href = r.role === "kitchen" ? "/kitchen" : "/family";
     } catch (e) { err.textContent = e.message; ci.error(); ci.focus(); }
   };
-  const ci = codeInput({ onComplete: go });
-  ci.input.addEventListener("input", () => { err.textContent = ""; });
-  $("#body").append(el("p", { class: "k-body", text: "Type the six-letter code from your family member's phone." }), el("div", { style: "margin-top:24px" }, ci.node, err));
-  $("#controls").append(button("Connect", () => (ci.value().length === 6 ? ci.submit() : ((err.textContent = "Type all six letters and numbers."), ci.error())), "primary"),
-    el("a", { class: "btn kbtn quiet-k", href: "/start", text: "Set up Kettle from scratch" }));
-  ci.focus();
+  const nameStep = () => {
+    $("#head").textContent = `What do you want to call this ${DEVICE}?`;
+    $("#body").textContent = ""; $("#controls").textContent = "";
+    $("#body").append(el("p", { class: "k-body", text: "One code can connect more than one device. Your family sees this name, so they know which device is which." }),
+      el("div", { style: "margin-top:20px" }, nf.node, err));
+    const next = () => { if (!nf.value()) { err.textContent = "Type a name, or tap one of the examples."; nf.focus(); return; } saveDeviceName(nf.value()); codeStep(); };
+    nf.input.onkeydown = (e) => { if (e.key === "Enter") next(); };
+    $("#controls").append(button("Next", next, "primary"), el("a", { class: "btn kbtn quiet-k", href: "/start", text: "Set up Kettle from scratch" }));
+    nf.focus();
+  };
+  const codeStep = () => {
+    $("#head").textContent = `Connect this ${DEVICE} to your family`;
+    $("#body").textContent = ""; $("#controls").textContent = ""; err.textContent = "";
+    ci = codeInput({ onComplete: go });
+    ci.input.addEventListener("input", () => { err.textContent = ""; });
+    $("#body").append(el("p", { class: "k-body", text: `This ${DEVICE}: ${nf.value()}. Type the six-letter code from your family member's phone.` }), el("div", { style: "margin-top:24px" }, ci.node, err));
+    $("#controls").append(button("Connect", () => (ci.value().length === 6 ? ci.submit() : ((err.textContent = "Type all six letters and numbers."), ci.error())), "primary"),
+      button("Change the name", nameStep, "quiet-k"));
+    ci.focus();
+  };
+  nameStep();
 } else boot();
 
 // ---------------------------------------------------------------- paired
+// Each listening device has an id and a name, so the family sees one day bar per device ("Kitchen laptop", "Bedroom tablet").
+// A device opened from a link (no code, so never asked) registers itself once under a plain default name.
+const myDevice = () => (link && homes()[link.id] && homes()[link.id].deviceId) || null;
+async function ensureDevice() {
+  if (!link || myDevice() || !srv) return;
+  const room = (srv.names && srv.names.room) || {};
+  const name = savedDeviceName() || `${room.type === "other" && room.name ? room.name : (ROOMS[room.type] || ROOMS.kitchen).label} ${DEVICE}`;
+  try { const r = await api(`/api/h/${link.id}/joined`, { method: "POST", key: link.key, body: { name } }); saveHome(link.id, { deviceId: r.deviceId, deviceName: name }); srv = r.state; }
+  catch {}
+}
 async function boot() {
   await poll();
+  ensureDevice();
   watchBattery();
   let sec = 0;
   everySecond(() => {
@@ -331,8 +359,9 @@ function shareable(w) {
   const hide = (srv && srv.hide) || [];
   const top = Object.keys(w.probs).sort((a, b) => w.probs[b] - w.probs[a]);
   const voices = top.slice(0, 2).every((c) => HIDEABLE.includes(c)) && top.slice(0, 2).some((c) => hide.includes(c));
-  if (hide.includes(w.label) || voices) return { start: w.start, end: w.end, label: "private", conf: 0, probs: Object.fromEntries(Object.keys(w.probs).map((c) => [c, 0])), novel: false, private: true, sounds: [], kinds: [] };
-  return { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds, kinds: w.kinds, taught: w.taught };
+  const dev = myDevice() ? { dev: myDevice() } : {};
+  if (hide.includes(w.label) || voices) return { start: w.start, end: w.end, label: "private", conf: 0, probs: Object.fromEntries(Object.keys(w.probs).map((c) => [c, 0])), novel: false, private: true, sounds: [], kinds: [], ...dev };
+  return { start: w.start, end: w.end, label: w.label, conf: w.conf, probs: w.probs, novel: w.novel, w: w.w, sounds: w.sounds, kinds: w.kinds, taught: w.taught, ...dev };
 }
 function stopListening() { if (mic) { mic.stop(); mic = null; } if (wake) { wake.release().catch(() => {}); wake = null; } if (ui.mic === "on") ui.mic = "idle"; }
 // ---------------------------------------------------------------- device report: kind, plugged in or not, and how fast it labels

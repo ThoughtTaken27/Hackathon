@@ -41,6 +41,9 @@ def main() -> int:
 
         # 2. kitchen pairs with the code
         kit.goto(BASE + "/kitchen")
+        if kit.get_by_label("Device name").count():               # v3.6: name this device first (one code, several devices)
+            kit.get_by_role("button", name="Kitchen laptop").click()
+            kit.get_by_role("button", name="Next").click()
         kit.get_by_label("Six-letter code").first.fill(code)       # the six-box code submits itself when complete
         kit.wait_for_timeout(800)
         if kit.get_by_role("button", name="Connect").count() and "/kitchen" in kit.url and not kit.locator("text=listens for kitchen sounds").count():

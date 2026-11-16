@@ -16,25 +16,52 @@
 <nav class="nav" aria-label="Kettle"><div class="nav-in">
   <a class="mark" href="/"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="8" width="7.5" height="6" rx="3" fill="#eb6834"/><rect x="10" y="8" width="4" height="6" rx="2" fill="#1baf7a"/><rect x="15.5" y="8" width="5.5" height="6" rx="2.75" fill="#2a78d6"/></svg>Kettle</a>
 </div></nav>
-<main class="shell"><div class="narrow enter">
-  <h1 class="h1">Enter your <em>code</em></h1>
-  <p class="lead">Six letters and numbers, from the other screen. Spaces don't matter.</p>
-  <div id="code-slot" style="margin-top:28px"></div>
-  <p class="err" id="err" role="alert"></p>
-  <div class="actions"><button class="btn primary lg" type="button" id="go">Connect</button><a class="btn lg" href="/start">Set up Kettle instead</a></div>
+<main class="shell"><div class="narrow enter" id="pair">
+  <div id="step-name">
+    <h1 class="h1">Name this <em>device</em></h1>
+    <p class="lead">One code can connect several devices: a phone for each family member, or more than one room. A name tells them apart.</p>
+    <div id="name-slot" style="margin-top:24px"></div>
+    <p class="err" id="name-err" role="alert"></p>
+    <div class="actions"><button class="btn primary lg" type="button" id="next">Next</button><a class="btn lg" href="/start">Set up Kettle instead</a></div>
+  </div>
+  <div id="step-code" hidden>
+    <h1 class="h1">Enter your <em>code</em></h1>
+    <p class="lead">Six letters and numbers, from the other screen. Spaces don't matter.</p>
+    <p class="meta muted" id="this-dev"></p>
+    <div id="code-slot" style="margin-top:20px"></div>
+    <p class="err" id="err" role="alert"></p>
+    <div class="actions"><button class="btn primary lg" type="button" id="go">Connect</button><button class="btn lg" type="button" id="back">Change the name</button></div>
+  </div>
 </div></main>
 <script type="module">
 import { $, api, saveHome, codeInput } from "/js/ui.js";
+import { deviceNameField, saveDeviceName } from "/js/devicename.js";
+const nf = deviceNameField(["My phone", "Kitchen laptop", "Living room tablet", "Bedroom phone"]);
+$("#name-slot").append(nf.node);
+const toCode = () => {
+  if (!nf.value()) { $("#name-err").textContent = "Type a name, or tap one of the examples."; nf.focus(); return; }
+  saveDeviceName(nf.value());
+  $("#step-name").hidden = true; $("#step-code").hidden = false;
+  $("#this-dev").textContent = `This device: ${nf.value()}`;
+  ci.focus();
+};
+$("#next").addEventListener("click", toCode);
+nf.input.addEventListener("keydown", (e) => { if (e.key === "Enter") toCode(); });
+nf.input.addEventListener("input", () => { $("#name-err").textContent = ""; });
+$("#back").addEventListener("click", () => { $("#step-code").hidden = true; $("#step-name").hidden = false; nf.focus(); });
 const go = async (code) => {
   $("#err").textContent = ""; $("#go").disabled = true; $("#go").textContent = "Connecting…";
-  try { const r = await api("/api/pair", { method: "POST", body: { code } }); saveHome(r.id, { [r.role + "Key"]: r.key }); location.href = r.role === "kitchen" ? "/kitchen" : "/family"; }
-  catch (e) { $("#err").textContent = e.message; ci.error(); $("#go").disabled = false; $("#go").textContent = "Connect"; ci.focus(); }
+  try {
+    const r = await api("/api/pair", { method: "POST", body: { code, name: nf.value() } });
+    saveHome(r.id, { [r.role + "Key"]: r.key, deviceName: r.name || nf.value(), deviceId: r.deviceId || null });
+    location.href = r.role === "kitchen" ? "/kitchen" : "/family";
+  } catch (e) { $("#err").textContent = e.message; ci.error(); $("#go").disabled = false; $("#go").textContent = "Connect"; ci.focus(); }
 };
 const ci = codeInput({ onComplete: go });
 $("#code-slot").append(ci.node);
 ci.input.addEventListener("input", () => { $("#err").textContent = ""; });
 $("#go").addEventListener("click", () => ci.value().length === 6 ? ci.submit() : (($("#err").textContent = "Type all six letters and numbers."), ci.error()));
-ci.focus();
+nf.focus();
 </script>
 </body>
 </html>

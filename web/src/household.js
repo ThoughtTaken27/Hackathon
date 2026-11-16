@@ -46,13 +46,15 @@ export function publicState(s) {
   return { ...rest, pushCount: (push || []).length };
 }
 
+const DEVICE_ID = /^[a-z0-9]{8}$/;     // ids the server hands out in route "joined" (randomId(8))
 export function cleanEvent(e, now) {
   if (!e || typeof e !== "object") return null;
   const start = +e.start, end = +e.end;
   if (!(end > start) || end - start > 600 || end > now + 120 || end < now - 86400) return null;
+  const dev = typeof e.dev === "string" && DEVICE_ID.test(e.dev) ? { dev: e.dev } : {};   // which named device heard it (one bar per room)
   if (e.label === "private") {           // a label the parent keeps private: no scores, no sounds (plan D2)
     const probs = Object.fromEntries(CLASSES.map((c) => [c, 0]));
-    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [] };
+    return { start, end, label: "private", conf: 0, probs, novel: false, private: true, sounds: [], kinds: [], ...dev };
   }
   if (!CLASSES.includes(e.label)) return null;
   const probs = {};
@@ -72,7 +74,7 @@ export function cleanEvent(e, now) {
   // named household sound types: ids from the allow-list only (plan D1, A6); "taught" = helped by this kitchen's setup
   out.kinds = Array.isArray(e.kinds) ? [...new Set(e.kinds.filter((k) => Object.hasOwn(KIND_NAMES, k)))] : [];
   if (e.taught) out.taught = true;
-  return out;
+  return { ...out, ...dev };
 }
 
 /**
@@ -108,7 +110,7 @@ export const SAFETY_TYPES = ["smoke", "co", "gunshot", "fall", "fall_still", "sc
 // Handover v3.5, 3.2: the family is told at once ("asking": the kitchen screen is asking "Are you OK?" right now), then the same
 // alert (same time, same id) is updated when the person answers ("ok", "help") or doesn't ("no_answer"). "none" = no check-in.
 export const CHECKIN_STATES = ["asking", "ok", "help", "no_answer", "none"];
-const MAX_ALERTS = 20, MAX_PUSH = 10;
+const MAX_ALERTS = 20, MAX_PUSH = 10, MAX_DEVICES = 20;
 
 export async function handle(store, { method, route, key, body, now }) {
   const s = await store.getState();
@@ -217,6 +219,16 @@ export async function handle(store, { method, route, key, body, now }) {
     if (!(s.push || []).length) return { status: 409, body: { error: "Turn on alerts on this phone first." } };
     const r = await done(200, { subscribed: s.push.length });
     return { ...r, notify: { test: true, at: now, tz: s.tz, names: s.names } };
+  }
+  // A device joined with a pairing code and the name its owner gave it ("Kitchen laptop", "Mum's tablet"). One code works for any
+  // number of devices for 48 hours; each one is listed here so the family can see what is connected.
+  if (method === "POST" && route === "joined") {
+    const name = typeof body?.name === "string" ? body.name.trim().slice(0, MAX_NAME).trim() : "";
+    if (!name) return { status: 400, body: { error: "Give this device a name first." } };
+    const dev = { id: randomId(8), name, role, at: now };
+    s.devices = [...(s.devices || []), dev].slice(-MAX_DEVICES);
+    changed = true;
+    return done(200, { deviceId: dev.id });
   }
   if (method === "POST" && route === "names") {
     s.names = { parent: cleanName(body?.parent, s.names.parent), caregiver: cleanName(body?.caregiver, s.names.caregiver),

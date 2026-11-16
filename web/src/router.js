@@ -48,6 +48,12 @@ export async function route(req, env, now = Date.now() / 1000) {
       const b = await readBody(req);
       const v = await env.codes.get(normCode(b.code));
       if (!v) { await env.codes.miss(who, now); return json(404, { error: "That code didn't work. Check the letters, or ask for a new code." }); }
+      // the code stays valid (48 h) so more devices can join with it; each one is recorded under the name it was given
+      if (typeof b.name === "string" && b.name.trim()) {
+        const r = await env.household(v.id).call({ method: "POST", route: "joined", key: v.key, body: { name: b.name }, now });
+        if (r.status !== 200) return json(r.status, r.body);
+        return json(200, { ...v, deviceId: r.body.deviceId, name: b.name.trim().slice(0, 24).trim() });
+      }
       return json(200, v);
     }
 
