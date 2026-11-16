@@ -15,9 +15,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CFG: dict = json.loads((ROOT / "web" / "public" / "model" / "safety.json").read_text())
 
-CHECKIN_S = {"fall": 60, "scream": 30, "distress": 60, "stillness": 60}
-FALL_DISTRESS_S, FALL_STILL_S, FALL_CANCEL_S, ACTIVE_BEFORE_S = 60, 600, 120, 1800
+CHECKIN_S = {"fall": 60, "scream": 30, "shout": 30, "distress": 60, "stillness": 60}
+FALL_DISTRESS_S, FALL_STILL_S, FALL_CANCEL_S, ACTIVE_BEFORE_S = 60, 120, 120, 1800   # v3.5: 2-minute stillness (was 10)
 SCREAM_S, DISTRESS_S, SEPARATE_S, MEDIA_WINDOWS = 120, 300, 10, 3
+TV_S, TV_WINDOWS = 60, 2           # v3.5 addendum 2: the head's "TV" counts only twice in 60 s, outside danger windows
+DANGER = ["impact", "glass", "scream", "distress", "gunshot", "shout"]
+SHOUT_S, SHOUTS = 60, 3
 COOLDOWN_S, SMOKE_CLEAR_S = 600, 300
 STOVE_S, STOVE_GAP_S, BEEP_S, BEEP_GAP_S, WATER_S, WATER_SHARE = 2400, 180, 300, 120, 1200, 0.8
 KEEP_S, STRAY = 2 * 3600, 2
@@ -25,10 +28,12 @@ COOKING_KINDS = ["frying", "kettle", "boiling"]
 OTHER_KITCHEN = ["dishes", "cutlery", "tap", "chopping", "cupboard", "drawer", "microwave", "blender", "pouring", "stirring"]
 TEXT = {
     "smoke": "a smoke alarm", "co": "what sounds like a carbon monoxide alarm", "fall": "a crash, then a groan or cry",
-    "fall_still": "a crash, then no movement for 10 minutes", "scream": "screaming", "distress": "repeated groaning or crying",
+    "fall_still": "a crash, then no movement for 2 minutes", "scream": "screaming", "shout": "shouting, again and again",
+    "gunshot": "what sounded like a gunshot", "distress": "repeated groaning or crying",
     "help": "the I need help button", "stillness": "no activity for hours",
     "stove": "frying or boiling for 40 minutes with nothing else heard", "beep": "a timer or appliance beeping for 5 minutes",
-    "water": "running water for 20 minutes", "scream_tv": "screaming while the TV or music was on", "test": "a test alert",
+    "water": "running water for 20 minutes", "scream_tv": "screaming while the TV or music was on",
+    "gunshot_tv": "a bang like a gunshot while the TV or music was on", "test": "a test alert",
 }
 
 
@@ -167,7 +172,8 @@ def _ev(w: dict, ids: list[str], pat: dict | None = None) -> dict:
 def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: bool = False, smoke_while_paused: bool = False) -> list[dict]:
     """One window (5-s hop) -> actions. Same contract as safety.js step()."""
     t, out = w["t"], []
-    st["hist"].append({"t": t, "hits": w.get("hits") or [], "media": bool(w.get("media")) or w.get("label") == "watching_tv",
+    tv = w.get("label") == "watching_tv" and not any(x in DANGER for x in (w.get("hits") or []))
+    st["hist"].append({"t": t, "hits": w.get("hits") or [], "media": bool(w.get("media")), "tv": tv,
                        "active": is_active(w), "cooks": _cooks(w), "kinds": w.get("kinds") or [], "label": w.get("label")})
     st["hist"] = [h for h in st["hist"] if h["t"] > t - KEEP_S]
     h = st["hist"]
@@ -181,7 +187,8 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
     pat = w.get("pattern") or {"t3": 0, "t4": 0}
     me["t3"], me["t4"] = pat["t3"], pat["t4"]
     if urgent and (not paused or smoke_while_paused):
-        smoke = sum(1 for x in last3 if _has(x, "smoke_alarm")) >= 2 or pat["t3"] >= 2
+        smoke = (sum(1 for x in last3 if _has(x, "smoke_alarm")) >= 2 or pat["t3"] >= 2
+                 or sum(1 for x in last3 if (x.get("t3") or 0) >= 1) >= 2)          # U1b: one T3 cycle in 2 of the last 3 windows
         if smoke:
             if st["smokeSince"] is None:
                 st["smokeSince"] = t - 10
@@ -197,7 +204,7 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
             st["coSince"] = None
     if paused:
         return out
-    media = any(x["media"] for x in h[-MEDIA_WINDOWS:])
+    media = any(x["media"] for x in h[-MEDIA_WINDOWS:]) or sum(1 for x in h if x["tv"] and x["t"] > t - TV_S) >= TV_WINDOWS
     if urgent and (_has(me, "impact") or _has(me, "glass")) and not media and not st["pending"] and not st["checkin"]:
         before = any(x["t"] < t - 5 and x["t"] >= t - ACTIVE_BEFORE_S and x["active"] for x in h)
         st["pending"] = {"at": t, "before": before, "evidence": _ev(w, ["impact", "glass"])}
@@ -220,6 +227,14 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
                 out.append(_alert(st, t, "concern", "scream_tv", evidence=_ev(w, ["scream"])))
         elif urgent and _cool(st, "scream", t):
             out.append(_start_checkin(st, t, "scream", "scream", _ev(w, ["scream", "distress"])))
+    if _has(me, "gunshot"):                                   # U8: straight to the family; with media on, only a note
+        if media:
+            if concern and _cool(st, "gunshot_tv", t):
+                out.append(_alert(st, t, "concern", "gunshot_tv", evidence=_ev(w, ["gunshot"])))
+        elif urgent and _cool(st, "gunshot", t):
+            out.append(_alert(st, t, "urgent", "gunshot", since=t, evidence=_ev(w, ["gunshot"])))
+    if urgent and not st["checkin"] and not media and _cool(st, "shout", t) and _separate(h, "shout", t - SHOUT_S) >= SHOUTS:   # U9
+        out.append(_start_checkin(st, t, "shout", "shout", _ev(w, ["shout"])))
     if (urgent and not st["checkin"] and not media and _cool(st, "distress", t) and _separate(h, "distress", t - DISTRESS_S) >= 3
             and not any(x["t"] > t - DISTRESS_S and x["cooks"] for x in h)):
         out.append(_start_checkin(st, t, "distress", "distress", _ev(w, ["distress"])))

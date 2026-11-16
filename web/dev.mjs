@@ -8,6 +8,8 @@ import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { handle } from "./src/household.js";
 import { route } from "./src/router.js";
+import { makeVapidKeys } from "./src/push.js";
+import { notify } from "./src/notify.js";
 
 const ROOT = fileURLToPath(new URL(".", import.meta.url));
 const PUB = join(ROOT, "public");
@@ -21,6 +23,16 @@ let missLog = [];                       // wrong pairing codes per address (memo
 const db = existsSync(DATA) ? JSON.parse(readFileSync(DATA, "utf8")) : { households: {}, codes: {} };
 let saveTimer = null;
 const save = () => { clearTimeout(saveTimer); saveTimer = setTimeout(async () => { await mkdir(join(ROOT, ".data"), { recursive: true }); await writeFile(DATA, JSON.stringify(db)); }, 300); };
+
+const queues = new Map();
+/** Run fn after every earlier call for the same home has finished (a per-home lock). */
+function serial(id, fn) {
+  const run = (queues.get(id) || Promise.resolve()).then(fn, fn);
+  const tail = run.catch(() => {});
+  queues.set(id, tail);
+  tail.then(() => { if (queues.get(id) === tail) queues.delete(id); });
+  return run;
+}
 
 function memStore(id) {
   const h = db.households[id];
@@ -36,14 +48,19 @@ function memStore(id) {
 const env = {
   household: (id) => ({
     init: async (state) => { db.households[id] = { state, events: [] }; save(); },
-    call: async (op) => (db.households[id] ? handle(memStore(id), op) : { status: 404, body: { error: "This Kettle link isn't valid any more. Ask for a new one." } }),
+    // one request per home at a time (as one Durable Object should be): handle() reads the state, awaits, then writes it back,
+    // so two overlapping requests (an alert and the 10-second labels, sent the same second) would let the slower one erase the other
+    call: (op) => serial(id, async () => (db.households[id] ? handle(memStore(id), op) : { status: 404, body: { error: "This Kettle link isn't valid any more. Ask for a new one." } })),
   }),
   codes: {
     put: async (code, value, ttl) => { db.codes[code] = { v: value, exp: Date.now() / 1000 + ttl }; save(); },
     get: async (code) => { const c = db.codes[code]; return c && c.exp > Date.now() / 1000 ? c.v : null; },
     miss: async (who, t) => { missLog.push([who, t]); missLog = missLog.filter(([, x]) => x > t - 3600); },
     misses: async (who, since) => missLog.filter(([w, x]) => w === who && x > since).length,
+    vapid: async () => { if (!db.vapid) { db.vapid = await makeVapidKeys(); save(); } return db.vapid; },
   },
+  // push notifications in the background, as the Worker does with waitUntil
+  notify: (id, n) => { if (db.households[id]) env.codes.vapid().then((keys) => notify(memStore(id), id, n, keys)).then((r) => r.length && console.log(`push: ${r.filter((x) => x.ok).length}/${r.length} sent`)); },
 };
 
 async function file(path) {

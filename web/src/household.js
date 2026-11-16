@@ -3,6 +3,7 @@
 // labels with times and scores. No audio ever reaches it; the kitchen page labels sound on the parent's own device.
 import { CLASSES, HIDEABLE, KIND_NAMES, MEAL, actions, newState, tick, tzOffset, validateRules } from "../public/js/core.js";
 import { SHOWN_SOUNDS } from "../public/js/sounds.js";
+import { validSubscription } from "./push.js";
 
 export const KEEP_DAYS = 8;            // labels older than this are deleted
 const MAX_EVENTS_PER_POST = 60;
@@ -41,8 +42,8 @@ export async function create({ parent, caregiver, relation, room, tz } = {}, now
 
 /** The state as either screen may see it (no key hashes). */
 export function publicState(s) {
-  const { keys, ...rest } = s;
-  return rest;
+  const { keys, push, ...rest } = s;              // push endpoints are capability URLs: they never leave the server
+  return { ...rest, pushCount: (push || []).length };
 }
 
 export function cleanEvent(e, now) {
@@ -100,10 +101,14 @@ export function tallyDays(s, evs) {
  * store: { getState(), putState(s), addEvents(evs), eventsSince(t), prune(before), wipe() }
  * Returns { status, body }.
  */
-// Urgent safety alerts the kitchen device may raise (web/public/js/safety.js): smoke/CO alarm, a crash then a cry or stillness,
-// screaming, and the "I need help" button. Only the kind and time are stored; the family view shows a red banner until seen.
-export const SAFETY_TYPES = ["smoke", "co", "fall", "fall_still", "scream", "help"];
-const MAX_ALERTS = 20;
+// Urgent safety alerts the kitchen device may raise (web/public/js/safety.js): smoke/CO alarm, a gunshot, a crash then a cry or
+// stillness, screaming, shouting, repeated crying, and the "I need help" button. Only the kind, the time and the check-in state are
+// stored; the family view shows a red banner until seen, and every subscribed family phone gets a push notification (notify.js).
+export const SAFETY_TYPES = ["smoke", "co", "gunshot", "fall", "fall_still", "scream", "shout", "distress", "stillness", "help"];
+// Handover v3.5, 3.2: the family is told at once ("asking": the kitchen screen is asking "Are you OK?" right now), then the same
+// alert (same time, same id) is updated when the person answers ("ok", "help") or doesn't ("no_answer"). "none" = no check-in.
+export const CHECKIN_STATES = ["asking", "ok", "help", "no_answer", "none"];
+const MAX_ALERTS = 20, MAX_PUSH = 10;
 
 export async function handle(store, { method, route, key, body, now }) {
   const s = await store.getState();
@@ -157,10 +162,21 @@ export async function handle(store, { method, route, key, body, now }) {
       const hide = Array.isArray(body.hide) ? body.hide.filter((h) => HIDEABLE.includes(h)) : [];
       const kindsOff = Array.isArray(body.kindsOff) ? body.kindsOff.filter((k) => Object.hasOwn(KIND_NAMES, k)) : [];
       actions.privacy(s, now, { hide, kindsOff });
-    } else if (type === "alert") {     // handover v3.2, 3.6: an Urgent safety alert from the kitchen device (no audio, no scores)
-      if (!SAFETY_TYPES.includes(body.kind) || !["no_answer", "help", "none"].includes(body.checkin || "none")) return { status: 400, body: { error: "bad alert" } };
+    } else if (type === "alert") {     // handover v3.5, 3.2: an Urgent safety alert from the kitchen device (no audio, no scores)
+      const checkin = body.checkin || "none";
+      if (!SAFETY_TYPES.includes(body.kind) || !CHECKIN_STATES.includes(checkin)) return { status: 400, body: { error: "bad alert" } };
       const at = Math.min(now, Math.max(now - 3600, +body.at || now));
-      s.alerts = [...(s.alerts || []), { id: `a${Math.round(at)}`, kind: body.kind, at, checkin: body.checkin || "none", seen: null }].slice(-MAX_ALERTS);
+      const id = `a${Math.round(at)}-${body.kind}`;      // same time + same kind = the same alert (a smoke and a CO alarm stay two)
+      const old = (s.alerts || []).find((x) => x.id === id);
+      if (old) {                        // the same alert, answered (or not): update it in place, never a second banner
+        if (old.checkin === checkin) return done(200);                  // a retry: nothing new, nobody is told twice
+        if (old.checkin === "help" || (old.checkin === "no_answer" && checkin === "asking")) return done(200);   // never step back
+        old.checkin = checkin; old.answered = now;
+      } else s.alerts = [...(s.alerts || []), { id, kind: body.kind, at, checkin, seen: null }].slice(-MAX_ALERTS);
+      changed = true;
+      const a = s.alerts.find((x) => x.id === id);
+      const r = await done(200);
+      return { ...r, notify: { alert: { ...a }, tz: s.tz, names: s.names } };
     } else if (type === "mic") {
       if (!["ok", "blocked", "none"].includes(body.state)) return { status: 400, body: { error: "bad mic state" } };
       actions.mic(s, now, { state: body.state });
@@ -181,6 +197,26 @@ export async function handle(store, { method, route, key, body, now }) {
     a.seen = now;
     changed = true;
     return done(200);
+  }
+  // Web Push (docs/PUSH-INTEGRATION.md): the family's phones subscribe here; the server keeps at most 10, deduped by endpoint.
+  if (route === "push" && (method === "POST" || method === "DELETE")) {
+    if (role !== "family") return { status: 403, body: { error: "Alerts are turned on from the family view." } };
+    if (method === "DELETE") {
+      s.push = (s.push || []).filter((p) => p.endpoint !== body?.endpoint);
+      changed = true;
+      return done(200, { subscribed: s.push.length });
+    }
+    const sub = validSubscription(body?.subscription);
+    if (!sub) return { status: 400, body: { error: "That browser's alert subscription isn't one Kettle can use." } };
+    s.push = [...(s.push || []).filter((p) => p.endpoint !== sub.endpoint), { ...sub, at: now }].slice(-MAX_PUSH);
+    changed = true;
+    return done(200, { subscribed: s.push.length });
+  }
+  if (method === "POST" && route === "pushtest") {          // "Send a test alert": proves the phone really gets notifications
+    if (role !== "family") return { status: 403, body: { error: "Test alerts are sent from the family view." } };
+    if (!(s.push || []).length) return { status: 409, body: { error: "Turn on alerts on this phone first." } };
+    const r = await done(200, { subscribed: s.push.length });
+    return { ...r, notify: { test: true, at: now, tz: s.tz, names: s.names } };
   }
   if (method === "POST" && route === "names") {
     s.names = { parent: cleanName(body?.parent, s.names.parent), caregiver: cleanName(body?.caregiver, s.names.caregiver),

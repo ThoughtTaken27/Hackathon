@@ -1,0 +1,12 @@
+{
+ "wav": "smoke.wav",
+ "expected": "smoke",
+ "room_urgent_after_s": 19.9,
+ "family_red_after_room_s": 2.8,
+ "server_alert_kinds": [
+  "smoke"
+ ],
+ "errors": [],
+ "ran_at": "2026-11-16 00:05 UTC",
+ "note": "Chromium fake microphone playing the WAV; family page polls every 5 s (push not tested headless)."
+}

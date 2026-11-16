@@ -35,12 +35,14 @@ ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / "results" / "cache"
 RNG = np.random.default_rng(0)
 QUANTILE = 0.995
-START = {"smoke_alarm": 0.35, "beep": 0.2, "scream": 0.1, "shout": 0.3, "distress": 0.1, "impact": 0.1, "glass": 0.3, "fire": 0.3, "siren": 0.2}   # floors: never below these
+QUANTILE_BY = {"gunshot": 1.0}
+START = {"gunshot": 0.3, "smoke_alarm": 0.35, "beep": 0.2, "scream": 0.1, "shout": 0.3, "distress": 0.1, "impact": 0.1, "glass": 0.3, "fire": 0.3, "siren": 0.2}   # floors: never below these
 DETECTORS = [   # id, name, AudioSet indices (Appendix A), where the positives come from
     ("smoke_alarm", "Smoke or fire alarm", [399, 400], "synthetic T3/T4 alarms"),
     ("beep", "Timer or appliance beep", [481, 398, 395], "synthetic kitchen timers + ESC-50 clock_alarm"),
     ("scream", "Screaming", [14], "Nonspeech7k screaming"),
     ("shout", "Shout or yell", [8, 11, 13], None),
+    ("gunshot", "Gunshot", [427, 428, 429, 430, 431], None),
     ("distress", "Groaning, moaning or crying", [38, 25, 22, 24], "Nonspeech7k crying"),
     ("impact", "A crash or thud", [460, 466, 469, 358], None),
     ("glass", "Glass breaking", [443, 470, 441], "ESC-50 glass_breaking"),
@@ -76,6 +78,21 @@ def sources() -> list[dict]:
     return out
 
 
+def add_predicted_labels(clips: list[dict]) -> None:
+    """The label the app's activity head would give each clip (v3.5 addendum 2): out-of-fold for SINS, the frozen head on the
+    cached embedding for everything else. The app passes this guess to the safety engine, so the simulator does too."""
+    from kettle import model
+    from eval.beyond import load as load_dev
+    inv = {i: c for c, i in C.items()}
+    head = model.load(ROOT / "models" / "head.json")
+    pred = {"sins": iter(load_dev()["P"].argmax(1))}
+    for src, f in (("esc50", "esc50all"), ("nonspeech7k", "nonspeech7k"), ("synth", "synth_alarms")):
+        emb = np.load(CACHE / f"ced-tiny_{f}.npz", allow_pickle=True)["emb"].astype(np.float64)
+        pred[src] = iter(model.predict_proba(head, emb).argmax(1))
+    for c in clips:
+        c["pred"] = inv[int(next(pred[c["src"]]))]
+
+
 def positives(det: str, c: dict) -> bool:
     return {"smoke_alarm": c["cat"] in ("synth_t3", "synth_t4"), "beep": c["cat"] in ("synth_timer", "clock_alarm"),
             "scream": c["cat"] == "ns_screaming", "distress": c["cat"] == "ns_crying", "glass": c["cat"] == "glass_breaking",
@@ -99,7 +116,8 @@ def calibrate(clips: list[dict]) -> tuple[list[dict], dict]:
         neg = ~pos & ~excl
         if det == "beep":
             neg &= ~np.isin(cats, ["synth_t3", "synth_t4"])          # a smoke alarm beeping is also a beep: not a false fire
-        tau = float(max(START[det], np.quantile(score[dev & neg], QUANTILE)))
+        q = QUANTILE_BY.get(det, QUANTILE)                          # gunshot: above every dev negative (PREREGISTER-SAFETY-V35)
+        tau = float(max(START[det], np.quantile(score[dev & neg], q)))
         tau = round(tau, 3)
         row = {"name": name, "tau": tau, "indices": idx, "positives_from": posdesc,
                "false_fire_heldout_all": rate(score[~dev & neg] >= tau),
@@ -143,6 +161,11 @@ def patterns(clips: list[dict]) -> dict:
                 hits["t3"] += p["t3"] >= 1
                 hits["t4"] += p["t4"] >= 1
             out[f"{kind}@{snr}dB"] = {"n": n, "t3_found": hits["t3"], "t4_found": hits["t4"]}
+    folders = [ROOT / "data" / "clips" / f for f in ("esc50_all", "nonspeech7k")]
+    if not all(f.exists() for f in folders):             # the pattern detector is unchanged: keep the last full run's count
+        prev = json.loads((ROOT / "results" / "safety.json").read_text())["alarm_pattern"]["real_clips_false"]
+        return {"synthetic_heldout": out, "real_clips_false": {**prev, "reused": "Nonspeech7k audio not on this machine; "
+                "alarm_pattern() is unchanged since the run that measured this, so that run's count is kept."}}
     real = {"t3": 0, "t4": 0, "n": 0, "fired_on": []}
     for folder in ("esc50_all", "nonspeech7k"):
         base = ROOT / "data" / "clips" / folder
@@ -165,10 +188,13 @@ def patterns(clips: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------- E7 scenario simulator
+LABELS = {"mode": "app"}        # "app": the head's own guess, as the app sees it; "dataset": the dataset's label (before v3.5 addendum 2)
+
+
 def to_window(c: dict, t: float, cfg: dict, pattern=None) -> dict:
     d = safety.detect(c["S"], cfg)
     ks = [k["id"] for k in kinds_mod.named(c["S"])]
-    lab = c["label"] or ("absence" if c["src"] == "sins" else "other")
+    lab = c["pred"] if LABELS["mode"] == "app" and "pred" in c else (c["label"] or ("absence" if c["src"] == "sins" else "other"))
     return {"t": t, **d, "kinds": ks, "label": lab, **({"pattern": pattern} if pattern else {})}
 
 
@@ -186,6 +212,7 @@ def simulate(clips: list[dict], cfg: dict, split: str = "heldout") -> dict:
     alarm = pool(lambda c: c["cat"] in ("synth_t3", "synth_t4") and c["snr"] >= 0)
     timer = pool(lambda c: c["cat"] == "synth_timer")
     misc = pool(lambda c: c["cat"] in ("door_wood_knock", "dog", "laughing", "ns_laugh", "clapping", "footsteps"))
+    bangs = pool(lambda c: c["cat"] in ("can_opening", "door_wood_knock", "fireworks", "thunderstorm"))     # gunshot look-alikes
     pick = lambda xs: xs[int(RNG.integers(len(xs)))]                               # noqa: E731
 
     def stream(seq: list[tuple]) -> list[dict]:
@@ -212,6 +239,7 @@ def simulate(clips: list[dict], cfg: dict, split: str = "heldout") -> dict:
         "neg_timer_beeps_while_cooking": lambda: sum(([(pick(cook), 2, None) for _ in range(3)] + [(pick(timer), 2, None)] for _ in range(6)), []),
         "neg_knocks_dogs_laughter": lambda: sum(([(pick(talk), 2, None) for _ in range(2)] + [(pick(misc), 2, None)] for _ in range(10)), []),
         "neg_busy_kitchen": lambda: [(pick(cook), 2, None) for _ in range(60)],
+        "neg_cans_knocks_fireworks_while_cooking": lambda: sum(([(pick(cook), 2, None) for _ in range(3)] + [(pick(bangs), 2, None)] for _ in range(8)), []),
     }
     res, types = {}, {}
     for name, build in kinds.items():
@@ -257,21 +285,40 @@ def simulate(clips: list[dict], cfg: dict, split: str = "heldout") -> dict:
 
 def main() -> None:
     clips = sources()
+    add_predicted_labels(clips)
     cfg_list, cal = calibrate(clips)
     cfg = {"detectors": cfg_list, "media": {"index": MEDIA, "tau": cal["media_tau"]},
            "source": "eval/safety.py -> results/safety.json (thresholds chosen on development clips only)"}
     pat = patterns(clips)
     sim = simulate(clips, cfg)
     sim_dev = simulate(clips, cfg, "dev")
+    LABELS["mode"] = "dataset"
+    sim_dataset = simulate(clips, cfg)
+    LABELS["mode"] = "app"
     n = {s: sum(1 for c in clips if c["src"] == s) for s in ("sins", "esc50", "nonspeech7k", "synth")}
     out = {"clips": n, "quantile": QUANTILE, "detectors": cal["detectors"], "media": cal["detectors"]["media"], "alarm_pattern": pat,
-           "scenarios": sim, "scenarios_dev": sim_dev,
-           "process_note": ("Disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms "
+           "scenarios": sim, "scenarios_dev": sim_dev, "scenarios_dataset_labels": sim_dataset,
+           "labels_note": ("scenarios and scenarios_dev feed each window the activity head's own label, as the app does (v3.5 addendum 2). "
+                           "scenarios_dataset_labels is the same held-out simulator fed the dataset's labels, the method used before."),
+           "process_note": ("v3.5 (eval/PREREGISTER-SAFETY-V35.md, written before this run): gunshot detector added (tau above every "
+                            "development negative, no gunshot recordings available), shouting rule (3 windows in 60 s), crash-then-stillness "
+                            "wait 600 s -> 120 s, and a new negative scenario (cans, knocks, fireworks, thunder while cooking). The new scenario draws "
+                            "from the shared random generator before the development run, so scenarios_dev timelines are redrawn (dev screaming "
+                            "98.3% -> 90.0% is that resampling: with the shout rule switched off the same timelines give the same count). The script "
+                            "was rerun twice more only to edit this note; it is deterministic (seed 0) and the numbers were identical. Then smoke rule U1b "
+                            "(a T3 cycle in 2 of the last 3 windows) was pre-registered as an addendum with its dev numbers and this file "
+                            "was regenerated once with it. Then (addendum 2) a live browser test showed the head's own 'TV' guess on a crash window "
+                            "silencing the alert; the simulator was switched to the head's own labels and the media rule changed (a head 'TV' "
+                            "counts only in 2 non-danger windows within 60 s); pre-registered with dev numbers, then this file regenerated once. "
+                            "Earlier, disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms "
                             "from screams and timers. The floors were raised to the plan's values (smoke 0.35, glass 0.3, fire 0.3) and the same "
                             "simulator is also reported on development clips (scenarios_dev), so the change can be checked on data not used to report."),
            "limits": ["No recordings of real falls (body hitting a floor): the crash is breaking glass, and a fall that makes little sound will be missed.",
                       "Smoke and CO alarms are synthetic NFPA 72 tones mixed with household noise and simple echo, not recordings of real alarms.",
-                      "No shouting-for-help clips: the shout detector has no measured catch rate and never raises an alert on its own.",
+                      "No shouting-for-help clips: the shout detector has no measured catch rate; it alerts only after 3 shouts in 60 s.",
+                      "No gunshot recordings could be fetched: the gunshot detector has no measured catch rate. Its threshold sits above "
+                      "every development clip; can openings, door knocks and fireworks are the measured false-alarm risks.",
+                      "A crash followed by someone quietly leaving the room now looks like a fall after 2 minutes (was 10).",
                       "Clips are close-microphone public recordings, joined in software; no real kitchen or real room has been measured yet."]}
     (ROOT / "results" / "safety.json").write_text(json.dumps(out, indent=1, default=float))
     (ROOT / "web" / "public" / "model" / "safety.json").write_text(json.dumps(cfg))

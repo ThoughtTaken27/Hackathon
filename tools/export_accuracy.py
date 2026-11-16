@@ -36,7 +36,7 @@ def main() -> None:
 
 
 def fill_writeup(A: dict) -> None:
-    """docs/WRITEUP.md blocks from results files: accuracy (naming + sound names), crosshome, calibration, privacy."""
+    """docs/TECHNICAL.md blocks from results files: accuracy (naming + sound names), crosshome, calibration, privacy."""
     import re
     K, S = A["kitchen_naming"], A["sound_head"]
     names = {k["id"]: k["name"] for k in json.loads((ROOT / "web" / "public" / "model" / "kinds.json").read_text())["kinds"]}
@@ -141,12 +141,12 @@ def fill_writeup(A: dict) -> None:
              "Per sound in those new homes (v2): " + "; ".join(f"{k} {v['true']} of {v['n']}" for k, v in V["real_home"]["v2"].items()) +
              ". `results/sound_head_v3.json`.")
     blocks = {"headline": headline, "realhomes": real, "accuracy": naming + "\n\n" + sounds, "crosshome": cross, "calibration": calib, "privacy": priv}
-    p = ROOT / "docs" / "WRITEUP.md"
+    p = ROOT / "docs" / "TECHNICAL.md"
     t = p.read_text()
     for k, v in blocks.items():
         t = re.sub(rf"<!-- {k}:start -->.*?<!-- {k}:end -->", f"<!-- {k}:start -->\n{v}\n<!-- {k}:end -->", t, flags=re.S)
     p.write_text(t)
-    print("filled docs/WRITEUP.md blocks:", ", ".join(blocks))
+    print("filled docs/TECHNICAL.md blocks:", ", ".join(blocks))
 
 if __name__ == "__main__":
     main()

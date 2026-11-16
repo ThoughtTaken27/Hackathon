@@ -4,7 +4,7 @@
 
 Track: AI + Health ("manage an ongoing one better"). Built for an adult child caring from a distance for a parent with early memory loss (invented persona: Meera, 34, and her father Ravi, 79, who consents on his own kitchen screen and can pause it).
 
-> **This project is a prototype and is not medical advice.** Kettle is not an emergency device and can't call for help. (An experimental urgent-sound layer is in the code, tested only on public and synthetic clips, never in a home; we make no detection claim for it.)
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device, can't call for help, and doesn't replace a smoke or CO detector or 911. Its urgent alerts were tested on public and synthetic clips and in a browser, never in a real home.
 
 | Meera's phone ("Dad's kitchen today") | Dad's kitchen laptop |
 |---|---|
@@ -16,6 +16,32 @@ On the official DCASE 2018 test set (run once with a frozen model; 1,113 moments
 
 
 > **Setting this up (people or agents):** follow [`SETUP.md`](SETUP.md) top to bottom: Python app, web app, every test, and the Cloudflare deploy. **Try it live:** https://kettle.parth-dev.workers.dev
+
+## Urgent alerts that reach the phone (Sun Nov 15, evening)
+
+A smoke or CO alarm, a crash then a cry or 2 minutes of stillness, screaming, shouting again and again, a gunshot, or the
+"I need help" button turns the family's view red and sends a **Web Push notification to their phone** at once, even with
+Kettle closed. Person-related alerts also ask "Are you OK?" on the room screen; pressing I'm OK turns the family's banner amber.
+Only the kind of sound and the time leave the room. Held-out simulator (`python -m eval.safety` → `results/safety.json`,
+pre-registered in `eval/PREREGISTER-SAFETY-V35.md`; 60 timelines each, nobody answering; every window carries the activity
+model's own label, as in the app):
+
+| Urgent sound | Caught | Where the sounds came from |
+|---|---|---|
+| Smoke alarm during cooking | 88.3% (53/60) | synthetic NFPA 72 tones in recorded everyday sound |
+| A crash, then a groan or cry | 73.3% (44/60) | public recordings joined in software |
+| A crash, then 2 minutes of stillness | 71.7% (43/60) | public recordings joined in software |
+| Screaming | 83.3% (50/60) | Nonspeech7k |
+| Gunshot, shouting | not measured | no recordings available to us |
+
+**False urgent alerts: 0 in 12.3 hours of ordinary home sound, and 0 in 360 look-alike timelines** (TV dramas, dropped pans,
+timers, cans, knocks, fireworks). A thud alone never turns red (it fires about once an hour in ordinary homes). In a real
+browser, a smoke alarm played into the microphone turned the room screen urgent after 19.9 s and the family page red 2.8 s later
+(`python web/test/e2e_urgent.py`, `results/e2e_urgent.json`). A breaking-glass clip followed by 2 quiet minutes made the room
+screen ask "Are you OK?" and the family page red 2.8 s later; pressing I'm OK turned it amber 4.8 s after
+(`results/e2e_urgent_crash.json`). That live test first **failed**: the activity model had called the crash window "TV", which
+switched off the alert. We fixed the rule (a "TV" guess must hold for 2 calm windows in a minute) and the simulator now uses the
+model's own labels, which lowered the crash numbers above to what the app really does.
 
 ## Improvement round (Sat Nov 14, evening): beyond the research home
 
@@ -60,7 +86,7 @@ CIs resample the 91 test sessions (the lower end is pessimistic: some resamples 
 | Some activity | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
 | Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
 | Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
-| TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
+| Talking / TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
 | Typing | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
 
 Recall fell from dev to held-out for some activity 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).

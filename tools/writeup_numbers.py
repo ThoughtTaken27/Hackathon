@@ -1,4 +1,4 @@
-"""Fill the numbers in docs/WRITEUP.md and README.md from results/metrics.json (never by hand).
+"""Fill the numbers in docs/TECHNICAL.md and README.md from results/metrics.json (never by hand).
 
 Replaces the text between <!-- results:start --> and <!-- results:end --> (and <!-- lead:start/end -->) markers.
 Usage: python tools/writeup_numbers.py
@@ -171,5 +171,5 @@ if __name__ == "__main__":
     # the one-page write-up keeps the tables, Meera's check and the dev line; the long explanations stay in the README
     keep = [ln for ln in wp["results"].split("\n") if not ln.startswith(("CIs resample", "Recall fell", "Every held-out moment"))]
     wp["results"] = re.sub(r"\n{3,}", "\n\n", "\n".join(keep))
-    fill(ROOT / "docs" / "WRITEUP.md", wp)
+    fill(ROOT / "docs" / "TECHNICAL.md", wp)
     print(parts["lead"])

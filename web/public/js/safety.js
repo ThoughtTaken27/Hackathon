@@ -6,7 +6,8 @@
 // both give the same answers on shared fixtures (web/test/safety_fixtures.json, made by tools/export_web_fixtures.py).
 //
 // Urgent rules (notify the family at once; person-related ones ask "Are you OK?" on the screen first):
-//   U1 smoke or fire alarm   smoke detector score in 2 of the last 3 windows, or 2 T3 beep cycles in one window
+//   U1 smoke or fire alarm   smoke detector score in 2 of the last 3 windows, or 2 T3 beep cycles in one window,
+//                            or (U1b) a T3 cycle in 2 of the last 3 windows
 //   U2 carbon monoxide alarm T4 beep pattern in 2 separate windows within 40 s
 //   U3 possible fall         impact or breaking glass, then within 60 s a distress voice; or 10 min of stillness
 //                            after it (2 stray windows allowed) when the person had been active in the 30 min before (cancelled by normal
@@ -16,12 +17,17 @@
 //   U5 distress after quiet  a distress voice 3+ separate times in 5 min with nothing else going on
 //   U6 "I need help"         the button on the screen, or "I need help" in a check-in
 //   U7 stillness             too quiet for hours (core.js C1) and no answer to the check-in
+//   U8 gunshot               a gunshot in one window with no TV, radio or music in the last 3 windows: no check-in
+//                            (with media on: only a "Worth a look" note). Threshold: above every development clip (cans!)
+//   U9 shouting              shouting or yelling in 3 separate windows within 60 s, no media: check-in, as for screaming
+// v3.5 (eval/PREREGISTER-SAFETY-V35.md): the crash-then-stillness wait is 2 minutes (was 10).
 // Worth-a-look notes made here (core.js makes the timeline ones): C6 stove maybe left on, C7 beeping ignored,
 // C8 "said they were OK" after a check-in, C9 water left running, scream heard with the TV on.
 
-export const CHECKIN_S = { fall: 60, scream: 30, distress: 60, stillness: 60 };
-const FALL_DISTRESS_S = 60, FALL_STILL_S = 600, FALL_CANCEL_S = 120, ACTIVE_BEFORE_S = 1800;
-const SCREAM_S = 120, DISTRESS_S = 300, SEPARATE_S = 10, MEDIA_WINDOWS = 3;
+export const CHECKIN_S = { fall: 60, scream: 30, shout: 30, distress: 60, stillness: 60 };
+const FALL_DISTRESS_S = 60, FALL_STILL_S = 120, FALL_CANCEL_S = 120, ACTIVE_BEFORE_S = 1800;
+const SCREAM_S = 120, SHOUT_S = 60, SHOUTS = 3, DISTRESS_S = 300, SEPARATE_S = 10, MEDIA_WINDOWS = 3, TV_S = 60, TV_WINDOWS = 2;
+const DANGER = ["impact", "glass", "scream", "distress", "gunshot", "shout"];
 const COOLDOWN_S = 600, SMOKE_CLEAR_S = 300;
 const STOVE_S = 2400, STOVE_GAP_S = 180, BEEP_S = 300, BEEP_GAP_S = 120, WATER_S = 1200, WATER_SHARE = 0.8;
 const KEEP_S = 2 * 3600, STRAY = 2;          // stillness allows 2 stray windows (a false door or cupboard name)
@@ -29,10 +35,10 @@ export const COOKING_KINDS = ["frying", "kettle", "boiling"];
 export const OTHER_KITCHEN = ["dishes", "cutlery", "tap", "chopping", "cupboard", "drawer", "microwave", "blender", "pouring", "stirring"];
 
 export const TEXT = {
-  smoke: "a smoke alarm", co: "what sounds like a carbon monoxide alarm", fall: "a crash, then a groan or cry", fall_still: "a crash, then no movement for 10 minutes",
-  scream: "screaming", distress: "repeated groaning or crying", help: "the I need help button", stillness: "no activity for hours",
+  smoke: "a smoke alarm", co: "what sounds like a carbon monoxide alarm", fall: "a crash, then a groan or cry", fall_still: "a crash, then no movement for 2 minutes",
+  scream: "screaming", shout: "shouting, again and again", gunshot: "what sounded like a gunshot", distress: "repeated groaning or crying", help: "the I need help button", stillness: "no activity for hours",
   stove: "frying or boiling for 40 minutes with nothing else heard", beep: "a timer or appliance beeping for 5 minutes", water: "running water for 20 minutes",
-  scream_tv: "screaming while the TV or music was on", test: "a test alert",
+  scream_tv: "screaming while the TV or music was on", gunshot_tv: "a bang like a gunshot while the TV or music was on", test: "a test alert",
 };
 
 /** safety.json -> the constants the detectors need. */
@@ -136,7 +142,10 @@ function startCheckin(st, t, rule, type, evidence) {
 export function step(st, w, opts = {}) {
   const { urgent = true, concern = true, paused = false, smokeWhilePaused = false } = opts;
   const t = w.t, out = [];
-  st.hist.push({ t, hits: w.hits || [], media: !!w.media || w.label === "watching_tv", active: isActive(w), cooks: cooks(w), kinds: w.kindsDevice || w.kinds || [], label: w.label || null });
+  // media: the AudioSet TV/radio/music detector. tv: the activity head said "TV" in a window with no danger in it (a crash or a
+  // scream can itself push the head to "TV"; v3.5 addendum 2). Real TV is continuous, so a head "TV" needs 2 windows in 60 s.
+  const tv = w.label === "watching_tv" && !(w.hits || []).some((x) => DANGER.includes(x));
+  st.hist.push({ t, hits: w.hits || [], media: !!w.media, tv, active: isActive(w), cooks: cooks(w), kinds: w.kindsDevice || w.kinds || [], label: w.label || null });
   st.hist = st.hist.filter((h) => h.t > t - KEEP_S);
   const h = st.hist, me = h[h.length - 1];
   if (me.active) st.lastActive = t;
@@ -147,7 +156,8 @@ export function step(st, w, opts = {}) {
   const pat = w.pattern || { t3: 0, t4: 0 };
   me.t3 = pat.t3; me.t4 = pat.t4;
   if (urgent && (!paused || smokeWhilePaused)) {
-    const smoke = last3.filter((x) => has(x, "smoke_alarm")).length >= 2 || pat.t3 >= 2;
+    // U1b (v3.5 addendum): one T3 cycle in 2 of the last 3 windows, since a 10-s window often holds only one complete cycle
+    const smoke = last3.filter((x) => has(x, "smoke_alarm")).length >= 2 || pat.t3 >= 2 || last3.filter((x) => x.t3 >= 1).length >= 2;
     if (smoke) { if (st.smokeSince == null) { st.smokeSince = t - 10; out.push(alert(st, t, "urgent", "smoke", { since: st.smokeSince, evidence: ev(w, ["smoke_alarm"], pat) })); } }
     else if (st.smokeSince != null && !h.some((x) => x.t > t - SMOKE_CLEAR_S && (has(x, "smoke_alarm") || x.t3))) st.smokeSince = null;
     const co = separate(h.map((x) => ({ ...x, hits: x.t4 >= 1 ? ["t4"] : [] })), "t4", t - 40) >= 2;      // two separate windows in 40 s
@@ -155,7 +165,7 @@ export function step(st, w, opts = {}) {
     else if (st.coSince != null && !h.some((x) => x.t > t - SMOKE_CLEAR_S && x.t4)) st.coSince = null;
   }
   if (paused) return out;
-  const media = h.slice(-MEDIA_WINDOWS).some((x) => x.media);
+  const media = h.slice(-MEDIA_WINDOWS).some((x) => x.media) || h.filter((x) => x.tv && x.t > t - TV_S).length >= TV_WINDOWS;
   // U3 possible fall: an impact or breaking glass starts a 10-minute watch
   if (urgent && (has(me, "impact") || has(me, "glass")) && !media && !st.pending && !st.checkin) {
     const before = h.some((x) => x.t < t - 5 && x.t >= t - ACTIVE_BEFORE_S && x.active);
@@ -177,6 +187,14 @@ export function step(st, w, opts = {}) {
     if (media) { if (concern && cool(st, "scream_tv", t)) out.push(alert(st, t, "concern", "scream_tv", { evidence: ev(w, ["scream"]) })); }
     else if (urgent && cool(st, "scream", t)) out.push(startCheckin(st, t, "scream", "scream", ev(w, ["scream", "distress"])));
   }
+  // U8 a gunshot: straight to the family, no question first (with TV, radio or music on: only a note)
+  if (has(me, "gunshot")) {
+    if (media) { if (concern && cool(st, "gunshot_tv", t)) out.push(alert(st, t, "concern", "gunshot_tv", { evidence: ev(w, ["gunshot"]) })); }
+    else if (urgent && cool(st, "gunshot", t)) out.push(alert(st, t, "urgent", "gunshot", { since: t, evidence: ev(w, ["gunshot"]) }));
+  }
+  // U9 shouting again and again (one raised voice is nothing)
+  if (urgent && !st.checkin && !media && cool(st, "shout", t) && separate(h, "shout", t - SHOUT_S) >= SHOUTS)
+    out.push(startCheckin(st, t, "shout", "shout", ev(w, ["shout"])));
   // U5 distress voice again and again with nothing else going on
   if (urgent && !st.checkin && !media && cool(st, "distress", t) && separate(h, "distress", t - DISTRESS_S) >= 3
     && !h.some((x) => x.t > t - DISTRESS_S && x.cooks)) out.push(startCheckin(st, t, "distress", "distress", ev(w, ["distress"])));

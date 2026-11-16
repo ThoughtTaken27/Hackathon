@@ -28,9 +28,10 @@
     <a class="link" href="/"><span class="long">Back to Kettle</span><span class="short">Back</span></a>
   </header>
   <div id="beyond"></div>
+  <div id="urgent-howsure"></div>
   <div id="content"></div>
   <footer class="foot">
-    <p>Every number on this page is read from results/metrics.json (<code>python -m eval</code>), results/beyond.json (<code>python -m eval.beyond</code>) , results/stress.json (<code>python -m eval.stress</code>) , results/stress_teach.json (<code>python -m eval.stress_teach</code>), and results/kitchen_naming.json, sounds.json, sound_head.json, judge.json and confetti.json (copied by <code>python tools/export_accuracy.py</code>). None is typed by hand.</p>
+    <p>Every number on this page is read from results/metrics.json (<code>python -m eval</code>), results/beyond.json (<code>python -m eval.beyond</code>) , results/stress.json (<code>python -m eval.stress</code>) , results/stress_teach.json (<code>python -m eval.stress_teach</code>), and results/kitchen_naming.json, sounds.json, sound_head.json, judge.json and confetti.json (copied by <code>python tools/export_accuracy.py</code>), and results/safety.json for urgent alerts (<code>python -m eval.safety</code>). None is typed by hand.</p>
     <p>Datasets, models, libraries and AI tools behind these numbers: <a href="/credits">Credits</a>.</p>
     <p><strong>Prototype, not medical advice.</strong> Kettle is not an emergency device.</p>
   </footer>
@@ -38,5 +39,6 @@
 <script src="/js/common-legacy.js"></script>
 <script src="/js/howsure.js?v=w7"></script>
 <script type="module" src="/js/beyond.js?v=w8"></script>
+<script type="module" src="/js/urgent-howsure.js?v=u1"></script>
 </body>
 </html>
