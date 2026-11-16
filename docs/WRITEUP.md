@@ -1,6 +1,8 @@
 # Kettle
 **Track:** Health
 
+*This project is a prototype and is not medical advice.*
+
 # The problem
 Millions of older Americans with early memory loss are living completely alone - hours away from the children who love them. They are too busy working or too far away, forcing adults into the painful trap of a weekly call where the parent hides their decline. On the other hand, cameras feel like they're being watched and expensive sensor kits make things worse with false alarm and it reaches a peak where families tune them out. Families that are left blind until a missed warning sign can turn a preventable emergency into a crisis.  
 
