@@ -1,5 +1,5 @@
 // Kettle service worker: offline shell, model cache, web push alerts.
-const CACHE = "kettle-v35-1";
+const CACHE = "kettle-v35-2";
 
 const SHELL = [
   "/", "/family", "/kitchen", "/listen", "/start", "/pair", "/how-sure",
@@ -59,8 +59,10 @@ self.addEventListener("fetch", (event) => {
   if (p.startsWith("/api/") || p === "/sw.js") return; // always network
   if (req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html")) {
     event.respondWith(networkFirst(req));
-  } else if (p.startsWith("/model/") || p.startsWith("/vendor/ort/")) {
-    event.respondWith(cacheFirst(req)); // big files: cached after first load
+  } else if ((p.startsWith("/model/") && !p.endsWith(".json")) || p.startsWith("/vendor/ort/")) {
+    event.respondWith(cacheFirst(req)); // big files (.onnx, runtime): cached after first load
+  } else if (p.startsWith("/model/")) {
+    event.respondWith(networkFirst(req)); // small model settings (thresholds, the kitchen detector): fresh when online
   } else {
     event.respondWith(networkFirst(req)); // css/js/img: fresh when online, cached when not
   }
