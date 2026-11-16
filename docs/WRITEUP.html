@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Kettle · Write-up</title>
+<style>
+@page { size: Letter; margin: 0.32in 0.5in; }
+* { box-sizing: border-box; }
+:root { --ink:#16181d; --mute:#5b616e; --rule:#d9dce2; --accent:#1f5fbf; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin:0; color:var(--ink); font:7.85pt/1.28 -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; font-feature-settings:"tnum" 1; }
+a { color:var(--accent); text-decoration:none; }
+header { display:flex; justify-content:space-between; align-items:flex-end; gap:16px; padding-bottom:6px; border-bottom:1.2px solid var(--ink); }
+h1 { margin:0; font-size:21pt; line-height:1; letter-spacing:-.02em; font-weight:700; }
+.tag { margin:4px 0 0; font-size:9.6pt; color:var(--ink); font-weight:500; letter-spacing:-.005em; }
+.meta { text-align:right; font-size:7.6pt; line-height:1.5; color:var(--mute); }
+.meta b { color:var(--ink); font-weight:600; }
+.identity { margin:7px 0 0; font-size:8.6pt; }
+.disc { margin:2px 0 0; font-size:7.6pt; color:var(--mute); font-style:italic; }
+.kpis { display:grid; grid-template-columns:repeat(4,1fr); margin:8px 0 2px; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
+.kpis div { padding:5px 10px 5px 0; }
+.kpis div + div { padding-left:10px; border-left:1px solid var(--rule); }
+.kpis b { display:block; font-size:15pt; line-height:1.05; letter-spacing:-.02em; font-weight:650; }
+.kpis span { display:block; margin-top:2px; font-size:7.1pt; line-height:1.3; color:var(--mute); }
+.cols { column-count:2; column-gap:22px; margin-top:4px; }
+section { break-inside:auto; }
+h2 { break-after:avoid; }
+li, dl, p, dd { break-inside:avoid; }
+h2 { margin:7px 0 2px; font-size:7.4pt; letter-spacing:.09em; text-transform:uppercase; font-weight:700; color:var(--ink); }
+h2 i { font-style:normal; color:var(--accent); margin-right:5px; }
+p { margin:0 0 4px; }
+ul, ol { margin:0 0 4px; padding-left:13px; }
+li { margin:0 0 2px; }
+dl { margin:0 0 4px; display:grid; grid-template-columns:auto 1fr; gap:2px 8px; }
+dt { font-weight:600; white-space:nowrap; }
+dd { margin:0; }
+.day { margin:4px 0 0; }
+table { width:100%; border-collapse:collapse; margin:2px 0 4px; font-size:7.7pt; }
+th { text-align:left; font-weight:600; color:var(--mute); font-size:6.9pt; letter-spacing:.05em; text-transform:uppercase; padding:3px 6px 3px 0; border-bottom:1px solid var(--ink); }
+td { padding:2.2px 6px 2.2px 0; border-bottom:1px solid var(--rule); vertical-align:top; }
+td.n, th.n { text-align:right; white-space:nowrap; }
+td.n b { font-weight:650; }
+.ci { color:var(--mute); }
+.note { font-size:7.2pt; color:var(--mute); margin-top:-1px; }
+code { font:7.2pt ui-monospace, Menlo, monospace; }
+footer { margin-top:4px; padding-top:4px; border-top:1px solid var(--rule); font-size:6.6pt; line-height:1.32; color:var(--mute); }
+footer b { color:var(--ink); font-weight:600; }
+</style></head>
+<body>
+<header>
+  <div>
+    <h1>Kettle</h1>
+    <p class="tag">Know the day went okay, without a camera.</p>
+  </div>
+  <div class="meta">
+    <b>Track</b> AI + Health<br>
+    <b>Live demo</b> <a href="https://kettle.parth-dev.workers.dev">kettle.parth-dev.workers.dev</a><br>
+    <b>Code</b> <a href="https://github.com/ThoughtTaken27/Hackathon">github.com/ThoughtTaken27/Hackathon</a><br>
+    <b>Video</b> VIDEO_LINK
+  </div>
+</header>
+<p class="identity"><b>Kettle helps an adult child who lives far from a parent with early memory loss</b> by turning the sounds of the parent's kitchen into a private, glanceable timeline of the day. The audio never leaves the room.</p>
+<p class="disc">This project is a prototype and is not medical advice.</p>
+
+<div class="kpis">
+  <div><b>84.1</b><span>macro F1 on a held-out real-home test (Apple: 31.8)</span></div>
+  <div><b>83%</b><span>of kitchen activity caught; 0.3% false alarms</span></div>
+  <div><b>0 / 0</b><span>false urgent alerts: 12.3 h of home audio, 360 look-alikes</span></div>
+  <div><b>0</b><span>audio files saved or sent in a privacy check of the app</span></div>
+</div>
+
+<div class="cols">
+<section>
+<h2><i>1</i>The problem</h2>
+<p>About 28% of US adults 65+ who live in the community live alone (<a href="https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans">ACL, 2023</a>). <b>Meera, 34,</b> lives 300 miles from her dad <b>Ravi, 79,</b> who has early memory loss and lives alone. At 10 AM she wonders: did Dad get up and make breakfast? Calling every morning feels like checking up on him. A camera feels like being watched. None of the nine sensor kits we looked at publishes its miss or false-alarm rate.</p>
+</section>
+
+<section>
+<h2><i>2</i>What we built</h2>
+<dl>
+  <dt>In</dt><dd>Sound from a spare phone or laptop on Ravi's counter.</dd>
+  <dt>On device</dt><dd>Every 10 s it names the sound: cooking, washing up, eating, talking/TV, quiet. No audio is saved or sent.</dd>
+  <dt>Out</dt><dd>Meera's phone shows a day bar and her checks: "kitchen activity by 10 AM: met at 8:05."</dd>
+  <dt>Urgent</dt><dd>A smoke alarm, or a crash then a cry or 2 min of stillness, turns her screen red.</dd>
+  <dt>Consent</dt><dd>Ravi agrees first, sees what Meera sees, can pause.</dd>
+</dl>
+<p class="day"><b>A normal day vs. an off day.</b> Tuesday: cooking 7:40 to 8:00, washing up at 8:05, TV 9 to 11. Meera glances on the bus and doesn't call. Thursday: quiet until 10:30, morning check "not yet." Now the 10:45 call has a reason. <b>Why not a chatbot?</b> It can't listen all day, and we never send it audio.</p>
+</section>
+
+<section>
+<h2><i>3</i>What we added</h2>
+<p>Our own user (a parent living alone, the kitchen as the daily sign of life), our own question (did the morning happen, not "what sound is this"), and our own layers on public data: a kitchen detector, "Some activity" instead of a shrug, consent and pause, and urgent alerts.</p>
+</section>
+
+<section>
+<h2><i>4</i>How it works</h2>
+<ol>
+  <li><b>Hear.</b> CED-tiny, a 5.5M-parameter audio model pretrained on AudioSet, runs in the browser.</li>
+  <li><b>Name.</b> An activity model trained on 8,920 clips from a real home (SINS).</li>
+  <li><b>Catch the kitchen.</b> A detector reads all 527 sound scores, so a clink of cutlery isn't averaged away.</li>
+  <li><b>Decide what to say.</b> "Some activity" when it can't name what a person is doing; "Not sure" only when it can't place the sound at all.</li>
+  <li><b>Alert.</b> Danger detectors push an alert to the family.</li>
+</ol>
+<p>Thresholds were set on development data, never on test sets.</p>
+</section>
+</div>
+
+<h2><i>5</i>Results on held-out data</h2>
+<table>
+<thead><tr><th>Test</th><th class="n">Kettle</th><th class="n">Baseline or before</th></tr></thead>
+<tbody>
+<tr><td>Naming 9 activities, DCASE 2018 test, 7,791 clips (macro F1)</td><td class="n"><b>84.1</b> <span class="ci">[74.4, 86.7]</span></td><td class="n">Apple 31.8 · always "Quiet" 5.0</td></tr>
+<tr><td>Same, each of 7 microphones alone (check across groups)</td><td class="n"><b>79.9 to 85.6</b></td><td class="n">4-mic average 85.3</td></tr>
+<tr><td>Kitchen activity caught, as the app shows it</td><td class="n"><b>83.1%</b> <span class="ci">[76.5, 90.2]</span></td><td class="n">81.1% before detector</td></tr>
+<tr><td>Kitchen activity missed / false alarms</td><td class="n"><b>225 of 1,183</b> / <b>21 of 6,608</b> (0.3%)</td><td class="n">0.1% false before</td></tr>
+<tr><td>Other homes caught: Kitchen20 / DESED dish + frying</td><td class="n"><b>78% / 88%</b></td><td class="n">63% / 85% before</td></tr>
+<tr><td>Moments labeled "Not sure"</td><td class="n"><b>3.6%</b></td><td class="n">16.3% before</td></tr>
+<tr><td>Urgent caught, 60 runs each: smoke / crash+cry / crash+still / scream</td><td class="n"><b>88% / 73% / 72% / 83%</b></td><td class="n"></td></tr>
+<tr><td>False urgent alerts: 12.3 h home audio / 360 look-alikes</td><td class="n"><b>0 / 0</b></td><td class="n"></td></tr>
+</tbody></table>
+<p class="note">Brackets: 95% intervals from resampling sessions; percentages reweighted to the real activity mix. Every number is in <code>results/*.json</code> and reruns in <code>notebooks/kettle_reproduce.ipynb</code>.</p>
+
+<div class="cols">
+<section>
+<h2><i>6</i>Where it fails</h2>
+<ul>
+  <li><b>A real kitchen.</b> At a teammate's home, cooking with metal pots read as "eating." Rules fixed; that kitchen not re-run.</li>
+  <li><b>Room and mic.</b> Through a simulated room and laptop mic it caught only 28% of dish and cooking clips. Mic placement matters.</li>
+  <li><b>New homes.</b> All DESED kitchen clips, incl. blenders: 43% caught (measured before the detector). One home taught it.</li>
+  <li><b>Look-alikes.</b> Rinsing while cooking reads as washing up; TV talk reads as conversation.</li>
+  <li><b>Urgent sounds</b> were synthetic alarms and recorded crashes, not real emergencies.</li>
+</ul>
+</section>
+<section>
+<h2><i>7</i>What we'd do next</h2>
+<ol>
+  <li><b>With more time, accuracy in real rooms comes first.</b> Record real kitchens with permission, train on audio passed through rooms and cheap mics, and test where the device sits. Boosting quiet audio lifted the simulated room from 28% to 68%, but false kitchen labels rose, so it isn't shipped.</li>
+  <li><b>Background listening on the parent's own phone.</b> Today Kettle needs a device left on in one room. A native Android app can listen with the screen off and the phone free for calls; a tiny loudness check would wake the model only for sounds worth naming. We'd measure battery drain before claiming a number.</li>
+</ol>
+</section>
+</div>
+
+<footer>
+<b>Data</b> (all public): <a href="https://doi.org/10.5281/zenodo.1247102">SINS / DCASE 2018 Task 5</a> dev + <a href="https://zenodo.org/records/1291760">eval</a> (CC BY-NC 4.0 / BY-NC-ND 4.0); <a href="https://zenodo.org/records/3588172">DESED</a> (CC BY 4.0); <a href="https://github.com/marc-moreaux/kitchen20">Kitchen20</a>; <a href="https://github.com/karolpiczak/ESC-50">ESC-50</a> (CC BY-NC 3.0); <a href="https://zenodo.org/records/45759">TUT Sound Events 2016 home</a> (non-commercial); <a href="https://zenodo.org/records/6967442">Nonspeech7k</a> (CC BY 4.0); <a href="https://github.com/Jakobovski/free-spoken-digit-dataset">free-spoken-digit</a> (CC BY-SA 4.0); <a href="https://research.google.com/audioset/">AudioSet</a> ontology (CC BY 4.0); our own synthetic smoke/CO/timer alarms (NFPA 72 patterns). <b>Models:</b> <a href="https://huggingface.co/mispeech/ced-tiny">CED-tiny</a> (Apache-2.0), plus our own activity head, kitchen detector and tag rules, and named-sound head. Comparisons only: CED-small, AST (BSD-3), LAION CLAP (Apache-2.0), Apple SoundAnalysis, DCASE 2018 baseline. <b>Libraries:</b> ONNX Runtime Web, PyTorch, torchaudio, Transformers, scikit-learn, NumPy/SciPy, Cloudflare Workers. Links and licences: <a href="https://kettle.parth-dev.workers.dev/credits">/credits</a>, <code>docs/DATA-SOURCES.md</code>; every table: <code>docs/WRITEUP-LONG.md</code>. <b>AI tools:</b> Claude Code (Anthropic) wrote most of the code and documents under our direction; Aside (Claude), an AI browser agent, built parts of the web app and ran evaluations; REA for the product teardown. Who wrote what: <code>docs/AI-USAGE-LOG.md</code>. Kettle is not an emergency device and doesn't replace a smoke or CO detector, or 911.
+</footer>
+</body></html>

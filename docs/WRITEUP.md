@@ -1,41 +1,66 @@
-# Kettle: know the day went okay, without a camera
+# Kettle
+**Know the day went okay, without a camera.**
 
-**Track:** AI + Health · **Try it:** [kettle.parth-dev.workers.dev](https://kettle.parth-dev.workers.dev) · **Code:** [github.com/ThoughtTaken27/Hackathon](https://github.com/ThoughtTaken27/Hackathon) · **Video:** VIDEO_LINK
+**Track:** AI + Health · **Live demo:** [kettle.parth-dev.workers.dev](https://kettle.parth-dev.workers.dev) · **Code:** [github.com/ThoughtTaken27/Hackathon](https://github.com/ThoughtTaken27/Hackathon) · **Video:** VIDEO_LINK · **One-page PDF:** [`docs/WRITEUP.pdf`](WRITEUP.pdf)
+
+**Kettle helps an adult child who lives far from a parent with early memory loss** by turning the sounds of the parent's kitchen into a private, glanceable timeline of the day. The audio never leaves the room.
 
 _This project is a prototype and is not medical advice._
 
-## The problem
-About 28% of US adults 65+ who live in the community live alone ([ACL, 2023](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans)). **Our user:** Meera, 34, lives 300 miles from her dad Ravi, 79, who has early memory loss and lives alone. At 10 AM she wonders: did Dad get up and make breakfast? Calling every morning feels like checking up on him. A camera feels like being watched. None of the nine sensor kits we looked at publishes how often it misses or false-alarms.
+| **84.1** | **83%** | **0 / 0** | **0** |
+|---|---|---|---|
+| macro F1 on a held-out real-home test (Apple: 31.8) | of kitchen activity caught; 0.3% false alarms | false urgent alerts: 12.3 h of home audio, 360 look-alikes | audio files saved or sent in a privacy check of the app |
 
-## What we built
-A spare phone or laptop sits on Ravi's kitchen counter and listens. Every 10 seconds it names what it hears (cooking, washing up, eating, talking or TV, quiet) on the device itself. No audio is saved or sent, only labels and times. Meera's phone shows a calm day bar and the checks she picked: "kitchen activity by 10 AM: met at 8:05." If a smoke alarm goes off, or there's a crash followed by a cry or 2 minutes of stillness, her screen turns red right away. Ravi agrees first, sees exactly what Meera sees, and can pause it any time. A chatbot can't do this job: it can't listen to a kitchen all day, and we never give it the audio.
+## 1. The problem
+About 28% of US adults 65+ who live in the community live alone ([ACL, 2023](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans)). **Meera, 34,** lives 300 miles from her dad **Ravi, 79,** who has early memory loss and lives alone. At 10 AM she wonders: did Dad get up and make breakfast? Calling every morning feels like checking up on him. A camera feels like being watched. None of the nine sensor kits we looked at publishes its miss or false-alarm rate.
 
-**A normal day vs. an off day.** Tuesday: cooking 7:40 to 8:00, washing up at 8:05, TV from 9 to 11. Meera glances at it on the bus and doesn't call. Thursday: the bar shows quiet until 10:30 and the morning check says "not yet." Now the 10:45 call has a reason.
+## 2. What we built
+- **In:** sound from a spare phone or laptop on Ravi's counter.
+- **On device:** every 10 s it names the sound: cooking, washing up, eating, talking/TV, quiet. No audio is saved or sent.
+- **Out:** Meera's phone shows a day bar and her checks: "kitchen activity by 10 AM: met at 8:05."
+- **Urgent:** a smoke alarm, or a crash then a cry or 2 min of stillness, turns her screen red.
+- **Consent:** Ravi agrees first, sees what Meera sees, can pause.
 
-## What we added
-Our own user and setting (one adult child, one parent living alone, the kitchen as the daily sign of life), our own question (did the morning happen, not "what sound is this"), and our own layers on a public dataset: a kitchen detector over all 527 sound scores, "Some activity" instead of a shrug, consent and pause on the parent's screen, and urgent alerts to the family.
+**A normal day vs. an off day.** Tuesday: cooking 7:40 to 8:00, washing up at 8:05, TV 9 to 11. Meera glances on the bus and doesn't call. Thursday: quiet until 10:30, morning check "not yet." Now the 10:45 call has a reason. **Why not a chatbot?** It can't listen all day, and we never send it audio.
 
-## How it works
-CED-tiny, a small audio model pretrained on AudioSet, runs in the browser (ONNX). On top of it: an activity model trained on 8,920 clips from a real home (SINS, DCASE 2018 Task 5); a kitchen detector that reads all 527 sound scores at once, so a clink of cutlery isn't lost in a 10-second average; rules that say "Some activity" when it heard a person but can't name the activity, and "Not sure" only when it can't place the sound at all; and danger detectors that push an alert to the family. Every threshold was chosen on development data. Test sets were scored once.
+## 3. What we added
+Our own user (a parent living alone, the kitchen as the daily sign of life), our own question (did the morning happen, not "what sound is this"), and our own layers on public data: a kitchen detector, "Some activity" instead of a shrug, consent and pause, and urgent alerts.
 
-## Results
-| Held-out test | Result |
-|---|---|
-| Activity naming, DCASE 2018 test, 7,791 clips, 91 sessions (macro F1) | **84.1** [74.4, 86.7] vs always "Quiet" 5.0, Apple's sound classifier 31.8 |
-| Same, each of the 7 microphones on its own (a check across groups) | 79.9 to 85.6 |
-| Kitchen activity, what the app shows: caught / missed / false alarms | **83.1%** [76.5, 90.2] / 225 of 1,183 / 21 of 6,608 (0.3%) |
-| Kitchen20 kitchen clips / DESED dish and frying clips, caught (before the kitchen detector) | **78% / 88%** (63% / 85%) |
-| "Not sure" on held-out windows (before the "Some activity" rule) | **3.6%** (16.3%) |
-| Urgent alerts on synthetic alarms and recorded crashes in home audio, 60 timelines each: smoke while cooking / crash then cry / crash then stillness / screaming | **88.3% / 73.3% / 71.7% / 83.3%** |
-| False urgent alerts: 12.3 h of ordinary home sound / 360 look-alikes (TV, dropped pans, timers) | **0 / 0** |
+## 4. How it works
+1. **Hear.** CED-tiny, a 5.5M-parameter audio model pretrained on AudioSet, runs in the browser.
+2. **Name.** An activity model trained on 8,920 clips from a real home (SINS).
+3. **Catch the kitchen.** A detector reads all 527 sound scores, so a clink of cutlery isn't averaged away.
+4. **Decide what to say.** "Some activity" when it can't name what a person is doing; "Not sure" only when it can't place the sound at all.
+5. **Alert.** Danger detectors push an alert to the family.
 
-**Where it fails.** When one of us tested it at home, cooking with metal pots read as "eating." We fixed the rules that caused it but haven't re-run that kitchen yet. The bigger problem: replayed through a simulated room and laptop mic (echo, quieter, background hiss), Kettle catches only 28% of dish and cooking clips, so mic placement matters a lot. On a broader set of real-home kitchen clips (DESED, including blenders) it caught 43% before tonight's changes. Urgent sounds are synthetic alarms and recorded crashes, not real emergencies, and we had no gunshot or shouting recordings to measure. A privacy check of the running app found 0 audio files written and 0 outside connections.
+Thresholds were set on development data, never on test sets.
 
-## What we'd do next
-1. **Accuracy in real rooms.** Record a few real kitchens with permission (protocol in `docs/REAL-KITCHEN-PROTOCOL.md`), train on audio that has been through rooms and cheap mics, and test where the laptop actually sits. In one quick test, boosting quiet audio raised the simulated room from 28% to 68% of DESED dish and cooking clips, but false kitchen labels went up too, so it isn't shipped yet.
-2. **Running in the background on the parent's own phone.** Right now Kettle needs a device left on in one room, with the screen on. A native Android app can keep the mic on with the screen off and the phone free for calls and texts. To save battery, a tiny loudness check would run all the time and wake the model only when there's sound worth naming. We'd measure the drain before claiming a number, and labels would need to stop assuming a kitchen.
+## 5. Results on held-out data
+| Test | Kettle | Baseline or before |
+|---|--:|--:|
+| Naming 9 activities, DCASE 2018 test, 7,791 clips (macro F1) | **84.1** [74.4, 86.7] | Apple 31.8 · always "Quiet" 5.0 |
+| Same, each of 7 microphones alone (check across groups) | **79.9 to 85.6** | 4-mic average 85.3 |
+| Kitchen activity caught, as the app shows it | **83.1%** [76.5, 90.2] | 81.1% before detector |
+| Kitchen activity missed / false alarms | **225 of 1,183** / **21 of 6,608** (0.3%) | 0.1% false before |
+| Other homes caught: Kitchen20 / DESED dish + frying | **78% / 88%** | 63% / 85% before |
+| Moments labeled "Not sure" | **3.6%** | 16.3% before |
+| Urgent caught, 60 runs each: smoke / crash+cry / crash+still / scream | **88% / 73% / 72% / 83%** | |
+| False urgent alerts: 12.3 h home audio / 360 look-alikes | **0 / 0** | |
 
-## Sources and AI tools
+Brackets: 95% intervals from resampling sessions; percentages reweighted to the real activity mix. Every number is in `results/*.json` and reruns in `notebooks/kettle_reproduce.ipynb`.
+
+## 6. Where it fails
+- **A real kitchen.** At a teammate's home, cooking with metal pots read as "eating." Rules fixed; that kitchen not re-run.
+- **Room and mic.** Through a simulated room and laptop mic it caught only 28% of dish and cooking clips. Mic placement matters.
+- **New homes.** All DESED kitchen clips, incl. blenders: 43% caught (measured before the detector). One home taught it.
+- **Look-alikes.** Rinsing while cooking reads as washing up; TV talk reads as conversation.
+- **Urgent sounds** were synthetic alarms and recorded crashes, not real emergencies.
+
+## 7. What we'd do next
+1. **With more time, accuracy in real rooms comes first.** Record real kitchens with permission, train on audio passed through rooms and cheap mics, and test where the device sits. Boosting quiet audio lifted the simulated room from 28% to 68%, but false kitchen labels rose, so it isn't shipped.
+2. **Background listening on the parent's own phone.** Today Kettle needs a device left on in one room. A native Android app can listen with the screen off and the phone free for calls; a tiny loudness check would wake the model only for sounds worth naming. We'd measure battery drain before claiming a number.
+
+## 8. Sources and AI tools
 **Datasets** (all public; audio git-ignored, only embeddings and labels committed):
 
 - [SINS / DCASE 2018 Task 5](https://doi.org/10.5281/zenodo.1247102) dev set (CC BY-NC 4.0): trains the activity head; [eval audio](https://zenodo.org/records/1291760) + [labels](https://zenodo.org/records/1964758) (CC BY-NC-ND 4.0) for one frozen test run; [published results](https://dcase.community/challenge2018/task-monitoring-domestic-activities-results) for comparison.
@@ -48,7 +73,7 @@ CED-tiny, a small audio model pretrained on AudioSet, runs in the browser (ONNX)
 - [AudioSet](https://research.google.com/audioset/) ontology (CC BY 4.0): the 527 sound tags CED-tiny outputs.
 - Our own synthetic smoke/CO/timer alarms (`eval/synth_alarms.py`, NFPA 72 patterns), labels known by construction.
 
-**Models:** [CED-tiny](https://huggingface.co/mispeech/ced-tiny) ([paper](https://arxiv.org/abs/2308.11957), Apache-2.0), pretrained on AudioSet, runs on the device as ONNX. On top of it, our own small trained parts: the activity head (logistic regression on SINS, `models/head.json`), the second-opinion AudioSet-tag rules (`models/witness.json`) and the named-sound head (`web/public/model/sound_head.json`). Baselines and comparisons only: [CED-small](https://huggingface.co/mispeech/ced-small), [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593) (BSD-3), [LAION CLAP](https://huggingface.co/laion/clap-htsat-unfused) (Apache-2.0), Apple SoundAnalysis, DCASE 2018 baseline.
+**Models:** [CED-tiny](https://huggingface.co/mispeech/ced-tiny) ([paper](https://arxiv.org/abs/2308.11957), Apache-2.0), pretrained on AudioSet, runs on the device as ONNX. On top of it, our own small trained parts: the activity head (logistic regression on SINS, `models/head.json`), the kitchen detector and second-opinion AudioSet-tag rules (`models/witness.json`) and the named-sound head (`web/public/model/sound_head.json`). Baselines and comparisons only: [CED-small](https://huggingface.co/mispeech/ced-small), [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593) (BSD-3), [LAION CLAP](https://huggingface.co/laion/clap-htsat-unfused) (Apache-2.0), Apple SoundAnalysis, DCASE 2018 baseline.
 
 **Libraries:** [ONNX Runtime Web](https://github.com/microsoft/onnxruntime), PyTorch, torchaudio, Transformers, scikit-learn, NumPy/SciPy, Cloudflare Workers. Full licence list: [/credits](https://kettle.parth-dev.workers.dev/credits) and `docs/DATA-SOURCES.md`; every table: `docs/WRITEUP-LONG.md`.
 
