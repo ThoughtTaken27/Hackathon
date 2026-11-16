@@ -94,7 +94,7 @@ recordings played through the same model"*.
    ("What Kettle heard" on the left, "What the family sees" on the right).
    🎙 *"More than one in four Americans over sixty-five live alone… Kettle turns a spare laptop in the kitchen into a calm
    timeline of the day's activity, from sound alone, without recording anything."*
-2. Scroll slowly down to the three big numbers (**84.1**, **89%**, **0**) and stop for 3 s.
+2. Scroll slowly down to the three big numbers (**84.1**, **83%**, **0**) and stop for 3 s.
    🎙 *"On held-out benchmark recordings it had never heard, scored once, Kettle reaches 84 macro F1, and it caught about nine in
    ten kitchen-activity moments. No audio is ever saved."*
 3. (Fallback for Take 2 only) Scroll to the **Two screens** section and click **A usual morning**. Let it play for 15 s.

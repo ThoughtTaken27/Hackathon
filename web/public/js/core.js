@@ -159,7 +159,8 @@ const rescues = (lab, w) => !!w && lab === "not_sure" && w.k >= TAU_K && w.k > w
 // Rule 2f (kettle/witness.py detects; models/witness.json "detector"; results/kitchen_detector.json): the head didn't say a
 // kitchen activity, the kitchen detector (all 527 tags) is >= TAU_KD, and no motor or bathroom sound beats the kitchen tags.
 export const TAU_KD = 0.65;
-const detects = (lab, w) => !!w && "kd" in w && !MEAL.has(lab) && lab !== "private" && lab !== "kitchen" && w.kd >= TAU_KD && !(w.v >= TAU_V && w.v > w.k);
+export const TAU_KD_K = 0.03;   // a kitchen tag must actually be heard; without it glass, clapping, birds and thunder fired
+const detects = (lab, w) => !!w && "kd" in w && !MEAL.has(lab) && lab !== "private" && lab !== "kitchen" && w.kd >= TAU_KD && w.k >= TAU_KD_K && !(w.v >= TAU_V && w.v > w.k);
 const vetoes = (lab, w) => !!w && MEAL.has(lab) && w.v >= TAU_V && w.v > w.k;
 export function rawLabel(ev, theta) {
   if (ev.private) return "private";

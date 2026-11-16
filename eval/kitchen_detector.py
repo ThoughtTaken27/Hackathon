@@ -132,8 +132,8 @@ def main() -> int:
         "_what": "Kitchen detector (rule 2f, eval/kitchen_detector.py): logistic regression on the log-odds of all 527 CED-tiny "
                  "AudioSet scores, kitchen activity vs anything else. Trained on the TUNE halves of DESED public eval, Kitchen20 and "
                  "ESC-50 household clips plus SINS dev; C and tau chosen on a held-back half of TUNE (false kitchen <= 3%). Fires only "
-                 "when the head did not already say a kitchen activity and no motor or bathroom sound is louder.",
-        "tau": tau, "C": C, "intercept": round(float(m.intercept_[0]), 6), "coef": [round(float(c), 6) for c in m.coef_[0]]}
+                 "when the head did not already say a kitchen activity, a kitchen tag was heard (k >= tau_k = 0.03, rule 2e's 'heard' bar; added after it fired on 10% of off-list sounds) and no motor or bathroom sound is louder.",
+        "tau": tau, "tau_k": 0.03, "C": C, "intercept": round(float(m.intercept_[0]), 6), "coef": [round(float(c), 6) for c in m.coef_[0]]}
     cfg_path.write_text(json.dumps(cfg))
     print(f"chosen on the held-back TUNE half: C={C} tau={tau} recall {100 * rec:.0f}% false {-100 * nfa:.1f}%")
     out = {"what": "Rule 2f head-to-head through the app's own window rules (kettle/timeline.py raw_label + describe), one 10-s window "
@@ -198,5 +198,60 @@ def report(rows) -> dict:
     return res
 
 
+def app_meal_metric() -> dict:
+    """What the app itself shows, scored with the team's own pre-registered kitchen metric (eval/dev.py meal_metric: per
+    10-s window, single mic, reweighted to the full test set's activity mix, 95% CI by session bootstrap).
+
+    The landing page used the model's top guess; the app never shows that (below theta it says Not sure / Some activity).
+    Here every held-out SINS eval window goes through the shipped rules (kettle/timeline.py raw_label, rule 2c naming,
+    rule 2e describe), before and after rule 2f. Writes web/public/data/app.json for the landing page."""
+    from eval import dev
+    from eval import metrics as M
+    from eval.common import full_counts
+    from kettle import evidence, model, timeline, witness
+    from kettle.data import load_meta
+    from kettle.labels import CLASSES
+    head = model.load(ROOT / "models" / "head.json")
+    meta = {r["file"][:-4]: r for r in load_meta("eval")}
+    F, E, S = [], [], []
+    for f in sorted(glob.glob(str(EMB / "eval" / "*"))):
+        a = np.load(f, allow_pickle=True)
+        F += [str(x) for x in a["files"]]
+        E.append(a["emb"][:, 0])
+        S.append(a["scores"][:, 0].astype(np.float32))
+    E, S = np.concatenate(E).astype(np.float32), np.concatenate(S)
+    y = np.array([CLASSES.index(meta[f]["label"]) for f in F])
+    s = np.array([meta[f]["session"] for f in F])
+    w = M.class_weights(full_counts("eval"), np.bincount(y, minlength=9))
+    P = model.predict_proba(head, E)
+    N = model.novelty(head, E) > head["novelty"]["threshold"]
+    split = "DCASE 2018 Task 5 eval sample (held-out); the app's shipped window rules on cached CED-tiny outputs"
+    det, out = witness.DET, {}
+    for key, d in (("app_before_rule_2f", None), ("app_live", det)):
+        witness.DET = d
+        labs = []
+        for i in range(len(S)):
+            e = {"probs": dict(zip(CLASSES, map(float, P[i]))), "novel": bool(N[i]), "w": witness.opinion(S[i]),
+                 "sounds": evidence.top_sounds(S[i]), "kinds": []}
+            lab = timeline.raw_label(e, head["theta"])
+            if lab == "kitchen":
+                lab = witness.name_kitchen([e])
+            labs.append(timeline.describe(e) if lab == "not_sure" else lab)
+        kit = np.array([l in MEAL or l == "kitchen" for l in labs])
+        p = np.where(kit, CLASSES.index("cooking"), CLASSES.index("other"))       # meal_metric only reads kitchen yes/no
+        out[key] = dev.meal_metric(y, p, s, w, split)
+        out[key]["not_sure_pct"] = round(100 * float(np.mean([l == "not_sure" for l in labs])), 1)
+    witness.DET = det
+    out["what"] = ("Kitchen activity caught / wrongly called, per 10-s window, single mic, through the app's own rules; the team's "
+                   "meal_metric (reweighted to the full test mix, CI by session bootstrap). Made by python -m eval.kitchen_detector --app.")
+    (ROOT / "web" / "public" / "data" / "app.json").write_text(json.dumps(out, indent=1))
+    return out
+
+
 if __name__ == "__main__":
+    if "--app" in sys.argv:
+        r = app_meal_metric()
+        for k in ("app_before_rule_2f", "app_live"):
+            print(k, {m: (r[k][m]["value"], [round(x, 1) for x in r[k][m]["ci95"]]) for m in ("caught", "false_alarm_rate", "right_when_it_says_so")}, "not sure", r[k]["not_sure_pct"])
+        raise SystemExit(0)
     raise SystemExit(main())
