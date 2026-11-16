@@ -1,5 +1,7 @@
 # Kettle demo video: script, shot list and how to record it
 
+> **Filming tonight with three people (grandpa, adult child, narrator)? Use [`docs/VIDEO-SHOOT.md`](VIDEO-SHOOT.md).** It replaces the scripts below.
+
 Click-by-click shooting script: `docs/DEMO-SCRIPT.md`.
 
 **Length: 1:55 (hard limit 2:00).** Upload as **unlisted** YouTube, then open the link in a private window to check it.
