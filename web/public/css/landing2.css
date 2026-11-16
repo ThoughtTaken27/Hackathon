@@ -31,7 +31,7 @@
 .acc-n { display: inline-block; width: 26px; color: var(--tx4); font-size: 15px; font-weight: 500; letter-spacing: 0; transition: color 260ms ease; vertical-align: 2px; }
 .acc[aria-selected="true"] .acc-n { color: var(--ink); }
 .acc-b { display: grid; grid-template-rows: 0fr; max-height: none !important; margin-top: 0 !important; padding-left: 26px;
-  transition: grid-template-rows 460ms cubic-bezier(.22,1,.36,1), opacity 300ms ease !important; }
+  transition: grid-template-rows 300ms cubic-bezier(.22,1,.36,1), opacity 220ms ease !important; }
 .acc-b > span { overflow: hidden; min-height: 0; }
 .acc[aria-selected="true"] .acc-b { grid-template-rows: 1fr; }
 .acc[aria-selected="true"] .acc-b > span { padding-top: 10px; }
@@ -135,7 +135,7 @@ main > section:not(.lx-hero), .lx-foot { position: relative; z-index: 1; }
 /* Hero and device frames: blocks glide to their new place when the day grows, instead of jumping (Nov 15) */
 .lx-panel .blk, .lx-scene-ui .blk, .dev .blk { transition: left 600ms cubic-bezier(.22,1,.36,1), width 600ms cubic-bezier(.22,1,.36,1); }
 .lx-panel .now-tick, .lx-scene-ui .now-tick, .dev .now-tick { transition: left 600ms cubic-bezier(.22,1,.36,1); }
-.lp-heard li { transition: background-color 400ms ease, opacity 400ms ease; will-change: transform; }
+.lp-heard li { transition: background-color 200ms ease, opacity 200ms ease; will-change: transform; }
 .lp-heard li:nth-child(6) { opacity: .45; }
 .lp-heard li:nth-child(5) { opacity: .75; }
 

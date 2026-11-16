@@ -174,7 +174,7 @@
 .acc-i::after { transform: rotate(90deg); }
 .acc[aria-selected="true"] .acc-i::after { transform: rotate(0); }
 .acc-b { grid-column: 1 / -1; display: block; max-height: 0; overflow: hidden; opacity: 0; font-size: 15.5px; line-height: 24px; color: var(--tx2); max-width: 32em;
-  transition: max-height 420ms var(--ease-out), opacity 300ms ease, margin-top 420ms var(--ease-out); }
+  transition: max-height 300ms var(--ease-out), opacity 220ms ease, margin-top 300ms var(--ease-out); }
 .acc[aria-selected="true"] .acc-b { max-height: 120px; opacity: 1; margin-top: 10px; }
 .acc-p { position: absolute; left: 0; right: 0; top: -1px; height: 1px; overflow: hidden; }
 .acc-p i { display: block; height: 100%; width: 100%; background: #1C1917; transform-origin: left; transform: scaleX(0); }

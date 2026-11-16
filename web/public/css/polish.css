@@ -180,43 +180,67 @@
 /* =================================================================== emoji, after Droppy's inline Droplet chips
    Microsoft Fluent Emoji (3D, MIT). Three uses, one system:
    .ej  a chip in running text: the emoji beside the word it names, on a tint of that word's day-bar colour
-   .hj  an animated emoji closing a section heading; it springs in after the heading's words land
-   .h3j an emoji heading a privacy card; it tilts when the card is hovered
-   Pops use one spring (the overshoot curve), everything else the page's ease-out. Transform and opacity only. */
+   .hj  an animated emoji closing a section heading
+   .h3j an emoji heading a privacy card
+   Motion follows the 12 principles where they earn it: the pop winds up (anticipation), travels on an arc, stretches on
+   the way and squashes on landing, then settles (follow-through). Hover feedback stays under 300 ms. */
 .ej { --c: var(--act-moving); display: inline-block; white-space: nowrap; padding: 0 .26em 0 .2em; margin: 0 .04em 0 0; border-radius: .42em;
   background: color-mix(in oklch, var(--c) 13%, transparent); color: color-mix(in oklch, var(--c) 58%, var(--ink)); font-weight: 560; line-height: 1.32; }
-.ej > img { display: inline-block; width: 1.24em; height: 1.24em; margin-right: .18em; vertical-align: -.24em;
-  opacity: .25; transform: scale(.72) rotate(-10deg); transition: transform 560ms cubic-bezier(.34,1.56,.64,1), opacity 260ms cubic-bezier(.22,1,.36,1); }
-.ej.on > img { opacity: 1; transform: none; }
+.ej > img { display: inline-block; width: 1.24em; height: 1.24em; margin-right: .18em; vertical-align: -.24em; opacity: .25; transform: scale(.72) rotate(-10deg);
+  transition: opacity 200ms cubic-bezier(.22,1,.36,1), transform 200ms cubic-bezier(.22,1,.36,1); }
+.ej.on > img { opacity: 1; transform: none; animation: ej-pop 460ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes ej-pop {
+  0%   { opacity: .25; transform: translate(0, .04em) scale(.72) rotate(-10deg); }
+  18%  { opacity: .6;  transform: translate(-.02em, .08em) scale(.68, .62) rotate(-12deg); }     /* wind-up: a short dip first */
+  55%  { opacity: 1;   transform: translate(.02em, -.16em) scale(.96, 1.1) rotate(4deg); }       /* up the arc, stretched */
+  78%  { transform: translate(0, .02em) scale(1.08, .92) rotate(-1deg); }                         /* lands, squashed */
+  100% { opacity: 1;   transform: none; } }
 
 .hj { display: inline-block; width: .92em; height: .92em; margin-left: .16em; vertical-align: -.1em; }
-.hj img { display: block; width: 100%; height: 100%; opacity: 0; transform: translateY(.18em) scale(.6) rotate(-14deg); }
-.lx-sec.seen .hj img { animation: hj-in 760ms cubic-bezier(.34,1.56,.64,1) 520ms forwards; }
-.lx-h2 em + .hj { margin-left: .12em; }
-@keyframes hj-in { 0% { opacity: 0; transform: translateY(.18em) scale(.6) rotate(-14deg); filter: blur(4px); } 60% { opacity: 1; filter: none; } 100% { opacity: 1; transform: none; } }
+.hj img { display: block; width: 100%; height: 100%; opacity: 0; transform-origin: 50% 90%; }
+.lx-sec.seen .hj img { animation: hj-in 720ms cubic-bezier(.22,1,.36,1) 560ms both; }
+@keyframes hj-in {
+  0%   { opacity: 0; transform: translate(-.28em, .3em) scale(.5) rotate(-18deg); filter: blur(4px); }
+  20%  { opacity: .5; transform: translate(-.3em, .36em) scale(.46, .4) rotate(-20deg); filter: blur(2px); }   /* anticipation */
+  58%  { opacity: 1; transform: translate(-.06em, -.2em) scale(.94, 1.1) rotate(6deg); filter: none; }        /* arc, stretch */
+  80%  { transform: translate(0, .02em) scale(1.1, .9) rotate(-2deg); }                                         /* squash on landing */
+  100% { opacity: 1; transform: none; } }
 
 .lx-card h3 { display: flex; align-items: center; gap: 10px; }
-.h3j { width: 26px; height: 26px; flex: none; transition: transform 520ms cubic-bezier(.34,1.56,.64,1); }
-@media (hover: hover) and (pointer: fine) { .lx-card:hover .h3j { transform: rotate(-9deg) scale(1.12); } }
+.h3j { width: 26px; height: 26px; flex: none; transform-origin: 50% 80%; transition: transform 260ms cubic-bezier(.34,1.56,.64,1); }
+@media (hover: hover) and (pointer: fine) { .lx-card:hover .h3j { transform: rotate(-9deg) scale(1.14); } }
 
-/* the day's readout and the hero's "What Kettle heard" carry the same emoji on the same tint */
-.ro-sw.ro-ej, .fam .ro-sw.ro-ej { width: 28px; height: 28px; border-radius: 8px; display: inline-grid; place-items: center; background: color-mix(in oklch, var(--c) 16%, transparent); }
-.ro-ej img { width: 20px; height: 20px; }
-.lp-heard .sw.ej-sw { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: color-mix(in oklch, var(--c) 16%, transparent); }
-.ej-sw img { width: 19px; height: 19px; }
-.lp-heard li.ns .ej-sw { opacity: .6; }
+/* "What Kettle heard": the emoji stands alone in its own column, at the size it was picked at (20 px) */
+.lp-heard li { grid-template-columns: 58px 20px 1fr auto; gap: 12px; transition: background-color 200ms ease, opacity 200ms ease; }
+.lp-heard .sw.ej-sw { width: 20px; height: 20px; border-radius: 0; background: none; display: block; }
+.ej-sw img { display: block; width: 20px; height: 20px; }
+.lp-heard li.ns .ej-sw { opacity: .55; }
+.lp-heard li.enter .ej-sw img { animation: ej-pop 440ms cubic-bezier(.22,1,.36,1) 120ms both; }   /* secondary action: the row slides in, its emoji lands a beat later */
+/* the readout on the landing panel: the same emoji, bare, beside the label */
+.ro-sw.ro-ej { width: 22px; height: 22px; border-radius: 0; background: none; display: inline-grid; place-items: center; position: static; }
+.ro-ej img { width: 22px; height: 22px; display: block; }
 
-/* section headings: the serif word gets a hand-drawn marker swipe once its section arrives (after Droppy's .hx-mark) */
-.lx-sec .lx-h2 em { position: relative; isolation: isolate; white-space: nowrap; }
-.lx-sec .lx-h2 em::before { content: ""; position: absolute; z-index: -1; left: -.06em; right: -.1em; bottom: .04em; height: .36em;
-  background: color-mix(in oklch, var(--accent) 24%, transparent);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 40' preserveAspectRatio='none'%3E%3Cpath d='M4 10 68 7 72 3 238 1 235 31 150 35 141 39 1 38Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 40' preserveAspectRatio='none'%3E%3Cpath d='M4 10 68 7 72 3 238 1 235 31 150 35 141 39 1 38Z'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
-  clip-path: inset(0 100% 0 0); transition: clip-path 720ms cubic-bezier(.32,.72,0,1) 380ms; }
-.lx-sec.seen .lx-h2 em::before { clip-path: inset(0); }
+/* one hand-drawn swash, under the promise that matters most ("leaves"), drawn once with slow-in/slow-out */
+.lx-h2 em.sw-em { position: relative; white-space: nowrap; }
+.swash { position: absolute; left: -.04em; right: -.08em; bottom: -.16em; width: calc(100% + .12em); height: .32em; overflow: visible; pointer-events: none; }
+.swash path { fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; opacity: .9; }
+.swash path + path { stroke-width: 1.4; opacity: .45; }
+.lx-sec.seen .swash path { transition: stroke-dashoffset 820ms cubic-bezier(.65,0,.35,1) 620ms; stroke-dashoffset: 0; }
+.lx-sec.seen .swash path + path { transition-delay: 860ms; transition-duration: 640ms; }
+
+/* Fitts: small targets get a bigger invisible hit area */
+.lx-links a { position: relative; }
+.lx-links a::after { content: ""; position: absolute; inset: -12px -8px; }
+.lp-fam .ro-step, .f-mini.fam .ro-step { position: relative; }
+.lp-fam .ro-step::after, .f-mini.fam .ro-step::after { content: ""; position: absolute; inset: -4px; border-radius: inherit; }
+
+/* the main buttons' arrow winds back a pixel, then goes (anticipation, 240 ms) */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lx-pill:hover svg { animation: arrow-go 240ms cubic-bezier(.22,1,.36,1) both; }
+  @keyframes arrow-go { 0% { transform: none; } 30% { transform: translateX(-2px); } 100% { transform: translateX(3px); } }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .ej > img, .hj img { opacity: 1; transform: none; transition: none; animation: none; }
-  .lx-sec .lx-h2 em::before { clip-path: inset(0); transition: none; }
+  .ej > img, .hj img, .ej-sw img { opacity: 1; transform: none; transition: none; animation: none !important; }
+  .swash path { stroke-dashoffset: 0; transition: none; }
 }
-.lp-heard .sw.ej-sw { margin-right: 4px; }

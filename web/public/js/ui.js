@@ -4,9 +4,9 @@ import { COLOUR, DISPLAY } from "./core.js";
 
 // One 3D emoji per thing Kettle can name (Microsoft Fluent Emoji, MIT; static WebP in /img/emoji). Colour stays the
 // day bar's key; the emoji sits on a tint of that colour so the two always agree.
-export const EMOJI = { cooking: "cooking", dishwashing: "sponge", eating: "plate", watching_tv: "tv", talk_or_tv: "tv",
-  social_activity: "speech", vacuum_cleaner: "broom", working: "keyboard", other: "footprints", kitchen: "teapot",
-  absence: "leaf", empty: "leaf", not_sure: "question" };
+export const EMOJI = { cooking: "pot", dishwashing: "sponge", eating: "bowl", watching_tv: "tv", talk_or_tv: "tv",
+  social_activity: "speaking", vacuum_cleaner: "broom", working: "keyboard", other: "footprints", kitchen: "teapot",
+  absence: "leaf", empty: "leaf", not_sure: "thinking" };   // picked at real size (20 px): each must read at a glance on white
 export function emoji(key, cls = "ej-i") {
   const n = EMOJI[key]; if (!n) return null;
   const i = document.createElement("img"); i.className = cls; i.src = `/img/emoji/${n}.webp`; i.alt = ""; i.width = i.height = 48;
