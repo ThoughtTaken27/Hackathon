@@ -1,5 +1,4 @@
-# Kettle
-**Track:** Health
+# Kettle: know the day went okay, without a camera
 
 **Track:** AI + Health · **Team:** three high school students · **Try it:** [kettle.parth-dev.workers.dev](https://kettle.parth-dev.workers.dev) · **Code:** [github.com/ThoughtTaken27/Hackathon](https://github.com/ThoughtTaken27/Hackathon) · **Video:** VIDEO_LINK
 
