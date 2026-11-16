@@ -60,7 +60,7 @@ CIs resample the 91 test sessions (the lower end is pessimistic: some resamples 
 | Some activity | 55.4 [40.6, 73.5] | 156 | 248 | 350 |
 | Conversation | 96.9 [92.5, 100.0] | 11 | 81 | 350 |
 | Vacuuming | 93.1 [71.4, 100.0] | 24 | 0 | 350 |
-| TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
+| Talking / TV | 98.6 [97.6, 100.0] | 29 | 4 | 2,107 |
 | Typing | 80.6 [72.7, 87.1] | 284 | 173 | 1,463 |
 
 Recall fell from dev to held-out for some activity 76% → 55%, washing up 89% → 73%, eating 92% → 85%, vacuuming 100% → 93% (a different stretch of the week and other microphones; one run can't separate the causes).
