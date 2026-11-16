@@ -9,6 +9,25 @@ the narration (no AI voice). The rubric wants numbers in the first 30 seconds.
 Every number spoken below comes from a results file (right-hand column). If a file changes, the number in the script changes.
 Run `python -m eval.check_metrics` and re-read this table before recording.
 
+## v3.5 script: lead with the urgent alert (use this one; the older script below is the fallback)
+
+Record on localhost or crop the address bar. Use real sounds in the room (a phone speaker reads as TV and is gated as media).
+Before filming: on the family phone press **Turn on alerts**, then **Send a test alert**, and check it arrives with Kettle closed.
+
+| Time | On screen | Narration (read exactly) | Number source |
+|---|---|---|---|
+| 0:00–0:10 | Kitchen: press a real smoke detector's **test button** next to the laptop. Cut to the phone: the red Kettle notification arrives; open it, red banner | "That's a smoke alarm in Dad's kitchen. Seconds later, his daughter's phone knows, from three hours away." | live; browser test: room red after 19.9 s, family 2.8 s later (`results/e2e_urgent.json`) |
+| 0:10–0:22 | Family view: banner, then the calm day bar | "More than one in four Americans over 65 live alone. Kettle turns a spare phone or laptop into a calm timeline of their day, from sound alone. It never records audio." | ACL 2023 profile (28%) |
+| 0:22–0:34 | How sure, top table | "On held-out recordings it had never heard, scored once: 84 macro F1. Apple's built-in sound classifier scores 32 on the same clips." | `results/metrics.json` (84.1, 31.8) |
+| 0:34–0:55 | Split screen live: stir a pan, run the tap → the label appears on the phone; a check turns Met | "Every ten seconds it names what it hears, then forgets the sound. Only the label leaves the kitchen." | — |
+| 0:55–1:08 | Kitchen: Pause; "What can be seen" untick Talking/TV; the phone shows it honestly | "Dad says yes first, can pause it, and decides what's shared." | — |
+| 1:08–1:30 | How sure → **Urgent alerts** card; then a crash and a cry (or press **I need help**) → kitchen "Are you OK? Asha has been told" → press I'm OK → phone banner turns amber | "A smoke alarm, a crash then a cry, screaming or a gunshot goes red at once. In over twelve hours of ordinary home sound, it raised zero false urgent alerts." | `results/safety.json` (0 in 12.3 h; smoke 88.3%) |
+| 1:30–1:48 | How sure failure rows | "Where it fails: in real homes it never heard, it says 'not sure' 42% of the time, and our alarm tests are synthetic, not real homes. We show that instead of hiding it." | `results/real_homes.json` (41.8%) |
+| 1:48–1:55 | Calm day bar; "Prototype, not medical advice" | "Kettle. Know the day went okay, without a camera." | — |
+
+If the live notification doesn't arrive by 8:15 PM, film the family page turning red with the tab open (that path is tested),
+and never fake a notification.
+
 ## The script (≈ 250 words spoken at a calm pace)
 
 | Time | On screen | Narration (read exactly) | Number source |
