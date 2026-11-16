@@ -2,7 +2,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { CLASSES, MEAL, TAU_K, TAU_V, TAU_COOK, TAU_WATER, TAU_MOUTH, COOK_SHARE, nameKitchen, rawLabel, headLabel, bySounds, blocks, today, newState, actions, evaluateRules } from "../public/js/core.js";
+import { CLASSES, MEAL, TAU_K, TAU_V, TAU_KD, TAU_COOK, TAU_WATER, TAU_MOUTH, COOK_SHARE, nameKitchen, rawLabel, headLabel, bySounds, blocks, today, newState, actions, evaluateRules } from "../public/js/core.js";
 import { opinion } from "../public/js/head.js";
 import { SHOWN_SOUNDS } from "../public/js/sounds.js";
 import * as H from "../src/household.js";
@@ -28,9 +28,14 @@ test("opinion(): three numbers from the listed tags only", () => {
   const as = new Float32Array(527);
   as[names.indexOf("Dishes, pots, and pans")] = 0.61; as[names.indexOf("Vacuum cleaner")] = 0.2;
   as[names.indexOf("Blender")] = 0.99; as[names.indexOf("Speech")] = 0.99;         // neither is kitchen evidence
-  assert.deepEqual(opinion(web, as), { k: 0.61, family: "dishwashing", v: 0.2, cook: 0, water: 0, mouth: 0 });
+  { const { kd, ...o } = opinion(web, as); assert.ok(kd >= 0 && kd <= 1); assert.deepEqual(o, { k: 0.61, family: "dishwashing", v: 0.2, cook: 0, water: 0, mouth: 0 }); }
   as[names.indexOf("Sizzle")] = 0.3; as[names.indexOf("Water tap, faucet")] = 0.07; as[names.indexOf("Crunch")] = 0.2;
-  assert.deepEqual(opinion(web, as), { k: 0.61, family: "dishwashing", v: 0.2, cook: 0.3, water: 0.07, mouth: 0.2 });
+  { const { kd, ...o } = opinion(web, as); assert.ok(kd >= 0 && kd <= 1); assert.deepEqual(o, { k: 0.61, family: "dishwashing", v: 0.2, cook: 0.3, water: 0.07, mouth: 0.2 }); }
+});
+
+test("rule 2f: TAU_KD and the detector match models/witness.json", () => {
+  const cfg = read("models/witness.json"), web = read("web/public/model/witness.json");
+  assert.equal(TAU_KD, cfg.detector.tau); assert.equal(web.detector.tau, cfg.detector.tau); assert.deepEqual(web.detector.coef, cfg.detector.coef);
 });
 
 test("rule 2c thresholds match models/witness.json", () => {

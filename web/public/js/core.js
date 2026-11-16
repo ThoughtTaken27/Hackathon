@@ -156,15 +156,20 @@ export function headLabel(ev, theta) {
   return p[top[0]] >= theta ? top[0] : "not_sure";
 }
 const rescues = (lab, w) => !!w && lab === "not_sure" && w.k >= TAU_K && w.k > w.v;
+// Rule 2f (kettle/witness.py detects; models/witness.json "detector"; results/kitchen_detector.json): the head didn't say a
+// kitchen activity, the kitchen detector (all 527 tags) is >= TAU_KD, and no motor or bathroom sound beats the kitchen tags.
+export const TAU_KD = 0.65;
+const detects = (lab, w) => !!w && "kd" in w && !MEAL.has(lab) && lab !== "private" && lab !== "kitchen" && w.kd >= TAU_KD && !(w.v >= TAU_V && w.v > w.k);
 const vetoes = (lab, w) => !!w && MEAL.has(lab) && w.v >= TAU_V && w.v > w.k;
 export function rawLabel(ev, theta) {
   if (ev.private) return "private";
   const lab = headLabel(ev, theta);
   if (vetoes(lab, ev.w)) return "not_sure";
   if (rescues(lab, ev.w)) return "cook" in ev.w ? "kitchen" : ev.w.family;
+  if (detects(lab, ev.w)) return "kitchen";      // rule 2f: named later from evidence across the stretch
   return lab;
 }
-export const bySounds = (ev, theta) => rescues(headLabel(ev, theta), ev.w);
+export const bySounds = (ev, theta) => { const lab = headLabel(ev, theta); return rescues(lab, ev.w) || (!vetoes(lab, ev.w) && detects(lab, ev.w)); };
 // Rule 2e (kettle/timeline.py describe; Sun Nov 15, owner's call after a real room showed "Not sure" over typing, a tap and
 // writing that the sound tags had named correctly). Activity names still need theta, so nothing here makes a new activity
 // claim. A window still "Not sure" after smoothing and bridging becomes:

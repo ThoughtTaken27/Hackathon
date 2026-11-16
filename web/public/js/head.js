@@ -20,6 +20,12 @@ export function opinion(wit, as) {
   const out = { k: Math.round(k * 1000) / 1000, family, v: Math.round(v * 1000) / 1000 };
   // cooking, running-water and chewing evidence for naming a kitchen stretch (core.js nameKitchen; kettle/witness.py)
   if (wit.evidence) for (const g of ["cook", "water", "mouth"]) { let m = 0; for (const i of wit.evidence[g]) m = Math.max(m, as[i]); out[g] = Math.round(m * 1000) / 1000; }
+  // the kitchen detector (kettle/witness.py detector): logistic regression on the log-odds of all 527 tags
+  if (wit.detector) {
+    let z = wit.detector.intercept;
+    for (let i = 0; i < as.length; i++) { const a = Math.min(Math.max(as[i], 1e-4), 1 - 1e-4); z += Math.log(a / (1 - a)) * wit.detector.coef[i]; }
+    out.kd = Math.round(1000 / (1 + Math.exp(-z))) / 1000;
+  }
   return out;
 }
 

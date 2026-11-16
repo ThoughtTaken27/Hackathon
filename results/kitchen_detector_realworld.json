@@ -1,0 +1,110 @@
+{
+ "what": "Real-world checks for rule 2f (Sun Nov 15, 8:15-8:45 PM CT).",
+ "room_and_mic_stress": {
+  "how": "Every TEST-half clip re-recorded through a simulated kitchen and laptop mic: 0.4 s reverb, 120 Hz-7 kHz band, -12 dB, hiss at 20 dB SNR (Ubicoustics-style). One 10-s window per clip, app rules, before day-bar smoothing. Kitchen20 limited to clips TEST under both the source split and the uploader split.",
+  "raw": {
+   "now": {
+    "desed": {
+     "kitchen_caught_pct": 20.0,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.0,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 9.0,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 0.4,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 0.4,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 48.5
+   },
+   "with_2f": {
+    "desed": {
+     "kitchen_caught_pct": 30.0,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.0,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 19.4,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 1.2,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 0.8,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 40.1
+   }
+  },
+  "loudness_normalised_to_-25_dBFS": {
+   "now": {
+    "desed": {
+     "kitchen_caught_pct": 42.5,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.5,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 44.6,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 7.4,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 3.5,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 31.3
+   },
+   "with_2f": {
+    "desed": {
+     "kitchen_caught_pct": 70.0,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.5,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 55.4,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 11.1,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 5.8,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 27.5
+   }
+  },
+  "finding": "Kitchen recognition collapses through a room and laptop mic (DESED 85% clean -> 20%; Kitchen20 63% -> 9%). The detector helps (30%, 19%). Loudness normalisation helps most (70%, 55% with the detector) but raises false kitchen and could not be checked on SINS (cached scores only), so it is not shipped."
+ },
+ "browser_end_to_end": {
+  "how": "web/test/e2e.py flow in Chromium with a fake microphone playing 100 s of TEST-half dish, frying and chopping clips passed through the same simulated room; the room screen read every 2 s (50 readings). \"now\" = the same build with the detector removed from web/public/model/witness.json.",
+  "now": {
+   "kitchen_readings": 20,
+   "readings": 50,
+   "not_sure_readings": 20,
+   "some_activity_readings": 5
+  },
+  "with_2f": {
+   "kitchen_readings": 35,
+   "readings": 50,
+   "not_sure_readings": 10,
+   "some_activity_readings": 0
+  }
+ }
+}

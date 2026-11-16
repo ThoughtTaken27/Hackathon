@@ -1,0 +1,99 @@
+{
+ "what": "Rule 2f head-to-head through the app's own window rules (kettle/timeline.py raw_label + describe), one 10-s window per clip, before day-bar smoothing. 'now' = the app before rule 2f; 'with_2f' = with the kitchen detector.",
+ "chosen": {
+  "C": 0.1,
+  "tau": 0.65,
+  "tune_heldback_recall_pct": 87.5,
+  "tune_heldback_false_pct": 2.0
+ },
+ "desed_test": {
+  "now": {
+   "kitchen_caught_pct": 85.0,
+   "n_kitchen": 40,
+   "false_kitchen_pct": 0.0,
+   "n_not_kitchen": 191,
+   "some_activity_pct": 42.0
+  },
+  "with_2f": {
+   "kitchen_caught_pct": 87.5,
+   "n_kitchen": 40,
+   "false_kitchen_pct": 0.52,
+   "n_not_kitchen": 191,
+   "some_activity_pct": 41.1
+  }
+ },
+ "k20_test": {
+  "now": {
+   "kitchen_caught_pct": 62.6,
+   "n_kitchen": 222,
+   "false_kitchen_pct": 4.53,
+   "n_not_kitchen": 243,
+   "some_activity_pct": 54.4
+  },
+  "with_2f": {
+   "kitchen_caught_pct": 90.1,
+   "n_kitchen": 222,
+   "false_kitchen_pct": 7.0,
+   "n_not_kitchen": 243,
+   "some_activity_pct": 43.7
+  }
+ },
+ "esc_test": {
+  "now": {
+   "kitchen_caught_pct": null,
+   "n_kitchen": 0,
+   "false_kitchen_pct": 2.72,
+   "n_not_kitchen": 257,
+   "some_activity_pct": 62.6
+  },
+  "with_2f": {
+   "kitchen_caught_pct": null,
+   "n_kitchen": 0,
+   "false_kitchen_pct": 4.28,
+   "n_not_kitchen": 257,
+   "some_activity_pct": 61.5
+  }
+ },
+ "sins_eval": {
+  "now": {
+   "kitchen_caught_pct": 79.0,
+   "n_kitchen": 1183,
+   "false_kitchen_pct": 0.15,
+   "n_not_kitchen": 6608,
+   "some_activity_pct": 10.1,
+   "false_kitchen_by_activity_pct": {
+    "absence": 0.0,
+    "other": 0.3,
+    "social_activity": 0.0,
+    "vacuum_cleaner": 0.3,
+    "watching_tv": 0.1,
+    "working": 0.3
+   },
+   "caught_by_activity_pct": {
+    "cooking": 85.7,
+    "dishwashing": 68.0,
+    "eating": 80.9
+   }
+  },
+  "with_2f": {
+   "kitchen_caught_pct": 82.5,
+   "n_kitchen": 1183,
+   "false_kitchen_pct": 1.23,
+   "n_not_kitchen": 6608,
+   "some_activity_pct": 9.2,
+   "false_kitchen_by_activity_pct": {
+    "absence": 0.1,
+    "other": 2.0,
+    "social_activity": 0.0,
+    "vacuum_cleaner": 0.3,
+    "watching_tv": 0.8,
+    "working": 3.7
+   },
+   "caught_by_activity_pct": {
+    "cooking": 89.2,
+    "dishwashing": 70.6,
+    "eating": 85.1
+   }
+  }
+ }
+}
