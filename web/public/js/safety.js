@@ -26,7 +26,8 @@
 
 export const CHECKIN_S = { fall: 60, scream: 30, shout: 30, distress: 60, stillness: 60 };
 const FALL_DISTRESS_S = 60, FALL_STILL_S = 120, FALL_CANCEL_S = 120, ACTIVE_BEFORE_S = 1800;
-const SCREAM_S = 120, SHOUT_S = 60, SHOUTS = 3, DISTRESS_S = 300, SEPARATE_S = 10, MEDIA_WINDOWS = 3;
+const SCREAM_S = 120, SHOUT_S = 60, SHOUTS = 3, DISTRESS_S = 300, SEPARATE_S = 10, MEDIA_WINDOWS = 3, TV_S = 60, TV_WINDOWS = 2;
+const DANGER = ["impact", "glass", "scream", "distress", "gunshot", "shout"];
 const COOLDOWN_S = 600, SMOKE_CLEAR_S = 300;
 const STOVE_S = 2400, STOVE_GAP_S = 180, BEEP_S = 300, BEEP_GAP_S = 120, WATER_S = 1200, WATER_SHARE = 0.8;
 const KEEP_S = 2 * 3600, STRAY = 2;          // stillness allows 2 stray windows (a false door or cupboard name)
@@ -141,7 +142,10 @@ function startCheckin(st, t, rule, type, evidence) {
 export function step(st, w, opts = {}) {
   const { urgent = true, concern = true, paused = false, smokeWhilePaused = false } = opts;
   const t = w.t, out = [];
-  st.hist.push({ t, hits: w.hits || [], media: !!w.media || w.label === "watching_tv", active: isActive(w), cooks: cooks(w), kinds: w.kindsDevice || w.kinds || [], label: w.label || null });
+  // media: the AudioSet TV/radio/music detector. tv: the activity head said "TV" in a window with no danger in it (a crash or a
+  // scream can itself push the head to "TV"; v3.5 addendum 2). Real TV is continuous, so a head "TV" needs 2 windows in 60 s.
+  const tv = w.label === "watching_tv" && !(w.hits || []).some((x) => DANGER.includes(x));
+  st.hist.push({ t, hits: w.hits || [], media: !!w.media, tv, active: isActive(w), cooks: cooks(w), kinds: w.kindsDevice || w.kinds || [], label: w.label || null });
   st.hist = st.hist.filter((h) => h.t > t - KEEP_S);
   const h = st.hist, me = h[h.length - 1];
   if (me.active) st.lastActive = t;
@@ -161,7 +165,7 @@ export function step(st, w, opts = {}) {
     else if (st.coSince != null && !h.some((x) => x.t > t - SMOKE_CLEAR_S && x.t4)) st.coSince = null;
   }
   if (paused) return out;
-  const media = h.slice(-MEDIA_WINDOWS).some((x) => x.media);
+  const media = h.slice(-MEDIA_WINDOWS).some((x) => x.media) || h.filter((x) => x.tv && x.t > t - TV_S).length >= TV_WINDOWS;
   // U3 possible fall: an impact or breaking glass starts a 10-minute watch
   if (urgent && (has(me, "impact") || has(me, "glass")) && !media && !st.pending && !st.checkin) {
     const before = h.some((x) => x.t < t - 5 && x.t >= t - ACTIVE_BEFORE_S && x.active);

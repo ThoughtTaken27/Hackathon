@@ -78,6 +78,21 @@ def sources() -> list[dict]:
     return out
 
 
+def add_predicted_labels(clips: list[dict]) -> None:
+    """The label the app's activity head would give each clip (v3.5 addendum 2): out-of-fold for SINS, the frozen head on the
+    cached embedding for everything else. The app passes this guess to the safety engine, so the simulator does too."""
+    from kettle import model
+    from eval.beyond import load as load_dev
+    inv = {i: c for c, i in C.items()}
+    head = model.load(ROOT / "models" / "head.json")
+    pred = {"sins": iter(load_dev()["P"].argmax(1))}
+    for src, f in (("esc50", "esc50all"), ("nonspeech7k", "nonspeech7k"), ("synth", "synth_alarms")):
+        emb = np.load(CACHE / f"ced-tiny_{f}.npz", allow_pickle=True)["emb"].astype(np.float64)
+        pred[src] = iter(model.predict_proba(head, emb).argmax(1))
+    for c in clips:
+        c["pred"] = inv[int(next(pred[c["src"]]))]
+
+
 def positives(det: str, c: dict) -> bool:
     return {"smoke_alarm": c["cat"] in ("synth_t3", "synth_t4"), "beep": c["cat"] in ("synth_timer", "clock_alarm"),
             "scream": c["cat"] == "ns_screaming", "distress": c["cat"] == "ns_crying", "glass": c["cat"] == "glass_breaking",
@@ -173,10 +188,13 @@ def patterns(clips: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------- E7 scenario simulator
+LABELS = {"mode": "app"}        # "app": the head's own guess, as the app sees it; "dataset": the dataset's label (before v3.5 addendum 2)
+
+
 def to_window(c: dict, t: float, cfg: dict, pattern=None) -> dict:
     d = safety.detect(c["S"], cfg)
     ks = [k["id"] for k in kinds_mod.named(c["S"])]
-    lab = c["label"] or ("absence" if c["src"] == "sins" else "other")
+    lab = c["pred"] if LABELS["mode"] == "app" and "pred" in c else (c["label"] or ("absence" if c["src"] == "sins" else "other"))
     return {"t": t, **d, "kinds": ks, "label": lab, **({"pattern": pattern} if pattern else {})}
 
 
@@ -267,15 +285,21 @@ def simulate(clips: list[dict], cfg: dict, split: str = "heldout") -> dict:
 
 def main() -> None:
     clips = sources()
+    add_predicted_labels(clips)
     cfg_list, cal = calibrate(clips)
     cfg = {"detectors": cfg_list, "media": {"index": MEDIA, "tau": cal["media_tau"]},
            "source": "eval/safety.py -> results/safety.json (thresholds chosen on development clips only)"}
     pat = patterns(clips)
     sim = simulate(clips, cfg)
     sim_dev = simulate(clips, cfg, "dev")
+    LABELS["mode"] = "dataset"
+    sim_dataset = simulate(clips, cfg)
+    LABELS["mode"] = "app"
     n = {s: sum(1 for c in clips if c["src"] == s) for s in ("sins", "esc50", "nonspeech7k", "synth")}
     out = {"clips": n, "quantile": QUANTILE, "detectors": cal["detectors"], "media": cal["detectors"]["media"], "alarm_pattern": pat,
-           "scenarios": sim, "scenarios_dev": sim_dev,
+           "scenarios": sim, "scenarios_dev": sim_dev, "scenarios_dataset_labels": sim_dataset,
+           "labels_note": ("scenarios and scenarios_dev feed each window the activity head's own label, as the app does (v3.5 addendum 2). "
+                           "scenarios_dataset_labels is the same held-out simulator fed the dataset's labels, the method used before."),
            "process_note": ("v3.5 (eval/PREREGISTER-SAFETY-V35.md, written before this run): gunshot detector added (tau above every "
                             "development negative, no gunshot recordings available), shouting rule (3 windows in 60 s), crash-then-stillness "
                             "wait 600 s -> 120 s, and a new negative scenario (cans, knocks, fireworks, thunder while cooking). The new scenario draws "
@@ -283,7 +307,9 @@ def main() -> None:
                             "98.3% -> 90.0% is that resampling: with the shout rule switched off the same timelines give the same count). The script "
                             "was rerun twice more only to edit this note; it is deterministic (seed 0) and the numbers were identical. Then smoke rule U1b "
                             "(a T3 cycle in 2 of the last 3 windows) was pre-registered as an addendum with its dev numbers and this file "
-                            "was regenerated once with it. "
+                            "was regenerated once with it. Then (addendum 2) a live browser test showed the head's own 'TV' guess on a crash window "
+                            "silencing the alert; the simulator was switched to the head's own labels and the media rule changed (a head 'TV' "
+                            "counts only in 2 non-danger windows within 60 s); pre-registered with dev numbers, then this file regenerated once. "
                             "Earlier, disclosed: the first held-out run used lower floors (smoke 0.1, glass 0.1, fire 0.1) and showed false smoke alarms "
                             "from screams and timers. The floors were raised to the plan's values (smoke 0.35, glass 0.3, fire 0.3) and the same "
                             "simulator is also reported on development clips (scenarios_dev), so the change can be checked on data not used to report."),

@@ -23,20 +23,25 @@ A smoke or CO alarm, a crash then a cry or 2 minutes of stillness, screaming, sh
 "I need help" button turns the family's view red and sends a **Web Push notification to their phone** at once, even with
 Kettle closed. Person-related alerts also ask "Are you OK?" on the room screen; pressing I'm OK turns the family's banner amber.
 Only the kind of sound and the time leave the room. Held-out simulator (`python -m eval.safety` → `results/safety.json`,
-pre-registered in `eval/PREREGISTER-SAFETY-V35.md`; 60 timelines each, nobody answering):
+pre-registered in `eval/PREREGISTER-SAFETY-V35.md`; 60 timelines each, nobody answering; every window carries the activity
+model's own label, as in the app):
 
 | Urgent sound | Caught | Where the sounds came from |
 |---|---|---|
 | Smoke alarm during cooking | 88.3% (53/60) | synthetic NFPA 72 tones in recorded everyday sound |
-| A crash, then a groan or cry | 81.7% (49/60) | public recordings joined in software |
-| A crash, then 2 minutes of stillness | 83.3% (50/60) | public recordings joined in software |
+| A crash, then a groan or cry | 73.3% (44/60) | public recordings joined in software |
+| A crash, then 2 minutes of stillness | 71.7% (43/60) | public recordings joined in software |
 | Screaming | 83.3% (50/60) | Nonspeech7k |
 | Gunshot, shouting | not measured | no recordings available to us |
 
 **False urgent alerts: 0 in 12.3 hours of ordinary home sound, and 0 in 360 look-alike timelines** (TV dramas, dropped pans,
 timers, cans, knocks, fireworks). A thud alone never turns red (it fires about once an hour in ordinary homes). In a real
 browser, a smoke alarm played into the microphone turned the room screen urgent after 19.9 s and the family page red 2.8 s later
-(`python web/test/e2e_urgent.py`, `results/e2e_urgent.json`).
+(`python web/test/e2e_urgent.py`, `results/e2e_urgent.json`). A breaking-glass clip followed by 2 quiet minutes made the room
+screen ask "Are you OK?" and the family page red 2.8 s later; pressing I'm OK turned it amber 4.8 s after
+(`results/e2e_urgent_crash.json`). That live test first **failed**: the activity model had called the crash window "TV", which
+switched off the alert. We fixed the rule (a "TV" guess must hold for 2 calm windows in a minute) and the simulator now uses the
+model's own labels, which lowered the crash numbers above to what the app really does.
 
 ## Improvement round (Sat Nov 14, evening): beyond the research home
 

@@ -101,6 +101,10 @@ def scenarios() -> list[dict]:
     add("shout_once_no", quiet(T0, 2) + [win(T0 + 10, hits=("shout",)), win(T0 + 15, hits=("shout",))] + quiet(T0 + 20, 10))
     add("shout_spread_no", sum(([win(T0 + 40 * i, hits=("shout",))] + quiet(T0 + 5 + 40 * i, 7) for i in range(3)), []))
     add("shout_with_tv_no", sum(([win(T0 + 15 * i, hits=("shout",), media=True)] + quiet(T0 + 5 + 15 * i, 2, media=True) for i in range(4)), []))
+    # v3.5 addendum 2: the head calling the crash window "TV" doesn't silence it; real TV (2 windows in 60 s) still does
+    add("crash_window_called_tv", cooking(T0, 20) + [win(T0 + 100, hits=("glass",), label="watching_tv", db=-15)] + quiet(T0 + 105, 26))
+    add("one_tv_guess_then_crash", cooking(T0, 19) + [win(T0 + 95, label="watching_tv")] + [win(T0 + 100, hits=("impact",), db=-15)] + quiet(T0 + 105, 26))
+    add("tv_on_then_crash_no", [win(T0 + i * HOP, label="watching_tv", db=-30) for i in range(20)] + [win(T0 + 100, hits=("impact",), label="watching_tv")] + quiet(T0 + 105, 26))
     # v3.5 crash then 2 minutes of stillness (was 10), and still nothing at 90 s
     add("fall_stillness_2min", cooking(T0, 20) + [win(T0 + 100, hits=("impact",), db=-15)] + quiet(T0 + 105, 26))
     add("fall_stillness_90s_no", cooking(T0, 20) + [win(T0 + 100, hits=("impact",), db=-15)] + quiet(T0 + 105, 18))

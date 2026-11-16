@@ -18,6 +18,8 @@ CFG: dict = json.loads((ROOT / "web" / "public" / "model" / "safety.json").read_
 CHECKIN_S = {"fall": 60, "scream": 30, "shout": 30, "distress": 60, "stillness": 60}
 FALL_DISTRESS_S, FALL_STILL_S, FALL_CANCEL_S, ACTIVE_BEFORE_S = 60, 120, 120, 1800   # v3.5: 2-minute stillness (was 10)
 SCREAM_S, DISTRESS_S, SEPARATE_S, MEDIA_WINDOWS = 120, 300, 10, 3
+TV_S, TV_WINDOWS = 60, 2           # v3.5 addendum 2: the head's "TV" counts only twice in 60 s, outside danger windows
+DANGER = ["impact", "glass", "scream", "distress", "gunshot", "shout"]
 SHOUT_S, SHOUTS = 60, 3
 COOLDOWN_S, SMOKE_CLEAR_S = 600, 300
 STOVE_S, STOVE_GAP_S, BEEP_S, BEEP_GAP_S, WATER_S, WATER_SHARE = 2400, 180, 300, 120, 1200, 0.8
@@ -170,7 +172,8 @@ def _ev(w: dict, ids: list[str], pat: dict | None = None) -> dict:
 def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: bool = False, smoke_while_paused: bool = False) -> list[dict]:
     """One window (5-s hop) -> actions. Same contract as safety.js step()."""
     t, out = w["t"], []
-    st["hist"].append({"t": t, "hits": w.get("hits") or [], "media": bool(w.get("media")) or w.get("label") == "watching_tv",
+    tv = w.get("label") == "watching_tv" and not any(x in DANGER for x in (w.get("hits") or []))
+    st["hist"].append({"t": t, "hits": w.get("hits") or [], "media": bool(w.get("media")), "tv": tv,
                        "active": is_active(w), "cooks": _cooks(w), "kinds": w.get("kinds") or [], "label": w.get("label")})
     st["hist"] = [h for h in st["hist"] if h["t"] > t - KEEP_S]
     h = st["hist"]
@@ -201,7 +204,7 @@ def step(st: dict, w: dict, urgent: bool = True, concern: bool = True, paused: b
             st["coSince"] = None
     if paused:
         return out
-    media = any(x["media"] for x in h[-MEDIA_WINDOWS:])
+    media = any(x["media"] for x in h[-MEDIA_WINDOWS:]) or sum(1 for x in h if x["tv"] and x["t"] > t - TV_S) >= TV_WINDOWS
     if urgent and (_has(me, "impact") or _has(me, "glass")) and not media and not st["pending"] and not st["checkin"]:
         before = any(x["t"] < t - 5 and x["t"] >= t - ACTIVE_BEFORE_S and x["active"] for x in h)
         st["pending"] = {"at": t, "before": before, "evidence": _ev(w, ["impact", "glass"])}

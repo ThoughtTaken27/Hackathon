@@ -16,15 +16,15 @@
 | Apple's built-in sound classifier, same clips | 31.8 [25.7, 37.9] | same |
 | Published DCASE baseline (full set, not directly comparable) | 85.0 / 83.1 | — |
 | Kitchen activity caught (the morning check) | 87.8% (1,039 of 1,183); false on 41 of 6,608 | held-out |
-| Urgent: smoke alarm during cooking / crash then cry / crash then stillness / screaming | **88.3% / 81.7% / 83.3% / 83.3%** | 60 timelines each |
+| Urgent: smoke alarm during cooking / crash then cry / crash then stillness / screaming | **88.3% / 73.3% / 71.7% / 83.3%** | 60 timelines each |
 | False urgent alerts: ordinary home sound / look-alikes (TV dramas, dropped pans, timers, cans, fireworks) | **0 in 12.3 h / 0 in 360** | held-out |
-| Live browser test: smoke alarm → room screen red → family page red | 19.9 s, then 2.8 s | 1 run |
+| Live browser tests: smoke alarm → room red → family red; crash → 2 min quiet → "Are you OK?" → family red → I'm OK → amber | 19.9 s → 2.8 s; 159.8 s → 2.8 s → 4.8 s | 1 run each |
 
 **Where it fails.**
 
 - **Homes it never heard:** in real homes (TUT-SED 2016) it named washing-up windows as kitchen activity only 52.7% of the time and said "Not sure" 41.8% (N = 55); real-home kitchen clips (DESED) were caught 43.0% (34 of 79), with 0 false kitchen labels in 191. It fails safe (grey, not wrong), but shows a lot of grey.
 - **A teammate's real kitchen:** metal pots read as "eating" and plate clatter as "washing up". Naming a stretch from all its windows cut dish clatter called washing up or eating from 6 to 1 of 15 clips.
-- **Urgent sounds are not from real homes:** smoke alarms are synthetic tones mixed into recorded everyday sound, crashes are breaking glass, and we had no gunshot or shouting recordings, so those two have no measured catch rate. A crash then someone quietly leaving looks like a fall.
+- **Urgent sounds are not from real homes:** smoke alarms are synthetic tones mixed into recorded everyday sound, crashes are breaking glass, and we had no gunshot or shouting recordings, so those two have no measured catch rate. A crash then someone quietly leaving looks like a fall. Our first live crash test failed (the model called the crash "TV", which muted it); we fixed the rule and now simulate with the model's own labels.
 
 **Privacy and limits.** A privacy check of the real app found 0 audio files written and 0 outside connections (`results/privacy_check.json`). Kettle reports activity, not intent or health. Prototype, not medical advice.
 

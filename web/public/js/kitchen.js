@@ -205,6 +205,7 @@ function merge(list) {
 // Concern-tier notes (C6 stove, C7 beeping, C9 water) stay off on purpose ({ concern: false } below): they have never been checked
 // end to end, so they would be unmeasured alerts (How sure says so).
 const safety = newEngine();
+if (window.kettleDebug) window.kettleSafety = safety;     // browser tests set kettleDebug to read the engine's recent windows
 const WIRED = ["smoke", "co", "gunshot", "fall", "fall_still", "scream", "shout", "distress", "help"];
 const ALERT_Q = "kettle.alertQueue";
 let alertQ = (() => { try { return JSON.parse(localStorage.getItem(ALERT_Q) || "[]"); } catch { return []; } })(), alertBusy = false;

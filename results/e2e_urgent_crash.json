@@ -1,0 +1,14 @@
+{
+ "wav": "crash_still.wav",
+ "expected": "fall_still",
+ "room_urgent_after_s": 159.8,
+ "family_red_after_room_s": 2.8,
+ "asked": "Kettle heard a crash, then no movement for 2 minutes at 12:21 AM.\n\nAsha has been told. Press I'm OK to let them know you're fine.\n\nIf nobody answers in 57 seconds, Kettle tells Asha that nobody answer",
+ "family_amber_after_ok_s": 4.8,
+ "server_alert_kinds": [
+  "fall_still"
+ ],
+ "errors": [],
+ "ran_at": "2026-11-16 00:21 UTC",
+ "note": "Chromium fake microphone playing the WAV; family page polls every 5 s (push not tested headless)."
+}

@@ -50,7 +50,7 @@ def main() -> int:
                 kit.get_by_role("button", name="Skip the sound check").click()
             t1 = time.time()
             try:
-                kit.wait_for_selector('#status[data-state="urgent"]', timeout=90000)
+                kit.wait_for_selector('#status[data-state="urgent"]', timeout=int(os.environ.get("KETTLE_E2E_WAIT_MS", "90000")))
                 out["room_urgent_after_s"] = round(time.time() - t1, 1)
                 log.append(f"room screen urgent after {out['room_urgent_after_s']}s of listening: {kit.locator('#head').inner_text()!r}")
             except Exception:
@@ -64,6 +64,17 @@ def main() -> int:
             except Exception:
                 errors.append("family page never showed the urgent banner")
             fam.screenshot(path=f"{OUT}/urgent-2-family.png", full_page=False)
+            if os.environ.get("KETTLE_E2E_ANSWER") == "ok" and kit.get_by_role("button", name="I'm OK").count():
+                out["asked"] = kit.locator("#body").inner_text()[:200]
+                kit.get_by_role("button", name="I'm OK").click()
+                t3 = time.time()
+                try:
+                    fam.wait_for_selector(".urgent.u-ok", timeout=20000)
+                    out["family_amber_after_ok_s"] = round(time.time() - t3, 1)
+                    log.append(f"family amber {out['family_amber_after_ok_s']}s after I'm OK: {fam.locator('.urgent .u-b').first.inner_text()!r}")
+                except Exception:
+                    errors.append("family banner never turned amber after I'm OK")
+                fam.screenshot(path=f"{OUT}/urgent-3-family-ok.png", full_page=False)
             st = api(f"/api/h/{hid}/state", key=fkey)
             kinds = [a["kind"] for a in st["state"].get("alerts", [])]
             out["server_alert_kinds"] = kinds
