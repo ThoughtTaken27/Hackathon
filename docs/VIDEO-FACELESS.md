@@ -18,6 +18,13 @@ Download from **Unsplash** (unsplash.com, Unsplash License) or **Pexels** (pexel
 | P4 (optional) | "smoke detector ceiling" | 1:10 |
 Write down each photo's page link and photographer name: paste them into the YouTube description and the credits (section 5).
 
+**Photos the team picked (credited in the write-up's Sources):**
+- P1 old man holding a cup: https://www.dreamstime.com/photos-images/old-man-holding-cup.html
+- P2 empty kitchen: https://www.dreamstime.com/water-tap-professional-kitchen-restaurant-modern-equipment-devices-empty-morning-interior-made-stainless-steel-image143073683
+- P3 person looking at a phone: https://www.istockphoto.com/photos/black-woman-looking-at-phone-from-behind (tip: lay a screenshot of Meera's red banner onto the blank phone screen in the editor)
+- P4 smoke detector: https://sen.news/smoke-sensors-on-steep-ceilings/
+Dreamstime and iStock previews carry watermarks and are licensed images: swap in free Pexels/Unsplash look-alikes if there's time.
+
 ### 1.2 The app, on one laptop (5 minutes)
 Use the live site if it has tonight's update (open `https://kettle.parth-dev.workers.dev/api/push/key`: it should show `{"publicKey":…}`), otherwise run it locally: `cd web && npm install && node dev.mjs` → `http://localhost:8787`.
 
@@ -109,6 +116,6 @@ Don't say "it detects falls", "it calls 911", or any number for gunshots or shou
 
 ## 5. Upload (5 minutes)
 1. YouTube → Upload → title **Kettle: know the day went okay, without a camera** → **Unlisted**. (If the channel shows a real name, use Google Drive → **Anyone with the link → Viewer** instead.)
-2. Description: *"Prototype, not medical advice. Photos: [photographer], Unsplash/Pexels ([links])."*
+2. Description: *"Prototype, not medical advice. Images: old man holding a cup and empty kitchen (Dreamstime), person looking at a phone (iStock), smoke detector (sen.news)"* followed by the four links above (or your Pexels/Unsplash replacements).
 3. Open the link in an **incognito** window: it plays without signing in.
 4. Paste the link into the submission form.

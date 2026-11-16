@@ -115,6 +115,7 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
   - [CED-tiny](https://huggingface.co/mispeech/ced-tiny) ([paper](https://arxiv.org/abs/2308.11957), Apache-2.0).
   - Comparisons only: CED-small, [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593), [CLAP](https://arxiv.org/abs/2211.06687), Apple SoundAnalysis.
 - **Libraries and hosting:** [ONNX Runtime Web](https://github.com/microsoft/onnxruntime), Cloudflare Workers, PyTorch, Transformers, scikit-learn.
+- **Images (demo video only):** [old man holding a cup](https://www.dreamstime.com/photos-images/old-man-holding-cup.html) (Dreamstime); [empty kitchen](https://www.dreamstime.com/water-tap-professional-kitchen-restaurant-modern-equipment-devices-empty-morning-interior-made-stainless-steel-image143073683) (Dreamstime); [person looking at a phone](https://www.istockphoto.com/photos/black-woman-looking-at-phone-from-behind) (iStock); [smoke detector](https://sen.news/smoke-sensors-on-steep-ceilings/) (sen.news).
 - **Statistic:** [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans).
 - **Tutorials:** none followed.
 - **AI tools:**
