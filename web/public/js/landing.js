@@ -186,7 +186,10 @@ fetch("/data/results.json").then((r) => r.json()).then((r) => {
   const set = (k, v) => document.querySelectorAll(`[data-k="${k}"]`).forEach((n) => { if (v != null) { n.textContent = v; n.dataset.to = v; runTick(n); } });
   const ev = r.dcase_eval, ma = ev && ev.meal_activity;
   if (ev) set("f1", ev.ours_ch0.macro_f1.value.toFixed(1));
-  if (ma) { set("caught", String(Math.round(ma.caught.value))); set("fa", ma.false_alarm_rate.value.toFixed(1)); }
+  // caught / false alarms: what the app itself shows (its own rules, not the model's raw top guess), web/public/data/app.json
+  // made by python -m eval.kitchen_detector --app with the same pre-registered metric
+  fetch("/data/app.json").then((x) => x.json()).then((a) => { const m = a.app_live;
+    set("caught", String(Math.round(m.caught.value))); set("fa", m.false_alarm_rate.value.toFixed(1)); }).catch(() => {});
   if (r.offlist && r.offlist.confident_wrong != null) set("ns", Number(r.offlist.confident_wrong.value ?? r.offlist.confident_wrong).toFixed(1));
   const c = r.privacy_check && r.privacy_check.checks;
   if (c) set("audio", String((c.new_or_changed_audio_extension_files || []).length + (c.new_or_changed_files_with_audio_magic_bytes || []).length));

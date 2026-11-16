@@ -42,7 +42,7 @@ def main() -> int:
         {"kitchen": witness.KITCHEN_IDX, "veto": witness.VETO_IDX, "tau_k": witness.TAU_K, "tau_v": witness.TAU_V,
          "evidence": witness.EVIDENCE_IDX, "tau_cook": witness.TAU_COOK, "tau_water": witness.TAU_WATER,
          "tau_mouth": witness.TAU_MOUTH, "cook_share": witness.COOK_SHARE,
-         **({"detector": {k: witness.DET[k] for k in ("coef", "intercept", "tau")}} if witness.DET else {})}))
+         **({"detector": {k: witness.DET[k] for k in ("coef", "intercept", "tau", "tau_k")}} if witness.DET else {})}))
     (WEB / "public" / "js" / "sounds.js").write_text(
         "// Made by tools/export_web_fixtures.py from kettle/evidence_labels.json. The only sound names Kettle may send or store.\n"
         f"export const SHOWN_SOUNDS = new Set({json.dumps(evidence.SHOWN)});\n")

@@ -97,3 +97,10 @@ def test_kitchen_detector_never_calls_speech_or_tv_kitchen():
         for n in names:
             a[witness.NAMES.index(n)] = 0.9
         assert witness.opinion(a)["kd"] < witness.TAU_KD, names
+
+
+def test_kitchen_detector_needs_a_kitchen_tag_heard():
+    """Rule 2f guard: a high kd alone (glass breaking, clapping, birds, thunder did this) is not enough."""
+    w = {"k": 0.01, "family": "dishwashing", "v": 0.0, "cook": 0.0, "water": 0.0, "mouth": 0.0, "kd": 0.99}
+    assert not witness.detects("other", w, {"cooking", "dishwashing", "eating"})
+    assert witness.detects("other", dict(w, k=0.2), {"cooking", "dishwashing", "eating"})

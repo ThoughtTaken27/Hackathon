@@ -39,6 +39,7 @@ COOK_SHARE: float = CFG["cook_share"]
 
 DET = CFG.get("detector")
 TAU_KD: float = DET["tau"] if DET else 1.0
+TAU_KD_K: float = DET.get("tau_k", 0.0) if DET else 1.0   # a kitchen tag must actually be heard (rule 2e's TAU_HEARD)
 
 
 def detector(audioset: np.ndarray) -> float:
@@ -127,7 +128,8 @@ def unsupported(label: str, evs: list[dict]) -> bool:
 
 
 def detects(label: str, w: dict | None, kitchen: set[str]) -> bool:
-    """Rule 2f: the head didn't say a kitchen activity, the kitchen detector is sure enough, and no motor or bathroom
-    sound is louder than the kitchen tags (the same guard as the veto). Windows without 'kd' (older data) never fire."""
+    """Rule 2f: the head didn't say a kitchen activity, the kitchen detector is sure enough, at least one kitchen tag was
+    actually heard (k >= TAU_KD_K; without it glass breaking, clapping, birds and thunder fired on 10% of off-list sounds),
+    and no motor or bathroom sound is louder than the kitchen tags. Windows without 'kd' (older data) never fire."""
     return bool(w) and "kd" in w and label not in kitchen and label not in ("private", "kitchen") and w["kd"] >= TAU_KD \
-        and not (w["v"] >= TAU_V and w["v"] > w["k"])
+        and w["k"] >= TAU_KD_K and not (w["v"] >= TAU_V and w["v"] > w["k"])

@@ -90,7 +90,51 @@
     "some_activity_pct_of_kitchen": 27.5
    }
   },
-  "finding": "Kitchen recognition collapses through a room and laptop mic (DESED 85% clean -> 20%; Kitchen20 63% -> 9%). The detector helps (30%, 19%). Loudness normalisation helps most (70%, 55% with the detector) but raises false kitchen and could not be checked on SINS (cached scores only), so it is not shipped."
+  "finding": "Kitchen recognition collapses through a room and laptop mic (DESED 85% clean -> 20%; Kitchen20 63% -> 9%). The detector helps (30%, 19%). Loudness normalisation helps most (70%, 55% with the detector) but raises false kitchen and could not be checked on SINS (cached scores only), so it is not shipped.",
+  "raw_live_with_guard": {
+   "now": {
+    "desed": {
+     "kitchen_caught_pct": 20.0,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.0,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 9.0,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 0.4,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 0.4,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 48.5
+   },
+   "with_2f": {
+    "desed": {
+     "kitchen_caught_pct": 27.5,
+     "n_kitchen": 40,
+     "false_kitchen_pct": 0.0,
+     "n_not": 191
+    },
+    "k20": {
+     "kitchen_caught_pct": 18.0,
+     "n_kitchen": 222,
+     "false_kitchen_pct": 0.8,
+     "n_not": 243
+    },
+    "esc": {
+     "kitchen_caught_pct": null,
+     "n_kitchen": 0,
+     "false_kitchen_pct": 0.8,
+     "n_not": 257
+    },
+    "some_activity_pct_of_kitchen": 40.8
+   }
+  }
  },
  "browser_end_to_end": {
   "how": "web/test/e2e.py flow in Chromium with a fake microphone playing 100 s of TEST-half dish, frying and chopping clips passed through the same simulated room; the room screen read every 2 s (50 readings). \"now\" = the same build with the detector removed from web/public/model/witness.json.",
@@ -100,11 +144,19 @@
    "not_sure_readings": 20,
    "some_activity_readings": 5
   },
-  "with_2f": {
+  "with_2f_unguarded": {
    "kitchen_readings": 35,
    "readings": 50,
    "not_sure_readings": 10,
    "some_activity_readings": 0
-  }
- }
+  },
+  "live_with_kitchen_tag_guard": {
+   "kitchen_readings": 40,
+   "readings": 50,
+   "not_sure_readings": 10,
+   "some_activity_readings": 0
+  },
+  "note": "one run per build; window timing shifts by about 5 readings between runs"
+ },
+ "guard": "Sun Nov 15 ~9:30 PM CT: rule 2f called 27/260 off-list sounds (glass breaking 9, clapping 7, birds 5, thunderstorm 4, rain 1) kitchen activity. Guard added: a kitchen tag must be heard (k >= 0.03). Chosen after seeing that off-list result, so off-list is no longer a clean test for the guard; checked on the TUNE halves too."
 }
