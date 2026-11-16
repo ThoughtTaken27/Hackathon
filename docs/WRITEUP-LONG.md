@@ -109,13 +109,15 @@ For comparison, in the research home's held-out test the top label caught 87.8% 
   - [Kitchen20](https://github.com/marc-moreaux/kitchen20).
   - [ESC-50](https://github.com/karolpiczak/ESC-50) (CC BY-NC 3.0).
   - [AudioSet](https://research.google.com/audioset/) ontology.
-  - Nonspeech7k.
+  - [Nonspeech7k](https://zenodo.org/records/6967442) (test split, CC BY 4.0).
+  - [TUT Sound Events 2016 "home"](https://zenodo.org/records/45759), dev + [eval](https://zenodo.org/records/996424) (non-commercial).
+  - Our own synthetic smoke/CO/timer alarms (`eval/synth_alarms.py`).
   - [free-spoken-digit-dataset](https://github.com/Jakobovski/free-spoken-digit-dataset) (test clips only).
 - **Pretrained models:**
   - [CED-tiny](https://huggingface.co/mispeech/ced-tiny) ([paper](https://arxiv.org/abs/2308.11957), Apache-2.0).
-  - Comparisons only: CED-small, [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593), [CLAP](https://arxiv.org/abs/2211.06687), Apple SoundAnalysis.
+  - Our own trained parts on CED-tiny embeddings: activity head (`models/head.json`), second-opinion tag rules (`models/witness.json`), named-sound head (`web/public/model/sound_head.json`).
+  - Comparisons only: CED-small, [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593), [CLAP](https://arxiv.org/abs/2211.06687), Apple SoundAnalysis, [DCASE 2018 baseline](https://github.com/DCASE-REPO/dcase2018_baseline).
 - **Libraries and hosting:** [ONNX Runtime Web](https://github.com/microsoft/onnxruntime), Cloudflare Workers, PyTorch, Transformers, scikit-learn.
-- **Images (demo video only, all from [Pexels](https://www.pexels.com/license/), free to use):** [elderly hands holding a red cup](https://www.pexels.com/photo/elderly-hands-holding-red-coffee-cup-outdoors-31114349/); [kitchen table and chairs](https://www.pexels.com/photo/rectangular-brown-wooden-table-and-two-chairs-972841/); [a woman using her smartphone on a couch](https://www.pexels.com/photo/a-woman-using-her-smartphone-on-a-couch-7681271/); [ceiling-mounted fire alarm](https://www.pexels.com/photo/ceiling-mounted-fire-alarm-system-in-building-39183052/).
 - **Statistic:** [ACL 2023 Profile of Older Americans](https://acl.gov/news-and-events/announcements/acl-releases-2023-profile-older-americans).
 - **Tutorials:** none followed.
 - **AI tools:**

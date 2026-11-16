@@ -36,4 +36,20 @@ CED-tiny, a small audio model pretrained on AudioSet, runs in the browser (ONNX)
 2. **Running in the background on the parent's own phone.** Right now Kettle needs a device left on in one room, with the screen on. A native Android app can keep the mic on with the screen off and the phone free for calls and texts. To save battery, a tiny loudness check would run all the time and wake the model only when there's sound worth naming. We'd measure the drain before claiming a number, and labels would need to stop assuming a kitchen.
 
 ## Sources and AI tools
-Datasets: SINS/DCASE 2018 Task 5, AudioSet (via CED), ESC-50, DESED, Kitchen20, Nonspeech7k, TUT-SED 2016. Model: CED-tiny. Video images: four free [Pexels](https://www.pexels.com/license/) photos. Licences and links: [/credits](https://kettle.parth-dev.workers.dev/credits); long version with every table: `docs/WRITEUP-LONG.md`. AI tools: Claude Code (Anthropic) wrote most of the code and documents under our direction; Aside (Claude) built parts of the web app and ran evaluations. Every number comes from our scripts (`results/*.json`, `notebooks/kettle_reproduce.ipynb`). Kettle is not an emergency device and doesn't replace a smoke or CO detector, or 911.
+**Datasets** (all public; audio git-ignored, only embeddings and labels committed):
+
+- [SINS / DCASE 2018 Task 5](https://doi.org/10.5281/zenodo.1247102) dev set (CC BY-NC 4.0): trains the activity head; [eval audio](https://zenodo.org/records/1291760) + [labels](https://zenodo.org/records/1964758) (CC BY-NC-ND 4.0) for one frozen test run; [published results](https://dcase.community/challenge2018/task-monitoring-domestic-activities-results) for comparison.
+- [DESED public eval](https://zenodo.org/records/3588172) (CC BY 4.0): real-home kitchen clips, tune half / test half.
+- [Kitchen20](https://github.com/marc-moreaux/kitchen20): kitchen sounds for named sounds and the kitchen detector.
+- [ESC-50](https://github.com/karolpiczak/ESC-50) (CC BY-NC 3.0): off-list "not sure" test, named sounds, privacy veto, alarm backgrounds.
+- [TUT Sound Events 2016 "home"](https://zenodo.org/records/45759), dev + [eval](https://zenodo.org/records/996424) (non-commercial): real-home test, scored once.
+- [Nonspeech7k](https://zenodo.org/records/6967442) test split (CC BY 4.0): cough, scream, cry etc. for urgent-alert tests.
+- [free-spoken-digit-dataset](https://github.com/Jakobovski/free-spoken-digit-dataset) (CC BY-SA 4.0): close-voice test clips only.
+- [AudioSet](https://research.google.com/audioset/) ontology (CC BY 4.0): the 527 sound tags CED-tiny outputs.
+- Our own synthetic smoke/CO/timer alarms (`eval/synth_alarms.py`, NFPA 72 patterns), labels known by construction.
+
+**Models:** [CED-tiny](https://huggingface.co/mispeech/ced-tiny) ([paper](https://arxiv.org/abs/2308.11957), Apache-2.0), pretrained on AudioSet, runs on the device as ONNX. On top of it, our own small trained parts: the activity head (logistic regression on SINS, `models/head.json`), the second-opinion AudioSet-tag rules (`models/witness.json`) and the named-sound head (`web/public/model/sound_head.json`). Baselines and comparisons only: [CED-small](https://huggingface.co/mispeech/ced-small), [AST](https://huggingface.co/MIT/ast-finetuned-audioset-10-10-0.4593) (BSD-3), [LAION CLAP](https://huggingface.co/laion/clap-htsat-unfused) (Apache-2.0), Apple SoundAnalysis, DCASE 2018 baseline.
+
+**Libraries:** [ONNX Runtime Web](https://github.com/microsoft/onnxruntime), PyTorch, torchaudio, Transformers, scikit-learn, NumPy/SciPy, Cloudflare Workers. Full licence list: [/credits](https://kettle.parth-dev.workers.dev/credits) and `docs/DATA-SOURCES.md`; every table: `docs/WRITEUP-LONG.md`.
+
+**AI tools:** [Claude Code](https://claude.com/claude-code) (Anthropic) wrote most of the code and documents under our direction; Aside (Claude), an AI browser agent, built parts of the web app and ran evaluations; REA for the product teardown. Who wrote what: `docs/AI-USAGE-LOG.md`. Every number comes from our scripts (`results/*.json`, `notebooks/kettle_reproduce.ipynb`). Kettle is not an emergency device and doesn't replace a smoke or CO detector, or 911.
