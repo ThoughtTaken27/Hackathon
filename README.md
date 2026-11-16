@@ -12,7 +12,7 @@
 | **Reproduce every number** | [`notebooks/kettle_reproduce.ipynb`](notebooks/kettle_reproduce.ipynb) (Colab button above, about 3 min on CPU, no keys) |
 | **Track** | AI + Health |
 
-> **This project is a prototype and is not medical advice.** Kettle is not an emergency device, can't call for help, and doesn't replace a smoke or CO detector or 911. Its urgent alerts were tested on public and synthetic clips and in a browser, never in a real emergency.
+> **This project is a prototype and is not medical advice.** Kettle is not an emergency device, cannot call for help, and doesn't replace a smoke or CO detector or 911. Its urgent alerts were tested on public and synthetic clips and in a browser, never in a real emergency.
 
 **Our user:** Meera, 34 (an invented persona), lives 300 miles from her dad Ravi, 79, who has early memory loss and lives alone. A laptop on Ravi's counter names what it hears every 10 seconds (cooking, washing up, eating, talking or TV, quiet). Meera's phone shows a calm day bar and the checks she picked ("kitchen activity by 10 AM: met at 8:05"), and turns red for a smoke alarm or a crash followed by a cry or stillness. Ravi agrees first, sees what she sees, and can pause it.
 
