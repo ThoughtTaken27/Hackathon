@@ -4,6 +4,7 @@ import { TEXT as SAFETY_TEXT } from "./safety.js";
 import { $, el, setText, api, now, linkFromHash, homes, saveHome, forgetHome, dayBar, legend, evidenceCard, readout, rulesList, qr, linkFor, copy, toast } from "./ui.js";
 import { HOP_S } from "./listen.js";
 import { pushSupport, subscribe, currentSubscription, unsubscribe, registerSW } from "./pushclient.js";
+import { ROOMS } from "./people.js";
 
 // a notification opens /family?h=<home>[&ack=<alert>]: pick that home (the key stays in this browser), then clean the address
 const qs = new URLSearchParams(location.search);
@@ -55,7 +56,9 @@ async function poll() {
     events = [...m.values()].sort((a, b) => a.end - b.end).filter((e) => e.end > now() - 36 * 3600);
     const sig = JSON.stringify(r.state) + "|" + events.length + "|" + (events.length ? events[events.length - 1].end : 0);
     srv = r.state; failures = 0;
-    saveHome(link.id, { parent: srv.names.parent, caregiver: srv.names.caregiver });
+    const room = srv.names.room || {};
+    saveHome(link.id, { parent: srv.names.parent, caregiver: srv.names.caregiver, room: room.type === "other" ? room.name : (ROOMS[room.type] || ROOMS.kitchen).label,
+      ...(homes()[link.id] && homes()[link.id].first ? {} : { first: Date.now() }) });
     if (sig !== lastSig || Date.now() - lastDraw > 14000) { lastSig = sig; draw(); }
   } catch (e) {
     if (e.status === 403 || e.status === 404) return gone(e.message);
@@ -93,6 +96,7 @@ function draw() {
   for (const h of t.heard) heard.append(el("li", { text: `${h.name}: ${h.text}${h.n > 1 ? ` (${h.n}×)` : ""}` }));
   $("#heard-sec").hidden = !t.heard.length;
   drawUrgent(n);
+  drawHomes();
   if (!pushDrawn) { pushDrawn = true; drawPush(); }
   drawWeek();
   $("#foot-who").textContent = n.self ? "You see the same day on the room screen and can pause Kettle any time." : `${n.parent} sees the same day on the ${n.room} screen and can pause Kettle any time.`;
@@ -208,6 +212,19 @@ function drawWeek() {
     el("span", { class: "d", text: r.day }),
     el("span", { class: "v", text: r.state === "yes" ? `✓ ${r.at}` : r.state === "no" ? "Not heard" : "Can't tell" }),
     el("span", { class: "k", text: r.kettle ? `Kettle ${r.kettle}` : "" })));
+}
+
+/** More than one parent (or grandparent): every home this phone can see, one chip each, plus "Add someone". Each home has its
+ *  own room device, link and alerts; the chips only switch which one this page shows (the keys stay in this browser). */
+function drawHomes() {
+  const box = $("#homes"); if (!box) return;
+  const list = Object.values(homes()).filter((h) => h.familyKey).sort((a, b) => (a.first || a.saved || 0) - (b.first || b.saved || 0));
+  const name = (h) => `${h.parent || "Your parent"}${h.room ? ` · ${h.room}` : ""}`;
+  const k = list.map((h) => h.id + name(h)).join("|") + "#" + link.id;
+  if (box.dataset.k === k) return;
+  box.dataset.k = k; box.textContent = "";
+  box.append(...list.map((h) => el("a", { class: "home-chip", href: `/family?h=${h.id}`, "aria-current": h.id === link.id ? "page" : null, text: name(h) })),
+    el("a", { class: "home-chip add", href: "/start", text: "+ Add someone" }));
 }
 
 // before the parent's device has said yes: show how to connect it (only on the device that holds the kitchen key)
