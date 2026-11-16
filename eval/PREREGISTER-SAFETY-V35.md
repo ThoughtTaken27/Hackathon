@@ -30,3 +30,13 @@ is run once after this note is committed. Any rerun is disclosed in `results/saf
 - Report, whatever they are: gunshot false fires per source on held-out clips (can opening, door knocks, fireworks, thunder);
   the new negative scenario "cans, knocks, fireworks and thunder while cooking" (60 timelines); the crash-then-stillness rate at 2 min.
 - Known cost stated up front: a crash followed by someone quietly leaving the room now looks like a fall after 2 minutes, not 10.
+
+## Addendum (written after the run above, before this change's held-out run): smoke rule U1b
+While building the browser test, a synthetic T3 alarm showed only **one complete T3 cycle per 10-s window**, but U1 needs two in
+one window (or the AudioSet smoke score, which catches ~4%). Added rule **U1b: a T3 cycle in 2 of the last 3 windows** (the windows
+overlap by 5 s, so a continuous alarm gives this within about 15 s).
+- Development only (simulator on dev clips, fresh seed 0): smoke during cooking 44/60 → 55/60; every negative scenario and ordinary
+  home audio unchanged. Of the 2,000 ESC-50 clips, the only two with any T3 cycle (a crow, a frog) already have two, so they already
+  fire under U1: U1b adds none there.
+- **Gate:** ship only if held-out ordinary home audio stays at 0 urgent per 24 h and every held-out negative scenario stays at 0.
+  Report the held-out smoke-during-cooking rate whatever it is. Earlier v3.5 rows will be recomputed in the same run (deterministic).
